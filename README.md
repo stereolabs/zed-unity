@@ -8,11 +8,14 @@ This package brings ZED image, depth and motion tracking data into Unity. In Uni
 
 Links
 ---------------
-ZED SDK Download - https://www.stereolabs.com/developers/
+
+Unity Plugin Download - https://github.com/stereolabs/zed-unity/releases
+
+ZED SDK Download - https://www.stereolabs.com/developers/release/2.3/
 
 Unity Plugin Documentation - https://www.stereolabs.com/documentation/guides/using-zed-with-unity/introduction.html
 
-ZED SDK API Documentation - https://www.stereolabs.com/developers/documentation/API
+ZED SDK API Documentation - https://www.stereolabs.com/developers/documentation/API/v2.3.0/
 
 Support
 -------
