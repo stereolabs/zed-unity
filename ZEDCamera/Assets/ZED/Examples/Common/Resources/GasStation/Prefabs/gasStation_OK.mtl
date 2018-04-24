@@ -1,0 +1,51 @@
+# Blender MTL File: 'save.blend'
+# Material Count: 4
+
+newmtl Rock
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni -1.000000
+d 1.000000
+illum 2
+map_Kd Rock.jpg
+map_Kn Rock_NORM.jpg
+map_Ks Rock_SPEC.jpg
+
+newmtl alpha
+Ns 9.803922
+Ka 0.000000 0.000000 0.000000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd alpha.tga
+map_Ka alpha.tga
+map_d alpha.tga
+
+newmtl domik
+Ns 9.803922
+Ka 0.000000 0.000000 0.000000
+Kd 0.588000 0.588000 0.588000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd domik.jpg
+map_Ka domik.jpg
+
+newmtl gasStation
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd gas_station.tga
