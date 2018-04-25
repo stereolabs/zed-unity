@@ -11,11 +11,11 @@ Links
 
 Unity Plugin Download - https://github.com/stereolabs/zed-unity/releases
 
-ZED SDK Download - https://www.stereolabs.com/developers/release/2.3/
+ZED SDK Download - https://www.stereolabs.com/developers/release/2.4/
 
 Unity Plugin Documentation - https://www.stereolabs.com/documentation/guides/using-zed-with-unity/introduction.html
 
-ZED SDK API Documentation - https://www.stereolabs.com/developers/documentation/API/v2.3.0/
+ZED SDK API Documentation - https://www.stereolabs.com/developers/documentation/API/v2.4.0/
 
 Support
 -------
