@@ -633,7 +633,7 @@ namespace sl
 				return false;
 			}
 
-
+			pluginIsReady = true;
 			return true;
          }
 
