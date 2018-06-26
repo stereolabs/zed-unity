@@ -568,13 +568,15 @@ public class GreenScreenManager : MonoBehaviour
 
     public void CreateFileWatcher(string path)
     {
+        if (!File.Exists(pathFileConfig)) return;
+
         FileSystemWatcher watcher = new FileSystemWatcher();
         watcher.Path = path;
         /* Watch for changes in LastAccess and LastWrite times, and 
            the renaming of files or directories. */
         watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
 
-        watcher.Filter = pathFileConfig;
+        watcher.Filter = Path.GetFileName(pathFileConfig);
 
         watcher.Changed += new FileSystemEventHandler(OnChanged);
         watcher.EnableRaisingEvents = true;

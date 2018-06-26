@@ -38,12 +38,7 @@ Shader "ZED/Planetarium/FresnelShader" {
 	half _FresnelExponent;
 	fixed4 _Color;
 
-	// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
-	// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
-	// #pragma instancing_options assumeuniformscaling
-	UNITY_INSTANCING_BUFFER_START(Props)
-		// put more per-instance properties here
-		UNITY_INSTANCING_BUFFER_END(Props)
+
 
 		half4 LightingSimpleSpecular(SurfaceOutput s, half3 lightDir, half3 viewDir, half atten) {
 		half NdotL = dot(s.Normal, lightDir);

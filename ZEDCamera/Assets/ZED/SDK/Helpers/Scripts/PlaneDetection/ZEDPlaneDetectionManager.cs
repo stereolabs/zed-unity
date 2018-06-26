@@ -13,7 +13,7 @@ using UnityEditor;
 [DisallowMultipleComponent]
 public class ZEDPlaneDetectionManager : MonoBehaviour
 { 
-	private GameObject holder;
+	private GameObject holder; //Object all planes are parented to, called [ZED Planes] in Hierarchy
 	private ZEDManager manager = null;
 	private Camera LeftCamera = null;
 	private sl.ZEDCamera zedCam;
@@ -27,32 +27,32 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 		get { return hasDetectedFloor; }
 	}
 
-	private ZEDPlaneGameObject floorPlaneGO = null;
+    private GameObject floorPlaneGO; 
+	private ZEDPlaneGameObject floorPlane = null;
 	public ZEDPlaneGameObject getFloorPlane{ 
-		get { return floorPlaneGO; } 
+		get { return floorPlane; } 
 	}
 
 	private int planeHitCount = 0;
-	public List<ZEDPlaneGameObject> hitPlaneGOList = null;
-	public ZEDPlaneGameObject getHitPlaneGO(int i)
+	public List<ZEDPlaneGameObject> hitPlaneList = null;
+	public ZEDPlaneGameObject getHitPlane(int i)
 	{
-		if (i < hitPlaneGOList.Count)
-			return hitPlaneGOList [i];
+		if (i < hitPlaneList.Count)
+			return hitPlaneList [i];
 		else
 			return null;
 	}
 
-	private Vector3[] planeMeshVertices;
-	private int[] planeMeshTriangles;
+	private Vector3[] planeMeshVertices; //Buffer for vertex data from SDK
+	private int[] planeMeshTriangles; //Buffer for triangle data from SDK 
 
 	public static bool isDisplay = false;
-
 
 	public bool addPhysicsOption = true;
 	public bool isVisibleInSceneOption = true;
 	public bool isVisibleInGameOption = true;
 
-    public Material overrideMaterial = null;
+    public Material overrideMaterial = null; //If null, shows wireframe. Otherwise, displays your custom material. 
 
 	private ZEDPlaneRenderer[] meshRenderer = new ZEDPlaneRenderer[2]; 
 
@@ -86,8 +86,8 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 		planeMeshVertices = new Vector3[65000];
 		planeMeshTriangles = new int[65000];
 
-		floorPlaneGO = new ZEDPlaneGameObject ();
-		hitPlaneGOList = new List<ZEDPlaneGameObject> ();
+		//floorPlaneGO = holder.AddComponent<ZEDPlaneGameObject> ();
+		hitPlaneList = new List<ZEDPlaneGameObject> ();
 
 		SetPlaneRenderer();
 	}
@@ -164,7 +164,7 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Transforms the plane mesh from Camera frame to world frame
+	/// Transforms the plane mesh from Camera frame to local frame, where each vertex is relative to the plane's center. 
 	/// </summary>
 	/// <param name="camera">Camera transform.</param>
 	/// <param name="srcVertices">Source vertices (in camera space).</param>
@@ -173,7 +173,7 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 	/// <param name="dstTriangles">Dst triangles (in world space).</param>
 	/// <param name="numVertices">Number of vertices.</param>
 	/// <param name="numTriangles">Number of triangles.</param>
-	private void TransformLocalToWorldMesh(Transform camera,Vector3[] srcVertices, int[] srcTriangles, Vector3[] dstVertices, int[] dstTriangles,int numVertices, int numTriangles)
+	private void TransformCameraToLocalMesh(Transform camera, Vector3[] srcVertices, int[] srcTriangles, Vector3[] dstVertices, int[] dstTriangles,int numVertices, int numTriangles, Vector3 centerpos)
 	{
  		//Since we are in Camera
 		if (numVertices == 0 || numTriangles == 0)
@@ -183,13 +183,14 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 		System.Buffer.BlockCopy(srcTriangles, 0, dstTriangles, 0, numTriangles * sizeof(int));
  
 		for (int i = 0; i < numVertices; i++) {
-			dstVertices [i] = camera.TransformPoint (dstVertices [i]);
+            dstVertices[i] -= centerpos;
+            dstVertices[i] = camera.transform.rotation * dstVertices[i];
 		}
 
 	}
 
 	/// <summary>
-	/// Detects the floor plane.
+	/// Detects the floor plane. Replaces the current floor plane, if there is one, unlike DetectPlaneAtHit. 
 	/// </summary>
 	/// <returns><c>true</c>, if floor plane was detected, <c>false</c> otherwise.</returns>
 	public bool DetectFloorPlane(bool auto)
@@ -204,16 +205,32 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 			if (numVertices > 0 && numTriangles > 0) {
 				Vector3[] worldPlaneVertices = new Vector3[numVertices];
 				int[] worldPlaneTriangles = new int[numTriangles];
-				TransformLocalToWorldMesh (LeftCamera.transform, planeMeshVertices, planeMeshTriangles, worldPlaneVertices, worldPlaneTriangles, numVertices, numTriangles);
-				hasDetectedFloor = true;
+				TransformCameraToLocalMesh (LeftCamera.transform, planeMeshVertices, planeMeshTriangles, worldPlaneVertices, worldPlaneTriangles, numVertices, numTriangles, plane.PlaneCenter);
 
-				if (!floorPlaneGO.IsCreated) {
-					if(overrideMaterial != null) floorPlaneGO.Create(holder.transform, plane, worldPlaneVertices, worldPlaneTriangles, 0, overrideMaterial);
-                    else floorPlaneGO.Create (holder.transform, plane, worldPlaneVertices, worldPlaneTriangles, 0);
-					floorPlaneGO.SetPhysics (addPhysicsOption);
+                hasDetectedFloor = true;
+
+                if(!floorPlaneGO)
+                {
+                    floorPlaneGO = new GameObject("Floor Plane");
+                    floorPlaneGO.transform.SetParent(holder.transform);
+                }
+
+                //Move the gameobject to the center of the plane. Note that the plane data's center is relative to the camera. 
+                floorPlaneGO.transform.position = LeftCamera.transform.position; //Add the camera's world position 
+                floorPlaneGO.transform.position += LeftCamera.transform.rotation * plane.PlaneCenter; //Add the center of the plane
+
+                if (!floorPlane)
+                {
+                    floorPlane = floorPlaneGO.AddComponent<ZEDPlaneGameObject>();
+                }
+
+				if (!floorPlane.IsCreated) {
+					if(overrideMaterial != null) floorPlane.Create(plane, worldPlaneVertices, worldPlaneTriangles, 0, overrideMaterial);
+                    else floorPlane.Create (plane, worldPlaneVertices, worldPlaneTriangles, 0);
+					floorPlane.SetPhysics (addPhysicsOption);
 				} else {
-					floorPlaneGO.UpdateFloorPlane (!auto,plane, worldPlaneVertices, worldPlaneTriangles, overrideMaterial);
-					floorPlaneGO.SetPhysics (addPhysicsOption);
+					floorPlane.UpdateFloorPlane (!auto,plane, worldPlaneVertices, worldPlaneTriangles, overrideMaterial);
+					floorPlane.SetPhysics (addPhysicsOption);
 
 				}
 				return true;
@@ -225,7 +242,7 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 
 
 	/// <summary>
-	/// Detects the plane around pixel hit
+	/// Detects the plane around screen-space coordinates specified. 
 	/// </summary>
 	/// <returns><c>true</c>, if plane at hit was detected, <c>false</c> otherwise.</returns>
 	/// <param name="imagePixel">Image pixel.</param>
@@ -239,17 +256,25 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 			int numVertices, numTriangles = 0;
 			zedCam.convertHitPlaneToMesh (planeMeshVertices, planeMeshTriangles, out numVertices, out numTriangles);
 			if (numVertices > 0 && numTriangles > 0) {
+                GameObject newhitGO = new GameObject(); //TODO: Move to proper location. (Need to rework how the mesh works first, though)
+                newhitGO.transform.SetParent(holder.transform);
+
 				Vector3[] worldPlaneVertices = new Vector3[numVertices];
 				int[] worldPlaneTriangles = new int[numTriangles];
-				TransformLocalToWorldMesh (LeftCamera.transform, planeMeshVertices, planeMeshTriangles, worldPlaneVertices, worldPlaneTriangles, numVertices, numTriangles);
-				ZEDPlaneGameObject hitPlane = new ZEDPlaneGameObject ();
+				TransformCameraToLocalMesh (LeftCamera.transform, planeMeshVertices, planeMeshTriangles, worldPlaneVertices, worldPlaneTriangles, numVertices, numTriangles, plane.PlaneCenter);
 
-                if(overrideMaterial != null) hitPlane.Create (holder.transform, plane, worldPlaneVertices, worldPlaneTriangles, planeHitCount + 1, overrideMaterial);
-                else hitPlane.Create(holder.transform, plane, worldPlaneVertices, worldPlaneTriangles, planeHitCount + 1);
+                //Move the gameobject to the center of the plane. Note that the plane data's center is relative to the camera. 
+                newhitGO.transform.position = LeftCamera.transform.position; //Add the camera's world position 
+                newhitGO.transform.position += LeftCamera.transform.rotation * plane.PlaneCenter; //Add the center of the plane
+
+				ZEDPlaneGameObject hitPlane = newhitGO.AddComponent<ZEDPlaneGameObject>();
+
+                if(overrideMaterial != null) hitPlane.Create (plane, worldPlaneVertices, worldPlaneTriangles, planeHitCount + 1, overrideMaterial);
+                else hitPlane.Create(plane, worldPlaneVertices, worldPlaneTriangles, planeHitCount + 1);
 
                 hitPlane.SetPhysics (addPhysicsOption);
 				hitPlane.SetVisible (isVisibleInSceneOption);
-				hitPlaneGOList.Add (hitPlane);
+				hitPlaneList.Add (hitPlane);
 				planeHitCount++;
 				return true;
 			}
@@ -265,12 +290,10 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 	/// </summary>
 	void Update()
 	{
-		if (Input.GetButtonDown ("Fire1")) {
+		if (Input.GetMouseButtonDown(0)) {
 			Vector2 ScreenPosition = Input.mousePosition;
 			DetectPlaneAtHit (ScreenPosition);
 		}
-
-	
 	}
 
 	/// <summary>
@@ -285,21 +308,18 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 	#if UNITY_EDITOR
 	void OnValidate()
 	{
-		if (floorPlaneGO != null && floorPlaneGO.IsCreated) {
-			floorPlaneGO.SetPhysics (addPhysicsOption);
-			floorPlaneGO.SetVisible (isVisibleInSceneOption);
+		if (floorPlane != null && floorPlane.IsCreated) {
+			floorPlane.SetPhysics (addPhysicsOption);
+			floorPlane.SetVisible (isVisibleInSceneOption);
 		}
 
-		if (hitPlaneGOList != null)
-			foreach (ZEDPlaneGameObject c in hitPlaneGOList) {
+		if (hitPlaneList != null)
+			foreach (ZEDPlaneGameObject c in hitPlaneList) {
 				if (c.IsCreated)
 					c.SetPhysics (addPhysicsOption);
 
 				c.SetVisible (isVisibleInSceneOption);
-			}
-
-
- 		
+			}	
 	}
 	#endif
 

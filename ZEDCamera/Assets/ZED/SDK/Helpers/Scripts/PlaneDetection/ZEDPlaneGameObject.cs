@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 /// <summary>
 /// Process the mesh taken from the ZED
 /// </summary>
-public class ZEDPlaneGameObject
+public class ZEDPlaneGameObject : MonoBehaviour
 {
 
     /// <summary>
@@ -17,8 +17,9 @@ public class ZEDPlaneGameObject
     public enum PLANE_TYPE
     {
         FLOOR,
-        HIT,
-        UNKNOWN
+        HIT_HORIZONTAL,
+		HIT_VERTICAL,
+		HIT_UNKNOWN
     };
 
     /// <summary>
@@ -40,8 +41,6 @@ public class ZEDPlaneGameObject
         public Vector3[] Bounds; //max 256 points
     }
 
-
-    public GameObject gameObject = null;
     public ZEDPlaneGameObject.PlaneData planeData;
 
 
@@ -50,13 +49,15 @@ public class ZEDPlaneGameObject
     {
         get { return isCreated; }
     }
+    public Vector3 worldNormal { get; private set; }
 
-
-    public ZEDPlaneGameObject()
+    public Vector3 worldCenter
     {
-        isCreated = false;
+        get
+        {
+            return gameObject.transform.position;
+        }
     }
-
 
     private void SetComponents(PlaneData plane, Vector3[] vertices, int[] triangles, Material rendermaterial)
     {
@@ -74,14 +75,12 @@ public class ZEDPlaneGameObject
         System.Array.Resize(ref vertices, highestvertindex + 1);
 
 
-        //Calculate the UVs for the vertices
+        //Calculate the UVs for the vertices based on world space so they line up with other planes
         Vector2[] uvs = new Vector2[vertices.Length];
-        Camera leftCamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
-        Vector3 worldnormal = leftCamera.transform.TransformDirection(plane.PlaneNormal);
-        Quaternion rotatetobackward = Quaternion.FromToRotation(worldnormal, Vector3.back);
+        Quaternion rotatetobackward = Quaternion.FromToRotation(worldNormal, Vector3.back);
         for (int i = 0; i < vertices.Length; i++)
         {
-            Vector3 upwardcoords = rotatetobackward * vertices[i];
+            Vector3 upwardcoords = rotatetobackward * (vertices[i] + worldCenter);
             uvs[i] = new Vector2(upwardcoords.x, upwardcoords.y);
         }
 
@@ -89,6 +88,7 @@ public class ZEDPlaneGameObject
         mf.mesh.vertices = vertices;
         mf.mesh.triangles = triangles;
         mf.mesh.uv = uvs;
+        mf.mesh.RecalculateNormals();
         mf.mesh.RecalculateBounds();
 
         // Get the mesh renderer and set properties
@@ -120,11 +120,9 @@ public class ZEDPlaneGameObject
     /// <param name="plane">PlaneData fills by findXXXPlane().</param>
     /// <param name="vertices">Vertices of the mesh</param>
     /// <param name="triangles">Triangles of the mesh</param>
-    public void Create(Transform holder, ZEDPlaneGameObject.PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count)
+    public void Create(PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count)
     {
-
-        Create(holder, plane, vertices, triangles, opt_count, GetDefaultMaterial(plane.Type));
-
+        Create(plane, vertices, triangles, opt_count, GetDefaultMaterial(plane.Type));
     }
 
     /// <summary>
@@ -134,9 +132,8 @@ public class ZEDPlaneGameObject
     /// <param name="plane">PlaneData fills by findXXXPlane().</param>
     /// <param name="vertices">Vertices of the mesh</param>
     /// <param name="triangles">Triangles of the mesh</param>
-    public void Create(Transform holder, ZEDPlaneGameObject.PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count, Material rendermaterial)
+    public void Create(PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count, Material rendermaterial)
     {
-
         planeData.ErrorCode = plane.ErrorCode;
         planeData.Type = plane.Type;
         planeData.PlaneNormal = plane.PlaneNormal;
@@ -146,18 +143,19 @@ public class ZEDPlaneGameObject
         planeData.PlaneEquation = plane.PlaneEquation;
         planeData.Extents = plane.Extents;
 
-        ///Create the GameObject as Primitive Plane
-        if (gameObject == null)
-            gameObject = new GameObject();
+        //Set normal in world space
+        Camera leftCamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
+        worldNormal = leftCamera.transform.TransformDirection(planeData.PlaneNormal);
+
+        ///Create the MeshCollider
         gameObject.AddComponent<MeshCollider>().sharedMesh = null;
 
-        if (plane.Type == PLANE_TYPE.FLOOR)
-            gameObject.name = "Floor Plane";
-        else if (plane.Type == PLANE_TYPE.HIT)
-            gameObject.name = "Hit Plane " + opt_count;
+        if (plane.Type != PLANE_TYPE.FLOOR)
+			gameObject.name = "Hit Plane " + opt_count;      
+        else
+			gameObject.name = "Floor Plane";
 
 
-        gameObject.transform.SetParent(holder);
         gameObject.layer = sl.ZEDCamera.TagOneObject;
 
         SetComponents(plane, vertices, triangles, rendermaterial);
@@ -167,7 +165,7 @@ public class ZEDPlaneGameObject
 
 
     /// <summary>
-    /// Updates the floor plane regarding "force" mode
+    /// Updates the floor plane using "force" mode
     /// </summary>
     /// <returns><c>true</c>, if floor plane was updated, <c>false</c> otherwise.</returns>
     /// <param name="force">If set to <c>true</c> force the update. Is set to false, update only if new plane/mesh is bigger or contains the old one</param>
@@ -184,7 +182,6 @@ public class ZEDPlaneGameObject
         //Check mesh
         if (!force)
         {
-
             if (!gameObject.GetComponent<MeshRenderer>().isVisible)
                 need_update = true;
             else
@@ -252,40 +249,17 @@ public class ZEDPlaneGameObject
             mr.enabled = c;
     }
 
-
-    /// <summary>
-    /// Gets the normal vector of the plane
-    /// </summary>
-    /// <returns>The normal.</returns>
-    public Vector3 GetNormal()
-    {
-		Camera leftCamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
-		Vector3 worldnormal = leftCamera.transform.TransformDirection(planeData.PlaneNormal);
-		return worldnormal;
-    }
-
-    /// <summary>
-    /// Gets the world position of the center of the plane
-    /// </summary>
-    /// <returns>The center.</returns>
-    public Vector3 GetCenter()
-    {
-		Camera leftCamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
-		Vector3 worldPlaneCenter = leftCamera.transform.TransformPoint(planeData.PlaneCenter);
-		return worldPlaneCenter;
-    }
-
     /// <summary>
     /// Gets the size of the bounding rect that fits the plane
     /// </summary>
     /// <returns>The scale.</returns>
-    public Vector2 getScale()
+    public Vector2 GetScale()
     {
         return planeData.Extents;
     }
 
 
-    public Bounds getBounds()
+    public Bounds GetBounds()
     {
         MeshFilter mf = gameObject.GetComponent<MeshFilter>();
         if (mf != null)
@@ -323,10 +297,13 @@ public class ZEDPlaneGameObject
                 //Floor planes are blue
                 defaultmaterial.SetColor("_WireColor", new Color(44.0f / 255.0f, 157.0f / 255.0f, 222.0f / 255.0f, 174.0f / 255.0f));
                 break;
-            case PLANE_TYPE.HIT:
-                //Hit planes are pink
+			case PLANE_TYPE.HIT_HORIZONTAL :
+			case PLANE_TYPE.HIT_VERTICAL :
+		    case PLANE_TYPE.HIT_UNKNOWN :
+			     // Hit planes are pink
                 defaultmaterial.SetColor("_WireColor", new Color(221.0f / 255.0f, 20.0f / 255.0f, 149.0f / 255.0f, 174.0f / 255.0f));
                 break;
+
             default:
                 //Unknown planes are white
                 defaultmaterial.SetColor("_WireColor", new Color(1, 1, 1, 174.0f / 255.0f));

@@ -244,7 +244,7 @@ public class ZEDRenderingPlane : MonoBehaviour
         //Get the current camera and set the aspect 
         mainCamera = GetComponent<Camera>();
         mainCamera.aspect = aspect;
-
+        mainCamera.renderingPath = RenderingPath.UsePlayerSettings;
 
     }
 
@@ -1047,7 +1047,6 @@ public class ZEDRenderingPlane : MonoBehaviour
                     RenderTexture.ReleaseTemporary(bluredMask);
                 }
             }
-
             else
             {
                 Graphics.Blit(source, destination);

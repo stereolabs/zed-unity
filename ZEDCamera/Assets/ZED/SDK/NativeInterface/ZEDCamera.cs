@@ -403,6 +403,9 @@ namespace sl
 		[DllImport(nameDll, EntryPoint = "dllz_get_internal_imu_orientation")]
 		private static extern int dllz_get_internal_imu_orientation(ref Quaternion rotation, int reference_time);
 
+		[DllImport(nameDll, EntryPoint = "dllz_get_internal_imu_data")]
+		private static extern int dllz_get_internal_imu_data(ref IMUData imuData, int reference_time);
+
 
         [DllImport(nameDll, EntryPoint = "dllz_get_area_export_state")]
         private static extern int dllz_get_area_export_state();
@@ -1540,6 +1543,37 @@ namespace sl
             return (TRACKING_STATE)dllz_get_position_at_target_frame(ref rotation, ref translation, ref targetQuaternion, ref targetTranslation, (int)mat_type);
         }
 
+
+		/// <summary>
+		/// Get the current position of the camera with an defined tracking frame (see TRACKING_FRAME )
+		///
+		/// </summary>
+		/// <param name="rotation">the quaternion will be filled with the current rotation of the camera depending on the reference and tracking frame</param>
+		/// <param name="position">the vector will be filled with the current position of the camera depending on the reference and trancking frameframe</param>
+		/// <param name="targetQuaternion"></param>
+		/// <param name="targetTranslation"></param>
+		/// <param name="mat_type"></param>
+		/// <returns></returns>
+		public TRACKING_STATE GetPosition(ref Quaternion rotation, ref Vector3 translation, TRACKING_FRAME tracking_frame, REFERENCE_FRAME mat_type = REFERENCE_FRAME.WORLD)
+		{
+			Quaternion rotationOffset = Quaternion.identity;
+			Vector3 positionOffset = Vector3.zero;
+			switch (tracking_frame)
+			{
+			case sl.TRACKING_FRAME.LEFT_EYE:
+				positionOffset = new Vector3(0, 0, 0);
+				break;
+			case sl.TRACKING_FRAME.RIGHT_EYE:
+				positionOffset = new Vector3(Baseline, 0, 0);
+				break;
+			case sl.TRACKING_FRAME.CENTER_EYE:
+				positionOffset = new Vector3(Baseline / 2.0f, 0, 0);
+				break;
+			}
+
+			return (TRACKING_STATE)dllz_get_position_at_target_frame(ref rotation, ref translation, ref rotationOffset, ref positionOffset, (int)mat_type);
+		}
+
 		/// <summary>
         /// Get position and fill a pose
         /// </summary>
@@ -1577,6 +1611,17 @@ namespace sl
 			return err;
 		}
 
+		/// <summary>
+		/// Get the full imu data (raw value and fused values) given by the IMU of the ZED-M (only available for ZED-M)
+		/// </summary>
+		/// <returns>Error code status</returns>
+		/// <param name="rotation">Rotation.</param>
+		public ERROR_CODE GetInternalIMUData(ref IMUData data, TIME_REFERENCE referenceTime = TIME_REFERENCE.IMAGE)
+		{
+			sl.ERROR_CODE err = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
+			err = (sl.ERROR_CODE)dllz_get_internal_imu_data(ref data,(int)referenceTime);
+			return err;
+		}
 
         /// <summary>
         /// Converts a float array to a matrix
@@ -1702,8 +1747,12 @@ namespace sl
         /// </summary>
         private void AssertCameraIsReady()
         {
-            if (!cameraReady || !pluginIsReady)
-                throw new Exception("Camera is not connected, init was not called or a dependency problem occurred");
+			if (!cameraReady)
+                throw new Exception("Camera is not connected or init was not called");
+
+			if (!pluginIsReady)
+				throw new Exception("Could not resolve plugin dependencies");
+			
         }
 
         /// <summary>

@@ -61,6 +61,9 @@ public class ZEDSVOManager : MonoBehaviour
     [SerializeField]
     public bool pause = false;
 
+	 
+
+
     /// <summary>
     /// Compression mode to register a SVO
     /// </summary>
@@ -96,6 +99,22 @@ public class ZEDSVOManager : MonoBehaviour
             currentFrame = value;
         }
     }
+
+
+	private bool need_NewFrame;
+	public bool NeedNewFrameGrab
+	{
+
+		get
+		{
+			return need_NewFrame;
+		}
+		set
+		{
+			need_NewFrame = value;
+		}
+
+	}
 
     /// <summary>
     /// Init the SVOManager
@@ -183,7 +202,7 @@ public class SVOManagerInspector : Editor
                 sl.ZEDCamera.GetInstance().SetSVOPosition(currentFrame.intValue);
                 if (pause.boolValue)
                 {
-                    sl.ZEDCamera.GetInstance().UpdateTextures();
+					obj.NeedNewFrameGrab = true;
                 }
             }
         }
