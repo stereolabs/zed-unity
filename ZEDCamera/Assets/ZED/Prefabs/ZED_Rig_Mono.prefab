@@ -128,12 +128,12 @@ Camera:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RenderingPath: 3
+  m_RenderingPath: 1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 0
   m_HDR: 0
-  m_AllowMSAA: 0
+  m_AllowMSAA: 1
   m_ForceIntoRT: 0
   m_OcclusionCulling: 0
   m_StereoConvergence: 10
@@ -217,12 +217,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resolution: 2
   depthMode: 1
-  trackingFrame: 0
   enableTracking: 1
   enableSpatialMemory: 1
   pathSpatialMemory: 
-  gravityRotation: {x: 0, y: 0, z: 0, w: 1}
-  videoOverlay: 1
-  realLightBrightness: 1
-  renderingPath: 1
+  depthOcclusion: 1
   postProcessing: 1
+  cameraBrightness: 1
+  versionZED: '-'
+  engineFPS: '-'
+  cameraFPS: '-'
+  HMDDevice: '-'
+  trackingState: '-'
+  gravityRotation: {x: 0, y: 0, z: 0, w: 1}
+  ZEDSyncPosition: {x: 0, y: 0, z: 0}
+  HMDSyncPosition: {x: 0, y: 0, z: 0}
+  ZEDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
+  HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}

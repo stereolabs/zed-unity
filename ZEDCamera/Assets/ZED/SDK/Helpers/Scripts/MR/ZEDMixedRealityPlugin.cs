@@ -225,9 +225,9 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	{
 		hasVRDevice = VRDevice.isPresent;
 		if (hasVRDevice) {
-			if (VRDevice.model.Contains ("Vive")) 
+			if (VRDevice.model.ToLower().Contains ("vive")) 
 				dllz_latency_corrector_initialize (0);
-			else if (VRDevice.model.Contains ("Oculus"))
+			else if (VRDevice.model.ToLower().Contains ("oculus"))
 				dllz_latency_corrector_initialize (1);
 	
 			dllz_drift_corrector_initialize ();
@@ -326,10 +326,15 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
 
 		// Only for vive... some image adjustment
-		if (VRDevice.model.Contains ("Vive")) {
+		if (VRDevice.model.ToLower().Contains ("vive")) {
 			zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.CONTRAST, 3);
 			zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.SATURATION, 3);
 		}
+
+
+        //Set eye layers to respective eyes. They were each set to Both during the loading screen to avoid one eye going blank at some rotations. 
+		finalLeftEye.stereoTargetEye = StereoTargetEyeMask.Left;
+		finalRightEye.stereoTargetEye = StereoTargetEyeMask.Right;
 
 		/// AR Passtrough is recommended in 1280x720 at 60, due to fov, fps, etc...;
 		/// Set Warning for user
@@ -594,13 +599,13 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 		//Write calibration file using default calibration
 		using (System.IO.StreamWriter file = new System.IO.StreamWriter (path)) {
 			string node = "[HMD]";
-			string tx = "tx=" + hmdtozedCalibration.translation.x.ToString () + " //Translation x";
-			string ty = "ty=" + hmdtozedCalibration.translation.y.ToString () + " //Translation y";
-			string tz = "tz=" + hmdtozedCalibration.translation.z.ToString () + " //Translation z";
-			string rx = "rx=" + hmdtozedCalibration.rotation.x.ToString () + " //Quaternion x";
-			string ry = "ry=" + hmdtozedCalibration.rotation.y.ToString () + " //Quaternion y";
-			string rz = "rz=" + hmdtozedCalibration.rotation.z.ToString () + " //Quaternion z";
-			string rw = "rw=" + hmdtozedCalibration.rotation.w.ToString () + " //Quaternion w";
+			string tx = "tx=" + hmdtozedCalibration.translation.x.ToString (System.Globalization.CultureInfo.InvariantCulture) + " //Translation x";
+			string ty = "ty=" + hmdtozedCalibration.translation.y.ToString (System.Globalization.CultureInfo.InvariantCulture) + " //Translation y";
+			string tz = "tz=" + hmdtozedCalibration.translation.z.ToString (System.Globalization.CultureInfo.InvariantCulture) + " //Translation z";
+			string rx = "rx=" + hmdtozedCalibration.rotation.x.ToString (System.Globalization.CultureInfo.InvariantCulture) + " //Quaternion x";
+			string ry = "ry=" + hmdtozedCalibration.rotation.y.ToString (System.Globalization.CultureInfo.InvariantCulture) + " //Quaternion y";
+			string rz = "rz=" + hmdtozedCalibration.rotation.z.ToString (System.Globalization.CultureInfo.InvariantCulture) + " //Quaternion z";
+			string rw = "rw=" + hmdtozedCalibration.rotation.w.ToString (System.Globalization.CultureInfo.InvariantCulture) + " //Quaternion w";
 
 			file.WriteLine (node);
 			file.WriteLine (tx);

@@ -18,6 +18,7 @@ class GreenScreenManagerEditor : Editor
     private SerializedProperty erosion;
     private SerializedProperty sigma;
     private SerializedProperty despill;
+    private SerializedProperty pathfileconfig;
 
 
     private GarbageMatte matte;
@@ -41,6 +42,7 @@ class GreenScreenManagerEditor : Editor
         blackclip = serializedObject.FindProperty("blackClip");
         sigma = serializedObject.FindProperty("sigma_");
         despill = serializedObject.FindProperty("spill");
+        pathfileconfig = serializedObject.FindProperty("pathFileConfig");
 
         enableGrabageMatte = serializedObject.FindProperty("enableGarbageMatte");
 
@@ -104,10 +106,11 @@ class GreenScreenManagerEditor : Editor
 
         GUILayout.Space(20);
         EditorGUILayout.BeginHorizontal();
-        greenScreen.pathFileConfig = EditorGUILayout.TextField("Save Config", greenScreen.pathFileConfig);
+        pathfileconfig.stringValue = EditorGUILayout.TextField("Save Config", greenScreen.pathFileConfig);
+        serializedObject.ApplyModifiedProperties();
         if (GUILayout.Button("...", optionsButtonBrowse))
         {
-            greenScreen.pathFileConfig = EditorUtility.OpenFilePanel("Load save file", "", "json");
+            pathfileconfig.stringValue = EditorUtility.OpenFilePanel("Load save file", "", "json");
             serializedObject.ApplyModifiedProperties();
         }
         EditorGUILayout.EndHorizontal(); EditorGUILayout.BeginHorizontal();

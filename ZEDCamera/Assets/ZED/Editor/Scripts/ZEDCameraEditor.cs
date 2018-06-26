@@ -60,7 +60,6 @@ public class ZEDCameraEditor : Editor
                 resolution = manager.resolution;
                 depthmode = manager.depthMode;
                 usespatialmemory = manager.enableSpatialMemory;
-                usedepthocclusion = manager.depthOcclusion;
                 usepostprocessing = manager.postProcessing;
 
                 pendingchange = false;
@@ -91,12 +90,16 @@ public class ZEDCameraEditor : Editor
 
     }
 
+    /// <summary>
+    /// Check if something has changed that requires restarting the camera
+    /// </summary>
+    /// <returns></returns>
     private bool CheckChange()
     {
         if (resolution != manager.resolution ||
             depthmode != manager.depthMode ||
             usespatialmemory != manager.enableSpatialMemory ||
-            usedepthocclusion != manager.depthOcclusion ||
+            //usedepthocclusion != manager.depthOcclusion ||
             usepostprocessing != manager.postProcessing)
         {
             return true;
