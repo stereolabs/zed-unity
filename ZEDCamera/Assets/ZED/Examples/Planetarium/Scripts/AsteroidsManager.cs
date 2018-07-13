@@ -8,7 +8,7 @@ public class AsteroidsManager : MonoBehaviour
     public GameObject asteroidsType1;
     public GameObject asteroidsType2;
     public Transform center;
-    public static int amount = 50;
+    public static int amount = 100;
     public float radius = 1;
     public float offset = 0.0f;
     Matrix4x4[] listPositionsOrigin = new Matrix4x4[amount];
@@ -44,7 +44,7 @@ public class AsteroidsManager : MonoBehaviour
             Vector3 position = new Vector3(x, y, z);
             //position = center.TransformPoint(position);
             //// 2. scale: Scale between 0.05 and 0.25f
-            float scale = Random.Range(0.2f, 0.6f);
+            float scale = Random.Range(0.1f, 0.3f);
             //model = glm::scale(model, glm::vec3(scale));
 
             // 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector

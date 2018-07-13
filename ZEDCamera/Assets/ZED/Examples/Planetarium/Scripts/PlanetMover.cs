@@ -13,20 +13,23 @@ public class PlanetMover : MonoBehaviour {
     private Vector3 dir;
 
     private Vector3 originPos;
+
     private void OnEnable()
     {
         //originPos = transform.localPosition;
     }
 
-    void Start () {
+    private void Start()
+    {
         dir = center.up;
-        //transform.position = originPos;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-            transform.RotateAround(center.position, center.TransformDirection(dir), Time.deltaTime * speedRevolution);
-            transform.Rotate(axis, speed*Time.deltaTime, Space.Self);
+    }
+
+    // Update is called once per frame
+    void Update () {
+
+        transform.RotateAround(center.position, center.TransformDirection(dir), Time.deltaTime * speedRevolution);
+
+        transform.Rotate(axis, speed*Time.deltaTime, Space.Self);
         
     }
 }

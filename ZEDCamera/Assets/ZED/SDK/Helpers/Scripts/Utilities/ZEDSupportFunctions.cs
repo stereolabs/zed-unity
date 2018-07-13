@@ -226,8 +226,9 @@ public class ZEDSupportFunctions
 		Vector3 screenpoint = camera.WorldToScreenPoint(point);
 
 		//Make sure it's within our view frustrum (except for clipping planes)
-		if (!CheckScreenView(point,camera))
+		if (!CheckScreenView (point, camera)) {
 			return countinvalidascollision;
+		}
 
 		//Compare distance in _virtual camera to corresponding point in distance map.
 		float realdistance;
@@ -390,11 +391,13 @@ public class ZEDSupportFunctions
 		//Transform the point into screen space
 		Vector3 screenpoint = camera.WorldToScreenPoint(point);
 
+
 		//Make sure it's within our view frustrum (except for clipping planes)
 		if (screenpoint.z <= 0f)
 		{
 			return false; //No collision if it's behind us.
 		}
+
 
 		if (screenpoint.x < 0f ||  //Too far to the left
 			screenpoint.y < 0f || //Too far to the bottom
@@ -425,6 +428,30 @@ public class ZEDSupportFunctions
         RenderTexture.active = currentActiveRT;
         return true;
     }
+
+
+
+	/***********************************************************************************************
+	 ******************************        MATH UTILS            **********************************
+	 ***********************************************************************************************/
+	public static float DistancePointLine(Vector3 point, Vector3 lineStartPoint, Vector3 lineEndPoint)
+	{
+		return Vector3.Magnitude(ProjectPointLine(point, lineStartPoint, lineEndPoint) - point);
+	}
+	public static Vector3 ProjectPointLine(Vector3 point, Vector3 lineStart, Vector3 lineEnd)
+	{
+		Vector3 rhs = point - lineStart;
+		Vector3 vector2 = lineEnd - lineStart;
+		float magnitude = vector2.magnitude;
+		Vector3 lhs = vector2;
+		if (magnitude > 1E-06f)
+		{
+			lhs = (Vector3)(lhs / magnitude);
+		}
+		float num2 = Mathf.Clamp(Vector3.Dot(lhs, rhs), 0f, magnitude);
+		return (lineStart + ((Vector3)(lhs * num2)));
+	}
+
 
 
 }

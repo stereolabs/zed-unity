@@ -245,14 +245,14 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 	/// Detects the plane around screen-space coordinates specified. 
 	/// </summary>
 	/// <returns><c>true</c>, if plane at hit was detected, <c>false</c> otherwise.</returns>
-	/// <param name="imagePixel">Image pixel.</param>
-	public bool DetectPlaneAtHit(Vector2 imagePixel)
+	/// <param name="screenPos">position of the pixel in screen space (2D)</param>
+	public bool DetectPlaneAtHit(Vector2 screenPos)
 	{
 		if (!isReady)
 			return false;
 
 		ZEDPlaneGameObject.PlaneData plane =  new ZEDPlaneGameObject.PlaneData();
-		if (zedCam.findPlaneAtHit(ref plane,imagePixel) == sl.ERROR_CODE.SUCCESS) {
+		if (zedCam.findPlaneAtHit(ref plane,screenPos) == sl.ERROR_CODE.SUCCESS) {
 			int numVertices, numTriangles = 0;
 			zedCam.convertHitPlaneToMesh (planeMeshVertices, planeMeshTriangles, out numVertices, out numTriangles);
 			if (numVertices > 0 && numTriangles > 0) {

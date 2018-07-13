@@ -1,30 +1,43 @@
 <!------------------------- Release notes ------------------------------------->
+### 2.5.0
+   - **Features**:
+     - Add USB Headset detection function in non-play mode.
+     - Improve tracking status with "Camera not tracked" status if no headset connected and camera tracking is disabled
+
+  - **Examples**:
+     - Add Drone Shooter example. This example reproduces the ZEDWorld drone demo app.
+     - Add Movie Screen example. This example reproduces the ZEDWorld movie demo app.
+     - Add VR Only Plane Detection. Advanced plane detection sample to show how the place the bunny and make collisions.
 
 
-###2.4.1
- - **Features**:
-   - Add Full IMUData access to get angular velocity and linear acceleration through ZEDCamera.GetInternalIMUData() function.
-
- - **Examples**:
-   - Modified Dark room sample into a AR "night club" light show to show how to use ZED Manager's camera brightness settings and ZEDLight script.
-   - Update Object Placement sample and doc.
-
- - **Bug Fixes**:
-   - Fix ZEDManager's camera brightness settings through scripting.
-   - Fix Normal and Center on plane's detection. Refactor ZEDPlaneGameObject as MonoBehavior.
-   - Fix ZED Rig Mono image when game is built due to rendering path.
-   - Fix crash when moving SVO playback playhead.
-   - Fix Camera settings spamming errors due to pluginIsReady value not set.
-   - Fix loading screen blank on left eye at specific rotations (180deg).
-   - Fix Depth occlusion setting in Rig mono.
-   - Fix greenscreen wrong config file that breaks the GreenScreen example if not found.
-   - Remove "Restart Camera" when changing Depth occlusions as it was not needed.
-
- - **Compatibility**:
-   - Add Vive Pro support as VR headset (not with the Vive's cameras).
+   - **Compatibility**:
+     - Compatible with ZED SDK 2.5, CUDA 9.0 or 9.2.
 
 
-###2.4
+### 2.4.1
+  - **Features**:
+    - Add Full IMUData access to get angular velocity and linear acceleration through ZEDCamera.GetInternalIMUData() function.
+
+  - **Examples**:
+    - Modified Dark room sample into a AR "night club" light show to show how to use ZED Manager's camera brightness settings and ZEDLight script.
+    - Update Object Placement sample and doc.
+
+  - **Bug Fixes**:
+    - Fix ZEDManager's camera brightness settings through scripting.
+    - Fix Normal and Center on plane's detection. Refactor ZEDPlaneGameObject as MonoBehavior.
+    - Fix ZED Rig Mono image when game is built due to rendering path.
+    - Fix crash when moving SVO playback playhead.
+    - Fix Camera settings spamming errors due to pluginIsReady value not set.
+    - Fix loading screen blank on left eye at specific rotations (180deg).
+    - Fix Depth occlusion setting in Rig mono.
+    - Fix greenscreen wrong config file that breaks the GreenScreen example if not found.
+    - Remove "Restart Camera" when changing Depth occlusions as it was not needed.
+
+  - **Compatibility**:
+    - Add Vive Pro support as VR headset (not with the Vive's cameras).
+
+
+### 2.4.0
  - **Features**:
    - Added plane detection :
       - ZEDPlaneDetectionManager.cs interfaces with the SDK. Click on the screen to add planes when detected, or specify a screen-space location with DetectPlaneAtHit(). A specific function for floor detection DetectFloorPlane() is provided (as well as a GUI button access). ZEDPlaneDetectionManager inherits from MonoBehavior and must be used to have access to plane detection in Unity Scene.

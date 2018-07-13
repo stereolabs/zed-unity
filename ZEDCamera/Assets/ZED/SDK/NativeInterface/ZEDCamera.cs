@@ -174,7 +174,7 @@ namespace sl
 		/// <summary>
 		/// Cuurent Plugin Version
 		/// </summary>
-		public static readonly System.Version PluginVersion = new System.Version(2, 4, 0);
+		public static readonly System.Version PluginVersion = new System.Version(2, 5, 0);
 
         /******** DLL members ***********/
 
@@ -184,6 +184,12 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "dllz_register_callback_debuger")]
         private static extern void dllz_register_callback_debuger(DebugCallback callback);
 
+
+		/*
+          * Utils function
+          */
+		[DllImport(nameDll, EntryPoint = "dllz_find_usb_device")]
+		private static extern bool dllz_find_usb_device(USB_DEVICE dev);
 
         /*
           * Create functions
@@ -636,9 +642,24 @@ namespace sl
 				return false;
 			}
 
+
 			pluginIsReady = true;
 			return true;
          }
+
+		/// <summary>
+		/// Checks the USB device of "brand" Type is connected.
+		/// </summary>
+		/// This function is static and can be called anytime
+		/// <returns><c>true</c>, if USB device connected was found, <c>false</c> otherwise.</returns>
+		/// <param name="Type">Type.</param>
+		public static bool CheckUSBDeviceConnected(USB_DEVICE Type)
+		{
+			if (dllz_find_usb_device (Type))
+				return true;
+			else
+				return false;
+		}
 
         /// <summary>
         /// Checks if all the dlls ara available and try to call a dummy function from the DLL

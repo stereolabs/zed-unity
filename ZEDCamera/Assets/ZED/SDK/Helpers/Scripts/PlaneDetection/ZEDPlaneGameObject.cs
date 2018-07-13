@@ -142,6 +142,10 @@ public class ZEDPlaneGameObject : MonoBehaviour
         planeData.PlaneTransformOrientation = plane.PlaneTransformOrientation;
         planeData.PlaneEquation = plane.PlaneEquation;
         planeData.Extents = plane.Extents;
+		planeData.BoundsSize = plane.BoundsSize;
+		planeData.Bounds = new Vector3[plane.BoundsSize];
+		System.Array.Copy (plane.Bounds, planeData.Bounds, plane.BoundsSize);
+
 
         //Set normal in world space
         Camera leftCamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
@@ -267,6 +271,31 @@ public class ZEDPlaneGameObject : MonoBehaviour
         else
             return new Bounds(gameObject.transform.position, Vector3.zero);
     }
+
+	/// <summary>
+	/// Gets the minimum distance to plane boundaries of a given 3D point (in world space)
+	/// </summary>
+	/// <returns>The minimum distance to boundaries.</returns>
+	/// <param name="worldPosition">World position.</param>
+	public float getMinimumDistanceToBoundaries(Vector3 worldPosition,out Vector3 minimumBoundsPosition)
+	{
+		Camera leftCamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
+		float minimal_distance = ZEDSupportFunctions.DistancePointLine (worldPosition, leftCamera.transform.TransformPoint(planeData.Bounds [0]), leftCamera.transform.TransformPoint(planeData.Bounds [1]));
+
+		Vector3 BestFoundPoint = new Vector3(0.0f,0.0f,0.0f);
+		if (planeData.BoundsSize > 2) {
+			for (int i = 1; i < planeData.BoundsSize - 1; i++) {
+				float currentDistance = ZEDSupportFunctions.DistancePointLine (worldPosition, leftCamera.transform.TransformPoint(planeData.Bounds [i]), leftCamera.transform.TransformPoint(planeData.Bounds [i + 1]));
+				if (currentDistance < minimal_distance) {
+					minimal_distance = currentDistance;
+					BestFoundPoint = ZEDSupportFunctions.ProjectPointLine(worldPosition,leftCamera.transform.TransformPoint(planeData.Bounds[i]),leftCamera.transform.TransformPoint(planeData.Bounds[i+1]));
+				}
+			}
+		}
+
+		minimumBoundsPosition = BestFoundPoint;
+		return minimal_distance;
+	}
 
     /// <summary>
     /// Destroy this instance.

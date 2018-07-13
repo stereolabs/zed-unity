@@ -63,13 +63,13 @@ public class ZEDPluginInspector : EditorWindow
 			EditorApplication.update += UpdateLog;
 
 		EditorApplication.update += UpdateSettingsWnd;
+
 	}
 
 	void OnEnable()
 	{
 		addMissingTag ();
 	}
-
 
 
 	static public void addMissingTag()
@@ -161,7 +161,10 @@ public class ZEDPluginInspector : EditorWindow
 		} 
 
 		EditorApplication.update -= UpdateWnd;
+
     }
+
+
 
     void OnGUI()
 	{

@@ -21,7 +21,7 @@ public class ZEDOffsetController : MonoBehaviour
 
     private string path = @"Stereolabs\steamvr";
 
-	public ZEDControllerManager padManager;
+	public ZEDControllerTracker padManager;
 
 	public bool isReady = false;
 
@@ -57,7 +57,7 @@ public class ZEDOffsetController : MonoBehaviour
 #if ZED_STEAM_VR
             if (PadComponentExist())
             {
-                string i = "indexController=" + (padManager.ControllerIndexZEDHolder > 0 ? SteamVR.instance.GetStringProperty(Valve.VR.ETrackedDeviceProperty.Prop_SerialNumber_String, (uint)padManager.ControllerIndexZEDHolder) : "NONE") + " //SN of the pad attached to the camera (NONE to set no pad on it)";
+                string i = "indexController=" + (padManager.index > 0 ? SteamVR.instance.GetStringProperty(Valve.VR.ETrackedDeviceProperty.Prop_SerialNumber_String, (uint)padManager.index) : "NONE") + " //SN of the pad attached to the camera (NONE to set no pad on it)";
                 file.WriteLine(i);
             }
 #endif
@@ -69,7 +69,10 @@ public class ZEDOffsetController : MonoBehaviour
 
     public bool PadComponentExist()
     {
-        return GetComponent<ZEDSteamVRControllerManager>() || GetComponent<ZEDOculusControllerManager>();
+        if (padManager != null)
+            return true;
+        else
+            return false;
     }
 
     private void OnEnable()
@@ -79,18 +82,13 @@ public class ZEDOffsetController : MonoBehaviour
 
     private void LoadComponentPad()
     {
-        ZEDSteamVRControllerManager steamPad = GetComponent<ZEDSteamVRControllerManager>();
-
-        if (steamPad != null && steamPad.enabled)
-        {
-            padManager = steamPad;
-        }
-
-        ZEDOculusControllerManager oculusPad = GetComponent<ZEDOculusControllerManager>();
-        if (oculusPad != null && oculusPad.enabled)
-        {
-            padManager = oculusPad;
-        }
+        ZEDControllerTracker pad = GetComponent<ZEDControllerTracker>();
+        if (pad == null)
+            pad = GetComponentInParent<ZEDControllerTracker>();
+        if (pad == null)
+            pad = GetComponentInChildren<ZEDControllerTracker>();
+        if (pad != null)
+            padManager = pad;
     }
 		
     void Awake()
@@ -112,6 +110,12 @@ public class ZEDOffsetController : MonoBehaviour
 		isReady = true;
     }
 
+    private void Update()
+    {
+        if (ZEDManager.Instance.IsZEDReady)
+            LoadZEDPos();
+    }
+
     /// <summary>
     /// Load the position of the ZED from a file
     /// </summary>
@@ -126,7 +130,12 @@ public class ZEDOffsetController : MonoBehaviour
         }
         catch (System.Exception)
         {
-
+            padManager.SNHolder = "NONE";
+        }
+        if (lines == null)
+        {
+            padManager.SNHolder = "NONE";
+            return;
         }
         if (lines == null) return;
         Vector3 position = new Vector3(0, 0, 0);
@@ -163,15 +172,17 @@ public class ZEDOffsetController : MonoBehaviour
                 {
                     eulerRotation.z = float.Parse(field, System.Globalization.CultureInfo.InvariantCulture);
                 }
+                else if(key == "indexController")
+                {
+                    LoadComponentPad();
+
+                    if (PadComponentExist())
+                    {
+                        padManager.SNHolder = field;
+                    }
+                }
             }
         }
-        LoadComponentPad();
-
-        if (PadComponentExist())
-        {
-            padManager.LoadIndex(path);
-        }
-
         transform.localPosition = position;
         transform.localRotation = Quaternion.Euler(eulerRotation.x, eulerRotation.y, eulerRotation.z);
     }
@@ -198,13 +209,10 @@ public class ZEDOffsetController : MonoBehaviour
     // Define the event handlers.
     private void OnChanged(object source, FileSystemEventArgs e)
     {
-
         if (PadComponentExist())
         {
-            padManager.LoadIndex(path);
+            LoadZEDPos();
         }
-
-
     }
 }
 

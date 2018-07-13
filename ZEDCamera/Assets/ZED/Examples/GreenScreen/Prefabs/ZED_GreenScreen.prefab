@@ -39,6 +39,7 @@ GameObject:
   - component: {fileID: 20601934564663844}
   - component: {fileID: 114220671445463034}
   - component: {fileID: 114949237780401958}
+  - component: {fileID: 114744244247048828}
   m_Layer: 0
   m_Name: Camera_Left
   m_TagString: Untagged
@@ -55,11 +56,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4829096614632822}
   - component: {fileID: 114684879225796312}
-  - component: {fileID: 114220791637821710}
-  - component: {fileID: 114621855916028142}
-  - component: {fileID: 114781471364138284}
-  - component: {fileID: 114361153094089464}
   - component: {fileID: 114707931465606152}
+  - component: {fileID: 114669934801942820}
   m_Layer: 0
   m_Name: ZED_GreenScreen
   m_TagString: Untagged
@@ -86,7 +84,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1886245529942436}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -129,7 +127,7 @@ Camera:
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: 0
+  m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -192,13 +190,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e14eefa25813a3489cc8b38d2027ac8, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   canvas: {fileID: 1066271739911124}
   viewMode: 0
   numberPointLights: 0
   numberSpotLights: 0
---- !u!114 &114220791637821710
+--- !u!114 &114669934801942820
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -206,33 +204,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1886245529942436}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6e37f9a7dba18f489fce17f647b73a2, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
---- !u!114 &114361153094089464
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1886245529942436}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1377e92fbb92b66488680841bb7dd154, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
---- !u!114 &114621855916028142
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1886245529942436}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f89810446ed6804f87f97c69e89de13, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  controllerIndexZEDHolder: -1
-  SNHolder:
+  m_Script: {fileID: 11500000, guid: 454b1f0b0de2bb644a283d964ccf7f06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  index: -1
+  deviceToTrack: 0
+  _latencyCompensation: 78
+  SNHolder: 
 --- !u!114 &114684879225796312
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -242,19 +220,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   resolution: 1
   depthMode: 1
   enableTracking: 0
   enableSpatialMemory: 0
   pathSpatialMemory: 
-  videoOverlay: 1
   depthOcclusion: 1
   postProcessing: 0
-  cameraBrightness: 1
-  renderingPath: 1
+  m_cameraBrightness: 1
+  versionZED: '-'
+  engineFPS: '-'
+  cameraFPS: '-'
+  HMDDevice: '-'
+  trackingState: '-'
   gravityRotation: {x: 0, y: 0, z: 0, w: 1}
+  ZEDSyncPosition: {x: 0, y: 0, z: 0}
+  HMDSyncPosition: {x: 0, y: 0, z: 0}
+  ZEDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
+  HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &114707931465606152
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -264,19 +249,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c602d2dc840f0144911c39c566846cb, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
---- !u!114 &114781471364138284
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114744244247048828
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1886245529942436}
+  m_GameObject: {fileID: 1323528551725558}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea5353284f730429809470e2ee9295, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Script: {fileID: 11500000, guid: f6e37f9a7dba18f489fce17f647b73a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  padManager: {fileID: 0}
+  isReady: 0
 --- !u!114 &114949237780401958
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -286,8 +273,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f764233cdca02140a49fbe2d778754c, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   screenManager: {fileID: 0}
   keys:
     color: {r: 0, g: 0, b: 0, a: 0}

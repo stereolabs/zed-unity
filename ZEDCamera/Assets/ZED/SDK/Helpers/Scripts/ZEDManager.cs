@@ -132,6 +132,15 @@ public class ZEDManager : MonoBehaviour
     /// Checks if the tracking has been activated
     /// </summary>
     private bool isTrackingEnable = false;
+	/// <summary>
+	/// Checks if the camera tracked in any way (hmd, zed, ...)
+	/// </summary>
+	private bool isCameraTracked = false;
+	public bool IsCameraTracked
+	{
+		get { return isCameraTracked; }
+	}
+
 
     /// <summary>
     /// Orientation returned by the tracker
@@ -1060,46 +1069,39 @@ public class ZEDManager : MonoBehaviour
     {
         if (!zedReady)
             return;
+		 
+		if (isZEDTracked) {
+			Quaternion r;
+			Vector3 v;
 
-        if (isZEDTracked)
-        {
-            Quaternion r;
-            Vector3 v;
+			isCameraTracked = true;
 
-            if (VRDevice.isPresent && isStereoRig)
-            {
-                if (calibrationHasChanged)
-                {
-                    AdjustZEDRigCameraPosition();
-                    calibrationHasChanged = false;
-                }
+			if (VRDevice.isPresent && isStereoRig) {
+				if (calibrationHasChanged) {
+					AdjustZEDRigCameraPosition ();
+					calibrationHasChanged = false;
+				}
 
-                ar.ExtractLatencyPose(imageTimeStamp);
-                ar.AdjustTrackingAR(zedPosition, zedOrientation, out r, out v);
-                zedRigRoot.localRotation = r;
-                zedRigRoot.localPosition = v;
+				ar.ExtractLatencyPose (imageTimeStamp);
+				ar.AdjustTrackingAR (zedPosition, zedOrientation, out r, out v);
+				zedRigRoot.localRotation = r;
+				zedRigRoot.localPosition = v;
 
-                ZEDSyncPosition = v;
-                ZEDSyncRotation = r;
-                HMDSyncPosition = ar.LatencyPose().translation;
-                HMDSyncRotation = ar.LatencyPose().rotation;
-            }
-            else
-            {
-                zedRigRoot.localRotation = zedOrientation;
-                zedRigRoot.localPosition = zedPosition;
-            }
-        }
-        else
-        {
-            //If VR Device is available and we are in StereoMode, use the tracking from the HMD
-            if (VRDevice.isPresent && isStereoRig)
-            {
-                ar.ExtractLatencyPose(imageTimeStamp);
-                zedRigRoot.localRotation = ar.LatencyPose().rotation;
-                zedRigRoot.localPosition = ar.LatencyPose().translation;
-            }
-        }
+				ZEDSyncPosition = v;
+				ZEDSyncRotation = r;
+				HMDSyncPosition = ar.LatencyPose ().translation;
+				HMDSyncRotation = ar.LatencyPose ().rotation;
+			} else {
+				zedRigRoot.localRotation = zedOrientation;
+				zedRigRoot.localPosition = zedPosition;
+			}
+		} else if (VRDevice.isPresent && isStereoRig) {
+			isCameraTracked = true;
+			ar.ExtractLatencyPose (imageTimeStamp);
+			zedRigRoot.localRotation = ar.LatencyPose ().rotation;
+			zedRigRoot.localPosition = ar.LatencyPose ().translation;
+		} else
+			isCameraTracked = false;
     }
 
     /// <summary>
@@ -1140,7 +1142,13 @@ public class ZEDManager : MonoBehaviour
             engineFPS = fps_engine.ToString("F1") + " FPS";
             if (frame_drop_count > 30 && fps_engine < 45)
                 engineFPS += "WARNING : engine low framerate detected";
-            trackingState = ZEDTrackingState.ToString();
+           
+			if (isZEDTracked)
+				trackingState = ZEDTrackingState.ToString();
+			else if (VRDevice.isPresent && isStereoRig)
+				trackingState = "HMD Tracking";
+			else
+				trackingState = "Camera Not Tracked";
         }
 		#endif
 

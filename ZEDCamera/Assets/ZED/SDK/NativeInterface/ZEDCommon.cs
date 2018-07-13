@@ -922,6 +922,15 @@ namespace sl
 		RIGHT_EYE
 	};
 
+	/// <summary>
+	/// List of specific usb device
+	/// </summary>
+	public enum USB_DEVICE {
+		USB_DEVICE_OCULUS,
+		USB_DEVICE_HTC,
+		USB_DEVICE_STEREOLABS
+	};
+
 
 	/// <summary>
 	/// Constant Rendering Plane distance (Don't change this)

@@ -25,7 +25,7 @@ public class PlaceOnScreen : MonoBehaviour {
             return;
         }
 
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetMouseButtonDown(0))
         {			
 			/// Mouse Input gives the screen pixel position
             Vector2 ScreenPosition = Input.mousePosition;
@@ -39,7 +39,7 @@ public class PlaceOnScreen : MonoBehaviour {
 
 
 			// To consider the location as a floor, we check that the normal is valid and is closely aligned with the gravity
-            bool validFloor = Normal.x != float.NaN && Vector3.Dot(Normal, Vector3.up) > 0.7f;
+            bool validFloor = Normal.x != float.NaN && Vector3.Dot(Normal, Vector3.up) > 0.85f;
 
 			// If we've found a floor to place the bunny, then set its location and show it.
 			if (validFloor) {
