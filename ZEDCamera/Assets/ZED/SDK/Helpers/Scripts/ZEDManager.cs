@@ -581,7 +581,6 @@ public class ZEDManager : MonoBehaviour
             //Force some initParameters that are required for MR experience
             initParameters.enableRightSideMeasure = isStereoRig;
             initParameters.depthMinimumDistance = 0.1f;
-            initParameters.depthMode = sl.DEPTH_MODE.PERFORMANCE;
             initParameters.depthStabilization = depthStabilizer;
 
             //Create the mirror, the texture from the firsts cameras is rendered to avoid a black border
