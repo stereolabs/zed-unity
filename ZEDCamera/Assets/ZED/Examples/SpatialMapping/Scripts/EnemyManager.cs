@@ -1,48 +1,53 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 /// <summary>
-/// Positions the enemies and controll their death
+/// Spawns the specified prefab and positions it when a NavMeshSurface reports there's 
+/// a new NavMesh it can walk on. Used in the ZED spatial mapping sample scene to spawn a bunny
+/// to walk around your environment once you're done scanning it.  
 /// </summary>
 public class EnemyManager : MonoBehaviour
 {
     /// <summary>
-    /// List of all the enemies
+    /// The prefab used to spawn the enemy. Should contain a NavMeshAgent component. 
     /// </summary>
-    static List<GameObject> enemies = new List<GameObject>();
-
-    /// <summary>
-    /// The prefab used to spawn the enemy
-    /// </summary>
+    [Tooltip("The prefab used to spawn the enemy. Should contain a NavMeshAgent component. ")]
     public GameObject enemyPrefab;
 
     /// <summary>
-    /// Check if the NavMesh is ready
+    /// Whether or not the NavMesh from the NavMeshSurface is ready.
     /// </summary>
     private bool isReady = false;
 
     /// <summary>
-    /// Number of tries to set a prefab
+    /// Number of tries the script has attempted to place the prefab on the NavMesh. It stops trying at 20.
     /// </summary>
     private int noNavMeshCount = 0;
 
     /// <summary>
-    /// Center of the current navMesh
+    /// Center of the current navMesh.
     /// </summary>
     private Vector3 centerNavMesh;
 
     /// <summary>
-    /// Type of agent accepted by the NavMesh
+    /// ID of agent type accepted by the NavMesh. Agent IDs are defined in the Navigation window.
     /// </summary>
     private int agentTypeNavMeshID = 0;
 
     /// <summary>
-    /// Type of the agent from the prefab
+    /// ID of the agent type from the prefab's NavMeshAgent component. Agent IDs are defined in the Navigation window.
     /// </summary>
     private int agentType = 0;
+
+    /// <summary>
+    /// List of all instantiated enemies. 
+    /// </summary>
+    static List<GameObject> enemies = new List<GameObject>();
+
     void Update()
     {
-        //Try to create an enemy on the navMesh
+        //Try to create an enemy on the NavMesh.
         if (isReady && enemies.Count == 0 && noNavMeshCount < 20)
         {
             Create();
@@ -55,7 +60,11 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    //A new navmesh has been created
+    /// <summary>
+    /// Called when ZEDSpatialMapping begins making a new mesh, to clear existing enemies
+    /// and prevent the script from trying to place enemies. 
+    /// Subscribed to ZEDSpatialMapping.OnMeshStarted in OnEnable().
+    /// </summary>
     void StartNavMesh()
     {
         //Clear all the enemies
@@ -90,12 +99,15 @@ public class EnemyManager : MonoBehaviour
 
     private void OnDisable()
     {
+        //Unsubscribe from the events. 
         ZEDSpatialMapping.OnMeshStarted -= StartNavMesh;
 		NavMeshSurface.OnNavMeshReady -= Ready;
     }
 
     /// <summary>
-    /// Event sent from the NavMesh
+    /// Called when the NavMesh is finished being created, to clear existing data
+    /// and begin trying to place the enemy.
+    /// Subscribed to NavMeshSurface.OnNavMeshReady in OnEnable(). 
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -135,21 +147,21 @@ public class EnemyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Try to create an agent on the navMesh
+    /// Try to create an agent on the NavMesh. 
     /// </summary>
     public void Create()
     {
-        //If the agent and the navMesh have two area type different
+        //If the agent and the NavMesh have different agent IDs, don't assign it. 
         if (agentType != agentTypeNavMeshID)
         {
             Debug.LogWarning("The agent ID differs from the NavMesh");
             return;
         }
-        //Create a gameobject to try to set it on the NavMesh
+        //Instantiate the prefab and try to place it on the NavMesh.
         enemies.Add(Instantiate(enemyPrefab, centerNavMesh, Quaternion.identity));
         List<GameObject> notActivated = new List<GameObject>();
 
-        //For each enemy created move it on the navMesh
+        //For each enemy created, move it on the NavMesh.
         foreach (GameObject o in enemies)
         {
             NavMeshAgentController a = o.GetComponent<NavMeshAgentController>();
@@ -166,7 +178,7 @@ public class EnemyManager : MonoBehaviour
             }
         }
         
-        //Destroy the objects missing the NavMesh
+        //Destroy any objects that were not properly added to the NavMesh.
         foreach (GameObject o in notActivated)
         {
             Destroy(o);

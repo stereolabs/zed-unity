@@ -3,12 +3,13 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 /// <summary>
-/// Helping functions for the post processing
+/// Helper functions for the post processing effects applied to the final mixed reality image.
+/// Used by ZEDRenderingPlane when Post-Processing is enabled, and always used by GreenScreenManager. 
 /// </summary>
 public class ZEDPostProcessingTools
 {
     /// <summary>
-    /// Returns the gaussian value for f(x) = (1/2*3.14*s)*e(-x*x/(2*s))
+    /// Returns the gaussian value for f(x) = (1/2*3.14*s)*e(-x*x/(2*s)).
     /// </summary>
     /// <param name="x"></param>
     /// <param name="sigma"></param>
@@ -19,7 +20,7 @@ public class ZEDPostProcessingTools
     }
 
     /// <summary>
-    /// Compute weights to be sent to the blur shader
+    /// Computes weights to be sent to the blur shader.
     /// </summary>
     /// <param name="sigma"></param>
     /// <param name="weights_"></param>
@@ -48,7 +49,7 @@ public class ZEDPostProcessingTools
                 weights[i] /= sum;
             }
 
-            // fix for just 3 fetches 
+            //Fix for just 3 fetches 
             weights_[0] = weights[0];
             weights_[1] = weights[1] + weights[2];
             weights_[2] = weights[3] + weights[4];
@@ -62,12 +63,12 @@ public class ZEDPostProcessingTools
     /// <summary>
     /// Blurs a render texture.
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="dest"></param>
-    /// <param name="mat">Material used to blur</param>
-    /// <param name="pass">The pass used by the material</param>
-    /// <param name="numberIterations">More iterations means a more prominent blur</param>
-    /// <param name="downscale">The downscale of the source, more blur, and less computation time</param>
+    /// <param name="source">Source RenderTexture.</param>
+    /// <param name="dest">RenderTexture that the blurred version will be rendered into.</param>
+    /// <param name="mat">Material used to blur.</param>
+    /// <param name="pass">The pass used by the material.</param>
+    /// <param name="numberIterations">More iterations means a more prominent blur.</param>
+    /// <param name="downscale">The downscale of the source, which increases blur and decreases computation time.</param>
     public static void Blur(RenderTexture source, RenderTexture dest, Material mat, int pass, int numberIterations = -1, int downscale = 2)
     {
 
@@ -88,12 +89,12 @@ public class ZEDPostProcessingTools
         {
             bool oddEven = false;
 
-            //Create two buffers to make a multi-pass blur
+            //Create two buffers to make a multi-pass blur.
             RenderTexture buffer2 = RenderTexture.GetTemporary(source.width / downscale, source.height / downscale, source.depth, source.format, RenderTextureReadWrite.Default);
 
 
             Graphics.Blit(source, buffer);
-            //To each pass alternate the buffer, and set the blur direction
+            //To each pass, alternate the buffer, and set the blur direction.
             for (int i = 0; i < numberIterations * 2; i++)
             {
                 mat.SetInt("horizontal", System.Convert.ToInt32(oddEven));
@@ -106,7 +107,7 @@ public class ZEDPostProcessingTools
                 {
                     mat.SetInt("horizontal", System.Convert.ToInt32(oddEven));
 
-                    //Copy the buffer to the final texture
+                    //Copy the buffer to the final texture.
                     if (oddEven)
                     {
                         Graphics.Blit(buffer2, dest, mat, pass);
@@ -117,12 +118,16 @@ public class ZEDPostProcessingTools
                     }
                 }
             }
-            //Destroy all the temporary buffers
+            //Destroy all the temporary buffers.
             RenderTexture.ReleaseTemporary(buffer2);
         }
         RenderTexture.ReleaseTemporary(buffer);
     }
 
+    /// <summary>
+    /// Holds IDs of shader properties. Used because setting a property by ID is faster than
+    /// setting it by a property name. 
+    /// </summary>
     static class Uniforms
     {
         internal static readonly int _MainTex = Shader.PropertyToID("_MainTex");
@@ -135,12 +140,12 @@ public class ZEDPostProcessingTools
     /// <summary>
     /// Blurs a render texture.
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="dest"></param>
+    /// <param name="cb">CommandBuffer from where the rendertexture is taken.</param>
+    /// <param name="dest">RenderTexture to be blurred.</param>
     /// <param name="mat">Material used to blur</param>
     /// <param name="pass">The pass used by the material</param>
     /// <param name="numberIterations">More iterations means a more prominent blur</param>
-    /// <param name="downscale">The downscale of the source, more blur, and less computation time</param>
+    /// <param name="downscale">The downscale of the source, which increases blur and decreases computation time.</param>
     public static void Blur(CommandBuffer cb, RenderTexture texture, Material mat, int pass, int numberIterations = -1, int downscale = 2)
     {
 
@@ -159,7 +164,6 @@ public class ZEDPostProcessingTools
         bool oddEven = false;
 
         //Create two buffers to make a multi-pass blur
-
         cb.Blit(texture, Uniforms._TempRT);
         //To each pass alternate the buffer, and set the blur direction
         for (int i = 0; i < numberIterations * 2; i++)
@@ -186,10 +190,8 @@ public class ZEDPostProcessingTools
             }
         }
         //Destroy all the temporary buffers
-        // RenderTexture.ReleaseTemporary(buffer2);
         cb.ReleaseTemporaryRT(Uniforms._TempRT);
         cb.ReleaseTemporaryRT(Uniforms._TempRT2);
-      //  RenderTexture.ReleaseTemporary(buffer);
     }
 
     public static void ComposeMask(CommandBuffer cb, RenderTexture mask, Material matStencilToMask, Material matComposeMask)
@@ -198,14 +200,15 @@ public class ZEDPostProcessingTools
         cb.GetTemporaryRT(Uniforms._TempRT2, -1, -1, 24);
         cb.Blit(mask, Uniforms._TempRT);
 
-        // this is fine, set up the target and clear
+        //This is fine, set up the target and clear.
         cb.SetRenderTarget(Uniforms._TempRT2);
         cb.ClearRenderTarget(false, true, Color.black);
-        //To keep the stencil in post process
+
+        //To keep the stencil in post process.
         cb.SetRenderTarget(Uniforms._TempRT2, BuiltinRenderTextureType.CurrentActive);
         cb.Blit(BuiltinRenderTextureType.CameraTarget, Uniforms._TempRT2, matStencilToMask);
-        //cb.DrawMesh(UnityEngine.PostProcessing.GraphicsUtils.quad, Matrix4x4.identity, matStencilToMask);
-        //Compose the second mask get in the forward pass. The shader should set the stencil to 148
+
+        //Compose the second mask retrieved in the forward pass. The shader should set the stencil to 148.
         //cb.Blit(mask, Uniforms._TempRT);
         cb.SetGlobalTexture("_Mask", Uniforms._TempRT);
        // matComposeMask.set("_Mask", Uniforms._TempRT);

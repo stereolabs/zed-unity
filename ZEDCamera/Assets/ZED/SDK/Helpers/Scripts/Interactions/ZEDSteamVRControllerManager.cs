@@ -1,4 +1,5 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+//       ##DEPRECATED
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -657,7 +658,7 @@ public class ZEDSteamVRControllerManager : MonoBehaviour, ZEDControllerManager
 		{
 		case sl.CONTROLS_BUTTON.ONE: return model == HMD.OCULUS ? EVRButtonId.k_EButton_A : EVRButtonId.k_EButton_ApplicationMenu;
 		case sl.CONTROLS_BUTTON.THREE: return EVRButtonId.k_EButton_ApplicationMenu;
-		case sl.CONTROLS_BUTTON.PRIMARY_THUBMSTICK: return EVRButtonId.k_EButton_SteamVR_Touchpad;
+		case sl.CONTROLS_BUTTON.PRIMARY_THUMBSTICK: return EVRButtonId.k_EButton_SteamVR_Touchpad;
 		case sl.CONTROLS_BUTTON.SECONDARY_THUMBSTICK: return EVRButtonId.k_EButton_SteamVR_Touchpad;
 
 		}

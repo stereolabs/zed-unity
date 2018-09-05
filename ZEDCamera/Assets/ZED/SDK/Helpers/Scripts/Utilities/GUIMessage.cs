@@ -4,85 +4,99 @@ using UnityEngine;
 using UnityEngine.VR;
 
 /// <summary>
-/// Controls the message displayed during the opening and disconnection of the ZED
-/// </summary>
+/// Controls the message displayed as the zed is initialized, and if it becomes disconnected. 
+/// Needs to be pre-attached to the ZED rig to work; not added in programmatically. 
+/// </summary><remarks>
+/// There are separate text elements for the mono view and the stereo view to account for the 
+/// difference in display resolutions. 'Mono' elements are displayed in a 'Screen Space - Overlay'
+/// canvas, and 'Stereo' elements in a 'Screen Space - Camera' canvas. 
+/// </remarks>
 public class GUIMessage : MonoBehaviour
 {
     /// <summary>
-    /// Text under the loading sign for mono rig
+    /// Text under the loading sign for the mono rig ("Loading...", "Camera is not detected", etc.)
     /// </summary>
     private UnityEngine.UI.Text textmono;
 
     /// <summary>
-    /// Text under the loading sign for stereo rig's left eye
+    /// Text under the loading sign for stereo rig's left eye ("Loading...", "Camera is not detected", etc.)
     /// </summary>
     private UnityEngine.UI.Text textleft;
 
     /// <summary>
-    /// Text under the loading sign for stereo rig's right eye
+    /// Text under the loading sign for stereo rig's right eye ("Loading...", "Camera is not detected", etc.)
     /// </summary>
     private UnityEngine.UI.Text textright;
 
     /// <summary>
-    /// Event to say the ZED is ready, start the timer, to wait the textures to be initialized
+    /// Flag set to true when the ZED is finished initializing.
+    /// Starts a timer to wait for the ZED's textures to be loaded.
     /// </summary>
     private bool ready = false;
 
     /// <summary>
-    /// Warning container for mono rig, contains the text, background and loading sign
+    /// Warning container for the mono rig. Contains the text, background, and loading graphic.
     /// </summary>
     private GameObject warningmono;
 
     /// <summary>
-    /// Warning container for stereo rig's left eye
+    /// Warning container for the stereo rig's left eye. Contains the text, background, and loading graphic.
     /// </summary>
     private GameObject warningleft;
 
     /// <summary>
-    /// Warning container for stereo rig's right eye
+    /// Warning container for the stereo rig's right eye. Contains the text, background, and loading graphic.
     /// </summary>
     private GameObject warningright;
 
     /// <summary>
-    /// Add few time before stopping the ZED launching screen to let time to the other textures to be initialized 
+    /// Timer used to add a 0.5 second delay between the ZED being initialized and the message disappearing.
+    /// This is done to let the ZED textures to finish being made. 
     /// </summary>
     private float timerWarning = 0.0f;
 
     /// <summary>
-    /// Stop the update of the script when the flag is set to true
+    /// If true, stops calling most of the logic in Update() which updates the canvas elements.
+    /// Called once the ZED is ready and all elements have been properly disabled. 
     /// </summary>
     private bool init = false;
 
     /// <summary>
-    /// Timer to stop the gif from rotating
+    /// Timer used to delay clearing the text by 0.2 seconds once the camera is initialized. 
     /// </summary>
     private float timer;
 
     /// <summary>
-    /// Reference to the spinner for the mono rig
+    /// Reference to the loading spinner animation for the mono rig.
     /// </summary>
     private GameObject imagemono;
 
     /// <summary>
-    /// Reference to the spinner for the stereo rig's left eye
+    /// Reference to the loading spinner animation for the stereo rig's left eye.
     /// </summary>
     private GameObject imageleft;
 
     /// <summary>
-    /// Reference to the spinner for the stereo rig's right eye
+    /// Reference to the loading spinner animation for the stereo rig's right eye.
     /// </summary>
     private GameObject imageright;
 
 	/// <summary>
-	/// Previous opening error
+	/// Opening status given during the ZED's last attempt to initialize.
+    /// Used to check if an error has gone on for more than one frame before changing text. 
 	/// </summary>
 	private sl.ERROR_CODE oldInitStatus;
 
+    /// <summary>
+    /// Creates canvas(es) and canvas elements depending on whether the ZED rig is mono (ZED_Rig_Mono) 
+    /// or stereo (ZED_Rig_Stereo). 
+    /// </summary>
     private void Awake()
     {
 		oldInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
         if (!ZEDManager.IsStereoRig) //Without VR, we use a Screen Space - Overlay canvas. 
         {
+            //Instantiate the mono warning prefab and set basic settings for it. 
             warningmono = Instantiate(Resources.Load("PrefabsUI/Warning") as GameObject, transform);
             warningmono.SetActive(true);
             textmono = warningmono.GetComponentInChildren<UnityEngine.UI.Text>();
@@ -98,7 +112,7 @@ public class GUIMessage : MonoBehaviour
         }
         else //In VR, we use two Screen Space - Camera canvases, one for each eye. 
         {
-            //Setup the left warning prefab
+            //Instantiate the left warning prefab and set basic settings for it.
             warningleft = Instantiate(Resources.Load("PrefabsUI/Warning_VR") as GameObject, ZEDManager.Instance.GetLeftCameraTransform());
             warningleft.SetActive(true);
             warningleft.GetComponent<Canvas>().worldCamera = ZEDManager.Instance.GetLeftCameraTransform().GetComponent<Camera>();
@@ -108,7 +122,7 @@ public class GUIMessage : MonoBehaviour
             imageleft = warningleft.transform.GetChild(0).GetChild(1).gameObject;
             imageleft.transform.parent.gameObject.SetActive(true);
 
-            //Setup the right warning prefab
+            //Instantiate the right warning prefab and set basic settings for it.
             warningright = Instantiate(Resources.Load("PrefabsUI/Warning_VR") as GameObject, ZEDManager.Instance.GetRightCameraTransform());
             warningright.SetActive(true);
             warningright.GetComponent<Canvas>().worldCamera = ZEDManager.Instance.GetRightCameraTransform().GetComponent<Camera>();
@@ -118,7 +132,7 @@ public class GUIMessage : MonoBehaviour
             imageright = warningright.transform.GetChild(0).GetChild(1).gameObject;
             imageright.transform.parent.gameObject.SetActive(true);
 
-            if (!sl.ZEDCamera.CheckPlugin())
+            if (!sl.ZEDCamera.CheckPlugin()) //Warn the use there's no SDK installed. 
             {
                 textleft.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_NOT_INSTALLED);
                 textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_NOT_INSTALLED);
@@ -128,12 +142,18 @@ public class GUIMessage : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Subscribe to OnZedReady and OnZEDDisconnected events. 
+    /// </summary>
     private void OnEnable()
     {
         ZEDManager.OnZEDReady += Ready;
         ZEDManager.OnZEDDisconnected += ZEDDisconnected;
     }
 
+    /// <summary>
+    /// Unsubscribe from OnZedReady and OnZEDDisconnected events. 
+    /// </summary>
     private void OnDisable()
     {
         ZEDManager.OnZEDReady -= Ready;
@@ -141,11 +161,12 @@ public class GUIMessage : MonoBehaviour
     }
 
     /// <summary>
-    /// Event if ZED is disconnected
+    /// Re-enable canvas elements and change message when ZED is disconnected. 
+    /// GameObjects were disabled before because the ZED had to have finished initializing before. 
     /// </summary>
     void ZEDDisconnected()
     {
-        if (warningmono)
+        if (warningmono) //Using the mono rig. 
         {
             warningmono.SetActive(true);
             imagemono.SetActive(true);
@@ -157,7 +178,7 @@ public class GUIMessage : MonoBehaviour
             ready = false;
         }
 
-        if (warningleft)
+        if (warningleft) //Using the stereo rig. 
         {
             warningleft.SetActive(true);
             imageleft.SetActive(true);
@@ -175,16 +196,18 @@ public class GUIMessage : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// If visible, print the loading status of the ZED, including relevant errors. 
+    /// </summary>
     void Update()
     {
-        if (!init)
+        if (!init) //This check will pass until 0.5 seconds after the ZED is done initializing. 
         {
             sl.ERROR_CODE e = ZEDManager.LastInitStatus;
 
-            if (e == sl.ERROR_CODE.SUCCESS)
+            if (e == sl.ERROR_CODE.SUCCESS) //Last initialization attempt was successful. 
             {
-                timer += Time.deltaTime;
+                timer += Time.deltaTime; //Clear text after a short delay. 
                 if (timer > 0.2f)
                 {
                     if (textmono)
@@ -198,11 +221,12 @@ public class GUIMessage : MonoBehaviour
                     }
 
                 }
-                if (imagemono)
+
+                if (imagemono) //Disable mono rig canvas. 
                 {
                     imagemono.gameObject.SetActive(false);
                 }
-                else if (imageleft)
+                else if (imageleft) //Disable stereo rig canvases. 
                 {
                     imageleft.gameObject.SetActive(false);
                     imageright.gameObject.SetActive(false);
@@ -210,24 +234,22 @@ public class GUIMessage : MonoBehaviour
 
 
             }
-			else if (e == sl.ERROR_CODE.ERROR_CODE_LAST)
+			else if (e == sl.ERROR_CODE.ERROR_CODE_LAST) //"Loading..."
             {
+                //Initial error code set before an initialization attempt has returned successful or failed. 
+                //In short, it means it's still loading. 
                 if (textmono)
                 {
                     textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.CAMERA_LOADING);
-                    //textmono.color = Color.white;
                 }
                 else if (textleft)
                 {
                     textleft.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.CAMERA_LOADING);
-                    //textleft.color = Color.white;
-
                     textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.CAMERA_LOADING);
-                    //textright.color = Color.white;
                 }
 
             }
-			else if (e == sl.ERROR_CODE.CAMERA_NOT_DETECTED && oldInitStatus == sl.ERROR_CODE.CAMERA_NOT_DETECTED)
+			else if (e == sl.ERROR_CODE.CAMERA_NOT_DETECTED && oldInitStatus == sl.ERROR_CODE.CAMERA_NOT_DETECTED) //"Camera not detected"
             {
                 if (textmono)
                 {
@@ -239,8 +261,8 @@ public class GUIMessage : MonoBehaviour
                     textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.UNABLE_TO_OPEN_CAMERA);
                 }
             }
-			else if (e == sl.ERROR_CODE.CAMERA_DETECTION_ISSUE && oldInitStatus == sl.ERROR_CODE.CAMERA_DETECTION_ISSUE)
-			{
+			else if (e == sl.ERROR_CODE.CAMERA_DETECTION_ISSUE && oldInitStatus == sl.ERROR_CODE.CAMERA_DETECTION_ISSUE) //"Unable to open camera"
+            {
 				if (textmono)
 				{
 					textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.CAMERA_DETECTION_ISSUE);
@@ -251,8 +273,8 @@ public class GUIMessage : MonoBehaviour
 					textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.CAMERA_DETECTION_ISSUE);
 				}
 			}
-			else if (e == sl.ERROR_CODE.SENSOR_NOT_DETECTED && oldInitStatus == sl.ERROR_CODE.SENSOR_NOT_DETECTED)
-			{
+			else if (e == sl.ERROR_CODE.SENSOR_NOT_DETECTED && oldInitStatus == sl.ERROR_CODE.SENSOR_NOT_DETECTED) //"Camera motion sensor not detected"
+            {
 				if (textmono)
 				{
 					textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SENSOR_NOT_DETECTED);
@@ -263,8 +285,8 @@ public class GUIMessage : MonoBehaviour
 					textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SENSOR_NOT_DETECTED);
 				}
 			}
-			else if (e == sl.ERROR_CODE.LOW_USB_BANDWIDTH && oldInitStatus == sl.ERROR_CODE.LOW_USB_BANDWIDTH)
-			{
+			else if (e == sl.ERROR_CODE.LOW_USB_BANDWIDTH && oldInitStatus == sl.ERROR_CODE.LOW_USB_BANDWIDTH)//"Low USB bandwidth"
+            {
 				if (textmono)
 				{
 					textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.LOW_USB_BANDWIDTH);
@@ -275,6 +297,18 @@ public class GUIMessage : MonoBehaviour
 					textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.LOW_USB_BANDWIDTH);
 				}
 			}
+            else if(e == sl.ERROR_CODE.INVALID_SVO_FILE && oldInitStatus == sl.ERROR_CODE.INVALID_SVO_FILE)
+            {
+                if (textmono)
+                {
+                    textmono.text = "Invalid SVO File/Path";
+                }
+                else if (textleft)
+                {
+                    textleft.text = "Invalid SVO File/Path";
+                    textright.text = "Invalid SVO File/Path";
+                }
+            }
 			else if (e==oldInitStatus)
             {
                 if (textmono)
@@ -289,7 +323,8 @@ public class GUIMessage : MonoBehaviour
             }
 			oldInitStatus = e;
         }
-        if (ready)
+
+        if (ready) //ZED has finished initializing. Set a timer, then disable texts after it expires. 
         {
             timerWarning += Time.deltaTime;
             if (timerWarning > 0.5f)
@@ -305,8 +340,7 @@ public class GUIMessage : MonoBehaviour
                 }
             }
             
-            init = true;
-            //timerWarning = 0;
+            init = true; //Prevents logic above the if (ready) check from running each frame. 
 
             if (imagemono)
             {
@@ -321,6 +355,9 @@ public class GUIMessage : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Set a flag to run timer and disable text. Called by ZEDManager.OnZEDReady when ZED finishes initializing. 
+    /// </summary>
     private void Ready()
     {
         ready = true;

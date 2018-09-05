@@ -1,4 +1,5 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+//       ##DEPRECATED
 
 
 using System.Collections;
@@ -221,7 +222,7 @@ public class ZEDOculusControllerManager : MonoBehaviour, ZEDControllerManager
         {
             case sl.CONTROLS_BUTTON.ONE: return OVRInput.Button.One;
             case sl.CONTROLS_BUTTON.THREE: return OVRInput.Button.Three;
-            case sl.CONTROLS_BUTTON.PRIMARY_THUBMSTICK: return OVRInput.Button.PrimaryThumbstick;
+            case sl.CONTROLS_BUTTON.PRIMARY_THUMBSTICK: return OVRInput.Button.PrimaryThumbstick;
             case sl.CONTROLS_BUTTON.SECONDARY_THUMBSTICK: return OVRInput.Button.SecondaryThumbstick;
 
         }

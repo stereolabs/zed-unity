@@ -241,19 +241,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0abc0576042adc45b8f05b0d971b044, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bunnyPrefab: {fileID: 1791071174324572, guid: 0bcfb109574c6044a8d247157698abd6,
+  bunnyPrefab: {fileID: 1791071174324572, guid: 0bcfb109574c6044a8d247157698abd6,
     type: 2}
-  _laserPointerPrefab: {fileID: 1013873881802346, guid: 059643d321daca8498088bf53a3c033d,
+  pointerPrefab: {fileID: 1013873881802346, guid: 059643d321daca8498088bf53a3c033d,
     type: 2}
-  _canPlaceHolder: 0
-  _uiPrefab: {fileID: 1113032969764556, guid: e118d12ab4eb21e488383f4b65090bd9, type: 2}
-  _currentBunny: {fileID: 0}
-  _baseballBat: {fileID: 0}
-  _placeHolderMat:
-  - {fileID: 2100000, guid: 1afc1a2666b033a4b9ee6e36cb577b8a, type: 2}
+  uiPrefab: {fileID: 1113032969764556, guid: e118d12ab4eb21e488383f4b65090bd9, type: 2}
+  placeHolderMat:
   - {fileID: 2100000, guid: 8c191c3046c025b4584bcfcf4a5f46ce, type: 2}
-  _rayOrigin: {fileID: 1184139381}
-  canSpawnMoreBunnies: 0
+  - {fileID: 2100000, guid: 1afc1a2666b033a4b9ee6e36cb577b8a, type: 2}
+  rayOrigin: {fileID: 0}
+  canSpawnMultipleBunnies: 0
+  canDisplayPlaceholder: 0
+  currentBunny: {fileID: 0}
+  baseballBat: {fileID: 0}
 --- !u!4 &383434826
 Transform:
   m_ObjectHideFlags: 0

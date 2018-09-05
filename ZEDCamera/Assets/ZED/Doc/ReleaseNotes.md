@@ -1,16 +1,35 @@
 <!------------------------- Release notes ------------------------------------->
+
+### 2.6.0
+   * **Features/Bug Fixes**:
+     - Add WindowsMR support through SteamVR Only (Beta).
+     - Fixed overwriting old mesh textures when Spatial mapping button is used while Save Mesh is checked.
+     - Forced pasue state to false when stating a scan in case it's been left in a pause state from a previous scan.
+     - Fixed restart (not) required when changing post-processing settings.
+     - Fixed repetitve UI error when not using plugin in VR mode in ZEDControllerTracker.cs. [ssue #21 reported on github].
+
+
+  * **Documentation**:
+    - Full rework of comments in source code.
+
+
+   * **Compatibility**:
+     - Compatible with ZED SDK 2.5, CUDA 9.0 or 9.2.
+
+
 ### 2.5.0
-   - **Features**:
+   * **Features**:
      - Add USB Headset detection function in non-play mode.
-     - Improve tracking status with "Camera not tracked" status if no headset connected and camera tracking is disabled
-
-  - **Examples**:
-     - Add Drone Shooter example. This example reproduces the ZEDWorld drone demo app.
-     - Add Movie Screen example. This example reproduces the ZEDWorld movie demo app.
-     - Add VR Only Plane Detection. Advanced plane detection sample to show how the place the bunny and make collisions.
+     - Improve tracking status with "Camera not tracked" status if no headset connected and camera tracking is disabled.
 
 
-   - **Compatibility**:
+  * **Examples**:
+    - Add Drone Shooter example. This example reproduces the ZEDWorld drone demo app.
+    - Add Movie Screen example. This example reproduces the ZEDWorld movie demo app.
+    - Add VR Only Plane Detection. Advanced plane detection sample to show how the place the bunny and make collisions.
+
+
+   * **Compatibility**:
      - Compatible with ZED SDK 2.5, CUDA 9.0 or 9.2.
 
 

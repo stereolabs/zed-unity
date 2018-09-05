@@ -3,23 +3,27 @@
 using UnityEngine;
 
 /// <summary>
-/// Create a mirror view and replace the view created by Unity
+/// In AR mode, displays a full-screen, non-timewarped view of the scene for the editor's Game window.
+/// Replaces Unity's default behavior of replicating the left eye view directly,
+/// which would otherwise have black borders and move around when the headset moves because of 
+/// latency compensation.
+/// ZEDManager creates a hidden camera with this script attached when in AR mode (see ZEDManager.CreateMirror()). 
 /// </summary>
 public class ZEDMirror : MonoBehaviour
 {
     /// <summary>
-    /// Reference to the ZEDManager to get the texture overlay
+    /// The scene's ZEDManager component, for getting the texture overlay. 
     /// </summary>
     public ZEDManager manager;
 
     /// <summary>
-    /// Reference to the texture overlay to get the render texture targeted
+    /// Reference to the ZEDRenderingPlane that renders the left eye, so we can get its target RenderTexture. 
     /// </summary>
 	private ZEDRenderingPlane textureOverlayLeft;
 
     void Start()
     {
-        UnityEngine.VR.VRSettings.showDeviceView = false;
+        UnityEngine.VR.VRSettings.showDeviceView = false; //Turn off default behavior.
     }
 
     private void Update()
@@ -30,12 +34,11 @@ public class ZEDMirror : MonoBehaviour
         }
     }
 
-    private void OnPostRender()
+    private void OnPostRender() //Called after the Camera component in this GameObject has rendered. 
     {
-
         if (textureOverlayLeft != null)
         {
-            Graphics.Blit(textureOverlayLeft.target, null as RenderTexture);
+            Graphics.Blit(textureOverlayLeft.target, null as RenderTexture); //Copy ZEDRenderingPlane's texture as the final image. 
         }
 
     }

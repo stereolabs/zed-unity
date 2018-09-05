@@ -3,8 +3,10 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
+
 /// <summary>
-/// Checks if the SDK is well installed
+/// Checks your system for the required ZED SDK version, and displays an error window with instructions if it's missing. 
+/// Runs automatically when Unity loads. Remove the [InitializeOnLoad] tag to disable this.
 /// </summary>
 [InitializeOnLoad]
 public class ZEDPluginInspector : EditorWindow
@@ -71,7 +73,10 @@ public class ZEDPluginInspector : EditorWindow
 		addMissingTag ();
 	}
 
-
+    /// <summary>
+    /// Makes sure the project's tags are loaded, as they are used in some samples but may get deleted on import or
+    /// if shared via source control. 
+    /// </summary>
 	static public void addMissingTag()
 	{
 		// Open tag manager
@@ -88,8 +93,8 @@ public class ZEDPluginInspector : EditorWindow
 			if (t.stringValue.Equals(s)) { found = true; break; }
 		}
 
-		// if not found, add it since we use it in GreenScreen. 
-		// This tag may be used anywhere, since it tags helper object that may have a specific behavior
+		//If not found, add it since we use it in GreenScreen. 
+		//This tag may be used anywhere, since it tags helper object that may have a specific behavior
 
 		if (!found)
 		{
@@ -175,7 +180,9 @@ public class ZEDPluginInspector : EditorWindow
 		}
 	}
 
-
+    /// <summary>
+    /// Displays a popup window when the correct ZED SDK version isn't installed.
+    /// </summary>
 	public void showErrorWindow()
 	{
 		if (image == null) {
@@ -230,6 +237,10 @@ public class ZEDPluginInspector : EditorWindow
 
 
 	Vector2 scrollPosition;
+    /// <summary>
+    /// Shows a window prompting the user to change project settings to recommended settings, with
+    /// buttons to automatically do so. 
+    /// </summary>
 	public void showSettingsWindow()
 	{
 		if (image == null) {

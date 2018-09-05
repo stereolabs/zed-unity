@@ -3,27 +3,57 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Every X seconds, changes the lights to a random color and points them in new, random directions. 
+/// Every X seconds, changes the lights in all child objects to a random (smae) color and rotates them to new, random directions
+/// if it contains a RandomDirectionMover object. 
+/// Used for the ZED Dark Room example scene.
 /// </summary>
 public class RandomDirLightManager : MonoBehaviour
 {
-    public float secondsBetweenPulses = 0.5f; //Seconds between 
-    private float pulseTimer;
+    /// <summary>
+    /// Time between each pulse. Should match the beats-per-second of the music. 
+    /// </summary>
+    [Tooltip("Time between each pulse. Should match the beats-per-second of the music. ")]
+    public float secondsBetweenPulses = 0.5f; 
 
+    /// <summary>
+    /// How long to wait after start to start pulsing. Use to sync to music. 
+    /// </summary>
+    [Tooltip("How long to wait after start to start pulsing. Use to sync to music.")]
     public float startDelay = 0.1f;
 
-    public List<Color> ColorOptions = new List<Color>(); //Potential colors the lights can become
+    /// <summary>
+    /// Pool of colors that the lights could become on each pulse. 
+    /// </summary>
+    [Tooltip("Pool of colors that the lights could become on each pulse. ")]
+    public List<Color> ColorOptions = new List<Color>();
 
+    /// <summary>
+    /// Length of time in seconds since the last pulse.
+    /// Gets incremented by Time.deltaTime in Update(). When it hits secondsBetweenPulses, it triggers a pulse and resets. 
+    /// </summary>
+    private float pulseTimer;
+
+    /// <summary>
+    /// List of all Light components in this object and its children. Filled in Start(). 
+    /// </summary>
     private List<Light> lightList;
-    private List<LightRandDir> randPointerList;
 
+    /// <summary>
+    /// List of all RandomDirectionMover components in this object and its children. Filled in Start. 
+    /// </summary>
+    private List<RandomDirectionMover> randPointerList;
+
+    /// <summary>
+    /// Stores the index of the color we used during the last pulse. 
+    /// Used to prevent the same color appearing twice in a row. 
+    /// </summary>
     private int lastcolorindex = -1;
 
 	// Use this for initialization
 	void Start ()
     {
 	    lightList = new List<Light>(GetComponentsInChildren<Light>());
-        randPointerList = new List<LightRandDir>(GetComponentsInChildren<LightRandDir>());
+        randPointerList = new List<RandomDirectionMover>(GetComponentsInChildren<RandomDirectionMover>());
 
         pulseTimer = -startDelay;
     }
@@ -40,6 +70,9 @@ public class RandomDirLightManager : MonoBehaviour
         }
 	}
 
+    /// <summary>
+    /// Picks a random color, sets all Lights to that color, and tells all RandomDirectionMovers to move randomly. 
+    /// </summary>
     private void PulseLights()
     {
         if (ColorOptions.Count > 0) //We have at least one color indexed, so we can pick a color from the list.
@@ -53,6 +86,8 @@ public class RandomDirLightManager : MonoBehaviour
                 {
                     newcolorindex = Random.Range(0, ColorOptions.Count - 1);
                 }
+
+                lastcolorindex = newcolorindex;
             }
             else newcolorindex = 0;
             
@@ -62,10 +97,9 @@ public class RandomDirLightManager : MonoBehaviour
             }
         }
 
-        foreach(LightRandDir pointer in randPointerList)
+        foreach(RandomDirectionMover pointer in randPointerList)
         {
-            StartCoroutine(pointer.NewDirection());
+            StartCoroutine(pointer.NewDirection()); //Causes it to move to a random direction. 
         }
-       
     }
 }

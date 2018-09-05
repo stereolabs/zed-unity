@@ -4,42 +4,50 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
-/// Sets the agent to randomly walk in a certain area
+/// Tells the attached NavMeshAgent component to walk to a random location, and finds a new location
+/// each time it arrives. 
+/// Used in the ZED spatial mapping sample to make the bunny character walk around once you've finished
+/// scanning your environment. 
 /// </summary>
+[RequireComponent(typeof(NavMeshAgent))]
 public class RandomWalk : MonoBehaviour
 {
     /// <summary>
-    /// Range of search available
+    /// Maximum distance of the next random point to walk to. 
     /// </summary>
-    public float m_Range = 25.0f;
+    [Tooltip("Maximum distance of the next random point to walk to.")]
+    public float maxRange = 25.0f;
 
     /// <summary>
-    /// Reference to the component agent
+    /// The NavMeshAgent component attached to this GameObject. 
     /// </summary>
     private NavMeshAgent m_agent;
 
     /// <summary>
-    /// flag to set the agent to walk
+    /// Whether the agent should be walking. 
     /// </summary>
     private bool startWalking = false;
 
     /// <summary>
-    /// Destination to walk to
+    /// Current random destination the agent is walking toward. 
     /// </summary>
     private Vector3 destination;
 
     /// <summary>
-    /// Reduce the range of research if the future position is hard to find
+    /// Factor used to narrow the range of possible random destinations if positions at the range are difficult to find. 
     /// </summary>
     private uint reduceFactor = 0;
+
+    /// <summary>
+    /// Enables the agent component and begins walking. 
+    /// Called by EnemyManager once the agent is successfully placed. 
+    /// </summary>
     public void Activate()
     {
         m_agent = GetComponent<NavMeshAgent>();
         m_agent.enabled = true;
         startWalking = true;
     }
-
-
 
     void Update()
     {
@@ -52,9 +60,9 @@ public class RandomWalk : MonoBehaviour
                     reduceFactor = 0;
                     return;
                 }
-                destination = (Mathf.Abs(m_Range) - reduceFactor) * Random.insideUnitSphere;
+                destination = (Mathf.Abs(maxRange) - reduceFactor) * Random.insideUnitSphere;
                 m_agent.destination = destination;                
-                if(reduceFactor < Mathf.Abs(m_Range)/2) reduceFactor++;
+                if(reduceFactor < Mathf.Abs(maxRange)/2) reduceFactor++;
             }
         }
     }

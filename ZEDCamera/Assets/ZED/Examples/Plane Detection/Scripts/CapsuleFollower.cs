@@ -1,35 +1,63 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Follows a given Capsule object. Used because VR controller movements don't allow for direct physics simulation.
+/// Instead, we apply phyics forces by script to make separate capsule colliders follow that controller,
+/// which then apply their forces to objects that this object would normally hit. 
+/// This script is attached to those follower objects. The object being followed has the Capsule component. 
+/// Used in the ZED VR plane detection sample for the baseball bat. 
+/// </summary>
 public class CapsuleFollower : MonoBehaviour
 {
-    private Capsule _target;
-    private Rigidbody _rigidbody;
-    private Vector3 _velocity;
-    private Collider _collider;
-    [SerializeField]
-    private float _sensitivity = 50;
+    /// <summary>
+    /// Object this capsule will follow. 
+    /// </summary>
+    private Capsule target;
 
     /// <summary>
-    /// Awake is used to initialize any variables or game state before the game starts.
+    /// Rigidbody attached to this object. 
+    /// </summary>
+    private Rigidbody rb;
+
+    /// <summary>
+    /// The velocity the rigidbody needs to be set to. Used so we can update the target velocity
+    /// in Update() but apply to the rigidbody in FixedUpdate() (which is where physics is actually run). 
+    /// </summary>
+    private Vector3 velocity;
+
+    /// <summary>
+    /// The collider attached to this object. 
+    /// </summary>
+    private Collider capsulecollider;
+
+    /// <summary>
+    /// Multiplier used to govern how quickly this follower follows its target when it moves. 
+    /// Higher values will make it lag behind less but may cause it to overshoot. 
+    /// </summary>
+    [SerializeField]
+    private float sensitivity = 50;
+
+    /// <summary>
+    /// Awake is used to initialize any variables or game states before the game starts.
     /// </summary>
     private void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody>();
-        _collider = GetComponent<Collider>();
+        rb = GetComponent<Rigidbody>();
+        capsulecollider = GetComponent<Collider>();
     }
 
     /// <summary>
     /// Update is called every frame.
-    /// Here we enable.disable the collider whenever baseball bat is active or not.
+    /// Here we enable/disable the collider whenever baseball bat is active or not.
     /// </summary>
     private void Update()
     {
-        if (_target.transform.parent.gameObject.activeInHierarchy)
+        if (target.transform.parent.gameObject.activeInHierarchy)
         {
-            _collider.enabled = true;
+            capsulecollider.enabled = true;
         }
         else
-            _collider.enabled = false;
+            capsulecollider.enabled = false;
     }
 
     /// <summary>
@@ -38,16 +66,17 @@ public class CapsuleFollower : MonoBehaviour
     /// </summary>
     private void FixedUpdate()
     {
-        Vector3 destination = _target.transform.position;
-        _rigidbody.transform.rotation = _target.transform.rotation;
+        Vector3 destination = target.transform.position;
+        rb.transform.rotation = target.transform.rotation;
 
-        _velocity = (destination - _rigidbody.transform.position) * _sensitivity;
+        velocity = (destination - rb.transform.position) * sensitivity;
 
-        _rigidbody.velocity = _velocity;
+        rb.velocity = velocity;
     }
 
     /// <summary>
-    /// When another collider enters ours, we assign our rigidbody's velocity to his.
+    /// When another collider enters ours, we assign our rigidbody's velocity to its
+    /// In the ZED VR plane detection sample, this is how the bunny gets launched. .
     /// </summary>
     /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
@@ -56,31 +85,32 @@ public class CapsuleFollower : MonoBehaviour
         //Checking if its a Bunny, with a Rigidbody and that is not moving.
         if (colBunny != null)
         {
-            if (other.GetComponent<Rigidbody>() && !colBunny._moving)
+            if (other.GetComponent<Rigidbody>() && !colBunny.IsMoving)
             {
-                if (_rigidbody.velocity.y <= -2)
+                if (rb.velocity.y <= -2)
                 {
                     colBunny.anim.SetTrigger("Squeeze");
                     colBunny.GetHit(hit: false);
                 }
-                else if (_rigidbody.velocity.magnitude > 2f)
+                else if (rb.velocity.magnitude > 2f)
                 {
                     //Send a call to GetHit() which delays for X seconds the Bunny's detection with the real world.
                     //Since the Bunny is already on the floor, it might return true for collision the moment the baseball bat touches it.
                     colBunny.GetHit(hit: true);
-                    //Assign our velocity with some changes. I found that it feels better when it's half the force.
-                    other.GetComponent<Rigidbody>().velocity = _rigidbody.velocity / 2;
+
+                    //Assign our velocity with some changes. Halving the velocity makes it feel more natural when hitting the bunny. 
+                    other.GetComponent<Rigidbody>().velocity = rb.velocity / 2;
                 }
             }
         }
     }
 
     /// <summary>
-    /// Sets the target to follow.
+    /// Sets the target to follow. Called by Capsule. 
     /// </summary>
-    /// <param name="batFollower"></param>
+    /// <param name="myTarget"></param>
     public void SetFollowTarget(Capsule myTarget)
     {
-        _target = myTarget;
+        target = myTarget;
     }
 }

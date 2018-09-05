@@ -3,7 +3,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Spawns and destroys the bunnies
+/// Previously used in the ZED spatial mapping sample scene. 
+/// Spawns and destroys the bunnies. 
 /// </summary>
 public class EnemyBehavior : MonoBehaviour {
 

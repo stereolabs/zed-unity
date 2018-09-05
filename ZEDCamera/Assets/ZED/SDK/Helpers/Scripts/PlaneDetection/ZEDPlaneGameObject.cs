@@ -6,51 +6,111 @@ using System.Threading;
 using System.Runtime.InteropServices;
 
 /// <summary>
-/// Process the mesh taken from the ZED
+/// Represents an individual plane that was detected by ZEDPlaneDetectionManager.
+/// When created, it converts plane data from the ZED SDK into a mesh with proper world position/rotation. 
+/// This is necessary as the ZED SDK provides plane data relative to the camera. 
+/// It's also used to enable/disable collisions and visibility. 
 /// </summary>
 public class ZEDPlaneGameObject : MonoBehaviour
 {
-
     /// <summary>
-    /// Plane Type (horizontal, vertical, unknown)
+    /// Type of the plane, determined by its orientation and whether detected by ZEDPlaneDetectionManager's
+    /// DetectFloorPlane() or DetectPlaneAtHit().
     /// </summary>
     public enum PLANE_TYPE
     {
+        /// <summary>
+        /// Floor plane of a scene. Retrieved by ZEDPlaneDetectionManager.DetectFloorPlane().
+        /// </summary>
         FLOOR,
+        /// <summary>
+        /// Horizontal plane, such as a tabletop, floor, etc. Detected with DetectPlaneAtHit() using screen-space coordinates. 
+        /// </summary>
         HIT_HORIZONTAL,
+        /// <summary>
+        /// Vertical plane, such as a wall. Detected with DetectPlaneAtHit() using screen-space coordinates. 
+        /// </summary>
 		HIT_VERTICAL,
+        /// <summary>
+        /// Plane at an angle neither parallel nor perpendicular to the floor. Detected with DetectPlaneAtHit() using screen-space coordinates. 
+        /// </summary>
 		HIT_UNKNOWN
     };
 
     /// <summary>
-    /// Structure that defines a plane
+    /// Structure that defines a new plane, holding information directly from the ZED SDK.
+    /// Data within is relative to the camera; use ZEDPlaneGameObject's public fields for world-space values. 
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct PlaneData
     {
+        /// <summary>
+        /// Error code returned by the ZED SDK when the plane detection was attempted. 
+        /// </summary>
         public sl.ERROR_CODE ErrorCode;
+        /// <summary>
+        /// Type of the plane (floor, hit_vertical, etc.) 
+        /// </summary>
         public ZEDPlaneGameObject.PLANE_TYPE Type;
+        /// <summary>
+        /// Normalized vector of the direction the plane is facing. 
+        /// </summary>
         public Vector3 PlaneNormal;
+        /// <summary>
+        /// Camera-space position of the center of the plane. 
+        /// </summary>
         public Vector3 PlaneCenter;
+        /// <summary>
+        /// Camera-space position of the center of the plane. 
+        /// </summary>
         public Vector3 PlaneTransformPosition;
+        /// <summary>
+        /// Camera-space rotation/orientation of the plane. 
+        /// </summary>
         public Quaternion PlaneTransformOrientation;
+        /// <summary>
+        /// The mathematical Vector4 equation of the plane. 
+        /// </summary>
         public Vector4 PlaneEquation;
+        /// <summary>
+        /// How wide and long/tall the plane is in meters. 
+        /// </summary>
         public Vector2 Extents;
+        /// <summary>
+        /// How many points make up the plane's bounds, eg. the array length of Bounds. 
+        /// </summary>
         public int BoundsSize;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+        ///Positions of the points that make up the edges of the plane's mesh. 
         public Vector3[] Bounds; //max 256 points
     }
 
+    /// <summary>
+    /// Copy of the PlaneData structure provided by the ZED SDK when the plane was first detected. 
+    /// Position, orientation, normal and equation are relative to the ZED camera at time of detection, not the world. 
+    /// </summary>
     public ZEDPlaneGameObject.PlaneData planeData;
 
 
+    /// <summary>
+    /// Whether the plane has had Create() called yet to build its mesh. 
+    /// </summary>
     private bool isCreated = false;
+    /// <summary>
+    /// Public accessor for isCreated, which is hether the plane has had Create() called yet to build its mesh. 
+    /// </summary>
     public bool IsCreated
     {
         get { return isCreated; }
     }
+    /// <summary>
+    /// Normalized vector representing the direction the plane is facing in world space. 
+    /// </summary>
     public Vector3 worldNormal { get; private set; }
 
+    /// <summary>
+    /// Position of the plane's center in world space. 
+    /// </summary>
     public Vector3 worldCenter
     {
         get
@@ -59,14 +119,21 @@ public class ZEDPlaneGameObject : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Creates a mesh from given plane data and assigns it to new MeshFilter, MeshRenderer and MeshCollider components. 
+    /// </summary>
+    /// <param name="plane"></param>
+    /// <param name="vertices"></param>
+    /// <param name="triangles"></param>
+    /// <param name="rendermaterial"></param>
     private void SetComponents(PlaneData plane, Vector3[] vertices, int[] triangles, Material rendermaterial)
     {
-        //Create the mesh filter to render the mesh
+        //Create the MeshFilter to render the mesh
         MeshFilter mf = gameObject.GetComponent<MeshFilter>();
         if (mf == null)
             mf = gameObject.AddComponent<MeshFilter>();
 
-        //Eliminate superfluous verts
+        //Eliminate superfluous vertices.
         int highestvertindex = 0;
         for (int i = 0; i < triangles.Length; i++)
         {
@@ -75,7 +142,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
         System.Array.Resize(ref vertices, highestvertindex + 1);
 
 
-        //Calculate the UVs for the vertices based on world space so they line up with other planes
+        //Calculate the UVs for the vertices based on world space, so they line up with other planes.
         Vector2[] uvs = new Vector2[vertices.Length];
         Quaternion rotatetobackward = Quaternion.FromToRotation(worldNormal, Vector3.back);
         for (int i = 0; i < vertices.Length; i++)
@@ -84,6 +151,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
             uvs[i] = new Vector2(upwardcoords.x, upwardcoords.y);
         }
 
+        //Apply the new data to the MeshFilter's mesh and update it. 
         mf.mesh.Clear();
         mf.mesh.vertices = vertices;
         mf.mesh.triangles = triangles;
@@ -91,19 +159,20 @@ public class ZEDPlaneGameObject : MonoBehaviour
         mf.mesh.RecalculateNormals();
         mf.mesh.RecalculateBounds();
 
-        // Get the mesh renderer and set properties
+        //Get the MeshRenderer and set properties.
         MeshRenderer mr = gameObject.GetComponent<MeshRenderer>();
         if (mr == null)
             mr = gameObject.AddComponent<MeshRenderer>();
         mr.material = rendermaterial;
 
+        //Turn off light and shadow effects, as the planes are meant to highlight a real-world object, not be a distinct object. 
         mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         mr.receiveShadows = false;
         mr.enabled = true;
         mr.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
         mr.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
 
-        // Get the mesh collider and set properties
+        //Get the MeshCollider and apply the new mesh to it. 
         MeshCollider mc = gameObject.GetComponent<MeshCollider>();
         if (mc == null)
             mc = gameObject.AddComponent<MeshCollider>();
@@ -114,26 +183,30 @@ public class ZEDPlaneGameObject : MonoBehaviour
     }
 
     /// <summary>
-    ///  Create the plane as a gameobject and fills the internal structure planeData for future access
+    ///  Create the plane as a GameObject, and fills the internal PlaneData structure for future access.
     /// </summary>
-    /// <param name="holder">Holder.</param>
-    /// <param name="plane">PlaneData fills by findXXXPlane().</param>
-    /// <param name="vertices">Vertices of the mesh</param>
-    /// <param name="triangles">Triangles of the mesh</param>
+    /// <param name="holder">Scene's holder object to which all planes are parented.</param>
+    /// <param name="plane">PlaneData filled by the ZED SDK.</param>
+    /// <param name="vertices">Vertices of the mesh.</param>
+    /// <param name="triangles">Triangles of the mesh.</param>
+    /// <param name="opt_count">If a hit plane, the total number of hit planes detected prior to and including this one.</param>
     public void Create(PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count)
     {
         Create(plane, vertices, triangles, opt_count, GetDefaultMaterial(plane.Type));
     }
 
     /// <summary>
-    ///  Create the plane as a gameobject and fills the internal structure planeData for future access
+    ///  Create the plane as a GameObject with a custom material, and fills the internal PlaneData structure for future access.
     /// </summary>
-    /// <param name="holder">Holder.</param>
-    /// <param name="plane">PlaneData fills by findXXXPlane().</param>
-    /// <param name="vertices">Vertices of the mesh</param>
-    /// <param name="triangles">Triangles of the mesh</param>
+    /// <param name="holder">Scene's holder object to which all planes are parented.</param>
+    /// <param name="plane">PlaneData filled by the ZED SDK.</param>
+    /// <param name="vertices">Vertices of the mesh.</param>
+    /// <param name="triangles">Triangles of the mesh.</param>
+    /// <param name="opt_count">If a hit plane, the total number of hit planes detected prior to and including this one.</param>
+    /// <param name="rendermaterial">Material to replace the default wireframe plane material.</param>
     public void Create(PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count, Material rendermaterial)
     {
+        //Copy the supplied PlaneData into this component's own PlaneData, for accessing later. 
         planeData.ErrorCode = plane.ErrorCode;
         planeData.Type = plane.Type;
         planeData.PlaneNormal = plane.PlaneNormal;
@@ -146,15 +219,14 @@ public class ZEDPlaneGameObject : MonoBehaviour
 		planeData.Bounds = new Vector3[plane.BoundsSize];
 		System.Array.Copy (plane.Bounds, planeData.Bounds, plane.BoundsSize);
 
-
-        //Set normal in world space
+        //Calculate the world space normal. 
         Camera leftCamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
         worldNormal = leftCamera.transform.TransformDirection(planeData.PlaneNormal);
 
-        ///Create the MeshCollider
+        //Create the MeshCollider.
         gameObject.AddComponent<MeshCollider>().sharedMesh = null;
 
-        if (plane.Type != PLANE_TYPE.FLOOR)
+        if (plane.Type != PLANE_TYPE.FLOOR) //Give it a name. 
 			gameObject.name = "Hit Plane " + opt_count;      
         else
 			gameObject.name = "Floor Plane";
@@ -169,22 +241,18 @@ public class ZEDPlaneGameObject : MonoBehaviour
 
 
     /// <summary>
-    /// Updates the floor plane using "force" mode
+    /// Updates the floor plane with new plane data, if 
     /// </summary>
     /// <returns><c>true</c>, if floor plane was updated, <c>false</c> otherwise.</returns>
     /// <param name="force">If set to <c>true</c> force the update. Is set to false, update only if new plane/mesh is bigger or contains the old one</param>
-    /// <param name="plane">Plane.</param>
-    /// <param name="vertices">Vertices.</param>
-    /// <param name="triangles">Triangles.</param>
+    /// <param name="plane">PlaneData returned from the ZED SDK.</param>
+    /// <param name="vertices">Vertices of the new plane mesh.</param>
+    /// <param name="triangles">Triangles of the new plane mesh.</param>
     public bool UpdateFloorPlane(bool force, ZEDPlaneGameObject.PlaneData plane, Vector3[] vertices, int[] triangles, Material rendermaterial = null)
     {
-        //Needs to be created
-        if (gameObject == null)
-            return false;
-
         bool need_update = false;
-        //Check mesh
-        if (!force)
+
+        if (!force) //Not force mode. Check if the new mesh contains or is larger than the old one. 
         {
             if (!gameObject.GetComponent<MeshRenderer>().isVisible)
                 need_update = true;
@@ -205,7 +273,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
             }
 
         }
-        else
+        else //Force mode. Update the mesh regardless of the existing mesh. 
             need_update = true;
 
         if (need_update)
@@ -232,9 +300,9 @@ public class ZEDPlaneGameObject : MonoBehaviour
 
 
     /// <summary>
-    /// Enable the Mesh collider of the game object
+    /// Enable/disable the MeshCollider component to turn on/off collisions. 
     /// </summary>
-    /// <param name="c">If set to <c>true</c> c.</param>
+    /// <param name="c">If set to <c>true</c>, collisions will be enabled.</param>
     public void SetPhysics(bool c)
     {
         MeshCollider mc = gameObject.GetComponent<MeshCollider>();
@@ -243,7 +311,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the Plane visible on the Scene
+    /// Enable/disable the MeshRenderer component to turn on/off visibility.
     /// </summary>
     /// <param name="c">If set to <c>true</c> c.</param>
     public void SetVisible(bool c)
@@ -254,7 +322,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the size of the bounding rect that fits the plane
+    /// Gets the size of the bounding rect that fits the plane (aka 'extents').
     /// </summary>
     /// <returns>The scale.</returns>
     public Vector2 GetScale()
@@ -262,7 +330,10 @@ public class ZEDPlaneGameObject : MonoBehaviour
         return planeData.Extents;
     }
 
-
+    /// <summary>
+    /// Returns the bounds of the plane from the MeshFilter. 
+    /// </summary>
+    /// <returns></returns>
     public Bounds GetBounds()
     {
         MeshFilter mf = gameObject.GetComponent<MeshFilter>();
@@ -297,15 +368,6 @@ public class ZEDPlaneGameObject : MonoBehaviour
 		return minimal_distance;
 	}
 
-    /// <summary>
-    /// Destroy this instance.
-    /// </summary>
-    public void Destroy()
-    {
-        if (gameObject != null)
-            GameObject.Destroy(gameObject);
-
-    }
 
     /// <summary>
     /// Determines whether this floor plane is visible by any camera.
@@ -316,6 +378,12 @@ public class ZEDPlaneGameObject : MonoBehaviour
         return gameObject.GetComponent<MeshRenderer>().isVisible;
     }
 
+    /// <summary>
+    /// Loads the default material for a plane, given its plane type. 
+    /// Blue wireframe for floor planes and pink wireframe for hit planes. 
+    /// </summary>
+    /// <param name="type">Type of plane based on its orientation and if it's the scene's floor plane.</param>
+    /// <returns></returns>
     private Material GetDefaultMaterial(PLANE_TYPE type)
     {
         //Find the default material for the plane type
@@ -334,7 +402,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
                 break;
 
             default:
-                //Unknown planes are white
+                //Misc. planes are white
                 defaultmaterial.SetColor("_WireColor", new Color(1, 1, 1, 174.0f / 255.0f));
                 break;
         }

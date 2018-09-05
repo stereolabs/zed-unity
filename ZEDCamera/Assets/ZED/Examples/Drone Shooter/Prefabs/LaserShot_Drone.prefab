@@ -190,12 +190,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 917f4e739f47fe547b2e6f09043ba809, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 1
-  Lifespan: 10
-  DistanceBetweenRayChecks: 0.05
-  RealWorldThickness: 0.05
+  speed: 1
+  lifespan: 10
+  distanceBetweenRayChecks: 0.05
+  realWorldThickness: 0.05
   _leftCamera: {fileID: 0}
-  ExplosionPrefab: {fileID: 1791358933297042, guid: 2c032cea9b945c4419585e346249d2ec,
+  explosionPrefab: {fileID: 1791358933297042, guid: 2c032cea9b945c4419585e346249d2ec,
     type: 2}
 --- !u!114 &114619527117472448
 MonoBehaviour:

@@ -7,11 +7,27 @@ using Valve.VR;
 using UnityEditor;
 #endif
 
+/// <summary>
+/// Causes the GameObject it's attached to to position itself where a tracked VR object is, such as 
+/// a Touch controller or Vive Tracker, but compensates for the ZED's latency. This way, virtual
+/// controllers don't move ahead of its real-world image. 
+/// This is done by logging position data from the VR SDK in use (Oculus or OpenVR/SteamVR) each frame, but only
+/// applying that position data to this transform after the delay in the latencyCompensation field. 
+/// Used in the ZED GreenScreen, Drone Shooter, Movie Screen, Planetarium and VR Plane Detection example scenes. 
+/// </summary>
 public class ZEDControllerTracker : MonoBehaviour
 {
-	private string loadedDevice = "";
+    /// <summary>
+    /// Type of VR SDK loaded. 'Oculus', 'OpenVR' or empty.
+    /// </summary>
+	private string loadeddevice = "";
 
-#if ZED_STEAM_VR
+#if ZED_STEAM_VR //Only enabled if the SteamVR Unity plugin is detected. 
+
+    /// <summary>
+    /// Enumerated version of the uint index SteamVR assigns to each device. 
+    /// Converted from OpenVR.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole). 
+    /// </summary>
     public enum EIndex
     {
         None = -1,
@@ -36,19 +52,29 @@ public class ZEDControllerTracker : MonoBehaviour
     public EIndex index = EIndex.None;
 
     /// <summary>
-    /// Timers between each checks, to registers new pads
+    /// How long since we've last checked OpenVR for the specified device. 
+    /// Incremented by Time.deltaTime each frame and reset when it reached timerMaxSteamVR. 
     /// </summary>
-    private float timerVive = 0.0f;
-    private float timerMaxVive = 1.0f;
-    private devices oldDevice;
+    private float timerSteamVR = 0.0f;
+
+    /// <summary>
+    /// How many seconds to wait between checking if the specified device is present in OpenVR.
+    /// The check is performed when timerSteamVR reaches this number, unless we've already retrieved the device index. 
+    /// </summary>
+    private float timerMaxSteamVR = 1.0f;
+    private Devices oldDevice;
 #endif
 
     /// <summary>
-    /// Per each ID, contains the list of the position of each controller, used to delayed their tracking
+    /// Per each tracked object ID, contains a list of their recent positions.
+    /// Used to look up where OpenVR says a tracked object was in the past, for latency compensation. 
     /// </summary>
     public Dictionary<int, List<TimedPoseData>> poseData = new Dictionary<int, List<TimedPoseData>>();
     
-    public enum devices
+    /// <summary>
+    /// Types of tracked devices. 
+    /// </summary>
+    public enum Devices
     {
         RightController,
         LeftController,
@@ -58,32 +84,44 @@ public class ZEDControllerTracker : MonoBehaviour
 #endif
         Hmd,
     };
-    [Tooltip("List of trackable devices that can be selected.")]
-    public devices deviceToTrack;
-
-    [Tooltip("Latency to be applied on the movement of this tracked object, to match the camera frequency.")]
-    [Range(0, 200)]
-    public int _latencyCompensation = 78;
 
     /// <summary>
-    /// The Serial number of the controller which is holding the ZED.
+    /// Type of trackable device that should be tracked.
+    /// </summary>
+    [Tooltip("Type of trackable device that should be tracked.")]
+    public Devices deviceToTrack;
+
+    /// <summary>
+    /// Latency in milliseconds to be applied on the movement of this tracked object, so that virtual controllers don't
+    /// move ahead of their real-world image.
+    /// </summary>
+    [Tooltip("Latency in milliseconds to be applied on the movement of this tracked object, so that virtual controllers don't" + 
+        " move ahead of their real-world image.")]
+    [Range(0, 200)]
+    public int latencyCompensation = 78;
+
+    /// <summary>
+    /// The Serial number of the controller/tracker to be tracked. 
+    /// If specified, it will override the device returned using the 'Device to Track' selection. 
+    /// Useful for forcing a specific device to be tracked, instead of the first left/right/Tracker object found.
     /// If Null, then there's no calibration to be applied to this script.
     /// If NONE, the ZEDControllerOffset failed to find any calibration file.
     /// If S/N is present, then this script will calibrate itself to track the correct device, if that's not the case already.
+    /// Note that ZEDOffsetController will load this number from a GreenScreen calibration file, if present. 
     /// </summary>
+    [Tooltip("The Serial number of the controller/tracker to be tracked." +
+        " If specified, overrides the 'Device to Track' selection.")]
     public string SNHolder = "";
 
     /// <summary>
-    /// Awake is used to initialize any variables or game state before the game starts.
+    /// Sets up the timed pose dictionary and identifies the VR SDK being used. 
     /// </summary>
     void Awake()
     {
-        //Reseting the dictionary.
-        poseData.Clear();
-        //Creating our element with its key and value.
-        poseData.Add(1, new List<TimedPoseData>());
+        poseData.Clear(); //Reset the dictionary.
+        poseData.Add(1, new List<TimedPoseData>()); //Create the list within the dictionary with its key and value.
         //Looking for the loaded device
-        loadedDevice = UnityEngine.VR.VRSettings.loadedDeviceName;
+        loadeddevice = UnityEngine.VR.VRSettings.loadedDeviceName;
     }
 
     /// <summary>
@@ -94,54 +132,54 @@ public class ZEDControllerTracker : MonoBehaviour
     void Update()
     {
 
-#if ZED_OCULUS
+#if ZED_OCULUS //Used only if the Oculus Integration plugin is detected. 
         //Check if the VR headset is connected.
-        if (OVRManager.isHmdPresent && loadedDevice == "Oculus")
+        if (OVRManager.isHmdPresent && loadeddevice == "Oculus")
         {
             if (OVRInput.GetConnectedControllers().ToString() == "Touch")
             {
                 //Depending on which tracked device we are looking for, start tracking it.
-                if (deviceToTrack == devices.LeftController) //Track the Left Oculus Controller.
+                if (deviceToTrack == Devices.LeftController) //Track the Left Oculus Controller.
                     RegisterPosition(1, OVRInput.GetLocalControllerPosition(OVRInput.Controller.LTouch), OVRInput.GetLocalControllerRotation(OVRInput.Controller.LTouch));
-                if (deviceToTrack == devices.RightController) //Track the Right Oculus Controller.
+                if (deviceToTrack == Devices.RightController) //Track the Right Oculus Controller.
                     RegisterPosition(1, OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch), OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch));
 
-                if (deviceToTrack == devices.Hmd) //Track the Oculus Hmd.
+                if (deviceToTrack == Devices.Hmd) //Track the Oculus Hmd.
                     RegisterPosition(1, UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.CenterEye), UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.CenterEye));
 
-                //Taking our saved positions, and applying a delay before assigning it to our Transform.
+                //Use our saved positions to apply a delay before assigning it to this object's Transform.
                 if (poseData.Count > 0)
                 {
                     sl.Pose p;
-                    //Delaying the saved values inside GetValuePosition() by a factor of latencyCompensation to the millisecond.
-                    p = GetValuePosition(1, (float)(_latencyCompensation / 1000.0f));
+
+                    //Delay the saved values inside GetValuePosition() by a factor of latencyCompensation in milliseconds.
+                    p = GetValuePosition(1, (float)(latencyCompensation / 1000.0f));
                     transform.position = p.translation; //Assign new delayed Position
                     transform.rotation = p.rotation; //Assign new delayed Rotation.
                 }
             }
         }
-        //Enabling the updates of the internal state of OVRInput.
+        //Enable updating the internal state of OVRInput.
         OVRInput.Update();
 #endif
 #if ZED_STEAM_VR
 
-        //Timer for checking on devices
-        timerVive += Time.deltaTime;
+        timerSteamVR += Time.deltaTime; //Increment timer for checking on devices
 
-        if (timerVive <= timerMaxVive)
+        if (timerSteamVR <= timerMaxSteamVR)
             return;
 
-        timerVive = 0f;
+        timerSteamVR = 0f;
 
         //Checks if a device has been assigned
-        if (index == EIndex.None && loadedDevice == "OpenVR")
+        if (index == EIndex.None && loadeddevice == "OpenVR")
         {
             if (BIsManufacturerController("HTC") || BIsManufacturerController("Oculus"))
             {
                 //We look for any device that has "tracker" in its 3D model mesh name.
-                //We're doing this since the device ID changes based on how many devices are connected to Steam VR.
-                //This way if there's no controllers or just one, it's going to get the right ID for the Tracker.
-                if (deviceToTrack == devices.ViveTracker)
+                //We're doing this since the device ID changes based on how many devices are connected to SteamVR.
+                //This way, if there's no controllers or just one, it's going to get the right ID for the Tracker.
+                if (deviceToTrack == Devices.ViveTracker)
                 {
                     var error = ETrackedPropertyError.TrackedProp_Success;
                     for (uint i = 0; i < 16; i++)
@@ -157,34 +195,34 @@ public class ZEDControllerTracker : MonoBehaviour
                 }
 
                 //Looks for a device with the role of a Right Hand.
-                if (deviceToTrack == devices.RightController)
+                if (deviceToTrack == Devices.RightController)
                 {
                     index = (EIndex)OpenVR.System.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.RightHand);
                 }
                 //Looks for a device with the role of a Left Hand.
-                if (deviceToTrack == devices.LeftController)
+                if (deviceToTrack == Devices.LeftController)
                 {
                     index = (EIndex)OpenVR.System.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.LeftHand);
                 }
 
-                //Assigns the Hmd
-                if (deviceToTrack == devices.Hmd)
+                //Assigns the HMD.
+                if (deviceToTrack == Devices.Hmd)
                 {
                     index = EIndex.Hmd;
                 }
             }
 
-            //Display Warning if there was supposed to be a calibration file, and none was found.
+            //Display a warning if there was supposed to be a calibration file, and none was found.
             if (SNHolder.Equals("NONE"))
             {
                 Debug.LogWarning(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.PAD_CAMERA_CALIBRATION_NOT_FOUND));
             }
-            else if (SNHolder != null && index != EIndex.None)
+            else if (SNHolder != null && index != EIndex.None) //
             {
                 //If the Serial number of the Calibrated device isn't the same as the current tracked device by this script...
                 if (!SteamVR.instance.GetStringProperty(Valve.VR.ETrackedDeviceProperty.Prop_SerialNumber_String, (uint)index).Contains(SNHolder))
                 {
-                    Debug.LogWarning(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.PAD_CAMERA_CALIBRATION_MISMATCH) + SNHolder);
+                    Debug.LogWarning(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.PAD_CAMERA_CALIBRATION_MISMATCH) + " Serial Number: " + SNHolder);
                     //... then look for that device through all the connected devices.
                     for (int i = 0; i < 16; i++)
                     {
@@ -194,16 +232,16 @@ public class ZEDControllerTracker : MonoBehaviour
                             index = (EIndex)i;
                             string deviceRole = OpenVR.System.GetControllerRoleForTrackedDeviceIndex((uint)index).ToString();
                             if (deviceRole.Equals("RightHand"))
-                                deviceToTrack = devices.RightController;
+                                deviceToTrack = Devices.RightController;
                             else if (deviceRole.Equals("LeftHand"))
-                                deviceToTrack = devices.LeftController;
+                                deviceToTrack = Devices.LeftController;
                             else if (deviceRole.Equals("Invalid"))
                             {
                                 var error = ETrackedPropertyError.TrackedProp_Success;
                                 var result = new System.Text.StringBuilder((int)64);
                                 OpenVR.System.GetStringTrackedDeviceProperty((uint)index, ETrackedDeviceProperty.Prop_RenderModelName_String, result, 64, ref error);
                                 if (result.ToString().Contains("tracker"))
-                                    deviceToTrack = devices.ViveTracker;
+                                    deviceToTrack = Devices.ViveTracker;
                             }
                             Debug.Log("A connected device with the correct Serial Number was found, and assigned to " + this + " the correct device to track.");
                             break;
@@ -221,9 +259,13 @@ public class ZEDControllerTracker : MonoBehaviour
     }
 
 #if ZED_STEAM_VR
-    public bool isValid { get; private set; }
     /// <summary>
-    /// Tracking the devices for SteamVR and applying a delay.
+    /// Whether a given set of poses is currently valid - contains at least one pose and attached to an actual device. 
+    /// </summary>
+    public bool isValid { get; private set; }
+
+    /// <summary>
+    /// Track the devices for SteamVR and applying a delay.
     /// <summary>
     private void OnNewPoses(TrackedDevicePose_t[] poses)
     {
@@ -249,15 +291,22 @@ public class ZEDControllerTracker : MonoBehaviour
         var pose = new SteamVR_Utils.RigidTransform(poses[i].mDeviceToAbsoluteTracking);
         //Saving those values.
         RegisterPosition(1, pose.pos, pose.rot);
-        //Delaying the saved values inside GetValuePosition() by a factor of latencyCompensation to the millisecond.
-        sl.Pose p = GetValuePosition(1, (float)(_latencyCompensation / 1000.0f));
+
+        //Delay the saved values inside GetValuePosition() by a factor of latencyCompensation in milliseconds.
+        sl.Pose p = GetValuePosition(1, (float)(latencyCompensation / 1000.0f));
         transform.localPosition = p.translation;
         transform.localRotation = p.rotation;
         
     }
 
+    /// <summary>
+    /// Reference to the Action that's called when new controller/tracker poses are available. 
+    /// </summary>
     SteamVR_Events.Action newPosesAction;
 
+    /// <summary>
+    /// Constructor that makes sure newPosesAction gets assigned when this class is created. 
+    /// </summary>
     ZEDControllerTracker()
     {
         newPosesAction = SteamVR_Events.NewPosesAction(OnNewPoses);
@@ -281,6 +330,12 @@ public class ZEDControllerTracker : MonoBehaviour
         isValid = false;
     }
 
+    /// <summary>
+    /// Checks if the tracked controller is made by the provided company.
+    /// Works by retrieving the manufacturer name from SteamVR and checking that it starts with the specified string. 
+    /// </summary>
+    /// <param name="name">Manufacturer's name. Example: "HTC"</param>
+    /// <returns></returns>
     public bool BIsManufacturerController(string name)
     {
         System.Text.StringBuilder sbType = new System.Text.StringBuilder(1000);
@@ -292,41 +347,44 @@ public class ZEDControllerTracker : MonoBehaviour
 
 #endif
     /// <summary>
-    /// Compute the delayed position and rotation from history
+    /// Compute the delayed position and rotation from the history stored in the poseData dictionary.
     /// </summary>
-    /// <param name="indx"></param>
+    /// <param name="keyindex"></param>
     /// <param name="timeDelay"></param>
     /// <returns></returns>
-    private sl.Pose GetValuePosition(int indx, float timeDelay)
+    private sl.Pose GetValuePosition(int keyindex, float timeDelay)
     {
         sl.Pose p = new sl.Pose();
-        if (poseData.ContainsKey(indx))
+        if (poseData.ContainsKey(keyindex))
         {
             //Get the saved position & rotation.
-            p.translation = poseData[indx][poseData[indx].Count - 1].position;
-            p.rotation = poseData[indx][poseData[indx].Count - 1].rotation;
+            p.translation = poseData[keyindex][poseData[keyindex].Count - 1].position;
+            p.rotation = poseData[keyindex][poseData[keyindex].Count - 1].rotation;
 
             float idealTS = (Time.time - timeDelay);
 
-            for (int i = 0; i < poseData[indx].Count; ++i)
+            for (int i = 0; i < poseData[keyindex].Count; ++i)
             {
-                if (poseData[indx][i].timestamp > idealTS)
+                if (poseData[keyindex][i].timestamp > idealTS)
                 {
                     int currentIndex = i;
                     if (currentIndex > 0)
                     {
                         //Calculate the time between the pose and the delayed pose.
-                        float timeBetween = poseData[indx][currentIndex].timestamp - poseData[indx][currentIndex - 1].timestamp;
-                        float alpha = ((Time.time - poseData[indx][currentIndex - 1].timestamp) - timeDelay) / timeBetween;
-                        //Lerping to the next position based on the time determied above.
-                        Vector3 pos = Vector3.Lerp(poseData[indx][currentIndex - 1].position, poseData[indx][currentIndex].position, alpha);
-                        Quaternion rot = Quaternion.Lerp(poseData[indx][currentIndex - 1].rotation, poseData[indx][currentIndex].rotation, alpha);
-                        //Applies new values
+                        float timeBetween = poseData[keyindex][currentIndex].timestamp - poseData[keyindex][currentIndex - 1].timestamp;
+                        float alpha = ((Time.time - poseData[keyindex][currentIndex - 1].timestamp) - timeDelay) / timeBetween;
+
+                        //Lerp to the next position based on the time determined above.
+                        Vector3 pos = Vector3.Lerp(poseData[keyindex][currentIndex - 1].position, poseData[keyindex][currentIndex].position, alpha);
+                        Quaternion rot = Quaternion.Lerp(poseData[keyindex][currentIndex - 1].rotation, poseData[keyindex][currentIndex].rotation, alpha);
+
+                        //Apply new values.
                         p = new sl.Pose();
                         p.translation = pos;
                         p.rotation = rot;
-                        //Removes used elements from dictionary.
-                        poseData[indx].RemoveRange(0, currentIndex - 1);
+
+                        //Removes used elements from the dictionary.
+                        poseData[keyindex].RemoveRange(0, currentIndex - 1);
                     }
                     return p;
                 }
@@ -336,32 +394,52 @@ public class ZEDControllerTracker : MonoBehaviour
     }
 
     /// <summary>
-    /// Set the current tracking to a container
+    /// Set the current tracking to a container (TimedPoseData) to be stored in poseData and retrieved/applied after the latency period.
     /// </summary>
-    /// <param name="index"></param>
-    /// <param name="position"></param>
-    /// <param name="rot"></param>
-    private void RegisterPosition(int indx, Vector3 position, Quaternion rot)
+    /// <param name="index">Key value in the dictionary.</param>
+    /// <param name="position">Tracked object's position from the VR SDK.</param>
+    /// <param name="rot">Tracked object's rotation from the VR SDK.</param>
+    private void RegisterPosition(int keyindex, Vector3 position, Quaternion rot)
     {
         TimedPoseData currentPoseData = new TimedPoseData();
         currentPoseData.timestamp = Time.time;
         currentPoseData.rotation = rot;
         currentPoseData.position = position;
-        poseData[indx].Add(currentPoseData);
+        poseData[keyindex].Add(currentPoseData);
     }
 
     /// <summary>
-    /// Structures used to delay the controllers
+    /// Structure used to hold the pose of a controller at a given timestamp.
+    /// This is stored in poseData with RegisterPosition() each time the VR SDK makes poses available.
+    /// It's retrieved with GetValuePosition() in Update() each frame. 
     /// </summary>
     public struct TimedPoseData
     {
+        /// <summary>
+        /// Value from Time.time when the pose was collected. 
+        /// </summary>
         public float timestamp;
+
+        /// <summary>
+        /// Rotation of the tracked object as provided by the VR SDK.
+        /// </summary>
         public Quaternion rotation;
+
+        /// <summary>
+        /// Position of the tracked object as provided by the VR SDK. 
+        /// </summary>
         public Vector3 position;
     }
 }
 
 #if UNITY_EDITOR
+/// <summary>
+/// Custom editor for ZEDControllerTracker. 
+/// If no VR Unity plugin (Oculus Integration or SteamVR plugin) has been loaded by the ZED plugin but one is found, 
+/// presents a button to create project defines that tell ZED scripts that this plugin is loaded.
+/// These defines (ZED_STEAM_VR and ZED_OCULUS) are used to allow compiling parts of ZED scripts that depend on scripts in these VR plugins. 
+/// Note that this detection will also be attempted any time an asset has been imported. See nested class AssetPostProcessZEDVR. 
+/// </summary>
 [CustomEditor(typeof(ZEDControllerTracker)), CanEditMultipleObjects]
 public class ZEDVRDependencies : Editor
 {
@@ -369,7 +447,7 @@ public class ZEDVRDependencies : Editor
     static string defineName;
     static string packageName;
 
-    public override void OnInspectorGUI()
+    public override void OnInspectorGUI() //Called when the Inspector is visible. 
     {
         if (CheckPackageExists("SteamVR"))
         {
@@ -382,11 +460,11 @@ public class ZEDVRDependencies : Editor
             packageName = "Oculus";
         }
 
-        if (EditorPrefs.GetBool(packageName))
+        if (EditorPrefs.GetBool(packageName)) //Has it been set? 
         {
             DrawDefaultInspector();
         }
-        else
+        else //No package loaded, but one has been detected. Present a button to load it. 
         {
             GUILayout.Space(20);
             if (GUILayout.Button("Load " + packageName + " data"))
@@ -403,13 +481,23 @@ public class ZEDVRDependencies : Editor
         }
     }
 
+    /// <summary>
+    /// Finds if a folder in the project exists with the specified name. 
+    /// Used to check if a plugin has been imported, as the relevant plugins are placed
+    /// in a folder named after the package. Example: "Assets/Oculus". 
+    /// </summary>
+    /// <param name="name">Package name.</param>
+    /// <returns></returns>
     public static bool CheckPackageExists(string name)
     {
         string[] packages = AssetDatabase.FindAssets(name);
         return packages.Length != 0 && AssetDatabase.IsValidFolder("Assets/" + name);
     }
 
-
+    /// <summary>
+    /// Activates a define tag in the project. Used to enable compiling sections of scripts with that tag enabled. 
+    /// For instance, parts of this script under a #if ZED_STEAM_VR statement will be ignored by the compiler unless ZED_STEAM_VR is enabled. 
+    /// </summary>
     public static void ActivateDefine()
     {
         EditorPrefs.SetBool(packageName, true);
@@ -417,14 +505,14 @@ public class ZEDVRDependencies : Editor
         string defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
         if (defines.Length != 0)
         {
-            if (!defines.Contains(defineName))
+            if (defineName != null && !defines.Contains(defineName))
             {
                 defines += ";" + defineName;
             }
         }
         else
         {
-            if (!defines.Contains(defineName))
+            if (defineName != null && !defines.Contains(defineName))
             {
                 defines += defineName;
             }
@@ -432,15 +520,19 @@ public class ZEDVRDependencies : Editor
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, defines);
     }
 
-
-    public static void DesactivateDefine()
+    /// <summary>
+    /// Removes a define tag from the project. 
+    /// Called whenever a package is checked for but not found. 
+    /// Removing the define tags will prevent compilation of code marked with that tag, like #if ZED_OCULUS.
+    /// </summary>
+    public static void DeactivateDefine()
     {
         EditorPrefs.SetBool(packageName, false);
-
+        
         string defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
         if (defines.Length != 0)
         {
-            if (defines.Contains(defineName))
+			if (defineName != null &&  defines.Contains(defineName))
             {
                 defines = defines.Remove(defines.IndexOf(defineName), defineName.Length);
 
@@ -453,9 +545,12 @@ public class ZEDVRDependencies : Editor
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, defines);
     }
 
+    /// <summary>
+    /// Inherits from UnityEditor.AssetPostProcessor to run ZED plugin-specific code whenever an asset is imported. 
+    /// This code checks for the Oculus and SteamVR Unity packages, to activate or deactivate project define tags accordingly. 
+    /// </summary>
     public class AssetPostProcessZEDVR : AssetPostprocessor
     {
-
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
 
@@ -473,7 +568,7 @@ public class ZEDVRDependencies : Editor
             }
             else
             {
-                DesactivateDefine();
+                DeactivateDefine();
             }
         }
     }
