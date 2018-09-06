@@ -314,7 +314,7 @@ namespace sl
         * Opening function (Opens camera and creates textures).
         */
         [DllImport(nameDll, EntryPoint = "dllz_open")]
-        private static extern int dllz_open(ref dll_initParameters parameters, System.Text.StringBuilder svoPath, System.Text.StringBuilder output);
+		private static extern int dllz_open(ref dll_initParameters parameters, System.Text.StringBuilder svoPath, System.Text.StringBuilder output,System.Text.StringBuilder opt_settings_path);
 
 
 
@@ -981,8 +981,10 @@ namespace sl
 
             dll_initParameters initP = new dll_initParameters(initParameters); //DLL-friendly version of InitParameters.  
             initP.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP; //Left-hand, Y-up is Unity's coordinate system, so we match that. 
-            int v = dllz_open(ref initP, new System.Text.StringBuilder(initParameters.pathSVO, initParameters.pathSVO.Length),
-               new System.Text.StringBuilder(initParameters.sdkVerboseLogFile, initParameters.sdkVerboseLogFile.Length));
+            int v = dllz_open(ref initP, 
+				new System.Text.StringBuilder(initParameters.pathSVO, initParameters.pathSVO.Length),
+				new System.Text.StringBuilder(initParameters.sdkVerboseLogFile, initParameters.sdkVerboseLogFile.Length),
+				new System.Text.StringBuilder(initParameters.optionalSettingsPath, initParameters.optionalSettingsPath.Length));
 
 			if ((ERROR_CODE)v != ERROR_CODE.SUCCESS)
             {

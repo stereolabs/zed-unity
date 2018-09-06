@@ -922,6 +922,10 @@ namespace sl
         /// True to stabilize the depth map. Recommended. 
         /// </summary>
         public bool depthStabilization;
+		/// <summary>
+		/// Optional path for searching configuration (calibration) file SNxxxx.conf. (introduced in ZED SDK 2.6)
+		/// </summary>
+		public string optionalSettingsPath = "";
 
         /// <summary>
         /// Constructor. Sets default initialization parameters recommended for Unity. 
@@ -945,6 +949,7 @@ namespace sl
             this.sdkVerboseLogFile = "";
             this.enableRightSideMeasure = false;
             this.depthStabilization = true;
+			this.optionalSettingsPath = "";
         }
 
     }
