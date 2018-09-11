@@ -1,34 +1,45 @@
 using UnityEngine;
+
 /// <summary>
-/// Functions support to help to retrieve depth and normals
-/// </summary>
+/// Holds numerous static functions for getting info about the real world in 
+/// specific places, to compare to the virtual world in the same place. 
+/// <para>Examples include knowing where a real-world point you click on is in Unity world space, 
+/// knowing what direction a real-world surface is facing, checking for collisions with the real world.</para>
+/// </summary><remarks>
+/// Functions that take a Vector2 for screen space (usually named "pixel" or something similar) are great for
+/// when you want to click on the screen to test the real-world 'thing' you click on. To do this, use Input.mousePosition
+/// and make a Vector2 out of the X and Y of the Vector3 it returns. 
+/// Most functions take a Camera as a parameter. Use the one providing the image on the screen -
+/// usually the left camera in the ZED rig, which can be easily retrieved using ZEDManager.GetLeftCameraTransform().
+/// </remarks>
 public class ZEDSupportFunctions
 {
 
-	/***********************************************************************************************
+    /***********************************************************************************************
 	 ********************             BASIC "GET" FUNCTIONS             ****************************
 	 ***********************************************************************************************/
 
 
     /// <summary>
-	/// Get the Normal vector at a given pixel (i,j). the Normal can be given regarding camera reference or in the world reference.
+    /// Gets the normal vector (the direction a surface is pointing) at a given screen-space pixel (i,j).  
+    /// The normal can be given relative to the camera or the world. Returns false if outside camera's view frustum. 
     /// </summary>
-	/// <param name="pixel"> position of the pixel</param>
-	/// <param name="reference_frame"> Reference frame given by the enum sl.REFERENCE_FRAME</param>
-	/// <param name="cam"> Unity Camera (to access world to camera transform</param>
-	/// <out> normal that will be filled </out>
-    /// <returns> true if success, false otherwie</returns>
-	public static bool GetNormalAtPixel(Vector2 pixel, sl.REFERENCE_FRAME reference_frame,Camera cam, out Vector3 normal)
+    /// <param name="pixel">Pixel coordinates.</param>
+    /// <param name="reference_frame">Reference frame given by the enum sl.REFERENCE_FRAME.</param>
+    /// <param name="cam">Unity Camera used for world-camera space conversion.</param>
+    /// <out>Normal to be filled.</out>
+    /// <returns>True if successful, false otherwise.</returns>
+    public static bool GetNormalAtPixel(Vector2 pixel, sl.REFERENCE_FRAME reference_frame, Camera cam, out Vector3 normal)
     {
         Vector4 n;
 		bool r = sl.ZEDCamera.GetInstance().GetNormalValue(new Vector3(pixel.x,pixel.y, 0), out n);
 
 		switch (reference_frame) {
-		case sl.REFERENCE_FRAME.CAMERA:
+		case sl.REFERENCE_FRAME.CAMERA: //Relative to the provided camera. 
 			normal = n;
 			break;
 
-		case sl.REFERENCE_FRAME.WORLD:
+		case sl.REFERENCE_FRAME.WORLD: //Relative to the world. 
 			normal = cam.transform.TransformDirection(n);
 			break;
 		default :
@@ -39,15 +50,16 @@ public class ZEDSupportFunctions
         return r;
     }
 
-	/// <summary>
-	/// Get the Normal vector at a world position (x,y,z). the Normal can be given regarding camera reference or in the world reference.
-	/// </summary>
-	/// <param name="position"> world position</param>
-	/// <param name="reference_frame"> Reference frame given by the enum sl.REFERENCE_FRAME</param>
-	/// <param name="cam"> Unity Camera (to access world to camera transform</param>
-	/// <out> normal vector that will be filled </out>
-	/// <returns> true if success, false otherwie</returns>
-	public static bool GetNormalAtWorldLocation(Vector3 position, sl.REFERENCE_FRAME reference_frame,Camera cam, out Vector3 normal)
+    /// <summary>
+    /// Gets the normal vector (the direction a surface is pointing) at a world position (x,y,z). 
+    /// The normal can be given relative to the camera or the world.
+    /// </summary>
+    /// <param name="position">World position.</param>
+    /// <param name="reference_frame"> Reference frame given by the enum sl.REFERENCE_FRAME.</param>
+    /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
+    /// <out>Normal vector to be filled.</out>
+    /// <returns>True if successful, false otherwise.</returns>
+    public static bool GetNormalAtWorldLocation(Vector3 position, sl.REFERENCE_FRAME reference_frame,Camera cam, out Vector3 normal)
     {
  		Vector4 n;
 		bool r = sl.ZEDCamera.GetInstance().GetNormalValue(cam.WorldToScreenPoint(position), out n);
@@ -71,9 +83,14 @@ public class ZEDSupportFunctions
     }
 
     /// <summary>
-	/// Get forward distance (ie depth) value at a given image pixel
-    /// </summary>
-    /// <param name="position"></param>
+	/// Gets forward distance (i.e. depth) value at a given image pixel. 
+    /// </summary><remarks>
+    /// Forward distance/depth is distinct from Euclidean distance in that it only measures
+    /// distance on the Z axis; the pixel's left/right or up/down position relative to the camera
+    /// makes no difference to the depth value. 
+    /// </remarks>
+    /// <param name="pixel">Pixel coordinates in screen space.</param>
+    /// <param name="depth">Forward distance/depth to given pixel.</param>
     /// <returns></returns>
     public static bool GetForwardDistanceAtPixel(Vector2 pixel, out float depth)
     {
@@ -84,15 +101,18 @@ public class ZEDSupportFunctions
         return true;
     }
 
-
-	/// <summary>
-	/// Get forward distance (ie depth) at a world position (x,y,z).
-	/// </summary>
-	/// <param name="position"> (x,y,z) world location</param>
-	/// <param name="Camera"> Camera object</param>
-    /// <out> Depth value in float </out>
-	/// <returns></returns>
-	public static bool GetForwardDistanceAtWorldLocation(Vector3 position, Camera cam,out float depth)
+    /// <summary>
+    /// Gets forward distance (i.e. depth) at a given world position (x,y,z).
+    /// </summary><remarks>
+    /// Forward distance/depth is distinct from Euclidean distance in that it only measures
+    /// distance on the Z axis; the pixel's left/right or up/down position relative to the camera
+    /// makes no difference to the depth value. 
+    /// </remarks>
+    /// <param name="position">World position to measure.</param>
+    /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
+    /// <param name="depth">Forward distance/depth to given position.</out>
+    /// <returns></returns>
+    public static bool GetForwardDistanceAtWorldLocation(Vector3 position, Camera cam, out float depth)
 	{
 		Vector3 pixelPosition = cam.WorldToScreenPoint (position);
 
@@ -105,12 +125,16 @@ public class ZEDSupportFunctions
 
 
 
-	/// <summary>
-	/// Get euclidean distance value at a given image pixel to the left camera
-	/// </summary>
-	/// <param name="position"></param>
-	/// <returns></returns>
-	public static bool GetEuclideanDistanceAtPixel(Vector2 pixel, out float distance)
+    /// <summary>
+    /// Gets the Euclidean distance from the world position of a given image pixel. 
+    /// </summary><remarks>
+    /// Euclidean distance is distinct from forward distance/depth in that it takes into account the point's X and Y position 
+    /// relative to the camera. It's the actual distance between the camera and the point in world space. 
+    /// </remarks>
+    /// <param name="pixel">Pixel coordinates in screen space.</param>
+    /// <param name="distance">Euclidean distance to given pixel.</param>
+    /// <returns></returns>
+    public static bool GetEuclideanDistanceAtPixel(Vector2 pixel, out float distance)
 	{
 		float d = sl.ZEDCamera.GetInstance().GetDistanceValue(new Vector3(pixel.x, pixel.y, 0));
 		distance = d;
@@ -120,14 +144,17 @@ public class ZEDSupportFunctions
 	}
 
 
-	/// <summary>
-	/// Get the euclidean distance value from a point at a world position (x,y,z) to the left camera
-	/// </summary>
-	/// <param name="position"> (x,y,z) world location</param>
-	/// <param name="Camera"> Camera object</param>
-	/// <out> Depth value in float </out>
-	/// <returns></returns>
-	public static bool GetEuclideanDistanceAtWorldLocation(Vector3 position, Camera cam,out float distance)
+    /// <summary>
+    /// Gets the Euclidean distance from the given caera to a point in the world (x,y,z).
+    /// </summary><remarks>
+    /// Euclidean distance is distinct from forward distance/depth in that it takes into account the point's X and Y position 
+    /// relative to the camera. It's the actual distance between the camera and the point in world space. 
+    /// </remarks>
+    /// <param name="position">World position to measure.</param>
+    /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
+    /// <param name="distance">Euclidean distance to given position.</out>
+    /// <returns></returns>
+    public static bool GetEuclideanDistanceAtWorldLocation(Vector3 position, Camera cam, out float distance)
 	{
 		Vector3 pixelPosition = cam.WorldToScreenPoint (position);
 
@@ -138,34 +165,35 @@ public class ZEDSupportFunctions
 		return true;
 	}
     /// <summary>
-    /// Get the world position of the given image pixel.
+    /// Gets the world position of the given image pixel.
     /// </summary>
-    /// <param name="pixelPos"></param>
-    /// <param name="cam"></param>
-    /// <returns>true if success, false otherwise</returns>
+    /// <param name="pixel">Pixel coordinates in screen space.</param>
+    /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
+    /// <param name="worldPos">Filled with the world position of the specified pixel.</param>
+    /// <returns>True if it found a value, false otherwise (such as if it's outside the camera's view frustum)</returns>
     public static bool GetWorldPositionAtPixel(Vector2 pixel, Camera cam, out Vector3 worldPos)
     {
  		float d;
 		worldPos = Vector3.zero;
 		if (!GetForwardDistanceAtPixel(pixel, out d)) return false;
 
-		//convert regarding screen size
+		//Adjust for difference between screen size and ZED's image resolution.
 		float xp = pixel.x * sl.ZEDCamera.GetInstance().ImageWidth / Screen.width;
 		float yp = pixel.y * sl.ZEDCamera.GetInstance().ImageHeight / Screen.height;
-		//Extract world position using S2W
+
+		//Extract world position using screen-to-world transform.
 		worldPos = cam.ScreenToWorldPoint(new Vector3(xp, yp,d));
 	    return true;
     }
 
 
     /// <summary>
-	/// Checks if a world location is visible from the camera (true) or masked by a virtual object (with collider)
-	/// This uses the raycast to check if we hit something or not
+	/// Checks if a real-world location is visible from the camera (true) or masked by a virtual object (with a collider).
     /// </summary>
-	/// <warning> This only occurs with the virtual objects that have a collider </warning>
-	/// <param name="position"> (x,y,z) world location</param>
-    /// <param name="cam"></param>
-    /// <returns></returns>
+	/// <warning>The virtual object must have a collider for this to work as it uses a collision test.</warning>
+	/// <param name="position">Position to check in world space. Must be in camera's view to check against the real world.</param>
+    /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
+    /// <returns>True if visible, false if obscurred.</returns>
     public static bool IsLocationVisible(Vector3 position, Camera cam)
     {
         RaycastHit hit;
@@ -178,16 +206,14 @@ public class ZEDSupportFunctions
         return true;
     }
 
-
-	/// <summary>
-	/// Checks if an image pixel is visible from the camera (true) or masked by a virtual object (with collider)
-	/// This uses the raycast to check if we hit something or not
-	/// </summary>
-	/// <warning> This only occurs with the virtual objects that have a collider </warning>
-	/// <param name="pixel"></param>
-	/// <param name="cam"></param>
-	/// <returns></returns>
-	public static bool IsPixelVisible(Vector2 pixel, Camera cam)
+    /// <summary>
+    /// Checks if the real world at an image pixel is visible from the camera (true) or masked by a virtual object (with a collider).
+    /// </summary>
+	/// <warning>The virtual object must have a collider for this to work as it uses a collision test.</warning>
+    /// <param name="pixel">Screen space coordinates of the real-world pixel.</param>
+    /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
+    /// <returns>True if visible, false if obscurred.</returns>
+    public static bool IsPixelVisible(Vector2 pixel, Camera cam)
 	{
 		RaycastHit hit;
 		float d;
@@ -202,37 +228,44 @@ public class ZEDSupportFunctions
 
 
 
-	/***********************************************************************************************
+    /***********************************************************************************************
 	 ********************             HIT TEST  FUNCTIONS             ******************************
 	 ***********************************************************************************************/
 
-	/// <summary>
-	/// Static functions for checking collisions or 'hit' with the real world.
-	/// In each function, "countinvalidascollision" specifies if off-screen pixels or missing depth values should count as collision.
-	/// "realworldthickness" specifies how far back a point needs to be behind the real world before it's not considered a collision.
-	/// </summary>
+    /// <summary>
+    /// Static functions for checking collisions or 'hits' with the real world. This does not require 
+    /// scanning/spatial mapping or plane detection as it used the live depth map.
+    /// Each is based on the premise that if a point is behind the real world, it has intersected with it (except when
+    /// using realworldthickness). This is especially when checked each frame on a moving object, like a projectile. 
+    /// In each function, "countinvalidascollision" specifies if off-screen pixels or missing depth values should count as collisions.
+    /// "realworldthickness" specifies how far back a point needs to be behind the real world before it's not considered a collision.
+    /// </summary>
 
 
 
-	/// <summary>
-	/// Checks an individual point in world space to see if it's occluded by the real world.
-	/// </summary>
-	/// <param name="point">3D point in the world that belongs to a virtual object</param>
-	/// <param name="camera">camera (usually left camera)</param>
-	/// <returns>True if the test represents a valid hit test.</returns>
-	public static bool HitTestAtPoint(Camera camera, Vector3 point, bool countinvalidascollision = false, float realworldthickness = Mathf.Infinity)
+    /// <summary>
+    /// Checks an individual point in world space to see if it's occluded by the real world.
+    /// </summary>
+    /// <param name="camera">Unity Camera used for world-camera space conversion (usually left camera).</param>
+    /// <param name="point">3D point in the world that belongs to a virtual object.</param>
+    /// <param name="countinvalidascollision">Whether a collision that can't be tested (such as when it's off-screen)
+    /// is counted as hitting something.</param>
+    /// <param name="realworldthickness">Sets the assumed thickness of the real world. Points further away than the world by
+    /// more than this amount won't return true, considered "behind" the real world instead of inside it.</param>
+    /// <returns>True if the test represents a valid hit test.</returns>
+    public static bool HitTestAtPoint(Camera camera, Vector3 point, bool countinvalidascollision = false, float realworldthickness = Mathf.Infinity)
 	{
-		//Transform the point into screen space
+		//Transform the point into screen space.
 		Vector3 screenpoint = camera.WorldToScreenPoint(point);
 
-		//Make sure it's within our view frustrum (except for clipping planes)
+		//Make sure it's within our view frustrum (excluding clipping planes).
 		if (!CheckScreenView (point, camera)) {
 			return countinvalidascollision;
 		}
 
-		//Compare distance in _virtual camera to corresponding point in distance map.
+		//Compare distance in virtual camera to corresponding point in distance map.
 		float realdistance;
-		ZEDSupportFunctions.GetEuclideanDistanceAtPixel(new Vector2(screenpoint.x, screenpoint.y), out realdistance);
+		GetEuclideanDistanceAtPixel(new Vector2(screenpoint.x, screenpoint.y), out realdistance);
 
 		//If we pass bad parameters, or we don't have an accurate reading on the depth, we can't test.
 		if(realdistance <= 0f)
@@ -240,29 +273,33 @@ public class ZEDSupportFunctions
 			return countinvalidascollision; //We can't read the depth from that pixel.
 		}
 
-		///Detection is the space
 		if (realdistance <= Vector3.Distance(point, camera.transform.position) && Vector3.Distance(point, camera.transform.position) - realdistance <= realworldthickness)
 		{
-			return true; //The real pixel is closer or at the same depth as the virtual point. That's a collision.
+			return true; //The real pixel is closer or at the same depth as the virtual point. That's a collision (unless closer by more than realworldthickness).
 		}
-		else return false; //It's behind the virtual point.
+		else return false; //The real pixel is behind the virtual point.
 	}
 
-	/// <summary>
-	/// Performs a "raycast" by checking for collisions/hit in a series of points on a ray.
-	/// </summary>
-	/// <param name="camera">camera (left camera usually)</param>
-	/// <param name="startpos">starting position of the ray</param>
-	/// <param name="rot">rotation of the ray from starting point</param>
-	/// <param name="maxdistance">maximum distance of the ray</param>
-	/// <param name="distbetweendots">distance between sample dots that define the ray</param>
-	/// <param name="collisionpoint">out : collision point</param>
-	/// <returns></returns>
-	public static bool HitTestOnRay(Camera camera, Vector3 startpos, Quaternion rot, float maxdistance, float distbetweendots, out Vector3 collisionpoint,
+    /// <summary>
+    /// Performs a "raycast" by checking for collisions/hit in a series of points on a ray.
+    /// Calls HitTestAtPoint at each point on the ray, spaced apart by distbetweendots.
+    /// </summary>
+    /// <param name="camera">Unity Camera used for world-camera space conversion (usually left camera)</param>
+    /// <param name="startpos">Starting position of the ray</param>
+    /// <param name="rot">Direction of the ray.</param>
+    /// <param name="maxdistance">Maximum distance of the ray</param>
+    /// <param name="distbetweendots">Distance between sample dots. 1cm (0.01f) is recommended for most casses, but
+    /// increase to improve performance at the cost of accuracy.</param>
+    /// <param name="collisionpoint">Fills the point where the collision occurred, if any.</param>
+    /// <param name="countinvalidascollision">Whether a collision that can't be tested (such as when it's off-screen)
+    /// is counted as hitting something.</param>
+    /// <param name="realworldthickness">Sets the assumed thickness of the real world. Points further away than the world by
+    /// more than this amount won't return true, considered "behind" the real world instead of inside it.</param>
+    /// <returns></returns>
+    public static bool HitTestOnRay(Camera camera, Vector3 startpos, Quaternion rot, float maxdistance, float distbetweendots, out Vector3 collisionpoint,
 		bool countinvalidascollision = false, float realworldthickness = Mathf.Infinity)
 	{
-		//We're gonna check for occlusion in a series of dots, spaced apart evenly.
-
+		//Check for occlusion in a series of dots, spaced apart evenly.
 		Vector3 lastvalidpoint = startpos;
 		for (float i = 0; i < maxdistance; i += distbetweendots)
 		{
@@ -283,30 +320,37 @@ public class ZEDSupportFunctions
 			}
 		}
 
-		//This code will only be reached if there's no collision
+		//There was no collision at any of the points checked. 
 		collisionpoint = lastvalidpoint;
 		return false;
 
 	}
 
-	/// <summary>
-	/// Checks if a spherical area is blocked above a given percentage. Useful for checking is a drone spawn point is valid.
-	/// Works by checking random points around the sphere for occlusion, Monte Carlo-style, so more samples means greater accuracy.
-	/// </summary>
-	/// <param name="camera">camera (Left camera usually)</param>
-	/// <param name="centerpoint">Center point of the sphere that belongs to the virtual objects</param>
-	/// <param name="radius">radius of the sphere</param>
-	/// <param name="numberofsamples">number of dots in the sphere (increasing this number will increase the processing time)</param>
-	/// <param name="blockedpercentagethreshold"> percentage between 0 and 1 that defines a collision (if greater than)</param>
-	/// <returns></returns>
-	public static bool HitTestOnSphere(Camera camera, Vector3 centerpoint, float radius, int numberofsamples, float blockedpercentagethreshold,
+    /// <summary>
+    /// Checks if a spherical area is blocked above a given percentage. Useful for checking if a drone spawn point is valid.
+    /// Works by checking random points around the sphere for occlusion, Monte Carlo-style, so more samples means greater accuracy.
+    /// </summary><remarks>
+    /// Unlike HitTestOnRay, you can allow some individual points to collide without calling the whole thing a collision. This is useful
+    /// to account for noise, or to allow objects to "graze" the real world. Adjust this with blockedpercentagethreshold.
+    /// See the Drone or DroneSpawner class for examples.</remarks>
+    /// <param name="camera">Unity Camera used for world-camera space conversion (usually left camera)</param>
+    /// <param name="centerpoint">Center point of the sphere.</param>
+    /// <param name="radius">Radius of the sphere</param>
+    /// <param name="numberofsamples">Number of dots in the sphere. Increase to improve accuracy at the cost of performance.</param>
+    /// <param name="blockedpercentagethreshold">Percentage (0 - 1) that the number of hits must exceed for a collision.</param>
+    /// <param name="countinvalidascollision">Whether a collision that can't be tested (such as when it's off-screen)
+    /// is counted as hitting something.</param>
+    /// <param name="realworldthickness">Sets the assumed thickness of the real world. Points further away than the world by
+    /// more than this amount won't return true, considered "behind" the real world instead of inside it.</param>
+    /// <returns>Whether the sphere is colliding with the real world.</returns>
+    public static bool HitTestOnSphere(Camera camera, Vector3 centerpoint, float radius, int numberofsamples, float blockedpercentagethreshold = 0.2f,
 		bool countinvalidascollision = true, float realworldthickness = Mathf.Infinity)
 	{
 		int occludedpoints = 0;
 
 		for (int i = 0; i < numberofsamples; i++)
 		{
-			//Find a random point along the bounds of a sphere and check if it's occluded
+			//Find a random point along the bounds of a sphere and check if it's occluded.
 			Vector3 randompoint = Random.onUnitSphere * radius + centerpoint;
 			if(HitTestAtPoint(camera, randompoint, countinvalidascollision, realworldthickness))
 			{
@@ -314,31 +358,40 @@ public class ZEDSupportFunctions
 			}
 		}
 
-		//See if the percentage of occluded pixels exceeds the threshold
+		//See if the percentage of occluded pixels exceeds the threshold.
 		float occludedpercent = occludedpoints / (float)numberofsamples;
 		if (occludedpercent > blockedpercentagethreshold)
 		{
-			return true; //Occluded
+			return true; //Occluded.
 		}
 		else return false;
 	}
 
-	/// <summary>
-	/// Checks for collisions with the vertices of a given mesh with a given transform.
-	/// Expensive, and quality depends on density and distribution of the mesh's vertices.
-	/// </summary>
-	/// <param name="camera">camera (Left camera usually)</param>
-	/// <param name="mesh">Mesh object</param>
-	/// <param name="worldtransform">world transform</param>
-	/// <param name="blockedpercentagethreshold">percentage between 0 and 1 that defines a collision (if greater than)</param>
-	/// <param name="meshsamplepercent">percentage between 0 and 1 that samples the mesh (will skip vertices if less than 1)</param>
-	/// <param name="countinvalidascollision">see HitTestAtPoint</param>
-	/// <param name="realworldthickness">see HitTestAtPoint</param>
-	/// <returns></returns>
-	public static bool HitTestOnMeshVertices(Camera camera, Mesh mesh, Transform worldtransform, float blockedpercentagethreshold, float meshsamplepercent = 1,
+    /// <summary>
+    /// Checks for collisions at each vertex of a given mesh with a given transform.
+    /// Expensive on large meshes, and quality depends on density and distribution of the mesh's vertices. 
+    /// </summary><remarks>
+    /// As a mesh's vertices are not typically designed to be tested in this way, it is almost always better
+    /// to use a sphere or a raycast; areas inside large faces of the mesh won't register as colliding, and
+    /// dense parts of the mesh will do more checks than is necessary. To make proper use of this feature, make a 
+    /// custom mesh with vertices spaced evenly, and use that in place of the mesh being used for rendering. 
+    /// </remarks>
+    /// <param name="camera">Unity Camera used for world-camera space conversion (usually left camera)</param>
+    /// <param name="mesh">Mesh to supply the vertices.</param>
+    /// <param name="worldtransform">World position, rotation and scale of the mesh.</param>
+    /// <param name="blockedpercentagethreshold">Percentage (0 - 1) that the number of hits must exceed for a collision.</param>
+    /// <param name="meshsamplepercent">Percentage of the mesh's vertices to check for hits. Lower to improve performance
+    /// at the cost of accuracy.</param>
+    /// <param name="countinvalidascollision">Whether a collision that can't be tested (such as when it's off-screen)
+    /// is counted as hitting something.</param>
+    /// <param name="realworldthickness">Sets the assumed thickness of the real world. Points further away than the world by
+    /// more than this amount won't return true, considered "behind" the real world instead of inside it.</param>
+    /// <returns>True if the mesh collided with the real world.</returns>
+    public static bool HitTestOnMesh(Camera camera, Mesh mesh, Transform worldtransform, float blockedpercentagethreshold, float meshsamplepercent = 1,
 		bool countinvalidascollision = false, float realworldthickness = Mathf.Infinity)
 	{
-		//Find how often we check samples, represented as an integer denominator
+		//Find how often we check samples, represented as an integer denominator.
+        //For example, if meshamplepercent is 0.2, then we'll check every five vertices. 
 		int checkfrequency = Mathf.RoundToInt(1f / Mathf.Clamp01(meshsamplepercent));
 		int totalchecks = Mathf.FloorToInt(mesh.vertices.Length / (float)checkfrequency);
 
@@ -362,31 +415,40 @@ public class ZEDSupportFunctions
 		return false;
 	}
 
-	/// <summary>
-	/// Checks for collisions with the vertices of the mesh in a meshfilter.
-	/// Expensive, and quality depends on density and distribution of the mesh's vertices.
-	/// </summary>
-	/// <param name="camera">camera (Left camera usually)</param>
-	/// <param name="meshfilter">Mesh filter object</param>
-	/// <param name="blockedpercentagethreshold">percentage between 0 and 1 that defines a collision (if greater than)</param>
-	/// <param name="meshsamplepercent">percentage between 0 and 1 that samples the mesh (will skip vertices if less than 1)</param>
-	/// <param name="countinvalidascollision">see HitTestAtPoint</param>
-	/// <param name="realworldthickness">see HitTestAtPoint</param>
-	/// <returns></returns>
-	public static bool HitTestOnMeshFilter(Camera camera, MeshFilter meshfilter, float blockedpercentagethreshold, float meshsamplepercent = 1,
+    /// <summary>
+    /// Checks for collisions at each vertex of a given mesh with a given transform.
+    /// Expensive on large meshes, and quality depends on density and distribution of the mesh's vertices. 
+    /// </summary><remarks>
+    /// As a mesh's vertices are not typically designed to be tested in this way, it is almost always better
+    /// to use a sphere or a raycast; areas inside large faces of the mesh won't register as colliding, and
+    /// dense parts of the mesh will do more checks than is necessary. To make proper use of this feature, make a 
+    /// custom mesh with vertices spaced evenly, and use that in place of the mesh being used for rendering. 
+    /// </remarks>
+    /// <param name="camera">Unity Camera used for world-camera space conversion (usually left camera)</param>
+    /// <param name="meshfilter">MeshFilter whose mesh value will supply the vertices.</param>
+    /// <param name="worldtransform">World position, rotation and scale of the mesh.</param>
+    /// <param name="blockedpercentagethreshold">Percentage (0 - 1) that the number of hits must exceed for a collision.</param>
+    /// <param name="meshsamplepercent">Percentage of the mesh's vertices to check for hits. Lower to improve performance
+    /// at the cost of accuracy.</param>
+    /// <param name="countinvalidascollision">Whether a collision that can't be tested (such as when it's off-screen)
+    /// is counted as hitting something.</param>
+    /// <param name="realworldthickness">Sets the assumed thickness of the real world. Points further away than the world by
+    /// more than this amount won't return true, considered "behind" the real world instead of inside it.</param>
+    /// <returns>True if the mesh collided with the real world.</returns>
+	public static bool HitTestOnMesh(Camera camera, MeshFilter meshfilter, float blockedpercentagethreshold, float meshsamplepercent = 1,
 		bool countinvalidascollision = false, float realworldthickness = Mathf.Infinity)
 	{
-		return HitTestOnMeshVertices(camera, meshfilter.mesh, meshfilter.transform, blockedpercentagethreshold, meshsamplepercent, countinvalidascollision, realworldthickness);
+		return HitTestOnMesh(camera, meshfilter.mesh, meshfilter.transform, blockedpercentagethreshold, meshsamplepercent, countinvalidascollision, realworldthickness);
 	}
 
-
-	/// <summary>
-	/// Simply checking if the object is within our view frustrum.
-	/// </summary>
-	/// <param name="point"></param>
-	/// <param name="camera"></param>
-	/// <returns></returns>
-	public static bool CheckScreenView(Vector3 point, Camera camera)
+    /// <summary>
+    /// Checks if a world space point is within our view frustum. 
+    /// Excludes near/far planes but returns false if the point is behind the camera.
+    /// </summary>
+    /// <param name="point">World space point to check.</param>
+    /// <param name="camera">Unity Camera used for world-camera space conversion (usually left camera)</param>
+    /// <returns></returns>
+    public static bool CheckScreenView(Vector3 point, Camera camera)
 	{
 		//Transform the point into screen space
 		Vector3 screenpoint = camera.WorldToScreenPoint(point);
@@ -411,33 +473,46 @@ public class ZEDSupportFunctions
 	}
 
 
-	/***********************************************************************************************
+    /***********************************************************************************************
 	 ******************************        IMAGE UTILS            **********************************
 	 ***********************************************************************************************/
 
-	static public bool SaveImage(RenderTexture rt, string path = "Assets/image.png")
+    /// <summary>
+    /// Saves a RenderTexture to a .png in the given relative path. Saved to Assets/image.png by default.
+    /// Use this to take a picture of the ZED's final output.
+    /// </summary><remarks>
+    /// If in pass-through AR mode, you can pass ZEDRenderingPlane.target to this from the ZEDRenderingPlane
+    /// components in the ZED's left eye. If not using AR, you can create your own RenderTexture, and use 
+    /// Graphics.Blit to copy to it in an OnRenderImage function of a component you attach to the camera.
+    /// </remarks>
+    /// <param name="rt">Source RenderTexture to be saved.</param>
+    /// <param name="path">Path and filename to save the file.</param>
+    /// <returns></returns>
+    static public bool SaveImage(RenderTexture rt, string path = "Assets/image.png")
     {
         if (rt == null || path.Length == 0) return false;
-        RenderTexture currentActiveRT = RenderTexture.active;
-        RenderTexture.active = rt;
+        RenderTexture currentActiveRT = RenderTexture.active; //Cache the currently active RenderTexture to avoid interference.
+        RenderTexture.active = rt; //Switch the source RenderTexture to the active one.
 
-        Texture2D tex = new Texture2D(rt.width, rt.height);
+        Texture2D tex = new Texture2D(rt.width, rt.height); //Make a Texture2D copy of it and save it. 
         tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
         System.IO.File.WriteAllBytes(path, tex.EncodeToPNG());
 
-        RenderTexture.active = currentActiveRT;
+        RenderTexture.active = currentActiveRT; //Restore the old active RenderTexture.
         return true;
     }
 
 
 
-	/***********************************************************************************************
+    /***********************************************************************************************
 	 ******************************        MATH UTILS            **********************************
 	 ***********************************************************************************************/
-	public static float DistancePointLine(Vector3 point, Vector3 lineStartPoint, Vector3 lineEndPoint)
+    
+    public static float DistancePointLine(Vector3 point, Vector3 lineStartPoint, Vector3 lineEndPoint)
 	{
 		return Vector3.Magnitude(ProjectPointLine(point, lineStartPoint, lineEndPoint) - point);
 	}
+
 	public static Vector3 ProjectPointLine(Vector3 point, Vector3 lineStart, Vector3 lineEnd)
 	{
 		Vector3 rhs = point - lineStart;

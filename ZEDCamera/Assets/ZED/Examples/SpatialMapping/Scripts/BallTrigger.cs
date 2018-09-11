@@ -3,7 +3,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Send events when the ball has touched an object
+/// Previously used in the ZED spatial mapping sample scene. 
+/// Sends events when the ball the script is attached to has touched an object.
 /// </summary>
 public class BallTrigger : MonoBehaviour
 {

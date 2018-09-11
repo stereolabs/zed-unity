@@ -2,6 +2,11 @@
 using UnityEditor;
 using UnityEngine;
 using System.IO;
+
+/// <summary>
+/// Custom Editor that extends the default settings shown in the Inspector. 
+/// Allows it to add buttons and hidden elements for the garbage matte and config file. 
+/// </summary>
 [CustomEditor(typeof(GreenScreenManager))]
 class GreenScreenManagerEditor : Editor
 {
@@ -32,7 +37,7 @@ class GreenScreenManagerEditor : Editor
     {
         greenScreen = (GreenScreenManager)target;
 
-
+        //Create serialized properties for all the GreenScreenManager's fields so they can be modified and saved/serialized properly. 
         keyColors = serializedObject.FindProperty("keyColors");
         erosion = serializedObject.FindProperty("erosion");
 
@@ -55,7 +60,6 @@ class GreenScreenManagerEditor : Editor
         key_colors();
     
 
-
         if (ToggleButtonStyleNormal == null)
         {
             ToggleButtonStyleNormal = "Button";
@@ -63,11 +67,13 @@ class GreenScreenManagerEditor : Editor
             ToggleButtonStyleToggled.normal.background = ToggleButtonStyleToggled.active.background;
         }
 
-        //matte = (ZEDGarbageMatte)target;
+        //matte = (ZEDGarbageMatte)target;  
         matte = greenScreen.garbageMatte;
         GUI.enabled = greenScreen.screenManager != null && greenScreen.screenManager.ActualRenderingPath == RenderingPath.Forward;
         enableGrabageMatte.boolValue = EditorGUILayout.Toggle("Enable Garbage Matte", enableGrabageMatte.boolValue);
         GUI.enabled = true;
+
+        //Show the garbage matte section, only if the scene is running and it's enabled. 
         if (enableGrabageMatte.boolValue && greenScreen.screenManager != null && greenScreen.screenManager.ActualRenderingPath == RenderingPath.Forward)
         {
             //serializedObject.Update();
@@ -104,6 +110,7 @@ class GreenScreenManagerEditor : Editor
             }
         } 
 
+        //Draw the configuration file path and Save/Load buttons. 
         GUILayout.Space(20);
         EditorGUILayout.BeginHorizontal();
         pathfileconfig.stringValue = EditorGUILayout.TextField("Save Config", greenScreen.pathFileConfig);
@@ -186,6 +193,7 @@ class GreenScreenManagerEditor : Editor
 
         despill.floatValue = EditorGUILayout.Slider("Despill", despill.floatValue, 0f, 1f);
 
+        //Button to reset to default settings. 
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
         if (GUILayout.Button("Default", optionsButton))

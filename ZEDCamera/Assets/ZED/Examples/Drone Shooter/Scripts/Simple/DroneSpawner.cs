@@ -3,35 +3,95 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Spawns a given Drone prefab when there is not one already in the scene. 
+/// It will only spawn drones in front of the user and when it can find a location where it wouldn't intersect the real world. 
+/// It will also not spawn drones if one already exists, or if _canSpawn is set to false, which is the case on start until the warning message finishes displaying). 
+/// Used in the ZED Drone Battle example scene. 
+/// </summary>
 public class DroneSpawner : MonoBehaviour
 {
+    /// <summary>
+    /// The Drone prefab to spawn.
+    /// </summary>
 	[Tooltip("The Drone prefab to spawn.")]
 	public GameObject dronePrefab;
-    [Tooltip("The warning message to spawn.")]
+
+    /// <summary>
+    /// The warning message to spawn at the start of the scene. Text is set by WarningDisplay() but the prefab holds the UI elements.
+    /// </summary>
+    [Tooltip("The warning message to spawn at the start of the scene. Text is set by WarningDisplay() but the prefab holds the UI elements.")]
     public GameObject spawnWarning;
+
+    /// <summary>
+    /// How far a point must be from real geometry to be considered a valid spawn location.
+    /// </summary>
     [Tooltip("How far a point must be from real geometry to be considered a valid spawn location.")]
 	public float clearRadius = 1f;
-	[Tooltip("How many times should we look around our chosen spawnPoint to see if there are any obstacles around it.")]
-	public int radiusCheckRate = 200;
-	[Tooltip("The maximum amount of collisions detected near a spawn point allowed.")]
+
+    /// <summary>
+    /// How many times should we check near a potential spawn point to see if there are any obstacles around it.
+    /// Higher numbers reduce the chance of spawning partially inside an object but may cause stutters.
+    /// </summary>
+	[Tooltip("How many times should we check near a potential spawn point to see if there are any obstacles around it. " +
+        "Higher numbers reduce the chance of spawning partially inside an object but may cause stutters.")]
+    public int radiusCheckRate = 200;
+
+    /// <summary>
+    /// The maximum number of collisions detected near a spawn point allowed. Higher values make it less likely for a drone to move inside an object, but too high and it may not move at all.
+    /// </summary>
+	[Tooltip("The maximum number of collisions detected near a spawn point allowed. " + 
+        "Higher values make it less likely for a drone to spawn inside an object, but too high and it may not spawn at all.")]
 	public float percentagethreshold = 0.4f;
-	[Tooltip("How long we wait after a drone's death before spawning a new one")]
+
+    /// <summary>
+    /// How long we wait (in seconds) after a drone's death before spawning a new one.
+    /// </summary>
+	[Tooltip("How long we wait (in seconds) after a drone's death before spawning a new one.")]
 	public float respawnTimer = 2f;
-	[Tooltip("What is the maximum distance the drone can be spawned.")]
+
+    /// <summary>
+    /// The maximum distance from a player that a drone can be spawned.
+    /// </summary>
+	[Tooltip("The maximum distance from a player that a drone can be spawned.")]
 	public float maxSpawnDistance = 6f;
 
-	private Vector3 _randomPosition; //The random position to be used when spawning a new drone.
-	private float _respawnCountdown; //Time counting down before spawning a new dorne.
-	private Drone _currentDrone; //The last spawned drone that is still active.
-	private Camera _leftCamera; //Needed for depth calculation
-    private bool _warning; //Did we display the warning message before spawning the Drones.
-    private bool _canSpawn; //Last check before starting spawning to allow warning message being displayed.
+    /// <summary>
+    /// The random position to be used when spawning a new drone.
+    /// Assigned only once a valid position has been found. 
+    /// </summary>
+	private Vector3 newspawnposition;
+
+    /// <summary>
+    /// Time counting down before spawning a new drone.
+    /// </summary>
+	private float respawncountdown;
+
+    /// <summary>
+    /// The last spawned drone that is still active.
+    /// </summary>
+	private Drone currentdrone;
+
+    /// <summary>
+    /// Needed for various calls to ZEDSupportFunctions.cs, so it can transform ZED depth info into world space. 
+    /// </summary>
+	private Camera leftcamera;
+
+    /// <summary>
+    /// Whether we already displayed the warning message before spawning the drones.
+    /// </summary>
+    private bool displayedwarning;
+
+    /// <summary>
+    /// Last check before starting to spawn drones, to allow warning message to be displayed.
+    /// </summary>
+    private bool canspawn;
     
     private bool _readyToSpawn
     {
         get
         {
-            if (_currentDrone == null && _respawnCountdown <= 0) return true;
+            if (currentdrone == null && respawncountdown <= 0) return true;
             else return false;
         }
     }
@@ -40,73 +100,73 @@ public class DroneSpawner : MonoBehaviour
     void Start()
     {
 		//Set the countdown Timer;
-		_respawnCountdown = respawnTimer;
+		respawncountdown = respawnTimer;
 		//Get the ZED camera
-		_leftCamera = ZEDManager.Instance.GetLeftCameraTransform().GetComponent<Camera>();
+		leftcamera = ZEDManager.Instance.GetLeftCameraTransform().GetComponent<Camera>();
     }
 
     // Update is called once per frame
     void Update()
     {
         //Reposition the screen in front our the Camera when its ready
-        if (ZEDManager.Instance.IsZEDReady && !_warning)
+        if (ZEDManager.Instance.IsZEDReady && !displayedwarning)
         {
             StartCoroutine(WarningDisplay());
-            _warning = true;
+            displayedwarning = true;
         }
 
-        if (!_canSpawn)
+        if (!canspawn)
             return;
 
         //Tick down the respawn timer if applicable
-        if (_respawnCountdown > 0)
+        if (respawncountdown > 0)
         {
-            _respawnCountdown -= Time.deltaTime;
+            respawncountdown -= Time.deltaTime;
         }
 
         if (_readyToSpawn) //We've got no drone and the respawn timer has elapsed
         {
-            //Try to spawn a drone in a random place in front of the player. We'll do once per frame for now. 
-			if (CheckRandomSpawnLocation(out _randomPosition))
+            //Try to spawn a drone in a random place in front of the player. We'll do this only once per frame to avoid stuttering.
+			if (CheckRandomSpawnLocation(out newspawnposition))
             {
-				_currentDrone = SpawnDrone(_randomPosition);
+				currentdrone = SpawnDrone(newspawnposition);
             }
         }
 
-		//Debug Solution to spawn drone multiple times for testing.
-		//On Input Down, destroy current drone.
-		if (Input.GetKeyDown (KeyCode.Mouse1)) {
-            //Destroys the current Drone.
-            Destroy(_currentDrone.gameObject);
-			ClearDrone ();
-		}
     }
 
     Text msg;
-    IEnumerator WarningDisplay()
+    /// <summary>
+    /// Positions, configures and displays the warning text at the start of the game.
+    /// Sets canspawn (which defaults to false) to true once finished, so that drones only spawn afterward. 
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator WarningDisplay() 
     {
-        GameObject warningMsg = Instantiate(spawnWarning);
+        GameObject warningMsg = Instantiate(spawnWarning); //Spawn the message prefab, which doesn't have the correct text yet. 
 
         warningMsg.transform.position = ZEDManager.Instance.OriginPosition + ZEDManager.Instance.OriginRotation * (Vector3.forward*2);
         Quaternion newRot = Quaternion.LookRotation(ZEDManager.Instance.OriginPosition - warningMsg.transform.position, Vector3.up);
         warningMsg.transform.eulerAngles = new Vector3(0, newRot.eulerAngles.y + 180, 0);
 
-        Text msg = warningMsg.GetComponentInChildren<Text>();
+        Text msg = warningMsg.GetComponentInChildren<Text>(); //Find the text in the prefab. 
 
         yield return new WaitForSeconds(1f);
 
+        //Add the letters to the message one at a time for effect. 
         int i = 0;
         string oldText = "WARNING!  DEPLOYING  DRONES!";
         string newText = "";
-        while (i < oldText.Length)
+        while (i < oldText.Length) 
         {
             newText += oldText[i++];
-            yield return new WaitForSeconds(0.15F);
+            yield return new WaitForSeconds(0.15F); 
             msg.text = newText;
         }
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(3f); //Let the user read it for a few seconds. 
 
+        //Change the warning message by clearing it and adding letters one at a time like before. 
         i = 0;
         oldText = "DEFEND  YOURSELF!";
         newText = "";
@@ -117,13 +177,14 @@ public class DroneSpawner : MonoBehaviour
             msg.text = newText;
         }
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(3f);//Let the user read it for a few seconds. 
+
         Destroy(warningMsg);
-        _canSpawn = true;
+        canspawn = true; //Drones can now spawn. 
     }
 
 	/// <summary>
-	/// looks for a random point in a radius around itself. 
+	/// Looks for a random point in a radius around itself. 
 	/// Upon collision, the point is moved slightly towards the camera and if its too far it's set to "maxSpawnDistance".
 	/// A more thorough search is then done for any other obstacles around it, also, in a radius.
 	/// If the number of collision doesn't exeeds the set threshold, then return true and output the new position.
@@ -144,7 +205,7 @@ public class DroneSpawner : MonoBehaviour
 
         //Get the world position of that position in the real world
 		Vector3 randomWorldPoint;
-		bool foundWorldPoint = ZEDSupportFunctions.GetWorldPositionAtPixel(randomScreenPoint, _leftCamera, out randomWorldPoint);
+		bool foundWorldPoint = ZEDSupportFunctions.GetWorldPositionAtPixel(randomScreenPoint, leftcamera, out randomWorldPoint);
 
 		if (!foundWorldPoint) //We can't read depth from that point. 
         {
@@ -152,7 +213,7 @@ public class DroneSpawner : MonoBehaviour
             return false;
         }
 			
-		float firstDistance = Vector3.Distance (_leftCamera.transform.position, randomWorldPoint);
+		float firstDistance = Vector3.Distance (leftcamera.transform.position, randomWorldPoint);
 		float newClearRadius;
 
 		//Check that the distance isn't too far.
@@ -162,11 +223,11 @@ public class DroneSpawner : MonoBehaviour
 			newClearRadius = clearRadius;
 
         //If we spawn the drone at that world point, it'll spawn inside a wall. Bring it between you and that wall. 
-		Quaternion directionToCamera = Quaternion.LookRotation(_leftCamera.transform.position - randomWorldPoint, Vector3.up);
+		Quaternion directionToCamera = Quaternion.LookRotation(leftcamera.transform.position - randomWorldPoint, Vector3.up);
 		Vector3 closerWorldPoint = randomWorldPoint + directionToCamera * Vector3.forward * newClearRadius;
 
         //Check that distance isn't too close
-		float secondDistance = Vector3.Distance(_leftCamera.transform.position, closerWorldPoint);
+		float secondDistance = Vector3.Distance(leftcamera.transform.position, closerWorldPoint);
 		if (secondDistance < 1f)
         {
             newRandomPos = Vector3.zero;
@@ -174,7 +235,7 @@ public class DroneSpawner : MonoBehaviour
         }
 
 		//Also check nearby points in a sphere of radius=ClearRadius to make sure the whole drone has a clear space. 
-		if (ZEDSupportFunctions.HitTestOnSphere(_leftCamera, closerWorldPoint, 1f, radiusCheckRate, percentagethreshold))
+		if (ZEDSupportFunctions.HitTestOnSphere(leftcamera, closerWorldPoint, 1f, radiusCheckRate, percentagethreshold))
         {
             //Not clear. 
             newRandomPos = Vector3.zero;
@@ -201,24 +262,28 @@ public class DroneSpawner : MonoBehaviour
 
         if (!dronecomponent)
         {
-            Debug.Log("Drone prefab spawned by DroneSpawner does not contain the Drone.cs component.");
+            Debug.LogError("Drone prefab spawned by DroneSpawner does not contain the Drone.cs component.");
         }
 
         //Give the drone a reference to this object so it can clear its reference and set the timer properly when it dies
 		dronecomponent.SetMySpawner(this);
 
         //Set the drone's transform values
-		dronego.transform.position = _randomPosition; //Assign the random Pos generated in CheckRandomSpawnLocation();
+		dronego.transform.position = newspawnposition; //Assign the random Pos generated in CheckRandomSpawnLocation();
 		dronego.transform.rotation = Quaternion.LookRotation(ZEDManager.Instance.GetLeftCameraTransform().position - spawnPosition, Vector3.up); //Make it look at the player.
 
         return dronecomponent;
 
     }
 
-    public void ClearDrone() //To be called by a drone when it dies. 
+    /// <summary>
+    /// Clears the drone reference, which will cause the script to start trying to spawn a new one again. 
+    /// Should be called by the drone itself in its OnDestroy(). 
+    /// </summary>
+    public void ClearDrone() 
     {
-        _currentDrone = null;
-        _respawnCountdown = respawnTimer;
+        currentdrone = null;
+        respawncountdown = respawnTimer;
 
         print("Drone destroyed");
     }

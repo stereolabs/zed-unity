@@ -6,72 +6,91 @@ using UnityEngine;
 using UnityEditor;
 #endif
 /// <summary>
-/// Manages the SVO, only used as an interface for Unity
-/// </summary>
+/// Lets you play back a recorded SVO file, which works in place of the input from a real ZED, 
+/// or record an SVO file from a live ZED. 
+/// <para>To use, attach to the same GameObject as ZED Manager (ZED_Rig_Mono or ZED_Rig_Stereo).</para
+/// </summary><remarks>
+/// When playing an SVO, the SDK behaves the same as if a real ZED were attached, so all regular features
+/// are available. The one exception is pass-through AR, as the ZED's timestamps and transform will both be 
+/// significantly out of sync with the VR headset. 
+/// </remarks>
 public class ZEDSVOManager : MonoBehaviour
 {
     /// <summary>
-    /// Set to true to record a SVO
+    /// Set to true to record an SVO. Recording begins when the ZED initialized and ends when the
+    /// application finishes. 
     /// </summary>
     [SerializeField]
+    [Tooltip("Set to true to record an SVO. Recording begins when the ZED initialized and ends when " + 
+        "the application finishes.")]
     public bool record = false;
 
     /// <summary>
-    /// Set to true to read a SVO, a SVO cannot be read and written at once
+    /// Set to true to read an SVO, using it as input instead of a real ZED. An SVO cannot be read and recorded
+    /// at the same time. 
     /// </summary>
     [SerializeField]
+    [Tooltip("Set to true to read an SVO, using it as input instead of a real ZED. " +
+        "An SVO cannot be read and recorded at the same time.")]
     public bool read = false;
 
     /// <summary>
-    /// Set the video file to record or read
+    /// Path to the SVO to be read, or where a new SVO will be recorded. 
+    /// <para>Note: If building the application, put the file in the root directory or specify a non-relative path
+    /// to preserve this reference.</para>
     /// </summary>
     [SerializeField]
     [HideInInspector]
     public string videoFile = "Assets/ZEDRecording.svo";
 
     /// <summary>
-    /// Loop the svo, if read is set to true
+    /// If reading an SVO, set this to true if the SVO should repeat once it finishes. 
+    /// <para>Some features won't handle this gracefully, such as tracking.</para>
     /// </summary>
     [SerializeField]
-    [Tooltip("Loop the SVO")]
+    [Tooltip("If reading an SVO, set this to true if the SVO should repeat once it finishes. " +
+        "Some features won't handle this gracefully, such as tracking.")]
     public bool loop = false;
 
+    /// <summary>
+    /// If reading an SVO, set true to use frame timestamps to set playback speed. Dropped
+    /// frames will cause a 'pause' in playback instead of a 'skip.' 
+    /// </summary>
+    [Tooltip("If reading an SVO, set true to use frame timestamps to set playback speed. " +
+        "Dropped frames will cause a 'pause' in playback instead of a 'skip.'")]
     [SerializeField]
     [HideInInspector]
     public bool realtimePlayback = true;
 
     /// <summary>
-    /// Current frame of the SVO (read)
+    /// Current frame being read from the SVO. Doesn't apply when recording. 
     /// </summary>
     [HideInInspector]
     [SerializeField]
     private int currentFrame = 0;
+    /// <summary>
+    /// Current frame being read from the SVO. Doesn't apply when recording. 
+    /// </summary>
+    public int CurrentFrame
+    {
+        get
+        {
+            return currentFrame;
+        }
+        set
+        {
+            currentFrame = value;
+        }
+    }
 
     /// <summary>
-    /// Number max of frames in the SVO
+    /// Total number of frames in a loaded SVO. 
     /// </summary>
     [HideInInspector]
     [SerializeField]
     private int numberFrameMax = 0;
-
     /// <summary>
-    /// Pause the SVO, Unity will continue to run
-    /// </summary>
-    [HideInInspector]
-    [SerializeField]
-    public bool pause = false;
-
-	 
-
-
-    /// <summary>
-    /// Compression mode to register a SVO
-    /// </summary>
-    [SerializeField]
-	public sl.SVO_COMPRESSION_MODE compressionMode = sl.SVO_COMPRESSION_MODE.LOSSY_BASED;
-
-    /// <summary>
-    /// Number frame max of the SVO
+    /// Total number of frames in a loaded SVO. 
     /// </summary>
     public int NumberFrameMax
     {
@@ -86,47 +105,44 @@ public class ZEDSVOManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Current frame of the SVO (number)
+    /// Set true to pause the SVO reading or recording. Will not pause the Unity scene itself. 
     /// </summary>
-    public int CurrentFrame
-    {
-        get
-        {
-            return currentFrame;
-        }
-        set
-        {
-            currentFrame = value;
-        }
-    }
-
-
-	private bool need_NewFrame;
-	public bool NeedNewFrameGrab
-	{
-
-		get
-		{
-			return need_NewFrame;
-		}
-		set
-		{
-			need_NewFrame = value;
-		}
-
-	}
+    [HideInInspector]
+    [SerializeField]
+    public bool pause = false;
 
     /// <summary>
-    /// Init the SVOManager
+    /// Compression mode used when recording an SVO. 
+    /// Uncompressed SVOs are extremely large (multiple gigabytes per minute). 
     /// </summary>
-    /// <param name="zedCamera"></param>
+    [Tooltip("Compression mode used when recording an SVO. " +
+        "Uncompressed SVOs are extremely large (multiple gigabytes per minute).")]
+    [SerializeField]
+	public sl.SVO_COMPRESSION_MODE compressionMode = sl.SVO_COMPRESSION_MODE.LOSSY_BASED;
+
+    /// <summary>
+    /// Flag set to true when we need to force ZEDManager to grab a new frame, even though
+    /// SVO playback is paused. Used when the SVO is paused but the playback slider has moved. 
+    /// </summary>
+    public bool NeedNewFrameGrab { get; set; }
+
+    /// <summary>
+    /// Changes the value of record if recording fails, and gets the length of a read SVO file.
+    /// </summary>
+    /// <param name="zedCamera">Reference to the Scene's ZEDCamera instance.</param>
     public void InitSVO(sl.ZEDCamera zedCamera)
     {
         if (record)
         {
-			if (zedCamera.EnableRecording(videoFile,compressionMode) != sl.ERROR_CODE.SUCCESS)
+            sl.ERROR_CODE svoerror = zedCamera.EnableRecording(videoFile, compressionMode);
+            if (svoerror != sl.ERROR_CODE.SUCCESS)
             {
                 record = false;
+            }
+            else if(svoerror == sl.ERROR_CODE.SVO_RECORDING_ERROR)
+            {
+                Debug.LogError("SVO recording failed. Check that there is enough space on the drive and that the "
+                    + "path provided is valid.");
             }
         }
 
@@ -139,13 +155,18 @@ public class ZEDSVOManager : MonoBehaviour
 
 #if UNITY_EDITOR
 
-
+/// <summary>
+/// Custom editor for ZEDSVOManager to change how it's drawn in the Inspector.
+/// Adds a playback slider and pause button, and makes Record and Read mutually-exclusive. 
+/// </summary>
 [CustomEditor(typeof(ZEDSVOManager)), CanEditMultipleObjects]
 public class SVOManagerInspector : Editor
 {
+    //Caches for record and read values, to make them mutually exclusive. 
     private bool current_recordValue = false;
     private bool current_readValue = false;
 
+    //Serializable versions of ZEDSVOManager's values so changes can be saved/serialized. 
     private SerializedProperty pause;
     private SerializedProperty record;
     private SerializedProperty read;
@@ -154,13 +175,18 @@ public class SVOManagerInspector : Editor
     private SerializedProperty currentFrame;
     private SerializedProperty numberFrameMax;
 
-    Rect drop_area;
+    Rect drop_area; //Bounds for dragging and dropping SVO files. 
 
-    private GUILayoutOption[] optionsButtonBrowse = { GUILayout.MaxWidth(30) };
+    private GUILayoutOption[] optionsButtonBrowse = { GUILayout.MaxWidth(30) }; //Adds padding for the SVO browse button. 
     string pauseText = "Pause";
+    string pauseTooltip = " SVO playback or recording."; //Appended to the pause Text to make tooltip text.
 
-    string[] filters = { "Svo files", "svo" };
+    string[] filters = { "Svo files", "svo" }; //Filters used for browsing for an SVO. 
     private ZEDSVOManager obj;
+
+    /// <summary>
+    /// Called by Unity each time the editor is viewed. 
+    /// </summary>
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
@@ -170,13 +196,19 @@ public class SVOManagerInspector : Editor
 
         using (new EditorGUI.DisabledScope(Application.isPlaying))
         {
-            string tooltip = "Uses timecodes of each frame for playback. Causes a pause for dropped frames or when pause was used during recording.";
+            string tooltip = "If reading an SVO, set true to use frame timestamps to set playback speed." +
+                "Dropped frames will cause a 'pause' in playback instead of a 'skip.'";
             obj.realtimePlayback = EditorGUILayout.Toggle(new GUIContent("Realtime Playback", tooltip), obj.realtimePlayback);
         }
 
-            EditorGUILayout.BeginHorizontal();
-        videoFile.stringValue = EditorGUILayout.TextField("SVO Path", videoFile.stringValue);
-        if (GUILayout.Button("...", optionsButtonBrowse))
+        EditorGUILayout.BeginHorizontal();
+        GUIContent pathlabel = new GUIContent("SVO Path", "Path to the SVO to be read, or where a new SVO will be recorded. " +
+            "Note: If building the application, put the file in the root directory or specify a non-relative path " +
+            "to preserve this reference.");
+        videoFile.stringValue = EditorGUILayout.TextField(pathlabel, videoFile.stringValue);
+
+        GUIContent loadlabel = new GUIContent("...", "Browse for existing SVO file.");
+        if (GUILayout.Button(loadlabel, optionsButtonBrowse))
         {
             obj.videoFile = EditorUtility.OpenFilePanelWithFilters("Load SVO", "", filters);
             serializedObject.ApplyModifiedProperties();
@@ -193,12 +225,13 @@ public class SVOManagerInspector : Editor
         EditorGUI.BeginChangeCheck();
 
         GUI.enabled = (obj.NumberFrameMax > 0);
-        currentFrame.intValue = EditorGUILayout.IntSlider("Frame ", currentFrame.intValue, 0, numberFrameMax.intValue);
+        GUIContent sliderlabel = new GUIContent("Frame ", "SVO playback position");
+        currentFrame.intValue = EditorGUILayout.IntSlider(sliderlabel, currentFrame.intValue, 0, numberFrameMax.intValue);
         if (EditorGUI.EndChangeCheck())
         {
             if (sl.ZEDCamera.GetInstance() != null)
             {
-                //If the slider of frame from the SVO has moved, grab mannually the frame and update the textures
+                //If the slider of frame from the SVO has moved, manually grab the frame and update the textures.
                 sl.ZEDCamera.GetInstance().SetSVOPosition(currentFrame.intValue);
                 if (pause.boolValue)
                 {
@@ -210,17 +243,21 @@ public class SVOManagerInspector : Editor
 
 		GUI.enabled = sl.ZEDCamera.GetInstance() != null && sl.ZEDCamera.GetInstance().IsCameraReady;
         pauseText = pause.boolValue ? "Resume" : "Pause";
-        if (GUILayout.Button(pauseText))
+        GUIContent pauselabel = new GUIContent(pauseText, pauseText + pauseTooltip);
+        if (GUILayout.Button(pauselabel))
         {
             pause.boolValue = !pause.boolValue;
         }
         GUI.enabled = true;
         DropAreaGUI();
 
-        serializedObject.ApplyModifiedProperties();
+        serializedObject.ApplyModifiedProperties(); //Applies changes to serialized properties to the values they represent. 
 
     }
 
+    /// <summary>
+    /// Binds the serialized properties to their respective values in ZEDSVOManager. 
+    /// </summary>
     private void OnEnable()
     {
         pause = serializedObject.FindProperty("pause");
@@ -234,8 +271,8 @@ public class SVOManagerInspector : Editor
     }
 
     /// <summary>
-    /// To allow looping when reading is on
-    /// To not allow to read and record at the same time
+    /// Allows looping when reading an SVO file (only) and prevents
+    /// reading and recording from both being true at the same time.
     /// </summary>
     private void CheckChange()
     {
@@ -263,9 +300,8 @@ public class SVOManagerInspector : Editor
 
     }
 
-
     /// <summary>
-    /// Helper to get the name of a drag and dropped file
+    /// Helper to get the name of a drag and dropped file.
     /// </summary>
     public void DropAreaGUI()
     {
@@ -290,6 +326,4 @@ public class SVOManagerInspector : Editor
         }
     }
 }
-
-
 #endif

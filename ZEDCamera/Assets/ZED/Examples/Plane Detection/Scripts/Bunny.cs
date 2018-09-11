@@ -2,51 +2,82 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bunny : MonoBehaviour {
+/// <summary>
+/// Governs the FlyingBunny prefab used in the ZED plane detection samples. 
+/// Checks for collisions in front of it in midair, and spawns the flag when it hits the ground. 
+/// </summary>
+public class Bunny : MonoBehaviour
+{
+    /// <summary>
+    /// Stores initial position when we are enabled/spawned into the scene.
+    /// Used to calculate how far the bunny traveled after we hit it in the VR plane detection demo. 
+    /// </summary>
+    public Vector3 InitialPosition { get; private set; } 
 
-    //Reference to the Rigidbody of this object.
-    private Rigidbody _rb;
-    //Variable to store our initial position when we are enabled/spawned into the scene.
-    public Vector3 _savedPos { get; private set; }
-    //Boolean that is true whenever this object is moved by the baseball bat.
-    public bool _moving { get; private set; }
-    //Reference to the ZED's left camera gameobject.
-    private Camera _leftCamera;
-    //Reference to the BunnySpawner that spawned this gameObject.
-    private BunnySpawner _mySpawner;
-    //The transform to be used as new center/pivot point for this gameObject when checking for collisions with the real world.
-    private Transform _centerPoint;
-    //Reference to the ZED Plane Detection Manager.
-    private ZEDPlaneDetectionManager _zedPlane;
-    //Reference to the Animator.
+    /// <summary>
+    /// True whenever this object is moved by the baseball bat. 
+    /// </summary>
+    public bool IsMoving { get; private set; }
+
+    /// <summary>
+    /// Reference to the ZED rig's left camera component.
+    /// </summary>
+    private Camera leftcamera;
+
+    /// <summary>
+    /// Reference to the BunnySpawner that spawned this GameObject.
+    /// </summary>
+    private BunnySpawner bunnyspawner;
+
+    /// <summary>
+    /// The transform used as center/pivot point for this GameObject when checking for collisions with the real world.
+    /// </summary>
+    private Transform centerpoint;
+
+    /// <summary>
+    /// Reference to the scene's ZED Plane Detection Manager.
+    /// </summary>
+    private ZEDPlaneDetectionManager planeManager;
+
+    /// <summary>
+    /// The bunny's Rigidbody component. 
+    /// </summary>
+    private Rigidbody rb;
+
+    /// <summary>
+    /// The Bunny's Animator component.
+    /// </summary>
     [HideInInspector]
     public Animator anim;
-    /// <summary>
-    /// Use this for initialization.
-    /// Setting up the variables, and start up states.
-    /// </summary>
+
+    // Use this for initialization.
     void Start()
     {
         //Find the left camera object if we didn't assign it at start. 
-        if (!_leftCamera)
+        if (!leftcamera)
         {
-            _leftCamera = ZEDManager.Instance.GetLeftCameraTransform().GetComponent<Camera>();
+            leftcamera = ZEDManager.Instance.GetLeftCameraTransform().GetComponent<Camera>();
         }
-        //we're not moving at start.
-        _moving = false;
-        //Get our Rigidbody component.
-        _rb = GetComponent<Rigidbody>();
-        //Saving our initial position.
-        _savedPos = transform.position;
-        //Getting the ZEDPlaneDetectionManager.cs component.
-        _zedPlane = FindObjectOfType<ZEDPlaneDetectionManager>();
+        
+        IsMoving = false; //we're not moving at start.
+
+        //Caching
+        planeManager = FindObjectOfType<ZEDPlaneDetectionManager>();
+        rb = GetComponent<Rigidbody>(); //Get our Rigidbody component.
+        anim = GetComponent<Animator>();
+
+        InitialPosition = transform.position; //Save for calculating distance traveled later. 
+
         //If there is a child in position 2, use it as new centerPoint.
         if (transform.GetChild(2) != null)
-            _centerPoint = transform.GetChild(2);
-        else //use this transform.
-            _centerPoint = transform;
-        //Get the Animator component.
-        anim = GetComponent<Animator>();
+        {
+            centerpoint = transform.GetChild(2);
+        }
+        else //If not, use this transform.
+        {
+            centerpoint = transform;
+        }
+
     }
 
     /// <summary>
@@ -55,7 +86,7 @@ public class Bunny : MonoBehaviour {
     /// <param name="spawner"></param>
     public void SetMySpawner(BunnySpawner spawner)
     {
-        _mySpawner = spawner;
+        bunnyspawner = spawner;
     }
 
     /// <summary>
@@ -72,28 +103,27 @@ public class Bunny : MonoBehaviour {
     /// Coroutine used to delay the collision detection of the Bunny.
     /// Setting the _moving variable after waiting X seconds.
     /// </summary>
-    /// <returns></returns>
     IEnumerator HitDelay(bool hit)
     {
         //Wait for X amount of seconds...
         yield return new WaitForSeconds(0.1f);
         if (hit)
         {
-            //... then set _moving to true, and allow collision detection in FixedUpdate().
-            _moving = true;
+            //... then set IsMoving to true, and allow collision detection in FixedUpdate().
+            IsMoving = true;
         }
         else
         {
-            _rb.isKinematic = true; //Freeze the object at the current position.
+            rb.isKinematic = true; //Freeze the object at the current position.
             yield return new WaitForSeconds(1f);
-            _mySpawner.SpawnUI(transform.position);
+            bunnyspawner.SpawnUI(transform.position);
         }
 
         //Clearing the scene from any Planes created by the ZED Plane Detection Manager.
-		for (int i = 0; i < _zedPlane.hitPlaneList.Count; i++)
+		for (int i = 0; i < planeManager.hitPlaneList.Count; i++)
         {
-			Destroy(_zedPlane.hitPlaneList[i].gameObject);
-			_zedPlane.hitPlaneList.RemoveAt(i);
+			Destroy(planeManager.hitPlaneList[i].gameObject);
+			planeManager.hitPlaneList.RemoveAt(i);
         }
     }
 
@@ -104,26 +134,25 @@ public class Bunny : MonoBehaviour {
     private void FixedUpdate()
     {
         //If we have been moved by the baseball bat
-        if (_moving)
+        if (IsMoving)
         {
             //Look for our next position based on our current velocity.
-            Vector3 predictedPos = _centerPoint.position + (_rb.velocity * (Time.deltaTime * 2.5f));
-            transform.rotation = Quaternion.LookRotation(_rb.velocity.normalized);
+            Vector3 predictedPos = centerpoint.position + (rb.velocity * (Time.deltaTime * 2.5f));
+            transform.rotation = Quaternion.LookRotation(rb.velocity.normalized);
             //Collision check with the real world at that next position.
-            if (ZEDSupportFunctions.HitTestAtPoint(_leftCamera, predictedPos))
+            if (ZEDSupportFunctions.HitTestAtPoint(leftcamera, predictedPos))
             {
                 //We hit something, but is it a flat surface?
-                if (_zedPlane.DetectPlaneAtHit(_leftCamera.WorldToScreenPoint(predictedPos)))
+                if (planeManager.DetectPlaneAtHit(leftcamera.WorldToScreenPoint(predictedPos)))
                 {
-                    _mySpawner.SpawnUI(predictedPos);
-                    _moving = false;
+                    bunnyspawner.SpawnUI(predictedPos); 
+                    IsMoving = false;
                 }
-                else//If not freeze on hit.
+                else//If not, bounce off of it but still show the flag. 
                 {
-                    //_rb.isKinematic = true; //Freeze the object at the current position.
-                    _moving = false; //Not moving anymore, so update our state.
-                    _mySpawner.SpawnUI(predictedPos); //Start spawning the UI on our current location.
-                    _rb.velocity = Vector3.Reflect(_rb.velocity /2 , transform.forward);
+                    IsMoving = false; //Not moving anymore, so update our state.
+                    bunnyspawner.SpawnUI(predictedPos); //Start spawning the UI on our current location.
+                    rb.velocity = Vector3.Reflect(rb.velocity /2 , transform.forward); //Bounce off the surface we hit 
                 }
             }
         }

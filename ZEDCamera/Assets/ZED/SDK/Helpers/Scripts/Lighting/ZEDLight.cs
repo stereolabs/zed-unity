@@ -3,25 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Registers the light in a common structure and checks if the light can be displayed
+/// Causes the attached Light component to cast light on the real world, if visible by the ZED. 
+/// Must be a point, spot, or directional light. Directional lights will also cast shadows on real objects. 
+/// Works by registering the Light component  to a static list (contained within) that's checked by ZEDRenderingPlane. 
+/// For more information, see our Lighting guide: https://docs.stereolabs.com/mixed-reality/unity/lighting/
 /// </summary>
 [RequireComponent(typeof(Light))]
 public class ZEDLight : MonoBehaviour
 {
     /// <summary>
-    /// Static structures shared among all the instances of ZEDLight
+    /// List of all ZEDLights in the scene. 
     /// </summary>
     [HideInInspector]
     public static List<ZEDLight> s_lights = new List<ZEDLight>();
 
     /// <summary>
-    /// Cached the light
+    /// Light component attached to this GameObject. 
     /// </summary>
     [HideInInspector]
     public Light cachedLight;
 
     /// <summary>
-    /// Interior cone of the spot light.
+    /// Interior cone of the spotlight, if the Light is a spotlight.
     /// </summary>
     [HideInInspector]
     public float interiorCone = 0.1f;
@@ -46,7 +49,8 @@ public class ZEDLight : MonoBehaviour
 
 
     /// <summary>
-    /// Checks if a light is enable or if it is lighting
+    /// Checks if a light is both enabled and has above-zero range and intensity. 
+    /// Used by ZEDRenderingPlane to filter out lights that won't be visible. 
     /// </summary>
     /// <returns></returns>
     public bool IsEnabled()

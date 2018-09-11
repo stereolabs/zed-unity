@@ -2,22 +2,52 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Fires a laser when the user issues a command. 
+/// If there is a ZEDControllerTracker in the same object, and the Oculus Integration or SteamVR plugins are installed, 
+/// it'll automatically check them for inputs. 
+/// </summary>
 [RequireComponent(typeof(AudioSource))]
 public class LaserGun : MonoBehaviour
 {
-    [Tooltip("What we spawn when the trigger is pulled")]
-    public GameObject LaserShotPrefab;
-    [Tooltip("Anchor object of the PointerBead")]
-    public GameObject LaserPointerBeadHolder;
-    [Tooltip("Anchor point to spawn the Laser.")]
-    public Transform LaserSpawnLocation;
+    /// <summary>
+    /// What we spawn when the trigger is pulled.
+    /// </summary>
+    [Tooltip("What we spawn when the trigger is pulled.")]
+    public GameObject laserShotPrefab;
 
-    private GameObject PointerBead; //Reference to the object that will be placed at the end of the laser.
-    private AudioSource _audioSource; //Reference to the audioSource
-    private Camera LeftCamera; //Reference to the ZED's left camera gameobject. 
+    /// <summary>
+    /// Anchor object of the PointerBead, which works as a crosshair.
+    /// </summary>
+    [Tooltip("Anchor object of the PointerBead, which works as a crosshair.")]
+    public GameObject laserPointerBeadHolder;
 
-    //The gameobject's controller for tracking & input.
-    private ZEDControllerTracker objectTracker;
+    /// <summary>
+    /// Anchor point where the laser spawns.
+    /// </summary>
+    [Tooltip("Anchor point where the laser spawns.")]
+    public Transform laserSpawnLocation;
+
+    /// <summary>
+    /// Reference to the object that will be placed at the end of the laser.
+    /// </summary>
+    private GameObject pointerbead;
+
+    /// <summary>
+    /// Reference to the audio source
+    /// </summary>
+    private AudioSource audiosource;
+
+    /// <summary>
+    /// Reference to the ZED's left camera gameobject. Used to pass to ZEDSupportFunctions.cs so it can transform ZED depth info into world space. 
+    /// </summary>
+    private Camera leftcamera;
+
+    /// <summary>
+    /// The gameobject's controller for tracking and input.
+    /// </summary>
+    private ZEDControllerTracker objecttracker;
+
 #if ZED_OCULUS
     private int fireCount = 0;
 #endif
@@ -25,31 +55,31 @@ public class LaserGun : MonoBehaviour
     IEnumerator Start()
     {
         //Find the left camera object if we didn't assign it at start. 
-        if (!LeftCamera) 
+        if (!leftcamera) 
         {
-            LeftCamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
+            leftcamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
         }
 
-        _audioSource = GetComponent<AudioSource>();
+        audiosource = GetComponent<AudioSource>();
 
-        if (LaserPointerBeadHolder != null)
+        if (laserPointerBeadHolder != null)
         {
             //Get the laser bead from the parent/achor object.
-            PointerBead = LaserPointerBeadHolder.transform.GetChild(0).gameObject;
+            pointerbead = laserPointerBeadHolder.transform.GetChild(0).gameObject;
             //Disable the laser bead to wait for the ZED to initialize. 
-            PointerBead.SetActive(false);
+            pointerbead.SetActive(false);
         }
 
         //Wait for VR Controllers to initilize
         yield return new WaitForSeconds(1f);
 
-        objectTracker = GetComponent<ZEDControllerTracker>();
+        objecttracker = GetComponent<ZEDControllerTracker>();
 
-        if (objectTracker != null)
+        if (objecttracker != null)
         {
 
 #if ZED_STEAM_VR
-            if (objectTracker.index >= 0)
+            if (objecttracker.index >= 0)
                 yield break;
 #endif
 #if ZED_OCULUS
@@ -104,7 +134,7 @@ public class LaserGun : MonoBehaviour
     void Update ()
     {
         //Do we have a Pointer Bead to position in the world?
-        if (LaserPointerBeadHolder != null)
+        if (laserPointerBeadHolder != null)
         {
             Vector3 crosshairpoint;
             Vector3 crosshairnormal;
@@ -112,17 +142,17 @@ public class LaserGun : MonoBehaviour
             if (ZEDManager.Instance.IsZEDReady && FindCrosshairPosition(out crosshairpoint, out crosshairnormal))
             {
                 //We hit something. Make sure the bead is active.
-                PointerBead.SetActive(true);
+                pointerbead.SetActive(true);
 
                 //Position the bead a the collision point, and make it face you. 
-                PointerBead.transform.position = crosshairpoint;
+                pointerbead.transform.position = crosshairpoint;
                 if(crosshairnormal.magnitude > 0.0001f)
-                PointerBead.transform.rotation = Quaternion.LookRotation(crosshairnormal);
+                pointerbead.transform.rotation = Quaternion.LookRotation(crosshairnormal);
             }
             else
             {
                 //We didn't hit anything. Disable the bead object. 
-                PointerBead.SetActive(false);
+                pointerbead.SetActive(false);
             }
         }
 
@@ -141,11 +171,11 @@ public class LaserGun : MonoBehaviour
 
         //We're controlling the fire Rate  OVRInput doesn't have a GetDown function for the IndexTrigger. Only an axis output.
 
-        if (objectTracker != null)
+        if (objecttracker != null)
         {
             if (OVRInput.GetConnectedControllers().ToString() == "Touch")
             {
-                if ((int)objectTracker.deviceToTrack == 0)
+                if ((int)objecttracker.deviceToTrack == 0)
                 {
                     if (fireCount == 0 && OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger, OVRInput.Controller.RTouch) > 0.75f)
                     {
@@ -156,7 +186,7 @@ public class LaserGun : MonoBehaviour
                         fireCount = 0;
 
                 }
-                if ((int)objectTracker.deviceToTrack == 1)
+                if ((int)objecttracker.deviceToTrack == 1)
                 {
                     if (fireCount == 0 && OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger, OVRInput.Controller.LTouch) > 0.75f)
                     {
@@ -172,15 +202,15 @@ public class LaserGun : MonoBehaviour
 #endif
 #if ZED_STEAM_VR
         //Looks for any input from this controller through SteamVR
-        if (objectTracker != null)
+        if (objecttracker != null)
         {
-            if ((int)objectTracker.deviceToTrack == 0 && objectTracker.index >= 0)
-                if (SteamVR_Controller.Input((int)objectTracker.index).GetHairTriggerDown())
+            if ((int)objecttracker.deviceToTrack == 0 && objecttracker.index >= 0)
+                if (SteamVR_Controller.Input((int)objecttracker.index).GetHairTriggerDown())
                 {
                     buttondown = true;
                 }
-            if ((int)objectTracker.deviceToTrack == 1 && objectTracker.index >= 0)
-                if (SteamVR_Controller.Input((int)objectTracker.index).GetHairTriggerDown())
+            if ((int)objecttracker.deviceToTrack == 1 && objecttracker.index >= 0)
+                if (SteamVR_Controller.Input((int)objecttracker.index).GetHairTriggerDown())
                 {
                     buttondown = true;
                 }
@@ -193,18 +223,22 @@ public class LaserGun : MonoBehaviour
         }
     }
 
-    bool FindCrosshairPosition(out Vector3 crosshairpoint, out Vector3 collisionnormal)
+    /// <summary>
+    /// Tests the depth of both the real and virtual in the center of the screen, and returns the world position of the closest one. 
+    /// </summary>
+    /// <param name="crosshairpoint">Where the crosshair should be rendered.</param>
+    /// <param name="collisionnormal">The normal vector of the surface aimed at, for rotating the crosshair accordingly if desired.</param>
+    /// <returns>False if there is no valid object, real or virtual, on which to place the crosshair. </returns>
+    private bool FindCrosshairPosition(out Vector3 crosshairpoint, out Vector3 collisionnormal)
     {
-        //Tests the depth of both the real and virtual in the center of the screen, and returns the world position of the closest one. 
-
         //Find the distance to the real world. The bool will be false if there is an error reading the depth at the center of the screen. 
         Vector3 realpoint;
-        bool foundrealdistance = ZEDSupportFunctions.HitTestOnRay(LeftCamera, LaserPointerBeadHolder.transform.position, LaserPointerBeadHolder.transform.rotation, 5f, 0.01f, out realpoint);
-        float realdistance = Vector3.Distance(LaserPointerBeadHolder.transform.position, realpoint);
+        bool foundrealdistance = ZEDSupportFunctions.HitTestOnRay(leftcamera, laserPointerBeadHolder.transform.position, laserPointerBeadHolder.transform.rotation, 5f, 0.01f, out realpoint);
+        float realdistance = Vector3.Distance(laserPointerBeadHolder.transform.position, realpoint);
 
         //Find the distance to the virtual. The bool will be false if there are no colliders ahead of you. 
         RaycastHit hitinfo;
-        bool foundvirtualdistance = Physics.Raycast(LaserPointerBeadHolder.transform.position, LaserPointerBeadHolder.transform.rotation * Vector3.forward, out hitinfo);
+        bool foundvirtualdistance = Physics.Raycast(laserPointerBeadHolder.transform.position, laserPointerBeadHolder.transform.rotation * Vector3.forward, out hitinfo);
 
         //If we didn't find either, return false so the laser and bead can be disabled. 
         if (!foundrealdistance && !foundvirtualdistance)
@@ -219,7 +253,7 @@ public class LaserGun : MonoBehaviour
         {
             //The real world is closer. Give the position of the real world pixel and return true. 
             crosshairpoint = realpoint;
-            ZEDSupportFunctions.GetNormalAtWorldLocation(realpoint, sl.REFERENCE_FRAME.WORLD, LeftCamera, out collisionnormal);
+            ZEDSupportFunctions.GetNormalAtWorldLocation(realpoint, sl.REFERENCE_FRAME.WORLD, leftcamera, out collisionnormal);
             return true;
         }
         else
@@ -232,19 +266,22 @@ public class LaserGun : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Spawns the laser prefab at the spawn anchor. 
+    /// </summary>
     void Fire()
     {
         //Create the shot and position/rotate it accordingly. 
-        GameObject blastershot = Instantiate(LaserShotPrefab);
-        blastershot.transform.position = LaserSpawnLocation != null ? LaserSpawnLocation.transform.position : transform.position;
-        blastershot.transform.rotation = LaserSpawnLocation != null ? LaserSpawnLocation.transform.rotation : transform.rotation;
-        if (LaserPointerBeadHolder != null)
-        blastershot.transform.LookAt(PointerBead.transform.position);
+        GameObject blastershot = Instantiate(laserShotPrefab);
+        blastershot.transform.position = laserSpawnLocation != null ? laserSpawnLocation.transform.position : transform.position;
+        blastershot.transform.rotation = laserSpawnLocation != null ? laserSpawnLocation.transform.rotation : transform.rotation;
+        if (laserPointerBeadHolder != null)
+        blastershot.transform.LookAt(pointerbead.transform.position);
 
         //Play a sound
-        if (_audioSource)
+        if (audiosource)
         {
-            _audioSource.Play();
+            audiosource.Play();
         }
     }
 }

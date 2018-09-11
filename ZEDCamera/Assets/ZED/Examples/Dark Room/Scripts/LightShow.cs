@@ -8,17 +8,33 @@ using UnityEngine;
 /// </summary>
 public class LightShow : MonoBehaviour
 {
-    public float SequenceDurationSeconds = 16;
-    public float _sequenceTimer = 0;
+    /// <summary>
+    /// How long each "show" lasts before its object is disabled and the next is enabled. 
+    /// </summary>
+    [Tooltip("How long each 'show' lasts before its object is disabled and the next is enabled. ")]
+    public float sequenceDurationSeconds = 16;
 
-    public List<GameObject> SequenceObjects = new List<GameObject>();
+    /// <summary>
+    /// Each object that holds a "show". Should contain or be a parent of all light objects it interacts with. 
+    /// </summary>
+    [Tooltip("Each object that holds a 'show'. Should contain or be a parent of all light objects it interacts with.")]
+    public List<GameObject> sequenceObjects = new List<GameObject>();
 
-    private int _sequenceIndex = 0;
+    /// <summary>
+    /// Runtime timer that indicates how long the current 'show' has been active. 
+    /// Update() increments it and advances the show when it reaches sequenceDurationSeconds, then resets it to 0. 
+    /// </summary>
+    private float sequencetimer = 0;
+
+    /// <summary>
+    /// Index of the sequence. Used to advance through the SequenceObjects list. 
+    /// </summary>
+    private int sequenceindex = 0;
 
 	// Use this for initialization
 	void OnEnable ()
     {
-        //set the first to active and the rest to not active. 
+        //set the first show to active and the rest to not active. 
         SwitchToSequence(0);
 		
 	}
@@ -26,28 +42,28 @@ public class LightShow : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        _sequenceTimer += Time.deltaTime;
-        if(_sequenceTimer >= SequenceDurationSeconds)
+        sequencetimer += Time.deltaTime;
+        if(sequencetimer >= sequenceDurationSeconds)
         {
-            _sequenceIndex++;
-            if(_sequenceIndex >= SequenceObjects.Count)
+            sequenceindex++;
+            if(sequenceindex >= sequenceObjects.Count)
             {
-                _sequenceIndex = 0;
+                sequenceindex = 0;
             }
 
-            SwitchToSequence(_sequenceIndex);
-            _sequenceTimer = _sequenceTimer % SequenceDurationSeconds;
+            SwitchToSequence(sequenceindex);
+            sequencetimer = sequencetimer % sequenceDurationSeconds;
         }
 	}
 
     private void SwitchToSequence(int index)
     {
         //Make sure that's a valid index
-        if (SequenceObjects.Count <= index || SequenceObjects[index] == null) return;
+        if (sequenceObjects.Count <= index || sequenceObjects[index] == null) return;
 
-        for(int i = 0; i < SequenceObjects.Count; i++)
+        for(int i = 0; i < sequenceObjects.Count; i++)
         {
-            SequenceObjects[i].SetActive(i == index);
+            sequenceObjects[i].SetActive(i == index);
         }
     }
 }

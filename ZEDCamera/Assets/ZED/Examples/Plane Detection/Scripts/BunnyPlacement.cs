@@ -3,30 +3,75 @@ using UnityEngine.UI;
 using System.Collections;
 using System;
 
+/// <summary>
+/// Handles detecting whether or not a real-world location is valid for placing a Bunny object
+/// in the ZED plane detection samples. To be valid, it must find a plane at the given location
+/// and that plane must face upward. Turns a placeholder object blue when valid, and red when not. 
+/// Also works with VR controllers if the SteamVR or Oculus Integration plugins are installed. 
+/// </summary>
 public class BunnyPlacement : MonoBehaviour
 {
-    //Positive Color for placement
+    /// <summary>
+    /// Textures assigned to the placeholder object when placement is valid. 
+    /// Index of each texture corresponds to the index of the material on the placeholder object. 
+    /// </summary>
+    [Tooltip("Textures assigned to the placeholder object when placement is valid. " + 
+        "Index of each texture corresponds to the index of the material on the placeholder object.")]
     public Texture[] goodPlacementTex;
-    //Negative Color for placement
+
+    /// <summary>
+    /// Textures assigned to the placeholder object when placement is not valid. 
+    /// Index of each texture corresponds to the index of the material on the placeholder object. 
+    /// </summary>
+    [Tooltip("Textures assigned to the placeholder object when placement is not valid. " +
+        "Index of each texture corresponds to the index of the material on the placeholder object.")]
     public Texture[] badPlacementTex;
-    //Point Light
-    private Light pointLight;
-    // Reference to the Object Tracker.
-    private ZEDControllerTracker trackedObj;
+    
+    /// <summary>
+    /// Light object in the placeholder object. We change its color based on placement validity. 
+    /// </summary>
+    private Light pointlight;
+
+    /// <summary>
+    /// The ZEDControllerTracker object in the VR controller used to place the object, if applicable. 
+    /// </summary>
+    private ZEDControllerTracker tracker;
+
 #if ZED_STEAM_VR
-    // Reference to the SteamVR Controller for Input purposes.
+    /// <summary>
+    /// Reference to the SteamVR Controller for Input purposes.
+    /// </summary>
     SteamVR_Controller.Device device;
 #endif
-    //Reference to the ZED Plane Detection Manager.
+
+    /// <summary>
+    /// The scene's ZED Plane Detection Manager.
+    /// </summary>
     private ZEDPlaneDetectionManager zedPlane;
-    //Reference to the BunnySpawner.
+
+    /// <summary>
+    /// The BunnySpawner object, normally on the same object as this component. 
+    /// </summary>
     private BunnySpawner bunnySpawner;
-    //Reference to the ZED's left camera gameobject.
+
+    /// <summary>
+    /// The ZED rig's left camera component. Passed to ZEDSupportFunctions.cs for transforming between world and camera space. 
+    /// </summary>
     private Camera leftCamera;
-    //Reference to the pointerBead transform.
-    private Transform pointerBead;
-    //Boolean that enables us to spawn or not the Bunny prefab.
-    private bool _canSpawnBunny;
+
+    /// <summary>
+    /// The placeholder object's transform.
+    /// </summary>
+    private Transform placeholder;
+
+    /// <summary>
+    /// Whether or not we are able to spawn a bunny here. 
+    /// </summary>
+    private bool canspawnbunny;
+
+    /// <summary>
+    /// Possible states of the button used for input, whether the spacebar, a VR controller trigger, etc. 
+    /// </summary>
     public enum state
     {
         Idle,
@@ -34,21 +79,19 @@ public class BunnyPlacement : MonoBehaviour
         Press,
         Up
     };
-    //The Buttons State
-    private state button;
-	public state Button {
-		get {
-			return button;
-		}
-	}
+
+    /// <summary>
+    /// The current state of the button used for input. 
+    /// </summary>
+    public state button { get; private set; }
 
     /// <summary>
     /// Awake is used to initialize any variables or game state before the game starts.
     /// </summary>
     void Awake()
     {
-        _canSpawnBunny = false;
-        trackedObj = GetComponent<ZEDControllerTracker>();
+        canspawnbunny = false;
+        tracker = GetComponent<ZEDControllerTracker>();
         zedPlane = FindObjectOfType<ZEDPlaneDetectionManager>();
         bunnySpawner = GetComponent<BunnySpawner>();
         if (!leftCamera)
@@ -58,13 +101,13 @@ public class BunnyPlacement : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets a reference to the pointerBead.
+    /// Sets a reference to the placeholder object. Set from BunnySpawner.cs. 
     /// </summary>
-    /// <param name="_pointer"></param>
-    public void SetPoinerBead(Transform _pointer)
+    /// <param name="pointer">The placeholder object.</param>
+    public void SetPlaceholder(Transform pointer)
     {
-        pointerBead = _pointer;
-        pointLight = _pointer.GetChild(0).GetComponentInChildren<Light>();
+        placeholder = pointer;
+        pointlight = pointer.GetChild(0).GetComponentInChildren<Light>();
     }
 
     /// <summary>
@@ -72,10 +115,9 @@ public class BunnyPlacement : MonoBehaviour
     /// Here we receive the input from the Controller.
     /// Then we decide what to do in each case.
     /// </summary>
-
     private void Update()
     {
-        if (trackedObj == null)
+        if (tracker == null)
         {
             if (Input.GetKeyDown(KeyCode.Space))
                 button = state.Down;
@@ -90,14 +132,14 @@ public class BunnyPlacement : MonoBehaviour
         {
 #if ZED_STEAM_VR
             //Check if a Controller tracked.
-            if ((int)trackedObj.index > 0)
+            if ((int)tracker.index > 0)
             {
-                device = SteamVR_Controller.Input((int)trackedObj.index);
+                device = SteamVR_Controller.Input((int)tracker.index);
             }
 
             //SteamVR provides OnButton responses for the Trigger input.
-            //When pressing Down, Holding it, or Releasing it.
-            if ((int)trackedObj.index > 0)
+            //When pressing down, holding it, or releasing it.
+            if ((int)tracker.index > 0)
             {
                 if (device.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
                 {
@@ -178,12 +220,14 @@ public class BunnyPlacement : MonoBehaviour
             //It just got pressed.
             if (button == state.Down)
             {
-                //Enable the bunnySpawner to display the pointerBead.
-                bunnySpawner._canPlaceHolder = true;
-                //Hide the baseball.
-                if(bunnySpawner._baseballBat != null)
-                bunnySpawner._baseballBat.SetActive(false);
-                //Clear the list of detected planes by the Manager.
+                //Enable the bunnySpawner to display the placeholder.
+                bunnySpawner.canDisplayPlaceholder = true;
+
+                //If we were holding the baseball bat but the user wants to re-place the bunny, hide the baseball bat.
+                if(bunnySpawner.baseballBat != null)
+                bunnySpawner.baseballBat.SetActive(false); 
+
+                //Clean up the list of detected planes.
 				if (zedPlane.hitPlaneList.Count > 0)
                 {
 					for (int i = 0; i < zedPlane.hitPlaneList.Count; i++)
@@ -193,10 +237,10 @@ public class BunnyPlacement : MonoBehaviour
                     }
                 }
                 //Destroy the current Bunny, if any, on the scene.
-                if (!bunnySpawner.canSpawnMoreBunnies && bunnySpawner._currentBunny != null)
+                if (!bunnySpawner.canSpawnMultipleBunnies && bunnySpawner.currentBunny != null)
                 {
-                    Destroy(bunnySpawner._currentBunny);
-                    bunnySpawner._currentBunny = null;
+                    Destroy(bunnySpawner.currentBunny);
+                    bunnySpawner.currentBunny = null;
                 }
             }
 
@@ -205,22 +249,23 @@ public class BunnyPlacement : MonoBehaviour
             {
 				if (zedPlane.hitPlaneList.Count == 0)
                 {
-                    //Launch the detection of Planes through the ZED Plane Detection Manager.
-                    if (zedPlane.DetectPlaneAtHit(leftCamera.WorldToScreenPoint(pointerBead.position)))
+                    //Start detecting planes through the ZED Plane Detection Manager.
+                    if (zedPlane.DetectPlaneAtHit(leftCamera.WorldToScreenPoint(placeholder.position)))
                     {
                         //Get the normal of the plane.
 						ZEDPlaneGameObject currentPlane = zedPlane.getHitPlane(zedPlane.hitPlaneList.Count - 1);
 						Vector3 planeNormal = currentPlane.worldNormal;
+
                         //Check if the plane has a normal close enough to Y (horizontal surface) to be stable for the Bunny to spawn into.
                         if (Vector3.Dot(planeNormal, Vector3.up) > 0.85f)
                         {
-                            //Allow to spawn the Bunny, and set the pointerBead to a positive color.
-                            if (_canSpawnBunny == false)
+                            //Allow spawning the Bunny, and set the placeholder to a positive color.
+                            if (canspawnbunny == false)
                             {
-                                _canSpawnBunny = true;
-                                bunnySpawner._placeHolderMat[0].mainTexture = goodPlacementTex[0];
-                                bunnySpawner._placeHolderMat[1].mainTexture = goodPlacementTex[1];
-                                pointLight.color = Color.blue;
+                                canspawnbunny = true;
+                                bunnySpawner.placeHolderMat[0].mainTexture = goodPlacementTex[0];
+                                bunnySpawner.placeHolderMat[1].mainTexture = goodPlacementTex[1];
+                                pointlight.color = Color.blue;
                             }
                             else //Clear the list of planes.
                             {
@@ -236,11 +281,12 @@ public class BunnyPlacement : MonoBehaviour
                         }
                         else //Surface wasn't horizontal enough
                         {
-                            //Don't allow for the Bunny to spawn,  and set the pointerBead to a negative color.
-                            _canSpawnBunny = false;
-                            bunnySpawner._placeHolderMat[0].mainTexture = badPlacementTex[0];
-                            bunnySpawner._placeHolderMat[1].mainTexture = badPlacementTex[1];
-                            pointLight.color = Color.red;
+                            //Don't allow the Bunny to spawn, and set the placeholder to a negative color.
+                            canspawnbunny = false;
+                            bunnySpawner.placeHolderMat[0].mainTexture = badPlacementTex[0];
+                            bunnySpawner.placeHolderMat[1].mainTexture = badPlacementTex[1];
+                            pointlight.color = Color.red;
+
                             //Clear the list of planes.
 							for (int i = 0; i < zedPlane.hitPlaneList.Count; i++)
                             {
@@ -254,13 +300,13 @@ public class BunnyPlacement : MonoBehaviour
 
 				else if (zedPlane.hitPlaneList.Count > 0)
                 {
-                    if (!Physics.Raycast(transform.position, pointerBead.position - transform.position))
+                    if (!Physics.Raycast(transform.position, placeholder.position - transform.position))
                     {
-                        //Don't allow for the Bunny to spawn,  and set the pointerBead to a negative color.
-                        _canSpawnBunny = false;
-                        bunnySpawner._placeHolderMat[0].mainTexture = badPlacementTex[0];
-                        bunnySpawner._placeHolderMat[1].mainTexture = badPlacementTex[1];
-                        pointLight.color = Color.red;
+                        //Don't allow for the Bunny to spawn,  and set the placeholder to a negative color.
+                        canspawnbunny = false;
+                        bunnySpawner.placeHolderMat[0].mainTexture = badPlacementTex[0];
+                        bunnySpawner.placeHolderMat[1].mainTexture = badPlacementTex[1];
+                        pointlight.color = Color.red;
                         //Clear the list of planes.
 						for (int i = 0; i < zedPlane.hitPlaneList.Count; i++)
                         {
@@ -275,9 +321,9 @@ public class BunnyPlacement : MonoBehaviour
             if (button == state.Up)
             {
                 //If at that moment the bunny was allowed to spawn, proceed ot make the call.
-                if (_canSpawnBunny)
+                if (canspawnbunny)
                 {
-					bunnySpawner.SpawnBunny(pointerBead.position);
+					bunnySpawner.SpawnBunny(placeholder.position);
                 }
                 else //Clear the list of planes.
                 {
@@ -287,9 +333,10 @@ public class BunnyPlacement : MonoBehaviour
 						zedPlane.hitPlaneList.RemoveAt(i);
                     }
                 }
+
                 //Reset the booleans.
-                _canSpawnBunny = false;
-                bunnySpawner._canPlaceHolder = false;
+                canspawnbunny = false;
+                bunnySpawner.canDisplayPlaceholder = false;
             }
         }
     }

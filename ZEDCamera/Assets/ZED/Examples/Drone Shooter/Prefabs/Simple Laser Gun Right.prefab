@@ -322,6 +322,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deviceToTrack: 0
   _latencyCompensation: 78
+  SNHolder: 
 --- !u!114 &114506010654110848
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -333,10 +334,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: deca4f9199ed3eb4daefaa38ac81e7cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LaserShotPrefab: {fileID: 1300082734421426, guid: e63673e297726e74c80253a7265f6670,
+  laserShotPrefab: {fileID: 1300082734421426, guid: e63673e297726e74c80253a7265f6670,
     type: 2}
-  LaserPointerBeadHolder: {fileID: 1720199324786894}
-  LaserSpawnLocation: {fileID: 4121785863575496}
+  laserPointerBeadHolder: {fileID: 1720199324786894}
+  laserSpawnLocation: {fileID: 4121785863575496}
 --- !u!212 &212511314823844404
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -10,48 +10,85 @@ using UnityEditor;
 #endif
 
 /// <summary>
-/// Creates a mask from position and apply it on the pipeline
+/// Creates a garbage matte mask from its position and apply it on the pipeline. 
+/// It's created by GreenScreenManager as a 3D object, that you can create from the Inspector by placing the bounds of the mesh. 
+/// The garbage matte represents a region of the screen where no real pixels will be rendered, regardless of depth. 
+/// This can be used to extend the bounds of a greenscreen when the physical screen isn't large enough to fill the background. 
 /// </summary>
 [RequireComponent(typeof(GreenScreenManager))]
 [RequireComponent(typeof(Camera))]
 public class GarbageMatte
 {
-    // Reference to the ZED
+    /// <summary>
+    /// Reference to the ZEDCamera. 
+    /// </summary>
     private sl.ZEDCamera zed;
 
-    //Position in queue to make transparent object, used to render the mesh transparent
+    /// <summary>
+    /// Position in the render queue used by Unity's renderer to render a mesh transparent. This gets appled to the shader. 
+    /// </summary>
     private const int QUEUE_TRANSPARENT_VALUE = 3000;
 
-    //List of points to make the mesh
+    /// <summary>
+    /// List of 3D points used to make the matte mesh, eg the "corners". 
+    /// </summary>
     private List<Vector3> points = new List<Vector3>();
 
-    // The current camera looking the scene, used to transform ScreenPosition to worldPosition
+    /// <summary>
+    /// The current camera looking at the scene, used to transform ScreenPosition to worldPosition when placing the boundary points. 
+    /// </summary>
     private Camera cam;
 
-    //List of the different gameObjects used by the mesh
+    /// <summary>
+    /// List of the gameObjects used by the mesh.
+    /// </summary>
     private List<GameObject> go = null;
 
-    //List of the meshes
+    /// <summary>
+    /// List of the meshes.
+    /// </summary>
     private List<MeshFilter> meshFilters;
 
-    //Triangles of the current mesh
+    /// <summary>
+    /// Triangles of the current mesh.
+    /// </summary>
     private List<int> triangles = new List<int>();
-    private List<GameObject> spheresBorder = new List<GameObject>();
 
+    /// <summary>
+    /// The sphere objects the user places via GreenScreenManager to define the bounds of the matte object. 
+    /// </summary>
+    private List<GameObject> borderspheres = new List<GameObject>();
+
+    /// <summary>
+    /// The ZED greenscreen material. Usually Mat_ZED_GreenScreen. 
+    /// </summary>
     private Material shader_greenScreen;
+
+    /// <summary>
+    /// The material used on the spheres that the user places via GreenScreenManager to define the bounds of the matte object. 
+    /// Usually Mat_ZED_Outlined.
+    /// </summary>
     private Material outlineMaterial;
+
+    /// <summary>
+    /// Whether or not the maatte is currently being edited. 
+    /// </summary>
     private bool isClosed = false;
 
+    /// <summary>
+    /// The index of meshFilters that refers to the plane mesh we're currently editing, if applicable. 
+    /// </summary>
     private int currentPlaneIndex;
+
+    /// <summary>
+    /// The Unity layer where spheres exist, for visibility reasons. 
+    /// </summary>
     private int sphereLayer = 21;
 
+    /// <summary>
+    /// The Unity CommandBuffer that gets applied to the camera, which results in the matte getting rendered. 
+    /// </summary>
     private CommandBuffer commandBuffer;
-
-    /*** OPTIONS TO CHANGE ****/
-    //At launch, if no file are found, the GarbageMatte controls are activated if true. Button Fire1 || Fire2
-    private bool isAbleToEdit = true;
-    // Apply the garbageMatte is per default on the button "return"
-    private string applyButton = "return";
 
     [SerializeField]
     [HideInInspector]
@@ -71,12 +108,12 @@ public class GarbageMatte
         get { return isInit; }
     }
     /// <summary>
-    /// Create the GarbageMatte class
+    /// Constructor that sets up the garbage matte for the desired camera in the desired place. 
     /// </summary>
-    /// <param name="cam"></param>
-    /// <param name="greenScreenMaterial"></param>
-    /// <param name="target"></param>
-    /// <param name="matte"></param>
+    /// <param name="cam">Camera in which to apply the matte effect</param>
+    /// <param name="greenScreenMaterial">Material reference, usually Mat_ZED_Greenscreen</param>
+    /// <param name="target">Center location of the matte effect</param>
+    /// <param name="matte">Optional reference to another garbage matte, used to copy its current edit mode. </param>
 	public GarbageMatte(Camera cam, Material greenScreenMaterial, Transform target, GarbageMatte matte)
     {
         this.target = target;
@@ -126,49 +163,13 @@ public class GarbageMatte
     }
 
     /// <summary>
-    /// Create a dummy garbage matte, do nothing. Should be used only as a cache in memory
+    /// Constructor to create a dummy garbage matte that does nothing. Should be used only as a cache in memory
     /// </summary>
 	public GarbageMatte()
     {
         isInit = false;
 
     }
-
-    
-    /// <summary>
-    /// Check if pad are ready to set the garbage matte points
-    /// </summary>
-    private void PadReady()
-    {
-        ResetPoints(false);
-        if (Load())
-        {
-            Debug.Log("Config garbage matte found, and loaded ( " + garbageMattePath + " )");
-            ApplyGarbageMatte();
-            editMode = false;
-        }
-        else
-        {
-            if (isAbleToEdit)
-            {
-                editMode = true;
-            }
-
-        }
-
-    }
-
-    private void OnEnable()
-    {
-        ZEDSteamVRControllerManager.ZEDOnPadIndexSet += PadReady;
-    }
-
-    private void OnDisable()
-    {
-        ZEDSteamVRControllerManager.ZEDOnPadIndexSet -= PadReady;
-
-    }
- 
 
     private List<int> indexSelected = new List<int>();
     private List<GameObject> currentGOSelected = new List<GameObject>();
@@ -177,7 +178,7 @@ public class GarbageMatte
     private int numberSpheresSelected = -1;
     
     /// <summary>
-    /// Update the garbage matte and manage the movement of the spheres
+    /// Update the garbage matte and manage the movement of the spheres. 
     /// </summary>
     public void Update()
     {
@@ -200,10 +201,10 @@ public class GarbageMatte
 
 			if (zed != null && zed.IsCameraReady)
             {
-                //If left click, add a sphere
+                //If left mouse is clicked, add a sphere
                 if (Input.GetMouseButtonDown(0))
                 {
-                    //Add a new plan if needed
+                    //Add a new plane if needed
                     if (go.Count - 1 < currentPlaneIndex)
                     {
 
@@ -236,7 +237,7 @@ public class GarbageMatte
                         //Create the planes if needed
                         for (int i = 0; i < planeSelectedIndex.Count; ++i)
                         {
-                            if ((spheresBorder.Count - planeSelectedIndex[i] * 4) < 4)
+                            if ((borderspheres.Count - planeSelectedIndex[i] * 4) < 4)
                             {
                                 numberSpheresSelected = -1;
                                 planeSelectedIndex.Clear();
@@ -246,7 +247,7 @@ public class GarbageMatte
                             points = new List<Vector3>();
                             for (int j = planeSelectedIndex[i] * 4; j < (planeSelectedIndex[i] + 1) * 4; j++)
                             {
-                                points.Add(spheresBorder[j].transform.position);
+                                points.Add(borderspheres[j].transform.position);
                             }
 
                             CloseShape(triangles, points, planeSelectedIndex[i]);
@@ -262,8 +263,8 @@ public class GarbageMatte
                         RaycastHit hit;
                         if (Physics.Raycast(target.position, (vec - target.position), out hit, 10, (1 << sphereLayer)))
                         {
-                            int hitIndex = spheresBorder.IndexOf(hit.transform.gameObject);
-                            vec = spheresBorder[hitIndex].transform.position;
+                            int hitIndex = borderspheres.IndexOf(hit.transform.gameObject);
+                            vec = borderspheres[hitIndex].transform.position;
                         }
                         points.Add(vec);
 
@@ -276,18 +277,18 @@ public class GarbageMatte
 
                         sphere.transform.position = points[points.Count - 1];
                         sphere.layer = sphereLayer;
-                        spheresBorder.Add(sphere);
-                        if (spheresBorder.Count >= 2)
+                        borderspheres.Add(sphere);
+                        if (borderspheres.Count >= 2)
                         {
-                            spheresBorder[spheresBorder.Count - 2].GetComponent<MeshRenderer>().material.SetFloat("_Outline", 0.00f);
+                            borderspheres[borderspheres.Count - 2].GetComponent<MeshRenderer>().material.SetFloat("_Outline", 0.00f);
                         }
 
-                        if (spheresBorder.Count % 4 == 0)
+                        if (borderspheres.Count % 4 == 0)
                         {
                             points = new List<Vector3>();
                             for (int i = currentPlaneIndex * 4; i < (currentPlaneIndex + 1) * 4; i++)
                             {
-                                points.Add(spheresBorder[i].transform.position);
+                                points.Add(borderspheres[i].transform.position);
                             }
                             CloseShape(triangles, points, currentPlaneIndex);
                             EndPlane();
@@ -311,17 +312,17 @@ public class GarbageMatte
 
                         for (int i = 0; i < hits.Length; ++i)
                         {
-                            int hitIndex = spheresBorder.IndexOf(hits[i].transform.gameObject);
+                            int hitIndex = borderspheres.IndexOf(hits[i].transform.gameObject);
 
                             indexSelected.Add(hitIndex);
-                            currentGOSelected.Add(spheresBorder[hitIndex]);
+                            currentGOSelected.Add(borderspheres[hitIndex]);
                             planeSelectedIndex.Add(hitIndex / 4);
                             meshFilterSelected.Add(meshFilters[planeSelectedIndex[planeSelectedIndex.Count - 1]]);
 
-                            spheresBorder[hitIndex].GetComponent<MeshRenderer>().material.SetFloat("_Outline", 0.02f);
+                            borderspheres[hitIndex].GetComponent<MeshRenderer>().material.SetFloat("_Outline", 0.02f);
                         }
                         numberSpheresSelected = hits.Length;
-                        spheresBorder[spheresBorder.Count - 1].GetComponent<MeshRenderer>().material.SetFloat("_Outline", 0.00f);
+                        borderspheres[borderspheres.Count - 1].GetComponent<MeshRenderer>().material.SetFloat("_Outline", 0.00f);
 
                     }
                     else
@@ -332,32 +333,27 @@ public class GarbageMatte
                 }
             }
 
-            //Apply the garbage matte
-            if (Input.GetKeyDown(applyButton))
-            {
-                ApplyGarbageMatte();
-            }
         }
     }
 
 
     /// <summary>
-    /// End the current plane and increase the index of plane
+    /// Finishes the current plane and increases the index of the plane
     /// </summary>
-    public void EndPlane()
+    private void EndPlane()
     {
         currentPlaneIndex++;
         ResetDataCurrentPlane();
     }
 
     /// <summary>
-    /// 
+    /// Enables editing the matte. 
     /// </summary>
     public void EnterEditMode()
     {
         if (isClosed)
         {
-            foreach (GameObject s in spheresBorder)
+            foreach (GameObject s in borderspheres)
             {
                 s.SetActive(true);
             }
@@ -375,13 +371,16 @@ public class GarbageMatte
         }
     }
 
+    /// <summary>
+    /// Removes the last sphere the user placed while defining the matte object's boundaries. 
+    /// </summary>
     public void RemoveLastPoint()
     {
         //Prevent to remove and move a sphere at the same time
         if (numberSpheresSelected != -1) return;
         if (isClosed)
         {
-            foreach (GameObject s in spheresBorder)
+            foreach (GameObject s in borderspheres)
             {
                 s.SetActive(true);
             }
@@ -397,7 +396,7 @@ public class GarbageMatte
             }
             isClosed = false;
         }
-        if (spheresBorder.Count % 4 == 0 && currentPlaneIndex > 0)
+        if (borderspheres.Count % 4 == 0 && currentPlaneIndex > 0)
         {
             GameObject.Destroy(go[currentPlaneIndex - 1]);
             go.RemoveAll(item => item == null);
@@ -408,26 +407,33 @@ public class GarbageMatte
 
         }
 
-        if (spheresBorder != null && spheresBorder.Count > 0)
+        if (borderspheres != null && borderspheres.Count > 0)
         {
 
-            GameObject.DestroyImmediate(spheresBorder[spheresBorder.Count - 1]);
-            spheresBorder.RemoveAt(spheresBorder.Count - 1);
-            if (spheresBorder.Count % 4 == 0 && spheresBorder.Count > 0)
+            GameObject.DestroyImmediate(borderspheres[borderspheres.Count - 1]);
+            borderspheres.RemoveAt(borderspheres.Count - 1);
+            if (borderspheres.Count % 4 == 0 && borderspheres.Count > 0)
             {
-                spheresBorder[spheresBorder.Count - 1].GetComponent<MeshRenderer>().material.SetFloat("_Outline", 0.02f);
+                borderspheres[borderspheres.Count - 1].GetComponent<MeshRenderer>().material.SetFloat("_Outline", 0.02f);
             }
 
         }
 
     }
 
+    /// <summary>
+    /// Clears the boundary points and triangles. Used before making a new plane, or when resetting all data. 
+    /// </summary>
     private void ResetDataCurrentPlane()
     {
         points.Clear();
         triangles.Clear();
     }
 
+    /// <summary>
+    /// Removes existing sphere objects used to define bounds. 
+    /// Used to ensure they're properly cleaned up when not being used to edit the garbage matte. 
+    /// </summary>
 	public void CleanSpheres()
 	{
 		GameObject[] remain_sphere2 = GameObject.FindGameObjectsWithTag ("HelpObject");
@@ -435,9 +441,12 @@ public class GarbageMatte
 			foreach (GameObject sph in remain_sphere2)
 				GameObject.DestroyImmediate (sph);
 		}
-
 	}
 
+    /// <summary>
+    /// Destroys all planes and spheres used to edit the matte to start from scratch. 
+    /// </summary>
+    /// <param name="cleansphere"></param>
 	public void ResetPoints(bool cleansphere)
     {
 		if (cleansphere) {
@@ -461,14 +470,14 @@ public class GarbageMatte
         go.Clear();
         meshFilters.Clear();
         ResetDataCurrentPlane();
-        if (spheresBorder != null)
+        if (borderspheres != null)
         {
-            foreach (GameObject s in spheresBorder)
+            foreach (GameObject s in borderspheres)
             {
                 GameObject.DestroyImmediate(s);
             }
         }
-        spheresBorder.Clear();
+        borderspheres.Clear();
         if (commandBuffer != null)
         {
             commandBuffer.Clear();
@@ -479,21 +488,23 @@ public class GarbageMatte
     }
 
     /// <summary>
-    /// Get orientation
+    /// Helper function to determine a point's orientation along the plane. 
+    /// Used by OrderPoints to sort vertices. 
     /// </summary>
     /// <param name="p1"></param>
     /// <param name="p2"></param>
     /// <param name="p"></param>
     /// <param name="X"></param>
     /// <param name="Y"></param>
-    /// <returns></returns>
+    /// <returns>1 if it should be higher on the list, 0 if it should be lower. </returns>
     private static int Orientation(Vector3 p1, Vector3 p2, Vector3 p, Vector3 X, Vector3 Y)
     {
         return (Vector3.Dot(p2, X) - Vector3.Dot(p1, X)) * (Vector3.Dot(p, Y) - Vector3.Dot(p1, Y)) - (Vector3.Dot(p, X) - Vector3.Dot(p1, X)) * (Vector3.Dot(p2, Y) - Vector3.Dot(p1, Y)) > 0 ? 1 : 0;
     }
 
     /// <summary>
-    /// Ordering the points to draw a mesh
+    /// Orders the points in the points list in an order proper for drawing a mesh.
+    /// Points need to appear in the list in clockwise order within a triangle being drawn with them, around the plane's normal. 
     /// </summary>
     /// <returns></returns>
     private List<int> OrderPoints(List<Vector3> points)
@@ -505,7 +516,7 @@ public class GarbageMatte
         Vector3 Y = Vector3.Cross(X, normal);
         Y.Normalize();
 
-        List<int> ordoredIndex = new List<int>();
+        List<int> orderedIndex = new List<int>();
 
         List<Vector3> convexHull = new List<Vector3>();
         float minX = Vector3.Dot(points[0], X);
@@ -524,7 +535,7 @@ public class GarbageMatte
         for (int i = 0; i < 4; i++)
         {
             convexHull.Add(p);
-            ordoredIndex.Add(points.IndexOf(p));
+            orderedIndex.Add(points.IndexOf(p));
             currentTestPoint = points[0];
             for (int j = 0; j < points.Count; j++)
             {
@@ -535,11 +546,11 @@ public class GarbageMatte
             }
             p = currentTestPoint;
         }
-        return ordoredIndex;
+        return orderedIndex;
     }
 
     /// <summary>
-    /// Draw the last quad
+    /// Finish off the last quad mesh. 
     /// </summary>
     public void CloseShape(List<int> triangles, List<Vector3> points, int currentPlaneIndex)
     {
@@ -564,12 +575,12 @@ public class GarbageMatte
         go[currentPlaneIndex].GetComponent<MeshFilter>().sharedMesh.vertices = points.ToArray();
         go[currentPlaneIndex].GetComponent<MeshFilter>().sharedMesh.triangles = triangles.ToArray();
 
-        spheresBorder[spheresBorder.Count - 1].GetComponent<MeshRenderer>().material.SetFloat("_Outline", 0.00f);
+        borderspheres[borderspheres.Count - 1].GetComponent<MeshRenderer>().material.SetFloat("_Outline", 0.00f);
 
     }
 
     /// <summary>
-    /// Apply the garbage matte by rendering into the stencil buffer
+    /// Apply the garbage matte by rendering into the stencil buffer.
     /// </summary>
     public void ApplyGarbageMatte()
     {
@@ -583,7 +594,7 @@ public class GarbageMatte
         if (shader_greenScreen != null)
         {
             isClosed = true;
-            foreach (GameObject s in spheresBorder)
+            foreach (GameObject s in borderspheres)
             {
                 s.SetActive(false);
             }
@@ -606,12 +617,15 @@ public class GarbageMatte
         }
         editMode = false;
     }
-
     private void OnApplicationQuit()
     {
         ResetPoints(true);
     }
 
+    /// <summary>
+    /// Create a hidden GameObject used to hold the editing components. 
+    /// </summary>
+    /// <returns></returns>
     private GameObject CreateGameObject()
     {
         GameObject plane = new GameObject("PlaneTest");
@@ -636,6 +650,9 @@ public class GarbageMatte
         return m;
     }
 
+    /// <summary>
+    /// Represents a single plane to be made into a mesh, then a matte. 
+    /// </summary>
     [System.Serializable]
     public struct Plane
     {
@@ -643,6 +660,9 @@ public class GarbageMatte
         public List<Vector3> vertices;
     }
 
+    /// <summary>
+    /// Holds all planes to be turned into mattes and the total number of meshes. 
+    /// </summary>
     [System.Serializable]
     public struct GarbageMatteData
     {
@@ -650,6 +670,10 @@ public class GarbageMatte
         public List<Plane> planes;
     }
 
+    /// <summary>
+    /// Packages the current garbage matte into GarbageMatteData, which can be serialized/saved by GreenScreenEditor. 
+    /// </summary>
+    /// <returns>Data ready to be serialized. </returns>
     public GarbageMatteData RegisterData()
     {
         GarbageMatteData garbageMatteData = new GarbageMatteData();
@@ -669,7 +693,11 @@ public class GarbageMatte
         return garbageMatteData;
     }
 
-
+    /// <summary>
+    /// Loads a serialized GarbageMatteData instance to be used/viewed/edited. 
+    /// </summary>
+    /// <param name="garbageMatteData"></param>
+    /// <returns>True if there was actual data to load (at least one plane).</returns>
     public bool LoadData(GarbageMatteData garbageMatteData)
     {
        
@@ -700,7 +728,7 @@ public class GarbageMatte
 
                 sphere.transform.position = points[points.Count - 1];
                 sphere.layer = sphereLayer;
-                spheresBorder.Add(sphere);
+                borderspheres.Add(sphere);
             }
             if (go.Count == 0) return false;
 
@@ -711,7 +739,7 @@ public class GarbageMatte
     }
 
     /// <summary>
-    /// Save the points into a file
+    /// Save the points into a file.
     /// </summary>
     public void Save()
     {
@@ -769,7 +797,7 @@ public class GarbageMatte
 				sphere.tag = "HelpObject";
                 sphere.transform.position = points[points.Count - 1];
                 sphere.layer = sphereLayer;
-                spheresBorder.Add(sphere);
+                borderspheres.Add(sphere);
             }
             if (go.Count == 0) return false;
 

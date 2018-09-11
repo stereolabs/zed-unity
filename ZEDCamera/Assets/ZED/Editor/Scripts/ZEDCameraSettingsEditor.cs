@@ -4,116 +4,123 @@ using UnityEngine;
 using UnityEditor;
 
 /// <summary>
-/// Custom window editor : Displays the information about the ZED.
+/// Custom window editor that handles what you see after clicking Window -> ZED Camera in the editor, or 
+/// the Open Camera Control button in the ZEDManager Inspector. 
 /// </summary>
 public class ZEDCameraSettingsEditor : EditorWindow
 {
     /// <summary>
-    /// Brightness default value
+    /// Brightness default value.
     /// </summary>
     private const int cbrightness = 4;
 
     /// <summary>
-    /// Contrast default value
+    /// Contrast default value.
     /// </summary>
     private const int ccontrast = 4;
 
     /// <summary>
-    /// Hue default value
+    /// Hue default value.
     /// </summary>
     private const int chue = 0;
 
     /// <summary>
-    /// Saturation default value
+    /// Saturation default value.
     /// </summary>
     private const int csaturation = 4;
 
     /// <summary>
-    /// White balance default value
+    /// White balance default value.
     /// </summary>
     private const int cwhiteBalance = 2600;
 
     /// <summary>
-    /// Path to save data
+    /// Path to save/load configurations.
     /// </summary>
     private const string ZEDSettingsPath = "ZED_Settings.conf";
 
     /// <summary>
-    /// Current brightness value
+    /// Current brightness value.
     /// </summary>
     static private int brightness = 4;
 
     /// <summary>
-    /// Current contrast value
+    /// Current contrast value.
     /// </summary>
     static private int contrast = 4;
 
     /// <summary>
-    /// Current hue value
+    /// Current hue value.
     /// </summary>
     static private int hue = 0;
 
     /// <summary>
-    /// Current saturation value
+    /// Current saturation value.
     /// </summary>
     static private int saturation = 4;
 
     /// <summary>
-    /// Current gain value
+    /// Current gain value.
     /// </summary>
     [SerializeField]
     public int gain;
 
     /// <summary>
-    /// Current exposure value
+    /// Current exposure value.
     /// </summary>
     [SerializeField]
     public int exposure;
     static private int whiteBalance = cwhiteBalance;
 
     /// <summary>
-    /// Is the exposure and gain is in auto mode
+    /// Is the exposure and gain in auto mode?
     /// </summary>
     [SerializeField]
     public static bool groupAuto = true;
 
     /// <summary>
-    /// Is the whiteBalance is in auto mode
+    /// Is the white balance in auto mode?
     /// </summary>
     [SerializeField]
     public static bool whiteBalanceAuto = true;
 
     /// <summary>
-    /// Is data is loaded from the file
+    /// Has data been loaded from the file?
     /// </summary>
     [SerializeField]
     public static bool loaded = false;
 
     /// <summary>
-    /// Is a reset is wanted
+    /// Has the user or a script requested a reset? 
     /// </summary>
     [SerializeField]
     public bool resetWanted = false;
 
     /// <summary>
-    /// Refresh rate of the values of gain and exposure when auto mode is activated
+    /// Refresh rate of the values of gain and exposure when auto mode is activated.
     /// </summary>
     private const int refreshRate = 60;
+    /// <summary>
+    /// Timer used to know when to refresh. 
+    /// </summary>
     static private int refreshCount = 0;
 
     /// <summary>
-    /// Sat manual value
+    /// Whether we've set a manual value to gain and exposure or if they're in auto mode. 
     /// </summary>
     static bool setManualValue = true;
+    /// <summary>
+    /// Whether we've set a manual value to white balance or if it's in auto mode. 
+    /// </summary>
     static bool setManualWhiteBalance = true;
 
     /// <summary>
-    /// default gui
+    /// Default GUI color.
     /// </summary>
     static Color defaultColor;
+
     static GUIStyle style = new GUIStyle();
     static private GUILayoutOption[] optionsButton = { GUILayout.MaxWidth(100) };
-
 
     static private sl.ZEDCamera zedCamera;
 
@@ -128,11 +135,18 @@ public class ZEDCameraSettingsEditor : EditorWindow
 
     private bool launched = false;
 
+    /// <summary>
+    /// Empty Constructor. 
+    /// </summary>
     public ZEDCameraSettingsEditor()
     {
 
     }
 
+    /// <summary>
+    /// Updates values from the camera and redraws the elements. 
+    /// Called whenever the application play state changes. 
+    /// </summary>
     void Draw()
     {
         if (zedCamera != null && Application.isPlaying)
@@ -149,7 +163,7 @@ public class ZEDCameraSettingsEditor : EditorWindow
     [MenuItem("Window/ZED Camera")]
     static void Init()
     {
-        // Get existing open window or if none, make a new one:
+        //Gets existing open window or, if none exists, makes a new one.
         ZEDCameraSettingsEditor window = (ZEDCameraSettingsEditor)EditorWindow.GetWindow(typeof(ZEDCameraSettingsEditor), false, "ZED Camera");
         window.position = new Rect(window.position.x, window.position.y, 400, 400);
         style.normal.textColor = Color.red;
@@ -167,7 +181,8 @@ public class ZEDCameraSettingsEditor : EditorWindow
     }
 
     /// <summary>
-    /// Refresh data
+    /// Refreshes data. Called by Unity when this window gets focus, such as when 
+    /// it's clicked on or alt-tabbed to. 
     /// </summary>
     void OnFocus()
     {
@@ -187,7 +202,7 @@ public class ZEDCameraSettingsEditor : EditorWindow
     }
 
     /// <summary>
-    /// Init all the first values, and gets values from the ZED
+    /// Initializes all the starting values, and gets current values from the ZED.
     /// </summary>
     void FirstInit()
     {
@@ -413,7 +428,7 @@ public class ZEDCameraSettingsEditor : EditorWindow
     }
 
     /// <summary>
-    /// Reset all the values
+    /// Resets all the values to defaults. Used when pressing the Reset button. 
     /// </summary>
     /// <param name="auto"></param>
     private void ResetValues(bool auto)
@@ -433,7 +448,7 @@ public class ZEDCameraSettingsEditor : EditorWindow
     }
 
     /// <summary>
-    /// Save the camera settings in a file
+    /// Saves the camera settings into a file.
     /// </summary>
     void SaveCameraSettings()
     {
@@ -441,7 +456,7 @@ public class ZEDCameraSettingsEditor : EditorWindow
     }
 
     /// <summary>
-    /// Get the values registered and update the interface
+    /// Gets the registered values and updates the interface.
     /// </summary>
     private void UpdateValuesCameraSettings()
     {
@@ -457,7 +472,7 @@ public class ZEDCameraSettingsEditor : EditorWindow
     }
 
     /// <summary>
-    /// Load the data from the file and update the current settings
+    /// Loads the data from the file and updates the current settings.
     /// </summary>
     void LoadCameraSettings()
     {
@@ -469,6 +484,11 @@ public class ZEDCameraSettingsEditor : EditorWindow
         loaded = true;
     }
 
+    /// <summary>
+    /// Draws a horizontal label with a label and a box. 
+    /// </summary>
+    /// <param name="name">Text of the label.</param>
+    /// <param name="value">Value to be displayed. Will be converted to a string.</param>
     void LabelHorizontal(string name, float value)
     {
         GUILayout.BeginHorizontal();
@@ -478,7 +498,7 @@ public class ZEDCameraSettingsEditor : EditorWindow
     }
 
     /// <summary>
-    /// Calibration settings view
+    /// Displays the calibration settings view.
     /// </summary>
     void CalibrationSettingsView()
     {

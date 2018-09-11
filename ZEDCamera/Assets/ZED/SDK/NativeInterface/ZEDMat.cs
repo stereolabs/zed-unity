@@ -1,18 +1,27 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
-//Wrapper to the Mat of the ZED
 using System;
 using System.Runtime.InteropServices;
 
+/// <summary>
+/// This file holds the ZEDMat class along with low-level structures used for passing data between 
+/// the C# ZEDMat and its equivalent in the SDK. 
+/// </summary>
 
 namespace sl
 {
-
+    /// <summary>
+    /// Represents a 2D vector of uchars for use on both the CPU and GPU. 
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct char2
     {
         public byte r;
         public byte g;
     }
+
+    /// <summary>
+    /// Represents a 3D vector of uchars for use on both the CPU and GPU. 
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct char3
     {
@@ -20,6 +29,10 @@ namespace sl
         public byte g;
         public byte b;
     }
+
+    /// <summary>
+    /// Represents a 4D vector of uchars for use on both the CPU and GPU. 
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct char4
     {
@@ -32,12 +45,19 @@ namespace sl
         [MarshalAs(UnmanagedType.U1)]
         public byte a;
     }
+
+    /// <summary>
+    /// Represents a 2D vector of floats for use on both the CPU and GPU. 
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct float2
     {
         public float r;
         public float g;
     }
+    /// <summary>
+    /// Represents a 3D vector of floats for use on both the CPU and GPU. 
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct float3
     {
@@ -45,6 +65,9 @@ namespace sl
         public float g;
         public float b;
     }
+    /// <summary>
+    /// Represents a 4D vector of floats for use on both the CPU and GPU. 
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct float4
     {
@@ -54,33 +77,95 @@ namespace sl
         public float a;
     }
 
+    /// <summary>
+    /// Mirrors the sl::Mat class used in the ZED C++ SDK to store images. 
+    /// Can be used to retrieve individual images from GPU or CPU memory: see ZEDCamera.RetrieveImage() 
+    /// and ZEDCamera.RetrieveMeasure(). 
+    /// </summary><remarks>
+    /// For more information on the Mat class it mirrors, see: 
+    /// https://www.stereolabs.com/developers/documentation/API/v2.5.1/classsl_1_1Mat.html
+    /// </remarks>
     public class ZEDMat
     {
+        /// <summary>
+        /// Type of mat, indicating the data type and the number of channels it holds. 
+        /// Proper mat type depends on the image type. See sl.VIEW and sl.MEASURE (in ZEDCommon.cs)
+        /// </summary>
         public enum MAT_TYPE
         {
-            MAT_32F_C1, /*!< float 1 channel.*/
-            MAT_32F_C2, /*!< float 2 channels.*/
+            /// <summary>
+            /// Float, one channel. Used for depth and disparity Measure-type textures.
+            /// </summary>
+            MAT_32F_C1,
+            /// <summary>
+            /// Float, two channels. 
+            /// </summary>
+            MAT_32F_C2, 
+            /// <summary>
+            /// Float, three channels.
+            /// </summary>
             MAT_32F_C3, /*!< float 3 channels.*/
-            MAT_32F_C4, /*!< float 4 channels.*/
-            MAT_8U_C1, /*!< unsigned char 1 channel.*/
-            MAT_8U_C2, /*!< unsigned char 2 channels.*/
-            MAT_8U_C3, /*!< unsigned char 3 channels.*/
-            MAT_8U_C4 /*!< unsigned char 4 channels.*/
+            /// <summary>
+            /// Float, four channels. Used for normals and XYZ (point cloud) measure-type textures 
+            /// </summary>
+            MAT_32F_C4, 
+            /// <summary>
+            /// Unsigned char, one channel. Used for greyscale image-type textures like depth and confidence displays. 
+            /// </summary>
+            MAT_8U_C1,
+            /// <summary>
+            /// Unsigned char, two channels. 
+            /// </summary>
+            MAT_8U_C2,
+            /// <summary>
+            /// Unsigned char, three channels. 
+            /// </summary>
+            MAT_8U_C3, 
+            /// <summary>
+            /// Unsigned char, four channels. Used for color images, like the main RGB image from each sensor. 
+            /// </summary>
+            MAT_8U_C4 
         };
 
+        /// <summary>
+        /// Categories for copying data within or between the CPU (processor) memory and GPU (graphics card) memory.
+        /// </summary>
         public enum COPY_TYPE
         {
+            /// <summary>
+            /// Copies data from one place in CPU memory to another. 
+            /// </summary>
             COPY_TYPE_CPU_CPU, /*!< copy data from CPU to CPU.*/
+            /// <summary>
+            /// Copies data from CPU memory to GPU memory.
+            /// </summary>
             COPY_TYPE_CPU_GPU, /*!< copy data from CPU to GPU.*/
+            /// <summary>
+            /// Copies data from one place in GPU memory to another. 
+            /// </summary>
             COPY_TYPE_GPU_GPU, /*!< copy data from GPU to GPU.*/
+            /// <summary>
+            /// Copies data from GPU memory to CPU memory. 
+            /// </summary>
             COPY_TYPE_GPU_CPU /*!< copy data from GPU to CPU.*/
         };
 
+        /// <summary>
+        /// Which memory to store an image/mat: CPU/processor memory or GPU (graphics card) memory.
+        /// </summary>
         public enum MEM
         {
-            MEM_CPU = 1, /*!< CPU Memory (Processor side).*/
-            MEM_GPU = 2 /*!< GPU Memory (Graphic card side).*/
+            /// <summary>
+            /// Store on memory accessible by the CPU. 
+            /// </summary>
+            MEM_CPU = 1,
+            /// <summary>
+            /// Store on memory accessible by the GPU. 
+            /// </summary>
+            MEM_GPU = 2 
         };
+
+        #region DLL Calls
         const string nameDll = "sl_unitywrapper";
 
         [DllImport(nameDll, EntryPoint = "dllz_mat_create_new")]
@@ -212,10 +297,14 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "dllz_mat_clone")]
         private static extern void dllz_mat_clone(System.IntPtr ptr, System.IntPtr ptrSource);
 
-        private System.IntPtr _matInternalPtr;
+        #endregion
 
         /// <summary>
-        /// Returns the internal ptr of a mat
+        /// Returns the internal ptr of a Mat. 
+        /// </summary>
+        private System.IntPtr _matInternalPtr;
+        /// <summary>
+        /// Returns the internal ptr of a Mat.
         /// </summary>
         public IntPtr MatPtr
         {
@@ -223,7 +312,7 @@ namespace sl
         }
 
         /// <summary>
-        /// Creates an empty mat
+        /// Creates an empty Mat.
         /// </summary>
         public ZEDMat()
         {
@@ -231,43 +320,47 @@ namespace sl
         }
 
         /// <summary>
-        /// Creates a mat from
+        /// Creates a mat from an existing internal ptr.
         /// </summary>
-        /// <param name="ptr"></param>
+        /// <param name="ptr">IntPtr to create the material with.</param>
         public ZEDMat(System.IntPtr ptr) 
         {
             if(ptr == IntPtr.Zero)
             {
-                throw new Exception("ZED Mat not initialized");
+                throw new Exception("ZED Mat not initialized.");
             }
             _matInternalPtr = ptr;
         }
 
         /// <summary>
-        /// Creates a Mat with a resolution
+        /// Creates a Mat with a given resolution.
         /// </summary>
-        /// <param name="resolution"></param>
-        /// <param name="type"></param>
-        /// <param name="mem"></param>
+        /// <param name="resolution">Resolution for the new Mat.</param>
+        /// <param name="type">Data type and number of channels the Mat will hold.
+        /// Depends on texture type: see sl.VIEW and sl.MEASURE in ZEDCommon.cs.</param>
+        /// <param name="mem">Whether Mat should exist on CPU or GPU memory.
+        /// Choose depending on where you'll need to access it from.</param>
         public ZEDMat(sl.Resolution resolution, MAT_TYPE type, MEM mem = MEM.MEM_CPU)
         {
             _matInternalPtr = dllz_mat_create_new(resolution, (int)(type), (int)(mem));
         }
 
         /// <summary>
-        /// Creates a Mat
+        /// Creates a Mat with a given width and height.
         /// </summary>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="type"></param>
-        /// <param name="mem"></param>
+        /// <param name="width">Width of the new Mat.</param>
+        /// <param name="height">Height of the new Mat.</param>
+        /// <param name="type">Data type and number of channels the Mat will hold.
+        /// Depends on texture type: see sl.VIEW and sl.MEASURE in ZEDCommon.cs.</param>
+        /// <param name="mem">Whether Mat should exist on CPU or GPU memory.
+        /// Choose depending on where you'll need to access it from.</param>
         public ZEDMat(uint width, uint height, MAT_TYPE type, MEM mem = MEM.MEM_CPU)
         {
             _matInternalPtr = dllz_mat_create_new(new sl.Resolution(width, height), (int)(type), (int)(mem));
         }
 
         /// <summary>
-        /// Defines whether the Mat is initialized or not.
+        /// True if the Mat has been initialized.
         /// </summary>
         /// <returns></returns>
         public bool IsInit()
@@ -276,9 +369,9 @@ namespace sl
         }
 
         /// <summary>
-        /// Free the memory of the Mat
+        /// Frees the memory of the Mat.
         /// </summary>
-        /// <param name="mem"></param>
+        /// <param name="mem">Whether the Mat is on CPU or GPU memory.</param>
         public void Free(MEM mem = (MEM.MEM_GPU | MEM.MEM_CPU))
         {
             dllz_mat_free(_matInternalPtr, (int)mem);
@@ -286,7 +379,7 @@ namespace sl
         }
 
         /// <summary>
-        /// Downloads data from DEVICE (GPU) to HOST (CPU), if possible.
+        /// Copies data from the GPU to the CPU, if possible.
         /// </summary>
         /// <returns></returns>
         public sl.ERROR_CODE UpdateCPUFromGPU()
@@ -295,7 +388,7 @@ namespace sl
         }
 
         /// <summary>
-        /// Uploads data from HOST (CPU) to DEVICE (GPU), if possible.
+        /// Copies data from the CPU to the GPU, if possible.
         /// </summary>
         /// <returns></returns>
         public sl.ERROR_CODE UpdateGPUFromCPU()
@@ -304,9 +397,9 @@ namespace sl
         }
 
         /// <summary>
-        /// Return the informations about the Mat
+        /// Returns information about the Mat.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>String providing Mat information.</returns>
         public string GetInfos()
         {
             byte[] buf = new byte[300];
@@ -315,31 +408,31 @@ namespace sl
         }
 
         /// <summary>
-        /// Copies data an other Mat (deep copy).
+        /// Copies data from this Mat to another Mat (deep copy).
         /// </summary>
-        /// <param name="dest">dst : the Mat where the data will be copied.</param>
-        /// <param name="copyType">cpyType : specify the memories that will be used for the copy.</param>
-        /// <returns></returns>
+        /// <param name="dest">Mat that the data will be copied to.</param>
+        /// <param name="copyType">The To and From memory types.</param>
+        /// <returns>Error code indicating if the copy was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE CopyTo(sl.ZEDMat dest, sl.ZEDMat.COPY_TYPE copyType = COPY_TYPE.COPY_TYPE_CPU_CPU)
         {
             return (sl.ERROR_CODE)dllz_mat_copy_to(_matInternalPtr, dest._matInternalPtr, (int)(copyType));
         }
-
+        
         /// <summary>
-        /// Reads an image from a file (only if \ref MEM_CPU is available on the current
+        /// Reads an image from a file. Supports .png and .jpeg. Only works if Mat has access to MEM_CPU.
         /// </summary>
-        /// <param name="filePath"> file path including the name and extension.</param>
-        /// <returns></returns>
+        /// <param name="filePath">File path, including file name and extension.</param>
+        /// <returns>Error code indicating if the read was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE Read(string filePath)
         {
             return (sl.ERROR_CODE)dllz_mat_read(_matInternalPtr, filePath);
         }
 
         /// <summary>
-        ///  Writes the Mat (only if MEM_CPU is available) into a file as an image.
+        /// Writes the Mat into a file as an image. Only works if Mat has access to MEM_CPU.
         /// </summary>
-        /// <param name="filePath">file path including the name and extension.</param>
-        /// <returns></returns>
+        /// <param name="filePath">File path, including file name and extension.</param>
+        /// <returns>Error code indicating if the write was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE Write(string filePath)
         {
             return (sl.ERROR_CODE)dllz_mat_write(_matInternalPtr, filePath);
@@ -364,9 +457,9 @@ namespace sl
         }
 
         /// <summary>
-        /// Returns the number of values stored in one pixel.
+        /// Returns the number of values/channels stored in each pixel.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Number of values/channels.</returns>
         public int GetChannels()
         {
             return dllz_mat_get_channels(_matInternalPtr);
@@ -375,23 +468,23 @@ namespace sl
         /// <summary>
         /// Returns the size in bytes of one pixel.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Size in bytes.</returns>
         public int GetPixelBytes()
         {
             return dllz_mat_get_pixel_bytes(_matInternalPtr);
         }
 
         /// <summary>
-        ///  Returns the memory step in number of elements (the number of values in one pixel row).
+        ///  Returns the memory 'step' in number/length of elements - how many values make up each row of pixels.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Step length.</returns>
         public int GetStep()
         {
             return dllz_mat_get_step(_matInternalPtr);
         }
 
         /// <summary>
-        /// Returns the memory step in Bytes (the Bytes size of one pixel row).
+        /// Returns the memory 'step' in bytes - how many bytes make up each row of pixels.
         /// </summary>
         /// <returns></returns>
         public int GetStepBytes()
@@ -400,7 +493,7 @@ namespace sl
         }
 
         /// <summary>
-        /// Returns the size in bytes of a row.
+        /// Returns the size of each row in bytes.
         /// </summary>
         /// <returns></returns>
         public int GetWidthBytes()
@@ -418,7 +511,7 @@ namespace sl
         }
 
         /// <summary>
-        /// Returns whether the Mat is the owner of the memory it access.
+        /// Returns whether the Mat is the owner of the memory it's accessing.
         /// </summary>
         /// <returns></returns>
         public bool IsMemoryOwner()
@@ -426,40 +519,44 @@ namespace sl
             return dllz_mat_is_memory_owner(_matInternalPtr);
         }
 
+        /// <summary>
+        /// Returns the resolution of the image that this Mat holds. 
+        /// </summary>
+        /// <returns></returns>
         public sl.Resolution GetResolution()
         {
             return dllz_mat_get_resolution(_matInternalPtr);
         }
 
         /// <summary>
-        /// Allocates the Mat memory.
+        /// Allocates memory for the Mat.
         /// </summary>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="matType"></param>
-        /// <param name="mem"></param>
+        /// <param name="width">Width of the image/matrix in pixels.</param>
+        /// <param name="height">Height of the image/matrix in pixels.</param>
+        /// <param name="matType">Type of matrix (data type and channels; see sl.MAT_TYPE)</param>
+        /// <param name="mem">Where the buffer will be stored - CPU memory or GPU memory.</param>
         public void Alloc(uint width, uint height, MAT_TYPE matType, MEM mem = MEM.MEM_CPU)
         {
             dllz_mat_alloc(_matInternalPtr, (int)width, (int)height, (int)matType, (int)mem);
         }
 
         /// <summary>
-        /// Allocates the Mat memory.
+        /// Allocates memory for the Mat.
         /// </summary>
-        /// <param name="resolution"></param>
-        /// <param name="matType"></param>
-        /// <param name="mem"></param>
+        /// <param name="resolution">Size of the image/matrix in pixels.</param>
+        /// <param name="matType">Type of matrix (data type and channels; see sl.MAT_TYPE)</param>
+        /// <param name="mem">Where the buffer will be stored - CPU memory or GPU memory.</param>
         public void Alloc(sl.Resolution resolution, MAT_TYPE matType, MEM mem = MEM.MEM_CPU)
         {
             dllz_mat_alloc(_matInternalPtr, (int)resolution.width, (int)resolution.height, (int)matType, (int)mem);
         }
 
         /// <summary>
-        /// Copies data from an other Mat (deep copy).
+        /// Copies data from another Mat into this one(deep copy).
         /// </summary>
-        /// <param name="src"></param>
-        /// <param name="copyType"></param>
-        /// <returns></returns>
+        /// <param name="src">Source Mat from which to copy.</param>
+        /// <param name="copyType">The To and From memory types.</param>
+        /// <returns>ERROR_CODE (as an int) indicating if the copy was successful, or why it wasn't.</returns>
         public int SetFrom(ZEDMat src, COPY_TYPE copyType = COPY_TYPE.COPY_TYPE_CPU_CPU)
         {
             return dllz_mat_set_from(_matInternalPtr, src._matInternalPtr, (int)copyType);
@@ -471,7 +568,7 @@ namespace sl
         }
 
         /// <summary>
-        /// Duplicates Mat by copy (deep copy).
+        /// Duplicates a Mat by copying all its data into a new one (deep copy).
         /// </summary>
         /// <param name="source"></param>
         public void Clone(ZEDMat source)
@@ -480,100 +577,100 @@ namespace sl
         }
 
         /************ GET VALUES *********************/
-        // Cannot send values by template, covariant issue with a out needed
+        //Cannot send values by template due to a covariant issue with an out needed.
 
         /// <summary>
-        /// Returns the value of a specific point in the matrix.
+        /// Returns the value of a specific point in the matrix. (MAT_32F_C1)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Gets filled with the current value.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out float value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_get_value_float(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
-        /// Returns the value of a specific point in the matrix.
+        /// Returns the value of a specific point in the matrix. (MAT_32F_C2)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Gets filled with the current value.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out float2 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_get_value_float2(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
-        /// Returns the value of a specific point in the matrix.
+        /// Returns the value of a specific point in the matrix. (MAT_32F_C3)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Gets filled with the current value.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out float3 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_get_value_float3(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
-        /// Returns the value of a specific point in the matrix.
+        /// Returns the value of a specific point in the matrix. (MAT_32F_C4)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Gets filled with the current value.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out float4 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_get_value_float4(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
-        /// Returns the value of a specific point in the matrix.
+        /// Returns the value of a specific point in the matrix. (MAT_TYPE_8U_C1)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Gets filled with the current value.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out byte value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_get_value_uchar(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
-        /// Returns the value of a specific point in the matrix.
+        /// Returns the value of a specific point in the matrix. (MAT_TYPE_8U_C2)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Gets filled with the current value.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out char2 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_get_value_uchar2(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
-        /// Returns the value of a specific point in the matrix.
+        /// Returns the value of a specific point in the matrix. (MAT_TYPE_8U_C3)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Gets filled with the current value.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out char3 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_get_value_uchar3(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
-        /// Returns the value of a specific point in the matrix.
+        /// Returns the value of a specific point in the matrix. (MAT_TYPE_8U_C4)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Gets filled with the current value.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out char4 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_get_value_uchar4(_matInternalPtr, x, y, out value, (int)(mem)));
@@ -582,100 +679,100 @@ namespace sl
 
 
         /************ SET VALUES *********************/
-        // Cannot send values by template, covariant issue with a out needed
+        //Cannot send values by template due to a covariant issue with an out needed.
 
         /// <summary>
-        /// Sets a value to a specific point in the matrix.
+        /// Sets a value to a specific point in the matrix. (MAT_32F_C1)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Value to which the point will be set.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref float value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_value_float(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
-        /// Sets a value to a specific point in the matrix.
+        /// Sets a value to a specific point in the matrix. (MAT_32F_C2)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Value to which the point will be set.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref float2 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_value_float2(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
-        /// Sets a value to a specific point in the matrix.
+        /// Sets a value to a specific point in the matrix. (MAT_32F_C3)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Value to which the point will be set.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref float3 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_value_float3(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
-        /// Sets a value to a specific point in the matrix.
+        /// Sets a value to a specific point in the matrix. (MAT_32F_C4)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Value to which the point will be set.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, float4 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_value_float4(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
-        /// Sets a value to a specific point in the matrix.
+        /// Sets a value to a specific point in the matrix. (MAT_TYPE_8U_C1)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Value to which the point will be set.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref byte value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_value_uchar(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
-        /// Sets a value to a specific point in the matrix.
+        /// Sets a value to a specific point in the matrix. (MAT_TYPE_8U_C2)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Value to which the point will be set.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref char2 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_value_uchar2(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
-        /// Sets a value to a specific point in the matrix.
+        /// Sets a value to a specific point in the matrix. (MAT_TYPE_8U_C3)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Value to which the point will be set.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref char3 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_value_uchar3(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
-        /// Sets a value to a specific point in the matrix.
+        /// Sets a value to a specific point in the matrix. (MAT_TYPE_8U_C4)
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="x">Row the point is in.</param>
+        /// <param name="y">Column the point is in.</param>
+        /// <param name="value">Value to which the point will be set.</param>
+        /// <param name="mem">Whether point is on CPU memory or GPU memory.</param>
+        /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref char4 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_value_uchar4(_matInternalPtr, x, y, ref value, (int)(mem)));
@@ -683,92 +780,91 @@ namespace sl
         /***************************************************************************************/
 
         /************ SET TO *********************/
-        // Cannot send values by template, covariant issue with a out needed
+        //Cannot send values by template due to a covariant issue with an out needed.
 
         /// <summary>
-        /// ills the Mat with the given value.
+        /// Fills the entire Mat with the given value. (MAT_32F_C1)
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="value">Value with which to fill the Mat.</param>
+        /// <param name="mem">Which buffer to fill - CPU or GPU memory.</param>
+        /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo(ref float value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_to_float(_matInternalPtr, ref value, (int)(mem)));
         }
 
-
         /// <summary>
-        /// ills the Mat with the given value.
+        /// Fills the entire Mat with the given value. (MAT_32F_C2)
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="value">Value with which to fill the Mat.</param>
+        /// <param name="mem">Which buffer to fill - CPU or GPU memory.</param>
+        /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo(ref float2 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_to_float2(_matInternalPtr, ref value, (int)(mem)));
         }
 
         /// <summary>
-        /// ills the Mat with the given value.
+        /// Fills the entire Mat with the given value. (MAT_32F_C3)
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="value">Value with which to fill the Mat.</param>
+        /// <param name="mem">Which buffer to fill - CPU or GPU memory.</param>
+        /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo(ref float3 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_to_float3(_matInternalPtr, ref value, (int)(mem)));
         }
 
         /// <summary>
-        /// ills the Mat with the given value.
+        /// Fills the entire Mat with the given value. (MAT_32F_C4)
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="value">Value with which to fill the Mat.</param>
+        /// <param name="mem">Which buffer to fill - CPU or GPU memory.</param>
+        /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo(ref float4 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_to_float4(_matInternalPtr, ref value, (int)(mem)));
         }
 
         /// <summary>
-        /// ills the Mat with the given value.
+        /// Fills the entire Mat with the given value. (MAT_TYPE_8U_C1)
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="value">Value with which to fill the Mat.</param>
+        /// <param name="mem">Which buffer to fill - CPU or GPU memory.</param>
+        /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo(ref byte value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_to_uchar(_matInternalPtr, ref value, (int)(mem)));
         }
 
         /// <summary>
-        /// ills the Mat with the given value.
+        /// Fills the entire Mat with the given value. (MAT_TYPE_8U_C2)
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="value">Value with which to fill the Mat.</param>
+        /// <param name="mem">Which buffer to fill - CPU or GPU memory.</param>
+        /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo(ref char2 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_to_uchar2(_matInternalPtr, ref value, (int)(mem)));
         }
 
         /// <summary>
-        /// ills the Mat with the given value.
+        /// Fills the entire Mat with the given value. (MAT_TYPE_8U_C3)
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="value">Value with which to fill the Mat.</param>
+        /// <param name="mem">Which buffer to fill - CPU or GPU memory.</param>
+        /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo(ref char3 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_to_uchar3(_matInternalPtr, ref value, (int)(mem)));
         }
 
         /// <summary>
-        /// ills the Mat with the given value.
+        /// Fills the entire Mat with the given value. (MAT_TYPE_8U_C4)
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="mem"></param>
-        /// <returns></returns>
+        /// <param name="value">Value with which to fill the Mat.</param>
+        /// <param name="mem">Which buffer to fill - CPU or GPU memory.</param>
+        /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo( ref char4 value, sl.ZEDMat.MEM mem)
         {
             return (sl.ERROR_CODE)(dllz_mat_set_to_uchar4(_matInternalPtr, ref value, (int)(mem)));

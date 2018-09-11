@@ -8,64 +8,104 @@ using UnityEditor;
 #endif
 
 /// <summary>
-/// Creates and draws the NavMesh
+/// Takes a mesh supplied by ZEDSpatialMappingManager after a scan and converts it into a 
+/// NavMesh at runtime that can be used for AI pathfinding. 
+/// If this script is present, the process will happen automatically when a scan is completed. 
+/// See the ZED spatial mapping tutorial for more info: https://docs.stereolabs.com/mixed-reality/unity/spatial-mapping-unity/
 /// </summary>
 [RequireComponent(typeof(ZEDSpatialMappingManager))]
 public class NavMeshSurface: MonoBehaviour
 {
-
-
 #if UNITY_5_6_OR_NEWER
+
     /// <summary>
-    /// List of sources built from meshes
+    /// The ID of the agent type the NavMesh will be built for. 
+    /// See available agent types (or create a new one) in Unity's Navigation window. 
+    /// </summary>
+    [SerializeField]
+    public int agentTypeID = 0;
+
+    /// <summary>
+    /// List of all NavMeshBuildSource objects the script creates to make the final mesh. 
+    /// One is created for each 'chunk' of the scan. 
     /// </summary>
     private List<NavMeshBuildSource> sources = new List<NavMeshBuildSource>();
 
     /// <summary>
-    /// Final nav mesh
+    /// The final NavMesh. 
     /// </summary>
     private NavMeshData navMesh;
 
     /// <summary>
-    /// Bounds of the mesh, it is computed at the collect of mesh
+    /// Outside bounds of the mesh. Computed after all the chunks have been collected. 
     /// </summary>
     private Bounds bounds;
 
-    [SerializeField]
-    public int agentTypeID = 0;
+    /// <summary>
+    /// Material used to display the final NavMesh in the editor. 
+    /// Normally Mat_ZED_Transparent_NavMesh.
+    /// </summary>
     private Material materialTransparent;
 #endif
-
+    /// <summary>
+    /// Arguments passed by NavMeshSurface's OnNavMeshReady event, so a class that places NPCs
+    /// (like EnemyManager) can place said NPC properly. 
+    /// </summary>
     public class PositionEventArgs : System.EventArgs
     {
+        /// <summary>
+        /// The world space position of the center of the new NavMesh.
+        /// </summary>
         public Vector3 position;
+
+        /// <summary>
+        /// Whether the NavMesh created is valid for placement (and drawing) purposes. 
+        /// </summary>
         public bool valid = false;
+
+        /// <summary>
+        /// The ID of the NavMesh's agent type.
+        /// </summary>
         public int agentTypeID = 0;
     }
     /// <summary>
-    /// Event when the navMesh is ready
+    /// Event that gets called when the NavMesh is finished being created. 
     /// </summary>
     public static event System.EventHandler<PositionEventArgs> OnNavMeshReady;
 
     /// <summary>
-    /// Reference to the spatial mapping
+    /// Reference to this GameObject's ZEDSpatialMappingManager component. 
     /// </summary>
     private ZEDSpatialMappingManager zedSpatialMapping;
 
+    /// <summary>
+    /// Whether to display the NavMesh in the editor. 
+    /// </summary>
     [HideInInspector]
     [SerializeField]
     public bool hideFlag = false;
 
+    /// <summary>
+    /// Whether the NavMesh construction is finished or not. 
+    /// </summary>
     [HideInInspector]
     [SerializeField]
     public bool isOver = false;
 
     /// <summary>
-    /// Navmesh object created
+    /// The GameObject that represents the NavMesh visually. 
     /// </summary>
     private GameObject navMeshObject;
+
+    /// <summary>
+    /// World space position of the final NavMesh. 
+    /// </summary>
     private Vector3 navMeshPosition;
+    /// <summary>
+    /// Public accessor for the world space position of the final NavMesh. 
+    /// </summary>
     public Vector3 NavMeshPosition { get { return navMeshObject != null ? navMeshPosition : Vector3.zero; } }
+
     // Use this for initialization
     void Start()
     {
@@ -75,39 +115,47 @@ public class NavMeshSurface: MonoBehaviour
         navMesh = new NavMeshData();
         NavMesh.AddNavMeshData(navMesh);
 
-        //Initialize a position of the bound
+        //Initialize a position for the bounds. 
         bounds = new Bounds(transform.position, new Vector3(30, 30, 30));
-        materialTransparent = Resources.Load("Materials/Mat_ZED_Transparent_NavMesh") as Material;
+        materialTransparent = Resources.Load("Materials/Mat_ZED_Transparent_NavMesh") as Material; //The material applied to the display object. 
 #endif
     }
 
     void OnEnable()
     {
+        //Listen for when the spatial mapping starts scanning, and when it's finished. 
         ZEDSpatialMapping.OnMeshReady += MeshIsOver;
         ZEDSpatialMapping.OnMeshStarted += NewNavMesh;
     }
 
+    /// <summary>
+    /// Clears the existing display object, if one exists. 
+    /// </summary>
     void NewNavMesh()
     {
         if(navMeshObject != null)
         {
-            Destroy(navMeshObject);
+            Destroy(navMeshObject); 
         }        
     }
 
     void OnDisable()
     {
+        //Unsubscribe from events, as they can otherwise still fire when this component is disabled. 
         ZEDSpatialMapping.OnMeshReady -= MeshIsOver;
         ZEDSpatialMapping.OnMeshStarted -= NewNavMesh;
-
     }
 
+    /// <summary>
+    /// Called when a new NavMesh has finished being processed. 
+    /// Updates several values and calls the OnMeshReady event with the proper arguments. 
+    /// </summary>
     void MeshIsOver()
     {
 #if UNITY_5_6_OR_NEWER
         UpdateNavMesh();
 
-		//Nav mesh has been build. Clear the sources as we don't need them
+		//Nav mesh has been built. Clear the sources as we don't need them
 		sources.Clear();
 
 		//Draw the nav mesh is possible (triangulation from navmesh has return an area) 
@@ -135,9 +183,9 @@ public class NavMeshSurface: MonoBehaviour
     }
 
     /// <summary>
-    /// Draws the navMesh
+    /// Creates a mesh with the same shape as the NavMesh for the display object. 
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Whether the mesh is valid.</returns>
     bool Draw()
     {
         NavMeshTriangulation triangulation = NavMesh.CalculateTriangulation();
@@ -145,7 +193,7 @@ public class NavMeshSurface: MonoBehaviour
         if (triangulation.areas.Length == 0) 
 			return false;
         
-
+        //Create a child object of this one that displays the NavMesh. 
 		if (navMeshObject == null)
         {
             navMeshObject = new GameObject("NavMesh");
@@ -170,12 +218,13 @@ public class NavMeshSurface: MonoBehaviour
         }
         r.sharedMaterial = materialTransparent;
         navMeshPosition = r.bounds.center;
-        navMeshObject.SetActive(hideFlag);
+        navMeshObject.SetActive(hideFlag); //Hidden by default. 
         return true;
     }
 
 	/// <summary>
-	/// Collect all the submeshes to build the Nav Mesh
+	/// Collect all the submeshes, or 'chunks', converts them into NavMeshBuildSource objects,
+    /// then fills the sources list with them. 
 	/// </summary>
 	void CollectSources()
     {
@@ -199,45 +248,44 @@ public class NavMeshSurface: MonoBehaviour
 #endif
     }
 
-
-
-	/// <summary>
-	/// Calculates the bounds once sources have been collected and inflate them 
-	/// </summary>
-	/// <param name="sources">Sources.</param>
-	void CalculateBounds(List<NavMeshBuildSource> sources)
+    /// <summary>
+    /// Calculates the NavMesh's bounds and inflates them slightly.
+    /// Called after all NavmeshBuildSource objects have been created. 
+    /// </summary>
+    /// <param name="sources">Sources.</param>
+    void CalculateBounds(List<NavMeshBuildSource> sources)
 	{
-		// Use the unscaled matrix for the NavMeshSurface
+		//Use the unscaled matrix for the NavMeshSurface.
 		if (sources.Count != 0) {
 			bounds.center = transform.position;
 	
-			//For each src, grows the bounds
+			//For each source, grows the bounds.
 			foreach (var src in sources) {
 				Mesh m = src.sourceObject as Mesh;
 				bounds.Encapsulate (m.bounds);
 			}
 		}
-		// Inflate the bounds a bit to avoid clipping co-planar sources
+		//Inflate the bounds a bit to avoid clipping co-planar sources.
 		bounds.Expand(0.1f);
 	}
 
     /// <summary>
-    /// Collect the meshes and construct a nav mesh
+    /// Collects the meshes and constructs a single NavMesh from them. 
     /// </summary>
     void UpdateNavMesh()
     {
         isOver = false;
         
-		// First collect all the sources (submeshes)
+		//First collect all the sources (submeshes).
 		CollectSources();
 
 #if UNITY_5_6_OR_NEWER
         if (sources.Count != 0)
         {
-			// adjust bounds
+			//Adjust bounds.
 			CalculateBounds(sources);
 
-			// update the nav mesh with sources and bounds
+			//Update the NavMesh with sources and bounds.
 	        var defaultBuildSettings = NavMesh.GetSettingsByID(agentTypeID);
             NavMeshBuilder.UpdateNavMeshData(navMesh, defaultBuildSettings, sources, bounds);
         }
@@ -246,7 +294,7 @@ public class NavMeshSurface: MonoBehaviour
 
 #if UNITY_5_6_OR_NEWER
     /// <summary>
-    /// Hide or display the navmesh drawn
+    /// Hide or display the NavMesh using the display object (navMeshObject). 
     /// </summary>
     public void SwitchStateDisplayNavMesh()
     {
@@ -266,41 +314,58 @@ public class NavMeshSurface: MonoBehaviour
 }
 #if UNITY_5_6_OR_NEWER
 #if UNITY_EDITOR
-
+/// <summary>
+/// Custom editor for NavMeshSurface to extend how it's drawn in the Inspector. 
+/// It adds a custom drop-down for agent types, and the Display button that toggles the NavMesh's visibility. 
+/// </summary>
 [CustomEditor(typeof(NavMeshSurface))]
 class ZEDNavMeshEditor : Editor
 {
-
+    //Represent the relevant properties as SerializedProperties. 
+    //This lets us manipulate and also save (serialize) the data in the scene. 
+    /// <summary>
+    /// Bound to agentTypeID, the agent type of the NavMesh. 
+    /// </summary>
     SerializedProperty agentID;
+    /// <summary>
+    /// Bound to hideFlag, whether the NavMesh is visible or not. 
+    /// </summary>
     SerializedProperty hideFlag;
+    /// <summary>
+    /// Bound to isOver, whether the NavMesh has been calculated or not. 
+    /// </summary>
     SerializedProperty isOver;
-    ZEDNavMeshEditor()
-    {
-
-    }
 
     private void OnEnable()
     {
+        //Bind the serialized properties to the relevant properties in NavMeshSurface. 
         agentID = serializedObject.FindProperty("agentTypeID");
         hideFlag = serializedObject.FindProperty("hideFlag");
         isOver = serializedObject.FindProperty("isOver");
     }
 
+    /// <summary>
+    /// Creates a custom drop-down for the Agent Type enum, which includes a button to 
+    /// open the Navigation window for creating/looking up agent types. 
+    /// </summary>
+    /// <param name="labelName">Text of the label beside the drop-down. Usually "Agent Type".</param>
+    /// <param name="agentTypeID">SerializedProperty that the drop-down reads/writes.</param>
     public static void AgentTypePopup(string labelName, SerializedProperty agentTypeID)
     {
         var index = -1;
         var count = NavMesh.GetSettingsCount();
-        var agentTypeNames = new string[count + 2];
+        //var agentTypeNames = new string[count + 2];
+        GUIContent[] agentTypeNames = new GUIContent[count + 2];
         for (var i = 0; i < count; i++)
         {
             var id = NavMesh.GetSettingsByIndex(i).agentTypeID;
             var name = NavMesh.GetSettingsNameFromID(id);
-            agentTypeNames[i] = name;
+            agentTypeNames[i] = new GUIContent(name);
             if (id == agentTypeID.intValue)
                 index = i;
         }
-        agentTypeNames[count] = "";
-        agentTypeNames[count + 1] = "Open Agent Settings...";
+        agentTypeNames[count] = new GUIContent("");
+        agentTypeNames[count + 1] = new GUIContent("Open Agent Settings...");
 
         bool validAgentType = index != -1;
         if (!validAgentType)
@@ -312,7 +377,8 @@ class ZEDNavMeshEditor : Editor
         EditorGUI.BeginProperty(rect, GUIContent.none, agentTypeID);
 
         EditorGUI.BeginChangeCheck();
-        index = EditorGUI.Popup(rect, labelName, index, agentTypeNames);
+        GUIContent text = new GUIContent(labelName, "The ID of the agent type the NavMesh will be built for.");
+        index = EditorGUI.Popup(rect, text, index, agentTypeNames);
         if (EditorGUI.EndChangeCheck())
         {
             if (index >= 0 && index < count)
@@ -335,12 +401,13 @@ class ZEDNavMeshEditor : Editor
         serializedObject.Update();
         AgentTypePopup("Agent Type", agentID);
 
-        GUI.enabled = isOver.boolValue;
-        if (GUILayout.Button(hideFlag.boolValue ? "Hide" : "Display"))
+        GUI.enabled = isOver.boolValue; //Only let the user click the button if the NavMesh is finished.
+        GUIContent text = new GUIContent(hideFlag.boolValue ? "Hide" : "Display", "Toggle the visibility of the NavMesh.");
+        if (GUILayout.Button(text))
         {
-            obj.SwitchStateDisplayNavMesh();
+            obj.SwitchStateDisplayNavMesh(); //Switch the setting to whatever it wasn't before. 
         }
-        serializedObject.ApplyModifiedProperties();
+        serializedObject.ApplyModifiedProperties(); //Applies everything we just changed. 
     }
 }
 #endif

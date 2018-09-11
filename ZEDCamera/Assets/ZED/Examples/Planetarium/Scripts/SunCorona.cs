@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SunCorona : MonoBehaviour {
+public class SunCorona : MonoBehaviour
+{
 
     Material mat;
     Vector2 offset;
