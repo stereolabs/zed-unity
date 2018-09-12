@@ -1,12 +1,15 @@
+
 <!------------------------- Release notes ------------------------------------->
 
 ### 2.6.0
    * **Features/Bug Fixes**:
      - Add WindowsMR support through SteamVR Only (Beta).
      - Fixed overwriting old mesh textures when Spatial mapping button is used while Save Mesh is checked.
-     - Forced pasue state to false when stating a scan in case it's been left in a pause state from a previous scan.
+     - Forced pause state to false when starting a new mapping in case it's been left in a pause state from a previous mapping.
      - Fixed restart (not) required when changing post-processing settings.
-     - Fixed repetitve UI error when not using plugin in VR mode in ZEDControllerTracker.cs. [ssue #21 reported on github].
+     - Fixed repetitve UI error when not using plugin in VR mode in ZEDControllerTracker.cs. [issue #21 reported on github].
+     - Simplified changing near and far planes in camera projection matrix.
+     - Fixed error messages when a wrong SVO path was provided for record or read.
 
 
   * **Documentation**:
@@ -14,7 +17,7 @@
 
 
    * **Compatibility**:
-     - Compatible with ZED SDK 2.5, CUDA 9.0 or 9.2.
+     - Compatible with ZED SDK 2.6, CUDA 9.0 or 9.2.
 
 
 ### 2.5.0
