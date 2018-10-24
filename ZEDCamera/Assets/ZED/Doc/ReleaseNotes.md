@@ -1,15 +1,29 @@
-
 <!------------------------- Release notes ------------------------------------->
+### 2.7.0
+
+   * **Features**:
+    - Added toggle box to reveal a camera rig used for final HMD output, normally hidden, for advanced users
+    - Added toggle boxes for the fade-in effect when the ZED initializes, and setting the ZED rig Gameobject to "DontDestroyOnLoad" on start
+
+
+   * **Bug Fixes**:
+    - Fixed Rift/Vive controller drift when using ZED's tracking instead of the HMD's  
+    - Changed the previously hard-coded layers the ZED plugin used (8-11) to be adjusted in the Inspector, and set them to 28-31 by default
+    - Changed greenscreen config file loading so that it will work in a build when placed in a Resources folder, and changed default save path accordingly
+    - Clarified error messages from playing SVOs in loop mode with tracking enabled
+
+
+   * **Compatibility**:
+    - Compatible with ZED SDK 2.7, CUDA 9.0 or 10.0.
+
 
 ### 2.6.0
    * **Features/Bug Fixes**:
      - Add WindowsMR support through SteamVR Only (Beta).
      - Fixed overwriting old mesh textures when Spatial mapping button is used while Save Mesh is checked.
-     - Forced pause state to false when starting a new mapping in case it's been left in a pause state from a previous mapping.
+     - Forced pasue state to false when stating a scan in case it's been left in a pause state from a previous scan.
      - Fixed restart (not) required when changing post-processing settings.
-     - Fixed repetitve UI error when not using plugin in VR mode in ZEDControllerTracker.cs. [issue #21 reported on github].
-     - Simplified changing near and far planes in camera projection matrix.
-     - Fixed error messages when a wrong SVO path was provided for record or read.
+     - Fixed repetitve UI error when not using plugin in VR mode in ZEDControllerTracker.cs. [ssue #21 reported on github].
 
 
   * **Documentation**:

@@ -286,7 +286,7 @@ namespace sl
         /// <summary>
         /// Cuurent Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(2, 6, 0);
+        public static readonly System.Version PluginVersion = new System.Version(2, 7, 0);
 
         /******** DLL members ***********/
 
@@ -1076,7 +1076,7 @@ namespace sl
         /// <param name="videoFileName">Filename. Whether it ends with .svo or .avi defines its file type.</param>
         /// <param name="compressionMode">How much compression to use</param>
         /// <returns>An ERROR_CODE that defines if the file was successfully created and can be filled with images.</returns>
-        public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.LOSSLESS_BASED)
+		public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.AVCHD_BASED)
         {
             return (ERROR_CODE)dllz_enable_recording(StringUtf8ToByte(videoFileName), (int)compressionMode);
         }

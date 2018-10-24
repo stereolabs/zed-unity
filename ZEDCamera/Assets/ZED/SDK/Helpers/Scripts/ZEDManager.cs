@@ -60,6 +60,7 @@ public class ZEDManager : MonoBehaviour
     /// then the Camera_eyes object in ZED_Rig_Stereo will move while this object stays still. </para>
     /// </summary>
     [Header("Motion Tracking")]
+
     [Tooltip("If enabled, the ZED will move/rotate itself using its own inside-out tracking. " +
         "If false, the camera tracking will move with the VR HMD if connected and available.")]
     public bool enableTracking = true;
@@ -126,6 +127,17 @@ public class ZEDManager : MonoBehaviour
         }
     }
     /// <summary>
+    /// True to make the ZED image fade from black when the application starts. 
+    /// </summary>
+    [HideInInspector]
+    public bool fadeInOnStart = true;
+    /// <summary>
+    /// True to apply DontDestroyOnLoad() on the ZED rig in Awake(), preserving it between scenes. 
+    /// </summary>
+    [HideInInspector]
+    public bool dontDestroyOnLoad = false;
+
+    /// <summary>
     /// Delegate for OnCamBrightnessChange, which is used to update shader properties when the brightness setting changes. 
     /// </summary>
     /// <param name="newVal"></param>
@@ -135,7 +147,32 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
 	public event onCamBrightnessChangeDelegate OnCamBrightnessChange;
 
+    /// <summary>
+    /// Whether to show the hidden camera rig used in stereo AR mode to prepare images for HMD output. 
+    /// </summary>
+    [SerializeField]
+    [HideInInspector]
+    private bool showarrig = false;
+    /// <summary>
+    /// Whether to show the hidden camera rig used in stereo AR mode to prepare images for HMD output. 
+    /// <para>This is rarely needed, but can be useful for understanding how the ZED output works.</para>
+    /// </summary>
+    public bool showARRig
+    {
+        get
+        {
+            return showarrig;
+        }
+        set
+        {
+            if(Application.isPlaying && showarrig != value && zedRigDisplayer != null)
+            {
+                zedRigDisplayer.hideFlags = value ? HideFlags.None : HideFlags.HideAndDontSave;
+            }
 
+            showarrig = value;
+        }
+    }
 
     //Strings used for the Status display in the Inspector. 
     /// <summary>
@@ -366,6 +403,14 @@ public class ZEDManager : MonoBehaviour
 	private Transform zedRigRoot = null;
 
     /// <summary>
+    /// Whether the 'Advanced Settings' panel in the editor was open when used last, so the editor will
+    /// display it as it was last time. 
+    /// </summary>
+    [SerializeField]
+    [HideInInspector]
+    private bool advancedPanelOpen = false;
+
+    /// <summary>
     /// Gets the center transform, which is the transform moved by the tracker in AR mode. 
     /// This is the root object in ZED_Rig_Mono, and Camera_eyes in ZED_Rig_Stereo.
     /// </summary>
@@ -441,22 +486,76 @@ public class ZEDManager : MonoBehaviour
     /// Layer that the left canvas GameObject (showing the image from the left eye) is set to.
     /// The right camera in ZED_Rig_Stereo can't see this layer. 
     /// </summary>
-    private int layerLeftScreen = 8;
+    [SerializeField]
+    [HideInInspector]
+    private int lefteyelayer = 28;
+    /// <summary>
+    /// Layer that the left canvas GameObject (showing the image from the left eye) is set to.
+    /// The right camera in ZED_Rig_Stereo can't see this layer. 
+    /// </summary>
+    public int leftEyeLayer
+    {
+        get
+        {
+            return lefteyelayer;
+        }
+    }
     /// <summary>
     /// Layer that the right canvas GameObject (showing the image from the right eye) is set to.
     /// The left camera in ZED_Rig_Stereo can't see this layer. 
     /// </summary>
-    private int layerRightScreen = 10;
+    [SerializeField]
+    [HideInInspector]
+    private int righteyelayer = 29;
+    /// <summary>
+    /// Layer that the right canvas GameObject (showing the image from the right eye) is set to.
+    /// The left camera in ZED_Rig_Stereo can't see this layer. 
+    /// </summary>
+    public int rightEyeLayer
+    {
+        get
+        {
+            return righteyelayer;
+        }
+    }
+
     /// <summary>
     /// Layer that the final left image canvas in the hidden AR rig is set to. (See CreateZEDRigDisplayer())
     /// Hidden from all ZED cameras except the final left camera. 
     /// </summary>
-    private int layerLeftFinalScreen = 9;
+    [SerializeField]
+    [HideInInspector]
+    private int lefteyelayerfinal = 30;
+    /// <summary>
+    /// Layer that the final left image canvas in the hidden AR rig is set to. (See CreateZEDRigDisplayer())
+    /// Hidden from all ZED cameras except the final left camera. 
+    /// </summary>
+    public int leftEyeLayerFinal
+    {
+        get
+        {
+            return lefteyelayerfinal;
+        }
+    }
+
     /// <summary>
     /// Layer that the final right image canvas in the hidden AR rig is set to. (See CreateZEDRigDisplayer())
     /// Hidden from all ZED cameras except the final right camera. 
     /// </summary>
-    private int layerRightFinalScreen = 11;
+    [SerializeField]
+    [HideInInspector]
+    private int righteyelayerfinal = 31;
+    /// <summary>
+    /// Layer that the final right image canvas in the hidden AR rig is set to. (See CreateZEDRigDisplayer())
+    /// Hidden from all ZED cameras except the final right camera. 
+    /// </summary>
+    public int rightEyeLayerFinal
+    {
+        get
+        {
+            return righteyelayerfinal;
+        }
+    }
 
 
     /////////////////////////////////////
@@ -520,20 +619,20 @@ public class ZEDManager : MonoBehaviour
                 if (cam.stereoTargetEye == StereoTargetEyeMask.Left)
                 {
                     cameraLeft = cam.transform;
-                    SetLayerRecursively(cameraLeft.gameObject, layerLeftScreen);
+                    SetLayerRecursively(cameraLeft.gameObject, lefteyelayer);
 
-                    cam.cullingMask &= ~(1 << layerRightScreen);
-                    cam.cullingMask &= ~(1 << layerRightFinalScreen);
-                    cam.cullingMask &= ~(1 << layerLeftFinalScreen);
+                    cam.cullingMask &= ~(1 << righteyelayer);
+                    cam.cullingMask &= ~(1 << righteyelayerfinal);
+                    cam.cullingMask &= ~(1 << lefteyelayerfinal);
                     cam.cullingMask &= ~(1 << sl.ZEDCamera.TagOneObject);
                 }
                 else if (cam.stereoTargetEye == StereoTargetEyeMask.Right)
                 {
                     cameraRight = cam.transform;
-                    SetLayerRecursively(cameraRight.gameObject, layerRightScreen);
-                    cam.cullingMask &= ~(1 << layerLeftScreen);
-                    cam.cullingMask &= ~(1 << layerLeftFinalScreen);
-                    cam.cullingMask &= ~(1 << layerRightFinalScreen);
+                    SetLayerRecursively(cameraRight.gameObject, righteyelayer);
+                    cam.cullingMask &= ~(1 << lefteyelayer);
+                    cam.cullingMask &= ~(1 << lefteyelayerfinal);
+                    cam.cullingMask &= ~(1 << righteyelayerfinal);
                     cam.cullingMask &= ~(1 << sl.ZEDCamera.TagOneObject);
 
                 }
@@ -573,13 +672,13 @@ public class ZEDManager : MonoBehaviour
             {
                 if (c != temp) 
                 {
-					c.cullingMask &= ~(1 << layerLeftScreen);
+					c.cullingMask &= ~(1 << lefteyelayer);
                     c.cullingMask &= ~(1 << sl.ZEDCamera.Tag);
                 }
             }
             if (cameraLeft.gameObject.transform.childCount > 0)
             {
-				cameraLeft.transform.GetChild(0).gameObject.layer = layerLeftScreen;
+				cameraLeft.transform.GetChild(0).gameObject.layer = lefteyelayer;
             }
         }
     }
@@ -647,6 +746,14 @@ public class ZEDManager : MonoBehaviour
             zedCamera.Destroy(); 
             zedCamera = null;
         }
+
+        //Restore the AR layers that were hidden, if necessary. 
+        if (!showarrig)
+        {
+            LayerMask layerNumberBinary = (1 << righteyelayerfinal); //Convert layer index into binary number. 
+            layerNumberBinary |= (1 << lefteyelayerfinal);
+            UnityEditor.Tools.visibleLayers |= (layerNumberBinary);
+        }
     }
 
     /// <summary>
@@ -657,8 +764,8 @@ public class ZEDManager : MonoBehaviour
         instance = this;
         zedReady = false;
         
-        DontDestroyOnLoad(transform.root); //If you want the ZED rig not to be destroyed when loading a scene. 
-
+        if(dontDestroyOnLoad) DontDestroyOnLoad(transform.root); //If you want the ZED rig not to be destroyed when loading a scene. 
+        
         //Set first few parameters for initialization. This will get passed to the ZED SDK when initialized. 
         initParameters = new sl.InitParameters();
         initParameters.resolution = resolution;
@@ -848,8 +955,8 @@ public class ZEDManager : MonoBehaviour
             //zedRigRoot transform (origin of the global camera) is placed on the HMD headset. Therefore, we move the 
             //camera in front of it by offsetHmdZEDPosition to compensate for the ZED's position on the headset. 
             //If values are wrong, tweak calibration file created in ZEDMixedRealityPlugin. 
-            cameraLeft.localPosition = ar.HmdToZEDCalibration.translation;
-            cameraLeft.localRotation = ar.HmdToZEDCalibration.rotation;
+            cameraLeft.localPosition = arRig.HmdToZEDCalibration.translation;
+            cameraLeft.localRotation = arRig.HmdToZEDCalibration.rotation;
             if (cameraRight) cameraRight.localPosition = cameraLeft.localPosition + rightCameraOffset; //Space the eyes apart. 
             if (cameraRight) cameraRight.localRotation = cameraLeft.localRotation;
         }
@@ -1053,7 +1160,7 @@ public class ZEDManager : MonoBehaviour
 
         if (isStereoRig && VRDevice.isPresent)
         {
-            ZEDMixedRealityPlugin.Pose pose = ar.InitTrackingAR();
+            ZEDMixedRealityPlugin.Pose pose = arRig.InitTrackingAR();
             OriginPosition = pose.translation;
             OriginRotation = pose.rotation;
             zedRigRoot.localPosition = OriginPosition;
@@ -1170,7 +1277,7 @@ public class ZEDManager : MonoBehaviour
                         {
                             if (!(enableTracking = (zedCamera.ResetTracking(initialRotation, initialPosition) == sl.ERROR_CODE.SUCCESS)))
                             {
-                                throw new Exception("Error: Tracking not available after SVO playback has looped.");
+                                Debug.LogError("ZED Tracking disabled: Not available during SVO playback when Loop is enabled.");
                             }
 
                             zedRigRoot.localPosition = initialPosition;
@@ -1213,15 +1320,15 @@ public class ZEDManager : MonoBehaviour
 					calibrationHasChanged = false;
 				}
 
-				ar.ExtractLatencyPose (imageTimeStamp); //Find what HMD's pose was at ZED image's timestamp for latency compensation. 
-                ar.AdjustTrackingAR (zedPosition, zedOrientation, out r, out v);
+				arRig.ExtractLatencyPose (imageTimeStamp); //Find what HMD's pose was at ZED image's timestamp for latency compensation. 
+                arRig.AdjustTrackingAR (zedPosition, zedOrientation, out r, out v);
 				zedRigRoot.localRotation = r;
 				zedRigRoot.localPosition = v;
 
 				ZEDSyncPosition = v;
 				ZEDSyncRotation = r;
-				HMDSyncPosition = ar.LatencyPose ().translation;
-				HMDSyncRotation = ar.LatencyPose ().rotation;
+				HMDSyncPosition = arRig.LatencyPose ().translation;
+				HMDSyncRotation = arRig.LatencyPose ().rotation;
 			}
             else //Not AR pass-through mode. 
             {
@@ -1231,9 +1338,9 @@ public class ZEDManager : MonoBehaviour
 		} else if (VRDevice.isPresent && isStereoRig) //ZED tracking is off but HMD tracking is on. Fall back to that. 
         {
 			isCameraTracked = true;
-			ar.ExtractLatencyPose (imageTimeStamp); //Find what HMD's pose was at ZED image's timestamp for latency compensation. 
-            zedRigRoot.localRotation = ar.LatencyPose ().rotation;
-			zedRigRoot.localPosition = ar.LatencyPose ().translation;
+			arRig.ExtractLatencyPose (imageTimeStamp); //Find what HMD's pose was at ZED image's timestamp for latency compensation. 
+            zedRigRoot.localRotation = arRig.LatencyPose ().rotation;
+			zedRigRoot.localPosition = arRig.LatencyPose ().translation;
 		}
         else //The ZED is not tracked by itself or an HMD. 
 			isCameraTracked = false;
@@ -1247,7 +1354,7 @@ public class ZEDManager : MonoBehaviour
     void UpdateHmdPose()
     {
         if (IsStereoRig && VRDevice.isPresent)
-            ar.CollectPose(); //Save headset pose with current timestamp. 
+            arRig.CollectPose(); //Save headset pose with current timestamp. 
     }
 
     /// <summary>
@@ -1296,7 +1403,7 @@ public class ZEDManager : MonoBehaviour
     {
         if (IsStereoRig && VRDevice.isPresent)
         {
-            ar.LateUpdateHmdRendering(); //Update textures on final AR rig for output to the headset. 
+            arRig.LateUpdateHmdRendering(); //Update textures on final AR rig for output to the headset. 
         }
     }
     #endregion
@@ -1322,11 +1429,16 @@ public class ZEDManager : MonoBehaviour
     }
 
 
-#region AR_CAMERAS
-    private GameObject zedRigDisplayer;
-    private ZEDMixedRealityPlugin ar;
+    #region AR_CAMERAS
     /// <summary>
-	/// Create a GameObject to display the ZED in an headset (ZED-M Only)
+    /// Stereo rig that adjusts images from ZED_Rig_Stereo to look correct in the HMD. 
+    /// <para>Hidden by default as it rarely needs to be changed.</para>
+    /// </summary>
+    [HideInInspector]
+    public GameObject zedRigDisplayer;
+    private ZEDMixedRealityPlugin arRig;
+    /// <summary>
+	/// Create a GameObject to display the ZED in an headset (ZED-M Only).
     /// </summary>
     /// <returns></returns>
     private GameObject CreateZEDRigDisplayer()
@@ -1335,10 +1447,9 @@ public class ZEDManager : MonoBehaviour
         if (zedRigDisplayer != null) return zedRigDisplayer;
 
         zedRigDisplayer = new GameObject("ZEDRigDisplayer");
-        ar = zedRigDisplayer.AddComponent<ZEDMixedRealityPlugin>();
+        arRig = zedRigDisplayer.AddComponent<ZEDMixedRealityPlugin>();
 
-
-        /*Screens : Left and right */
+        /*Screens left and right */
         GameObject leftScreen = GameObject.CreatePrimitive(PrimitiveType.Quad);
         MeshRenderer meshLeftScreen = leftScreen.GetComponent<MeshRenderer>();
         meshLeftScreen.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
@@ -1347,7 +1458,7 @@ public class ZEDManager : MonoBehaviour
         meshLeftScreen.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
         meshLeftScreen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         meshLeftScreen.sharedMaterial = Resources.Load("Materials/Unlit/Mat_ZED_Unlit") as Material;
-        leftScreen.layer = layerLeftFinalScreen;
+        leftScreen.layer = lefteyelayerfinal;
         GameObject.Destroy(leftScreen.GetComponent<MeshCollider>());
 
         GameObject rightScreen = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -1359,7 +1470,7 @@ public class ZEDManager : MonoBehaviour
         meshRightScreen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         GameObject.Destroy(rightScreen.GetComponent<MeshCollider>());
         meshRightScreen.sharedMaterial = Resources.Load("Materials/Unlit/Mat_ZED_Unlit") as Material;
-        rightScreen.layer = layerRightFinalScreen;
+        rightScreen.layer = righteyelayerfinal;
 
         /*Camera left and right*/
         GameObject camLeft = new GameObject("cameraLeft");
@@ -1369,7 +1480,7 @@ public class ZEDManager : MonoBehaviour
         camL.renderingPath = RenderingPath.Forward;//Minimal overhead
         camL.clearFlags = CameraClearFlags.Color;
         camL.backgroundColor = Color.black;
-        camL.cullingMask = 1 << layerLeftFinalScreen;
+        camL.cullingMask = 1 << lefteyelayerfinal;
         camL.allowHDR = false;
         camL.allowMSAA = false;
 
@@ -1380,30 +1491,33 @@ public class ZEDManager : MonoBehaviour
         camR.clearFlags = CameraClearFlags.Color;
         camR.backgroundColor = Color.black;
 		camR.stereoTargetEye = StereoTargetEyeMask.Both; //Temporary setting to fix loading screen issue.
-        camR.cullingMask = 1 << layerRightFinalScreen;
+        camR.cullingMask = 1 << righteyelayerfinal;
         camR.allowHDR = false;
         camR.allowMSAA = false;
  
-		SetLayerRecursively (camRight, layerRightFinalScreen);
-		SetLayerRecursively (camLeft, layerLeftFinalScreen);
- 
-        //Hide camera in editor
+		SetLayerRecursively (camRight, righteyelayerfinal);
+		SetLayerRecursively (camLeft, lefteyelayerfinal);
+
+        //Hide camera in editor.
 #if UNITY_EDITOR
-        LayerMask layerNumberBinary = (1 << layerRightFinalScreen); //Convert layer index into binary number. 
-        layerNumberBinary |= (1 << layerLeftFinalScreen);
-        LayerMask flippedVisibleLayers = ~UnityEditor.Tools.visibleLayers;
-        UnityEditor.Tools.visibleLayers = ~(flippedVisibleLayers | layerNumberBinary);
+        if (!showarrig)
+        {
+            LayerMask layerNumberBinary = (1 << righteyelayerfinal); //Convert layer index into binary number. 
+            layerNumberBinary |= (1 << lefteyelayerfinal);
+            LayerMask flippedVisibleLayers = ~UnityEditor.Tools.visibleLayers;
+            UnityEditor.Tools.visibleLayers = ~(flippedVisibleLayers | layerNumberBinary);
+        }
 #endif
         leftScreen.transform.SetParent(zedRigDisplayer.transform);
         rightScreen.transform.SetParent(zedRigDisplayer.transform);
 
 
-        ar.finalCameraLeft = camLeft;
-        ar.finalCameraRight = camRight;
-        ar.ZEDEyeLeft = cameraLeft.gameObject;
-        ar.ZEDEyeRight = cameraRight.gameObject;
-        ar.quadLeft = leftScreen.transform;
-        ar.quadRight = rightScreen.transform;
+        arRig.finalCameraLeft = camLeft;
+        arRig.finalCameraRight = camRight;
+        arRig.ZEDEyeLeft = cameraLeft.gameObject;
+        arRig.ZEDEyeRight = cameraRight.gameObject;
+        arRig.quadLeft = leftScreen.transform;
+        arRig.quadRight = rightScreen.transform;
 
 
         ZEDMixedRealityPlugin.OnHmdCalibChanged += CalibrationHasChanged;
@@ -1473,7 +1587,6 @@ public class ZEDManager : MonoBehaviour
         Awake();
 
     }
-
 
 
 #region EventHandler

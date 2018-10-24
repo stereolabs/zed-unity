@@ -388,7 +388,8 @@ public class ZEDRenderingPlane : MonoBehaviour
     void ZEDReady()
     {
         //Add the fade-in effect for when the camera first becomes visible. 
-        gameObject.AddComponent<LoadingFade>();
+        if(ZEDManager.Instance.fadeInOnStart) gameObject.AddComponent<LoadingFade>();
+
         zedCamera = sl.ZEDCamera.GetInstance();
 		SetTextures(zedCamera,viewMode);
         canvas.SetActive(true);

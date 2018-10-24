@@ -746,7 +746,15 @@ namespace sl
         /// <summary>
         /// Lossy compression based on jpeg. Average size = 22% of RAW.
         /// </summary>
-        LOSSY_BASED
+        LOSSY_BASED,
+		/// <summary>
+		/// AVCHD Based compression (H264). Available since ZED SDK 2.7
+		/// </summary>
+		AVCHD_BASED,
+		/// <summary>
+		/// HEVC Based compression (H265). Available since ZED SDK 2.7
+		/// </summary>
+		HEVC_BASED,
     }
 
     /// <summary>
