@@ -60,7 +60,7 @@ public class ZEDSVOManager : MonoBehaviour
         "Dropped frames will cause a 'pause' in playback instead of a 'skip.'")]
     [SerializeField]
     [HideInInspector]
-    public bool realtimePlayback = true;
+    public bool realtimePlayback = false;
 
     /// <summary>
     /// Current frame being read from the SVO. Doesn't apply when recording. 
@@ -118,7 +118,7 @@ public class ZEDSVOManager : MonoBehaviour
     [Tooltip("Compression mode used when recording an SVO. " +
         "Uncompressed SVOs are extremely large (multiple gigabytes per minute).")]
     [SerializeField]
-	public sl.SVO_COMPRESSION_MODE compressionMode = sl.SVO_COMPRESSION_MODE.LOSSY_BASED;
+	public sl.SVO_COMPRESSION_MODE compressionMode = sl.SVO_COMPRESSION_MODE.AVCHD_BASED;
 
     /// <summary>
     /// Flag set to true when we need to force ZEDManager to grab a new frame, even though

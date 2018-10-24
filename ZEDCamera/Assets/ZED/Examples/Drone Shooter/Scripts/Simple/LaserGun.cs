@@ -90,7 +90,7 @@ public class LaserGun : MonoBehaviour
             int children = transform.childCount;
             for (int i = 0; i < children; ++i)
                 transform.GetChild(i).gameObject.SetActive(false);
-            this.enabled = false;
+            //this.enabled = false;
         }
         else
         {
@@ -121,7 +121,7 @@ public class LaserGun : MonoBehaviour
                         for (int i = 0; i < children; ++i)
                             transform.GetChild(i).gameObject.SetActive(false);
 
-                        this.enabled = false;
+                        //this.enabled = false;
                         yield break;
                     }
                 }
@@ -169,8 +169,24 @@ public class LaserGun : MonoBehaviour
 
 #if ZED_OCULUS
 
-        //We're controlling the fire Rate  OVRInput doesn't have a GetDown function for the IndexTrigger. Only an axis output.
+        //Update whether the Touch controllers are active. 
+        int children = transform.childCount;
+        if (OVRManager.isHmdPresent)
+        {
+            if (OVRInput.GetConnectedControllers().ToString() == "Touch")
+            {
+                for (int i = 0; i < children; ++i)
+                    transform.GetChild(i).gameObject.SetActive(true);
 
+            }
+            else
+            {
+                for (int i = 0; i < children; ++i)
+                    transform.GetChild(i).gameObject.SetActive(false);
+            }
+        }
+
+        //We're controlling the fire Rate.  OVRInput doesn't have a GetDown function for the IndexTrigger. Only an axis output.
         if (objecttracker != null)
         {
             if (OVRInput.GetConnectedControllers().ToString() == "Touch")

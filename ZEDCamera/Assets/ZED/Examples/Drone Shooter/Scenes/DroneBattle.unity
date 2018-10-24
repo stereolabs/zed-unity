@@ -227,7 +227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 093ceb9e77bac7a4ea5ec3013f638a87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SecondsToDisplayEffect: 1
+  secondsToDisplayEffect: 1
 --- !u!135 &78578991
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -598,6 +598,16 @@ Prefab:
     - target: {fileID: 4937924797587290, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 2}
       propertyPath: m_RootOrder
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114228649437443144, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114575857264643554, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 2}
@@ -974,7 +984,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resolution: 2
   depthMode: 1
-  enableTracking: 0
+  enableTracking: 1
   enableSpatialMemory: 0
   pathSpatialMemory: 
   depthOcclusion: 1

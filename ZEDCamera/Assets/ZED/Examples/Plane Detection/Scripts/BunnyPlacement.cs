@@ -158,7 +158,7 @@ public class BunnyPlacement : MonoBehaviour
             }
 #elif ZED_OCULUS
         //Check if a Controller is tracked.
-        if ((int)trackedObj.deviceToTrack == 0)
+        if ((int)tracker.deviceToTrack == 0)
         {
             //Oculus Touch Triggers aren't of Button type, but Axis.
             //So we have to create our own state for this Input, based on sensitivity from 0 to 1.
@@ -186,7 +186,7 @@ public class BunnyPlacement : MonoBehaviour
             }
         }
 
-        if ((int)trackedObj.deviceToTrack == 1)
+        if ((int)tracker.deviceToTrack == 1)
         {
             if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger, OVRInput.Controller.LTouch) > 0.5f)
             {

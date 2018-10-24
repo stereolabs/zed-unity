@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.VR;
 using System.Collections.Generic;
 #if ZED_STEAM_VR
 using Valve.VR;
@@ -114,6 +115,12 @@ public class ZEDControllerTracker : MonoBehaviour
     public string SNHolder = "";
 
     /// <summary>
+    /// Cached transform that represents the ZED's head, retrieved from ZEDManager.GetZedRootTransform(). 
+    /// Used to find the offset between the HMD and tracked transform to compensate for drift. 
+    /// </summary>
+    private Transform zedRigRoot;
+
+    /// <summary>
     /// Sets up the timed pose dictionary and identifies the VR SDK being used. 
     /// </summary>
     void Awake()
@@ -122,6 +129,8 @@ public class ZEDControllerTracker : MonoBehaviour
         poseData.Add(1, new List<TimedPoseData>()); //Create the list within the dictionary with its key and value.
         //Looking for the loaded device
         loadeddevice = UnityEngine.VR.VRSettings.loadedDeviceName;
+
+        zedRigRoot = ZEDManager.Instance.GetZedRootTansform();
     }
 
     /// <summary>
@@ -405,6 +414,11 @@ public class ZEDControllerTracker : MonoBehaviour
         currentPoseData.timestamp = Time.time;
         currentPoseData.rotation = rot;
         currentPoseData.position = position;
+
+        //Compensate for positional drift by measuring the distance between HMD and ZED rig root (the head's center). 
+        Vector3 zedhmdposoffset = zedRigRoot.position - InputTracking.GetLocalPosition(VRNode.Head);
+        currentPoseData.position += zedhmdposoffset;
+
         poseData[keyindex].Add(currentPoseData);
     }
 
