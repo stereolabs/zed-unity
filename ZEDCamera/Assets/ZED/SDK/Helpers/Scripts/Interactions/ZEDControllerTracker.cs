@@ -304,7 +304,7 @@ public class ZEDControllerTracker : MonoBehaviour
     /// <summary>
     /// Track the devices for SteamVR and applying a delay.
     /// <summary>
-    private void OnNewPoses(TrackedDevicePose_t[] poses)
+    private void OnNewPoses(TrackedDevicePose_t newpose)
     {
         if (index == EIndex.None)
             return;
@@ -313,19 +313,16 @@ public class ZEDControllerTracker : MonoBehaviour
 
         isValid = false;
 
-        if (poses.Length <= i)
+        if (!newpose.bDeviceIsConnected)
             return;
 
-        if (!poses[i].bDeviceIsConnected)
-            return;
-
-        if (!poses[i].bPoseIsValid)
+        if (!newpose.bPoseIsValid)
             return;
 
         isValid = true;
 
         //Get the position and rotation of our tracked device.
-        var pose = new SteamVR_Utils.RigidTransform(poses[i].mDeviceToAbsoluteTracking);
+        var pose = new SteamVR_Utils.RigidTransform(newpose.mDeviceToAbsoluteTracking);
         //Saving those values.
         RegisterPosition(1, pose.pos, pose.rot);
 
@@ -333,20 +330,6 @@ public class ZEDControllerTracker : MonoBehaviour
         sl.Pose p = GetValuePosition(1, (float)(latencyCompensation / 1000.0f));
         transform.localPosition = p.translation;
         transform.localRotation = p.rotation;
-        print("Made it to end of pose updates");
-    }
-
-    /// <summary>
-    /// Reference to the Action that's called when new controller/tracker poses are available. 
-    /// </summary>
-    SteamVR_Events.Action newPosesAction;
-
-    /// <summary>
-    /// Constructor that makes sure newPosesAction gets assigned when this class is created. 
-    /// </summary>
-    ZEDControllerTracker()
-    {
-        newPosesAction = SteamVR_Events.NewPosesAction(OnNewPoses);
     }
 
     void OnEnable()
@@ -356,19 +339,10 @@ public class ZEDControllerTracker : MonoBehaviour
             enabled = false;
             return;
         }
-        /*var render = SteamVR_Render.instance;
-        if (render == null)
-        {
-            enabled = false;
-            return;
-        }*/
-
-        newPosesAction.enabled = true;
     }
 
     void OnDisable()
     {
-        newPosesAction.enabled = false;
         isValid = false;
     }
 
@@ -389,7 +363,10 @@ public class ZEDControllerTracker : MonoBehaviour
 
     private void UpdateControllerState()
     {
-        openvrsystem.GetControllerState((uint)index, ref controllerstate, controllerstatesize);
+        ETrackingUniverseOrigin tracktype = OpenVR.Compositor.GetTrackingSpace();
+        TrackedDevicePose_t newposes = new TrackedDevicePose_t();
+        openvrsystem.GetControllerStateWithPose(tracktype, (uint)index, ref controllerstate, controllerstatesize, ref newposes);
+        OnNewPoses(newposes);
     }
 
     /// <summary>
