@@ -265,8 +265,6 @@ public class GreenScreenManager : MonoBehaviour
     private void OnEnable()
     {
         ZEDManager.OnZEDReady += ZEDReady;
-        ZEDSteamVRControllerManager.ZEDOnPadIndexSet += PadReady;
-
 
         Shader.SetGlobalInt("ZEDGreenScreenActivated", 1);
 		screenManager = GetComponent<ZEDRenderingPlane>();
@@ -276,7 +274,6 @@ public class GreenScreenManager : MonoBehaviour
     private void OnDisable()
     {
         ZEDManager.OnZEDReady -= ZEDReady;
-        ZEDSteamVRControllerManager.ZEDOnPadIndexSet -= PadReady;
     }
 
     private void Awake()

@@ -237,19 +237,25 @@ public class ZEDTransformController : MonoBehaviour
                 //Looks for any input from this controller through SteamVR.
                 if (objectTrackers.Count > 0 && objectTrackers[0].index >= 0)
                 {
-                    moveaxissteamvr = SteamVR_Controller.Input((int)objectTrackers[0].index).GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0);
+                    //moveaxissteamvr = SteamVR_Controller.Input((int)objectTrackers[0].index).GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0);
+                    moveaxissteamvr = objectTrackers[0].GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0);
+
                     inputRotation += moveaxissteamvr.x * rotationSpeed * 360f * Time.deltaTime;
 
                     gravity = Quaternion.FromToRotation(zedManager.GetZedRootTansform().up, Vector3.up);
                     transform.localPosition += gravity * zedManager.GetLeftCameraTransform().up * moveaxissteamvr.y * movementSpeed * Time.deltaTime;
 
-                    if (objectTrackers[0].index > 0 && SteamVR_Controller.Input((int)objectTrackers[0].index).GetHairTrigger())
+                    //if (objectTrackers[0].index > 0 && SteamVR_Controller.Input((int)objectTrackers[0].index).GetHairTrigger())
+                    if (objectTrackers[0].index > 0 && objectTrackers[0].GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger).x > 0.1f)
+                    {
                         inputScale = 1f;
+                    }
                 }
 
                 if (objectTrackers.Count > 1 && objectTrackers[1].index >= 0)
                 {
-                    moveaxissteamvr = SteamVR_Controller.Input((int)objectTrackers[1].index).GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0);
+                    //moveaxissteamvr = SteamVR_Controller.Input((int)objectTrackers[1].index).GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0);
+                    moveaxissteamvr = objectTrackers[1].GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0);
 
                     if (moveaxissteamvr.x != 0 || moveaxissteamvr.y != 0)
                     {
@@ -261,8 +267,11 @@ public class ZEDTransformController : MonoBehaviour
                     else
                         isMoving = false;
 
-                    if (objectTrackers[1].index > 0 && SteamVR_Controller.Input((int)objectTrackers[1].index).GetHairTrigger())
+                    //if (objectTrackers[1].index > 0 && SteamVR_Controller.Input((int)objectTrackers[1].index).GetHairTrigger())
+                    if (objectTrackers[1].index > 0 && objectTrackers[1].GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger).x > 0.1f)
+                    {
                         inputScale = -1f;
+                    }
                 }
             }
 #endif

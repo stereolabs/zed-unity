@@ -41,7 +41,7 @@ public class BunnyPlacement : MonoBehaviour
     /// <summary>
     /// Reference to the SteamVR Controller for Input purposes.
     /// </summary>
-    SteamVR_Controller.Device device;
+    //SteamVR_Controller.Device device;
 #endif
 
     /// <summary>
@@ -134,22 +134,25 @@ public class BunnyPlacement : MonoBehaviour
             //Check if a Controller tracked.
             if ((int)tracker.index > 0)
             {
-                device = SteamVR_Controller.Input((int)tracker.index);
+                //device = SteamVR_Controller.Input((int)tracker.index);
             }
 
             //SteamVR provides OnButton responses for the Trigger input.
             //When pressing down, holding it, or releasing it.
             if ((int)tracker.index > 0)
             {
-                if (device.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
+                //if (device.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
+                if (tracker.GetVRButtonDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger))
                 {
                     button = state.Down;
                 }
-                else if (device.GetPress(SteamVR_Controller.ButtonMask.Trigger))
+                //else if (device.GetPress(SteamVR_Controller.ButtonMask.Trigger))
+                else if (tracker.GetVRButtonHeld(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger))
                 {
                     button = state.Press;
                 }
-                else if (device.GetPressUp(SteamVR_Controller.ButtonMask.Trigger))
+                //else if (device.GetPressUp(SteamVR_Controller.ButtonMask.Trigger))
+                else if (tracker.GetVRButtonReleased(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger))
                 {
                     button = state.Up;
                 }

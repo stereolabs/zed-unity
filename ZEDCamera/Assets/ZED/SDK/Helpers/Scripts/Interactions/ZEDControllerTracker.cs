@@ -26,6 +26,24 @@ public class ZEDControllerTracker : MonoBehaviour
 #if ZED_STEAM_VR //Only enabled if the SteamVR Unity plugin is detected. 
 
     /// <summary>
+    /// OpenVR System class that lets us get inputs straight from the API, bypassing SteamVR.
+    /// This is necessary because different versions of SteamVR use completely different input systems. 
+    /// </summary>
+    CVRSystem openvrsystem = OpenVR.System;
+    /// <summary>
+    /// State of the controller's buttons and axes. Used to check inputs. 
+    /// </summary>
+    VRControllerState_t controllerstate;
+    /// <summary>
+    /// State of the controller's buttons and axes last frame. Used to check if buttons just went down or up. 
+    /// </summary>
+    VRControllerState_t lastcontrollerstate;
+    /// <summary>
+    /// Size of VRControllerState_t class in bytes. Used to call GetControllerState from the OpenVR API. 
+    /// </summary>
+    const uint controllerstatesize = 64;
+
+    /// <summary>
     /// Enumerated version of the uint index SteamVR assigns to each device. 
     /// Converted from OpenVR.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole). 
     /// </summary>
@@ -173,13 +191,16 @@ public class ZEDControllerTracker : MonoBehaviour
 #endif
 #if ZED_STEAM_VR
 
+        lastcontrollerstate = controllerstate;
+        UpdateControllerState(); //Get the button states so we can check if buttons are down or not. 
+
         timerSteamVR += Time.deltaTime; //Increment timer for checking on devices
 
         if (timerSteamVR <= timerMaxSteamVR)
             return;
 
         timerSteamVR = 0f;
-
+        
         //Checks if a device has been assigned
         if (index == EIndex.None && loadeddevice == "OpenVR")
         {
@@ -229,14 +250,21 @@ public class ZEDControllerTracker : MonoBehaviour
             else if (SNHolder != null && index != EIndex.None) //
             {
                 //If the Serial number of the Calibrated device isn't the same as the current tracked device by this script...
-                if (!SteamVR.instance.GetStringProperty(Valve.VR.ETrackedDeviceProperty.Prop_SerialNumber_String, (uint)index).Contains(SNHolder))
+                //if (!SteamVR.instance.GetStringProperty(Valve.VR.ETrackedDeviceProperty.Prop_SerialNumber_String, (uint)index).Contains(SNHolder)
+                var snerror = ETrackedPropertyError.TrackedProp_Success;
+                var snresult = new System.Text.StringBuilder((int)64);
+                OpenVR.System.GetStringTrackedDeviceProperty((uint)index, ETrackedDeviceProperty.Prop_SerialNumber_String, snresult, 64, ref snerror);
+                if(!snresult.ToString().Contains(SNHolder))
                 {
                     Debug.LogWarning(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.PAD_CAMERA_CALIBRATION_MISMATCH) + " Serial Number: " + SNHolder);
                     //... then look for that device through all the connected devices.
                     for (int i = 0; i < 16; i++)
                     {
                         //If a device with the same Serial Number is found, then change the device to track of this script.
-                        if(SteamVR.instance.GetStringProperty(Valve.VR.ETrackedDeviceProperty.Prop_SerialNumber_String, (uint)i).Contains(SNHolder))
+                        //if(SteamVR.instance.GetStringProperty(Valve.VR.ETrackedDeviceProperty.Prop_SerialNumber_String, (uint)i).Contains(SNHolder))
+                        var chsnresult = new System.Text.StringBuilder((int)64);
+                        OpenVR.System.GetStringTrackedDeviceProperty((uint)i, ETrackedDeviceProperty.Prop_SerialNumber_String, chsnresult, 64, ref snerror);
+                        if (snresult.ToString().Contains(SNHolder))
                         {
                             index = (EIndex)i;
                             string deviceRole = OpenVR.System.GetControllerRoleForTrackedDeviceIndex((uint)index).ToString();
@@ -305,7 +333,7 @@ public class ZEDControllerTracker : MonoBehaviour
         sl.Pose p = GetValuePosition(1, (float)(latencyCompensation / 1000.0f));
         transform.localPosition = p.translation;
         transform.localRotation = p.rotation;
-        
+        print("Made it to end of pose updates");
     }
 
     /// <summary>
@@ -323,12 +351,17 @@ public class ZEDControllerTracker : MonoBehaviour
 
     void OnEnable()
     {
-        var render = SteamVR_Render.instance;
-        if (render == null)
+        if(openvrsystem == null)
         {
             enabled = false;
             return;
         }
+        /*var render = SteamVR_Render.instance;
+        if (render == null)
+        {
+            enabled = false;
+            return;
+        }*/
 
         newPosesAction.enabled = true;
     }
@@ -349,10 +382,85 @@ public class ZEDControllerTracker : MonoBehaviour
     {
         System.Text.StringBuilder sbType = new System.Text.StringBuilder(1000);
         Valve.VR.ETrackedPropertyError err = Valve.VR.ETrackedPropertyError.TrackedProp_Success;
-        SteamVR.instance.hmd.GetStringTrackedDeviceProperty((uint)0, Valve.VR.ETrackedDeviceProperty.Prop_ManufacturerName_String, sbType, 1000, ref err);
+        openvrsystem.GetStringTrackedDeviceProperty((uint)0, Valve.VR.ETrackedDeviceProperty.Prop_ManufacturerName_String, sbType, 1000, ref err);
+        //SteamVR.instance.hmd.GetStringTrackedDeviceProperty((uint)0, Valve.VR.ETrackedDeviceProperty.Prop_ManufacturerName_String, sbType, 1000, ref err);
         return (err == Valve.VR.ETrackedPropertyError.TrackedProp_Success && sbType.ToString().StartsWith(name));
     }
 
+    private void UpdateControllerState()
+    {
+        openvrsystem.GetControllerState((uint)index, ref controllerstate, controllerstatesize);
+    }
+
+    /// <summary>
+    /// Returns if the VR controller button with the given ID was pressed for the first time this frame. 
+    /// </summary>
+    /// <param name="buttonid">EVR ID of the button as listed in OpenVR.</param>
+    public bool GetVRButtonDown(EVRButtonId buttonid)
+    {
+        if (openvrsystem == null) return false; //If VR isn't running, we can't check. 
+
+        bool washeldlastupdate = (lastcontrollerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
+        if (washeldlastupdate == true) return false; //If the key was held last check, it can't be pressed for the first time now. 
+
+        bool isheld = (controllerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
+        return isheld; //If we got here, we know it was not down last frame. 
+
+    }
+
+    /// <summary>
+    /// Returns if the VR controller button with the given ID is currently held. 
+    /// </summary>
+    /// <param name="buttonid">EVR ID of the button as listed in OpenVR.</param>
+    public bool GetVRButtonHeld(EVRButtonId buttonid)
+    {
+        if (openvrsystem == null) return false; //If VR isn't running, we can't check. 
+
+        bool isheld = (controllerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
+        return isheld;
+    }
+
+    /// <summary>
+    /// Returns if the VR controller button with the given ID was held last frame, but released this frame. 
+    /// </summary>
+    /// <param name="buttonid">EVR ID of the button as listed in OpenVR.</param>
+    public bool GetVRButtonReleased(EVRButtonId buttonid)
+    {
+        if (openvrsystem == null) return false; //If VR isn't running, we can't check. 
+
+        bool washeldlastupdate = (lastcontrollerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
+        if (washeldlastupdate == false) return false; //If the key was held last check, it can't be released now. 
+
+        bool isheld = (controllerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
+        return !isheld; //If we got here, we know it was not up last frame. 
+    }
+
+    /// <summary>
+    /// Returns the value of an axis with the provided ID. 
+    /// Note that for single-value axes, the relevant value will be the X in the returned Vector2 (the Y is unused). 
+    /// </summary>
+    /// <param name="buttonid"></param>
+    /// <returns></returns>
+    public Vector2 GetAxis(EVRButtonId buttonid)
+    {
+        //Convert the EVRButtonID enum to the axis number and check if it's not an axis. 
+        uint axis = (uint)buttonid - (uint)EVRButtonId.k_EButton_Axis0; 
+        if(axis < 0 || axis > 4)
+        {
+            Debug.LogError("Called GetAxis with " + buttonid + ", which is not an axis.");
+            return Vector2.zero;
+        }
+
+        switch(axis)
+        {
+            case 0: return new Vector2(controllerstate.rAxis0.x, controllerstate.rAxis0.y);
+            case 1: return new Vector2(controllerstate.rAxis1.x, controllerstate.rAxis1.y);
+            case 2: return new Vector2(controllerstate.rAxis2.x, controllerstate.rAxis2.y);
+            case 3: return new Vector2(controllerstate.rAxis3.x, controllerstate.rAxis3.y);
+            case 4: return new Vector2(controllerstate.rAxis4.x, controllerstate.rAxis4.y);
+            default: return Vector2.zero;
+        }
+    }
 
 #endif
     /// <summary>
