@@ -221,12 +221,14 @@ public class LaserGun : MonoBehaviour
         if (objecttracker != null)
         {
             if ((int)objecttracker.deviceToTrack == 0 && objecttracker.index >= 0)
-                if (SteamVR_Controller.Input((int)objecttracker.index).GetHairTriggerDown())
+                //if (SteamVR_Controller.Input((int)objecttracker.index).GetHairTriggerDown())
+                if(objecttracker.GetVRButtonDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger))
                 {
                     buttondown = true;
                 }
             if ((int)objecttracker.deviceToTrack == 1 && objecttracker.index >= 0)
-                if (SteamVR_Controller.Input((int)objecttracker.index).GetHairTriggerDown())
+                //if (SteamVR_Controller.Input((int)objecttracker.index).GetHairTriggerDown())
+                if (objecttracker.GetVRButtonDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger))
                 {
                     buttondown = true;
                 }
