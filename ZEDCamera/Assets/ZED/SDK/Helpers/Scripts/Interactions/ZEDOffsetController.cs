@@ -8,6 +8,10 @@ using System.IO;
 using UnityEditor;
 #endif
 
+#if ZED_STEAM_VR
+    using Valve.VR;
+#endif
+
 /// <summary>
 /// Saves and loads the pose of this object relative to its parent. 
 /// Used primarily when mounting the ZED to a tracked object (like a VR controller) for 3rd person mixed reality. 
