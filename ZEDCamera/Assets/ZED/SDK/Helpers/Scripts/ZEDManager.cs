@@ -752,7 +752,9 @@ public class ZEDManager : MonoBehaviour
         {
             LayerMask layerNumberBinary = (1 << righteyelayerfinal); //Convert layer index into binary number. 
             layerNumberBinary |= (1 << lefteyelayerfinal);
+#if UNITY_EDITOR
             UnityEditor.Tools.visibleLayers |= (layerNumberBinary);
+#endif
         }
     }
 
