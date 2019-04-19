@@ -42,7 +42,6 @@ public class ZEDControllerTracker : MonoBehaviour
     /// Size of VRControllerState_t class in bytes. Used to call GetControllerState from the OpenVR API. 
     /// </summary>
     const uint controllerstatesize = 64;
-
     /// <summary>
     /// Enumerated version of the uint index SteamVR assigns to each device. 
     /// Converted from OpenVR.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole). 
@@ -89,7 +88,7 @@ public class ZEDControllerTracker : MonoBehaviour
     /// Used to look up where OpenVR says a tracked object was in the past, for latency compensation. 
     /// </summary>
     public Dictionary<int, List<TimedPoseData>> poseData = new Dictionary<int, List<TimedPoseData>>();
-    
+
     /// <summary>
     /// Types of tracked devices. 
     /// </summary>
@@ -104,6 +103,7 @@ public class ZEDControllerTracker : MonoBehaviour
         Hmd,
     };
 
+
     /// <summary>
     /// Type of trackable device that should be tracked.
     /// </summary>
@@ -114,10 +114,11 @@ public class ZEDControllerTracker : MonoBehaviour
     /// Latency in milliseconds to be applied on the movement of this tracked object, so that virtual controllers don't
     /// move ahead of their real-world image.
     /// </summary>
-    [Tooltip("Latency in milliseconds to be applied on the movement of this tracked object, so that virtual controllers don't" + 
+    [Tooltip("Latency in milliseconds to be applied on the movement of this tracked object, so that virtual controllers don't" +
         " move ahead of their real-world image.")]
     [Range(0, 200)]
     public int latencyCompensation = 78;
+ 
 
     /// <summary>
     /// The Serial number of the controller/tracker to be tracked. 
@@ -139,6 +140,13 @@ public class ZEDControllerTracker : MonoBehaviour
     private Transform zedRigRoot;
 
     /// <summary>
+    /// Reference to the scene's ZEDManager component. Used for compensating for headset drift when this is on a controller. 
+    /// </summary>
+    [Tooltip("Reference to the scene's ZEDManager component. Used for compensating for headset drift when this is on a controller. " +
+        "If left blank, will be set to the first available ZEDManager.")]
+    public ZEDManager zedManager = null;
+
+    /// <summary>
     /// Sets up the timed pose dictionary and identifies the VR SDK being used. 
     /// </summary>
     void Awake()
@@ -148,7 +156,19 @@ public class ZEDControllerTracker : MonoBehaviour
         //Looking for the loaded device
         loadeddevice = UnityEngine.VR.VRSettings.loadedDeviceName;
 
-        zedRigRoot = ZEDManager.Instance.GetZedRootTansform();
+        if (!zedManager)
+        {
+            zedManager = FindObjectOfType<ZEDManager>();
+            //If there are multiple cameras in a scene, this arbitrary assignment could be bad. Warn the user. 
+            if (ZEDManager.GetInstances().Count > 1)
+            {
+                //Using Log instead of LogWarning because most users don't enable warnings but this is actually important. 
+                Debug.Log("Warning: ZEDController automatically set itself to first available ZED (" + zedManager.cameraID + ") because zedManager " +
+                    "value wasn't set, but there are multiple ZEDManagers in the scene. Assign a reference directly to ensure no unexpected behavior.");
+            }
+        }
+
+        zedRigRoot = zedManager.GetZedRootTansform();
     }
 
     /// <summary>
@@ -200,7 +220,7 @@ public class ZEDControllerTracker : MonoBehaviour
             return;
 
         timerSteamVR = 0f;
-        
+
         //Checks if a device has been assigned
         if (index == EIndex.None && loadeddevice == "OpenVR")
         {
@@ -250,18 +270,16 @@ public class ZEDControllerTracker : MonoBehaviour
             else if (SNHolder != null && index != EIndex.None) //
             {
                 //If the Serial number of the Calibrated device isn't the same as the current tracked device by this script...
-                //if (!SteamVR.instance.GetStringProperty(Valve.VR.ETrackedDeviceProperty.Prop_SerialNumber_String, (uint)index).Contains(SNHolder)
                 var snerror = ETrackedPropertyError.TrackedProp_Success;
                 var snresult = new System.Text.StringBuilder((int)64);
                 OpenVR.System.GetStringTrackedDeviceProperty((uint)index, ETrackedDeviceProperty.Prop_SerialNumber_String, snresult, 64, ref snerror);
-                if(!snresult.ToString().Contains(SNHolder))
+                if (!snresult.ToString().Contains(SNHolder))
                 {
                     Debug.LogWarning(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.PAD_CAMERA_CALIBRATION_MISMATCH) + " Serial Number: " + SNHolder);
                     //... then look for that device through all the connected devices.
                     for (int i = 0; i < 16; i++)
                     {
                         //If a device with the same Serial Number is found, then change the device to track of this script.
-                        //if(SteamVR.instance.GetStringProperty(Valve.VR.ETrackedDeviceProperty.Prop_SerialNumber_String, (uint)i).Contains(SNHolder))
                         var chsnresult = new System.Text.StringBuilder((int)64);
                         OpenVR.System.GetStringTrackedDeviceProperty((uint)i, ETrackedDeviceProperty.Prop_SerialNumber_String, chsnresult, 64, ref snerror);
                         if (snresult.ToString().Contains(SNHolder))
@@ -330,11 +348,12 @@ public class ZEDControllerTracker : MonoBehaviour
         sl.Pose p = GetValuePosition(1, (float)(latencyCompensation / 1000.0f));
         transform.localPosition = p.translation;
         transform.localRotation = p.rotation;
+
     }
 
     void OnEnable()
     {
-        if(openvrsystem == null)
+        if (openvrsystem == null)
         {
             enabled = false;
             return;
@@ -363,6 +382,7 @@ public class ZEDControllerTracker : MonoBehaviour
 
     private void UpdateControllerState()
     {
+        //openvrsystem.GetControllerState((uint)index, ref controllerstate, controllerstatesize);
         ETrackingUniverseOrigin tracktype = OpenVR.Compositor.GetTrackingSpace();
         TrackedDevicePose_t newposes = new TrackedDevicePose_t();
         openvrsystem.GetControllerStateWithPose(tracktype, (uint)index, ref controllerstate, controllerstatesize, ref newposes);
@@ -421,14 +441,14 @@ public class ZEDControllerTracker : MonoBehaviour
     public Vector2 GetAxis(EVRButtonId buttonid)
     {
         //Convert the EVRButtonID enum to the axis number and check if it's not an axis. 
-        uint axis = (uint)buttonid - (uint)EVRButtonId.k_EButton_Axis0; 
-        if(axis < 0 || axis > 4)
+        uint axis = (uint)buttonid - (uint)EVRButtonId.k_EButton_Axis0;
+        if (axis < 0 || axis > 4)
         {
             Debug.LogError("Called GetAxis with " + buttonid + ", which is not an axis.");
             return Vector2.zero;
         }
 
-        switch(axis)
+        switch (axis)
         {
             case 0: return new Vector2(controllerstate.rAxis0.x, controllerstate.rAxis0.y);
             case 1: return new Vector2(controllerstate.rAxis1.x, controllerstate.rAxis1.y);
@@ -477,6 +497,14 @@ public class ZEDControllerTracker : MonoBehaviour
                         p.translation = pos;
                         p.rotation = rot;
 
+                        //Add drift correction, but only if the zedRigRoot position won't be affected.
+                        if ((deviceToTrack == Devices.LeftController || deviceToTrack == Devices.RightController) && !zedManager.transform.IsChildOf(transform))
+                        {
+                            //Compensate for positional drift by measuring the distance between HMD and ZED rig root (the head's center). 
+                            Vector3 zedhmdposoffset = zedRigRoot.position - InputTracking.GetLocalPosition(VRNode.Head);
+                            p.translation += zedhmdposoffset;
+                        }
+
                         //Removes used elements from the dictionary.
                         poseData[keyindex].RemoveRange(0, currentIndex - 1);
                     }
@@ -500,11 +528,8 @@ public class ZEDControllerTracker : MonoBehaviour
         currentPoseData.rotation = rot;
         currentPoseData.position = position;
 
-        //Compensate for positional drift by measuring the distance between HMD and ZED rig root (the head's center). 
-        Vector3 zedhmdposoffset = zedRigRoot.position - InputTracking.GetLocalPosition(VRNode.Head);
-        currentPoseData.position += zedhmdposoffset;
-
         poseData[keyindex].Add(currentPoseData);
+
     }
 
     /// <summary>
@@ -548,12 +573,13 @@ public class ZEDVRDependencies : Editor
 
     public override void OnInspectorGUI() //Called when the Inspector is visible. 
     {
-        if (CheckPackageExists("SteamVR"))
+        if (CheckPackageExists("OpenVR"))
         {
             defineName = "ZED_STEAM_VR";
             packageName = "SteamVR";
         }
-        else if (CheckPackageExists("Oculus") || CheckPackageExists("OVR"))
+        //else if (CheckPackageExists("Oculus") || CheckPackageExists("OVR"))
+        else if (CheckPackageExists("OVRManager"))
         {
             defineName = "ZED_OCULUS";
             packageName = "Oculus";
@@ -590,8 +616,9 @@ public class ZEDVRDependencies : Editor
     public static bool CheckPackageExists(string name)
     {
         string[] packages = AssetDatabase.FindAssets(name);
-        return packages.Length != 0 && AssetDatabase.IsValidFolder("Assets/" + name);
+        return packages.Length != 0;
     }
+
 
     /// <summary>
     /// Activates a define tag in the project. Used to enable compiling sections of scripts with that tag enabled. 
@@ -600,18 +627,17 @@ public class ZEDVRDependencies : Editor
     public static void ActivateDefine()
     {
         EditorPrefs.SetBool(packageName, true);
-
         string defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
         if (defines.Length != 0)
         {
-            if (defineName != null && !defines.Contains(defineName))
+            if (!defines.Contains(defineName))
             {
                 defines += ";" + defineName;
             }
         }
         else
         {
-            if (defineName != null && !defines.Contains(defineName))
+            if (!defines.Contains(defineName))
             {
                 defines += defineName;
             }
@@ -624,14 +650,13 @@ public class ZEDVRDependencies : Editor
     /// Called whenever a package is checked for but not found. 
     /// Removing the define tags will prevent compilation of code marked with that tag, like #if ZED_OCULUS.
     /// </summary>
-    public static void DeactivateDefine()
+    public static void DeactivateDefine(string packagename)
     {
-        EditorPrefs.SetBool(packageName, false);
-        
+        EditorPrefs.SetBool(packagename, false);
         string defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
         if (defines.Length != 0)
         {
-			if (defineName != null &&  defines.Contains(defineName))
+            if (defineName != null && defines.Contains(defineName))
             {
                 defines = defines.Remove(defines.IndexOf(defineName), defineName.Length);
 
@@ -652,14 +677,18 @@ public class ZEDVRDependencies : Editor
     {
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
-
-            if (ZEDVRDependencies.CheckPackageExists("OVR") || ZEDVRDependencies.CheckPackageExists("Oculus"))
+            if (CheckPackageExists("OVRManager"))
             {
                 defineName = "ZED_OCULUS";
                 packageName = "Oculus";
                 ActivateDefine();
             }
-            if (ZEDVRDependencies.CheckPackageExists("SteamVR"))
+            else
+            {
+                DeactivateDefine("Oculus");
+            }
+
+            if (CheckPackageExists("OpenVR"))
             {
                 defineName = "ZED_STEAM_VR";
                 packageName = "SteamVR";
@@ -667,7 +696,7 @@ public class ZEDVRDependencies : Editor
             }
             else
             {
-                DeactivateDefine();
+                DeactivateDefine("SteamVR");
             }
         }
     }

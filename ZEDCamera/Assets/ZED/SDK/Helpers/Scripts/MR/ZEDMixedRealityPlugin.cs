@@ -20,7 +20,7 @@ using System.IO;
 public class ZEDMixedRealityPlugin : MonoBehaviour
 {
     #region DLL Calls
-    const string nameDll = "sl_unitywrapper";
+	const string nameDll = sl.ZEDCommon.NameDLL;
 	[DllImport(nameDll, EntryPoint = "dllz_compute_size_plane_with_gamma")]
 	private static extern System.IntPtr dllz_compute_size_plane_with_gamma(sl.Resolution resolution, float perceptionDistance, float eyeToZedDistance, float planeDistance, float HMDFocal, float zedFocal);
 
@@ -312,8 +312,25 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     void Start()
 	{
 		hasVRDevice = VRDevice.isPresent;
-		manager = transform.parent.GetComponent<ZEDManager>();
-		zedCamera = sl.ZEDCamera.GetInstance();
+
+
+		//iterate until we found the ZED Manager parent...
+		Transform ObjParent = gameObject.transform;
+		int tries = 0;
+		while (manager == null && tries < 50) {
+			if (ObjParent!=null)
+				manager= ObjParent.GetComponent<ZEDManager> ();
+			if (manager == null && ObjParent!=null)
+				ObjParent = ObjParent.parent;
+			tries++;
+		}
+
+		if (manager != null) {
+			manager.OnZEDReady += ZEDReady;
+			zedCamera = manager.zedCamera;
+		} else
+			return;
+
 		leftScreen = ZEDEyeLeft.GetComponent<ZEDRenderingPlane>();
 		rightScreen = ZEDEyeRight.GetComponent<ZEDRenderingPlane>();
 		finalLeftEye = finalCameraLeft.GetComponent<Camera>();
@@ -392,13 +409,11 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
             
 			scale (quadLeft.gameObject, scaleFromZED);
 			scale (quadRight.gameObject, scaleFromZED);
-			ready = false;
-
 		}
+        ready = false;
 
-
-		// If using Vive, change ZED's settings to compensate for different screen. 
-		if (VRDevice.model.ToLower().Contains ("vive")) {
+        // If using Vive, change ZED's settings to compensate for different screen. 
+        if (VRDevice.model.ToLower().Contains ("vive")) {
 			zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.CONTRAST, 3);
 			zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.SATURATION, 3);
 		}
@@ -420,13 +435,15 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	public void OnEnable()
 	{
 		latencyCorrectionReady = false;
-		ZEDManager.OnZEDReady += ZEDReady;
+		if (manager !=null)
+			manager.OnZEDReady += ZEDReady;
 	}
 
 	public void OnDisable()
 	{
 		latencyCorrectionReady = false;
-		ZEDManager.OnZEDReady -= ZEDReady;
+		if (manager !=null)
+			manager.OnZEDReady -= ZEDReady;
 	}
 
 	void OnGrab()
@@ -439,12 +456,15 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	/// </summary>
 	public void CollectPose()
 	{
+		if (manager == null)
+			return;
+		
 		KeyPose k = new KeyPose();
 		k.Orientation = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.Head);
 		k.Translation = UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.Head);
-		if (sl.ZEDCamera.GetInstance().IsCameraReady)
+		if (manager.zedCamera.IsCameraReady)
 		{
-			k.Timestamp = sl.ZEDCamera.GetInstance().GetCurrentTimeStamp();
+			k.Timestamp = manager.zedCamera.GetCurrentTimeStamp();
 			if (k.Timestamp >= 0)
 			{
 				dllz_latency_corrector_add_key_pose(ref k.Translation, ref k.Orientation, k.Timestamp); //Poses are handled by the wrapper. 
@@ -480,7 +500,11 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	/// </summary>
 	public void UpdateRenderPlane()
 	{
-		if (!ZEDManager.IsStereoRig) return; //Make sure we're in pass-through AR mode. 
+		if (manager == null)
+			return;
+		
+		if (!manager.IsStereoRig) 
+			return; //Make sure we're in pass-through AR mode. 
 
 		Quaternion r;
 		r = latencyPose.rotation;
@@ -500,6 +524,9 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	/// <returns>Initial offset for the ZED's tracking. </returns>
 	public Pose InitTrackingAR()
 	{
+		if (manager == null)
+			return new Pose ();
+
 		Transform tmpHMD = transform;
 		tmpHMD.position = InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.Head);
 		tmpHMD.rotation = InputTracking.GetLocalRotation (UnityEngine.VR.VRNode.Head);
@@ -596,7 +623,6 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 			else ready = false;
 		}
 
-
 		if (hasVRDevice) //Do nothing if we no longer have a HMD connected. 
 		{
 			CollectPose (); //File the current HMD pose into the latency poses to reference later. 
@@ -615,7 +641,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	{
 		if (cam == finalLeftEye || cam == finalRightEye)
 		{
-			if ((!zedReady && ZEDManager.IsStereoRig))
+			if ((!zedReady && manager.IsStereoRig))
 			{
 				quadLeft.localRotation = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.Head);
 				quadLeft.localPosition = UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.Head) + quadLeft.localRotation * offset;

@@ -59,28 +59,9 @@ public class AsteroidsManager : MonoBehaviour
     /// </summary>
     Matrix4x4[] listPositions2 = new Matrix4x4[amount];
 
-    /// <summary>
-    /// The scene's ZEDManager object. 
-    /// </summary>
-    private ZEDManager manager;
-
-    /// <summary>
-    /// The left Camera component in the ZED rig. 
-    /// </summary>
-    private Camera leftCamera = null;
-    /// <summary>
-    /// The right Camera component in the ZED rig, if applicable (ie. when using the stereo rig). 
-    /// </summary>
-    private Camera rightCamera = null;
-
 
     void Start()
     {
-        if(!manager)
-        {
-            manager = ZEDManager.Instance;
-        }
-
         CreateAsteroids(listPositionsOrigin, amount, radius, offset); //Create all type 1 asteroids.
         CreateAsteroids(listPositionsOrigin2, amount, radius, offset); //Create all type 2 asteroids. 
 
@@ -142,26 +123,31 @@ public class AsteroidsManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(leftCamera == null)
+        foreach(ZEDManager manager in ZEDManager.GetInstances())
         {
-			if (manager) leftCamera = manager.GetLeftCameraTransform().GetComponent<Camera>();
+            DrawAsteroids(manager);
         }
-        if(rightCamera == null && ZEDManager.IsStereoRig)
-        {
-			if (manager) rightCamera = manager.GetRightCameraTransform().GetComponent<Camera>();
-        }
+
+        
+    }
+
+    private void DrawAsteroids(ZEDManager manager)
+    {
+        Camera leftcamera = manager.GetLeftCamera();
+        Camera rightcamera = manager.GetRightCamera();
+
         //Update positions and draw asteroids of type 1
         UpdatePosition(listPositionsOrigin, listPositions);
-        Graphics.DrawMeshInstanced(asteroidsType1.GetComponent<MeshFilter>().sharedMesh, 
+        Graphics.DrawMeshInstanced(asteroidsType1.GetComponent<MeshFilter>().sharedMesh,
                                     0, asteroidsType1.GetComponent<MeshRenderer>().sharedMaterial,
                                     listPositions,
                                     listPositions.Length,
-                                    null, 
-                                    UnityEngine.Rendering.ShadowCastingMode.Off, 
-                                    false, 
-                                    8,
-                                    leftCamera);
-        if (ZEDManager.IsStereoRig)
+                                    null,
+                                    UnityEngine.Rendering.ShadowCastingMode.Off,
+                                    false,
+                                    gameObject.layer,
+                                    leftcamera);
+        if (manager.IsStereoRig)
         {
             Graphics.DrawMeshInstanced(asteroidsType1.GetComponent<MeshFilter>().sharedMesh,
                                         0,
@@ -171,22 +157,22 @@ public class AsteroidsManager : MonoBehaviour
                                         null,
                                         UnityEngine.Rendering.ShadowCastingMode.Off,
                                         false,
-                                        10,
-                                        rightCamera);
+                                        gameObject.layer,
+                                        rightcamera);
         }
         //Update positions and draw asteroids of type 2
         UpdatePosition(listPositionsOrigin2, listPositions2);
-        Graphics.DrawMeshInstanced(asteroidsType2.GetComponent<MeshFilter>().sharedMesh, 
-                                    0, 
-                                    asteroidsType2.GetComponent<MeshRenderer>().sharedMaterial, 
+        Graphics.DrawMeshInstanced(asteroidsType2.GetComponent<MeshFilter>().sharedMesh,
+                                    0,
+                                    asteroidsType2.GetComponent<MeshRenderer>().sharedMaterial,
                                     listPositions2,
-                                    listPositions2.Length, 
-                                    null, 
-                                    UnityEngine.Rendering.ShadowCastingMode.Off, 
-                                    false, 
-                                    8,
-                                    leftCamera);
-        if (ZEDManager.IsStereoRig)
+                                    listPositions2.Length,
+                                    null,
+                                    UnityEngine.Rendering.ShadowCastingMode.Off,
+                                    false,
+                                    gameObject.layer,
+                                    leftcamera);
+        if (manager.IsStereoRig)
         {
             Graphics.DrawMeshInstanced(asteroidsType2.GetComponent<MeshFilter>().sharedMesh,
                                     0,
@@ -196,8 +182,9 @@ public class AsteroidsManager : MonoBehaviour
                                     null,
                                     UnityEngine.Rendering.ShadowCastingMode.Off,
                                     false,
-                                    10,
-                                    rightCamera);
+                                    gameObject.layer,
+                                    rightcamera);
         }
     }
+
 }

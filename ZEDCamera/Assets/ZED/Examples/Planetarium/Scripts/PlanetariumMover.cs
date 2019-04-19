@@ -124,7 +124,8 @@ public class PlanetariumMover : MonoBehaviour
 
         currentlightrange = sunlight.range * (1 / currentscale);
 
-        manager = ZEDManager.Instance;
+
+		manager = planetarium.transform.parent.GetComponentInChildren<ZEDManager>();
 
         spotLightSun = suncontainer.transform.Find("SunSpotLight").GetComponent<Light>();
         halolightsun = suncontainer.transform.Find("SunHaloLight").GetComponent<Light>();
@@ -140,12 +141,12 @@ public class PlanetariumMover : MonoBehaviour
 
     private void OnEnable()
     {
-        ZEDManager.OnZEDReady += ZEDReady;
+		manager.OnZEDReady += ZEDReady;
     }
 
     private void OnDisable()
     {
-        ZEDManager.OnZEDReady -= ZEDReady;
+		manager.OnZEDReady -= ZEDReady;
 
     }
 
@@ -154,6 +155,7 @@ public class PlanetariumMover : MonoBehaviour
     /// </summary>
     void ZEDReady()
     {
+		if (manager)
         planetarium.transform.position = manager.OriginPosition + manager.OriginRotation * Vector3.forward;
     }
 

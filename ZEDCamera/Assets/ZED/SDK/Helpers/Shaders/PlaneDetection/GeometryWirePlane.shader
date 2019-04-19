@@ -20,6 +20,7 @@ Shader "Custom/Plane Detection/ GeometryWirePlane"
 		Pass
 	{
 		Blend SrcAlpha OneMinusSrcAlpha
+		ZTest Always
 		CGPROGRAM
 #pragma vertex vert
 #pragma geometry geom

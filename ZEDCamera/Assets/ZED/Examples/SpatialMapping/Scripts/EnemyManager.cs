@@ -74,8 +74,7 @@ public class EnemyManager : MonoBehaviour
 
     private void OnEnable()
     {
-        ZEDSpatialMapping.OnMeshStarted += StartNavMesh;
-		NavMeshSurface.OnNavMeshReady += Ready;
+    	NavMeshSurface.OnNavMeshReady += Ready;
 
         //Set the ZEDLight component on the object if a light is active
         Component[] lights = enemyPrefab.GetComponentsInChildren(typeof(Light));
@@ -90,6 +89,9 @@ public class EnemyManager : MonoBehaviour
 
     private void Start()
     {
+		StartNavMesh ();
+
+
         UnityEngine.AI.NavMeshAgent c;
         if ((c = enemyPrefab.GetComponent<UnityEngine.AI.NavMeshAgent>()) != null)
         {
@@ -100,7 +102,6 @@ public class EnemyManager : MonoBehaviour
     private void OnDisable()
     {
         //Unsubscribe from the events. 
-        ZEDSpatialMapping.OnMeshStarted -= StartNavMesh;
 		NavMeshSurface.OnNavMeshReady -= Ready;
     }
 

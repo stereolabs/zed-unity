@@ -37,7 +37,7 @@ public class BunnySpawner : MonoBehaviour
     /// The origin position for the pointer, from which you aim the ray to check for a valid placement location. 
     /// If null (such as in the non-VR sample) it takes this script's GameObject position.
     /// </summary>
-    [Tooltip("The origin position for the pointer, from which you aim the ray to check for a valid placement location. " + 
+    [Tooltip("The origin position for the pointer, from which you aim the ray to check for a valid placement location. " +
         "If null (such as in the non-VR sample) it takes this script's GameObject position.")]
     public Transform rayOrigin;
 
@@ -61,7 +61,7 @@ public class BunnySpawner : MonoBehaviour
     /// <summary>
     /// The last Bunny gameObject spawned in the scene.
     /// </summary>
-    [HideInInspector] 
+    [HideInInspector]
     public GameObject currentBunny;
 
     /// <summary>
@@ -74,6 +74,15 @@ public class BunnySpawner : MonoBehaviour
     /// </summary>
     private GameObject placeholder;
 
+
+
+    /// <summary>
+    /// The "primary" ZEDManager used for spawning bunnies. Used to aim the UI and decide where bunnies are looking on spawn. 
+    /// <para>If not set, the first available one in the scene will be used.</para>
+    /// </summary>
+    [Tooltip("The 'primary' ZEDManager used for spawning bunnies. Used to aim the UI and decide where bunnies are looking on spawn. " +
+        "If not set, the first available one in the scene will be used.")]
+    public ZEDManager zedManager;
     /// <summary>
     /// Reference to the ZED's left camera gameobject.
     /// </summary>
@@ -87,20 +96,25 @@ public class BunnySpawner : MonoBehaviour
     /// <summary>
     /// The gameObject that holds the 3D Model of the Baseball Bat, so we can Show/Hide it.
     /// </summary>
-    [HideInInspector] 
+    [HideInInspector]
     public GameObject baseballBat;
 
-    void Awake ()
+    void Awake()
     {
+        if (!zedManager)
+        {
+            zedManager = FindObjectOfType<ZEDManager>();
+        }
+
         //Find the left camera object if we didn't assign it at start. 
         if (!leftcamera)
         {
-            leftcamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
+            leftcamera = zedManager.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
         }
 
         //Check if there is a Object Tracker on this object for VR controls. 
         var tracker = GetComponent<ZEDControllerTracker>();
-        if(tracker != null)
+        if (tracker != null)
         {
             //Get the parent object of the baseball bat.
             if (transform.childCount > 1)
@@ -129,14 +143,14 @@ public class BunnySpawner : MonoBehaviour
     /// This function is called every fixed framerate frame
     /// Here we take care of enabling & disabling the laser pointer by looking for collisions with the real world.
     /// </summary>
-    void FixedUpdate ()
+    void FixedUpdate()
     {
         //Do we have a Pointer Bead to position in the world?
-		if (pointer != null && GetComponent<BunnyPlacement>().button != BunnyPlacement.state.Idle)
+        if (pointer != null && GetComponent<BunnyPlacement>().button != BunnyPlacement.state.Idle)
         {
             Vector3 pointerposition;
             //Point the bead at the closest thing in front of the camera. 
-            if (ZEDManager.Instance.IsZEDReady && FindPointerPosition(out pointerposition) && canDisplayPlaceholder)
+            if (zedManager.IsZEDReady && FindPointerPosition(out pointerposition) && canDisplayPlaceholder)
             {
                 //We hit something. Make sure the bead is active.
                 pointer.SetActive(true);
@@ -151,8 +165,8 @@ public class BunnySpawner : MonoBehaviour
                 pointer.SetActive(false);
             }
         }
-		else
-			pointer.SetActive(false);
+        else
+            pointer.SetActive(false);
     }
 
     /// <summary>
@@ -197,8 +211,8 @@ public class BunnySpawner : MonoBehaviour
     public void SpawnUI(Vector3 spawnPos)
     {
         //Hide the baseball bat.
-        if(baseballBat != null)
-        baseballBat.SetActive(false);
+        if (baseballBat != null)
+            baseballBat.SetActive(false);
 
         //Destroy the last UI that was spawned, if any.
         if (currentui != null)
@@ -240,20 +254,18 @@ public class BunnySpawner : MonoBehaviour
     {
         //Find the distance to the real world. The bool will be false if there is an error reading the depth at the center of the screen. 
         Vector3 realpoint;
-       bool foundrealdistance = ZEDSupportFunctions.HitTestOnRay(leftcamera, rayOrigin.position, rayOrigin.rotation, 5.0f, 0.05f, out realpoint);
-        
-        //If we didn't find, return false so the laser and bead can be disabled. 
-        if (!foundrealdistance)
+        foreach (ZEDManager manager in ZEDManager.GetInstances()) //Check all cameras, in case it's hitting something the main ZEDManager can't see. 
         {
-            pointerbeadpoint = Vector3.zero;
-            return false;
-        }
-        else //Output the world position of the collision.
-        {
-            pointerbeadpoint = realpoint;
-            return true;
+            if (ZEDSupportFunctions.HitTestOnRay(zedManager.zedCamera, leftcamera, rayOrigin.position, rayOrigin.rotation, 5.0f, 0.05f, out realpoint))
+            {
+                pointerbeadpoint = realpoint;
+                return true; //No need to check the other cameras. 
+            }
         }
 
+        //No camera was able to see a collision. 
+        pointerbeadpoint = Vector3.zero;
+        return false;
 
     }
 }

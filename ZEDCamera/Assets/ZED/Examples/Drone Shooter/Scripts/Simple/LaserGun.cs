@@ -29,6 +29,12 @@ public class LaserGun : MonoBehaviour
     public Transform laserSpawnLocation;
 
     /// <summary>
+    /// Reference to the scene's primary ZEDManager component. Used for placing the crosshair. 
+    /// </summary>
+    [Tooltip("Reference to the scene's primary ZEDManager component. Used for placing the crosshair.")]
+    public ZEDManager zedManager = null;
+
+    /// <summary>
     /// Reference to the object that will be placed at the end of the laser.
     /// </summary>
     private GameObject pointerbead;
@@ -37,11 +43,6 @@ public class LaserGun : MonoBehaviour
     /// Reference to the audio source
     /// </summary>
     private AudioSource audiosource;
-
-    /// <summary>
-    /// Reference to the ZED's left camera gameobject. Used to pass to ZEDSupportFunctions.cs so it can transform ZED depth info into world space. 
-    /// </summary>
-    private Camera leftcamera;
 
     /// <summary>
     /// The gameobject's controller for tracking and input.
@@ -54,13 +55,17 @@ public class LaserGun : MonoBehaviour
 
     IEnumerator Start()
     {
-        //Find the left camera object if we didn't assign it at start. 
-        if (!leftcamera) 
-        {
-            leftcamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
-        }
-
         audiosource = GetComponent<AudioSource>();
+
+        if (zedManager == null)
+        {
+            zedManager = FindObjectOfType<ZEDManager>();
+            if (ZEDManager.GetInstances().Count > 1)
+            {
+                Debug.Log("Warning: " + gameObject + " ZEDManager reference not set, but there are multiple ZEDManagers in the scene. " +
+                    "Setting to first available ZEDManager, which may cause undesirable crosshair positions.");
+            }
+        }
 
         if (laserPointerBeadHolder != null)
         {
@@ -97,7 +102,7 @@ public class LaserGun : MonoBehaviour
             //If its not attached to an object tracker
             var otherObjectTracker = FindObjectsOfType<ZEDControllerTracker>();
 
-            if(otherObjectTracker != null)
+            if (otherObjectTracker != null)
             {
                 int children = transform.childCount;
 #if ZED_STEAM_VR
@@ -106,7 +111,7 @@ public class LaserGun : MonoBehaviour
                     if (trackers.index >= 0)
                     {
                         for (int i = 0; i < children; ++i)
-                        transform.GetChild(i).gameObject.SetActive(false);
+                            transform.GetChild(i).gameObject.SetActive(false);
 
                         this.enabled = false;
                         yield break;
@@ -131,7 +136,7 @@ public class LaserGun : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update ()
+    void Update()
     {
         //Do we have a Pointer Bead to position in the world?
         if (laserPointerBeadHolder != null)
@@ -139,15 +144,15 @@ public class LaserGun : MonoBehaviour
             Vector3 crosshairpoint;
             Vector3 crosshairnormal;
             //Point the bead at the closest thing in front of the camera. 
-            if (ZEDManager.Instance.IsZEDReady && FindCrosshairPosition(out crosshairpoint, out crosshairnormal))
+            if (FindCrosshairPosition(out crosshairpoint, out crosshairnormal))
             {
                 //We hit something. Make sure the bead is active.
                 pointerbead.SetActive(true);
 
                 //Position the bead a the collision point, and make it face you. 
                 pointerbead.transform.position = crosshairpoint;
-                if(crosshairnormal.magnitude > 0.0001f)
-                pointerbead.transform.rotation = Quaternion.LookRotation(crosshairnormal);
+                if (crosshairnormal.magnitude > 0.0001f)
+                    pointerbead.transform.rotation = Quaternion.LookRotation(crosshairnormal);
             }
             else
             {
@@ -162,7 +167,8 @@ public class LaserGun : MonoBehaviour
         bool buttondown = false;
 
         //Check for keys present on all systems 
-        if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Space))
+        //Use objecttracker to know if this controller was intended to be on a VR controller. 
+        if (objecttracker == null && (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Space)))
         {
             buttondown = true;
         }
@@ -222,7 +228,7 @@ public class LaserGun : MonoBehaviour
         {
             if ((int)objecttracker.deviceToTrack == 0 && objecttracker.index >= 0)
                 //if (SteamVR_Controller.Input((int)objecttracker.index).GetHairTriggerDown())
-                if(objecttracker.GetVRButtonDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger))
+                if (objecttracker.GetVRButtonDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger))
                 {
                     buttondown = true;
                 }
@@ -250,9 +256,18 @@ public class LaserGun : MonoBehaviour
     private bool FindCrosshairPosition(out Vector3 crosshairpoint, out Vector3 collisionnormal)
     {
         //Find the distance to the real world. The bool will be false if there is an error reading the depth at the center of the screen. 
-        Vector3 realpoint;
-        bool foundrealdistance = ZEDSupportFunctions.HitTestOnRay(leftcamera, laserPointerBeadHolder.transform.position, laserPointerBeadHolder.transform.rotation, 5f, 0.01f, out realpoint);
-        float realdistance = Vector3.Distance(laserPointerBeadHolder.transform.position, realpoint);
+        Vector3 realpoint = Vector3.zero;
+        float realdistance = 20f; //Arbitrary distance to put the crosshair if it hits nothing at all. Chosen by ZED's max range. 
+        bool foundrealdistance = false;
+
+        if (ZEDSupportFunctions.HitTestOnRay(zedManager.zedCamera, zedManager.GetLeftCamera(), laserPointerBeadHolder.transform.position,
+            laserPointerBeadHolder.transform.rotation, 5f, 0.01f, out realpoint))
+        {
+            realdistance = Vector3.Distance(laserPointerBeadHolder.transform.position, realpoint);
+            foundrealdistance = true;
+        }
+
+
 
         //Find the distance to the virtual. The bool will be false if there are no colliders ahead of you. 
         RaycastHit hitinfo;
@@ -267,11 +282,11 @@ public class LaserGun : MonoBehaviour
         }
 
         //Decide if we use the real or virtual distance
-        if(!foundvirtualdistance || realdistance < hitinfo.distance)
+        if (!foundvirtualdistance || realdistance < hitinfo.distance)
         {
             //The real world is closer. Give the position of the real world pixel and return true. 
             crosshairpoint = realpoint;
-            ZEDSupportFunctions.GetNormalAtWorldLocation(realpoint, sl.REFERENCE_FRAME.WORLD, leftcamera, out collisionnormal);
+            ZEDSupportFunctions.GetNormalAtWorldLocation(zedManager.zedCamera, realpoint, sl.REFERENCE_FRAME.WORLD, zedManager.GetLeftCamera(), out collisionnormal);
             return true;
         }
         else
@@ -281,7 +296,7 @@ public class LaserGun : MonoBehaviour
             collisionnormal = hitinfo.normal;
             return true;
         }
-        
+
     }
 
     /// <summary>
@@ -293,8 +308,11 @@ public class LaserGun : MonoBehaviour
         GameObject blastershot = Instantiate(laserShotPrefab);
         blastershot.transform.position = laserSpawnLocation != null ? laserSpawnLocation.transform.position : transform.position;
         blastershot.transform.rotation = laserSpawnLocation != null ? laserSpawnLocation.transform.rotation : transform.rotation;
-        if (laserPointerBeadHolder != null)
-        blastershot.transform.LookAt(pointerbead.transform.position);
+
+        if (laserPointerBeadHolder != null && pointerbead.transform.localPosition != Vector3.zero)
+        {
+            blastershot.transform.LookAt(pointerbead.transform.position);
+        }
 
         //Play a sound
         if (audiosource)

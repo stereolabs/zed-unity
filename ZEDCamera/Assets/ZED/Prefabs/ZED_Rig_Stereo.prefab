@@ -72,7 +72,8 @@ GameObject:
   - component: {fileID: 4552186382818458}
   - component: {fileID: 33967978859279694}
   - component: {fileID: 23931263026373856}
-  m_Layer: 8
+  - component: {fileID: 114833973883948664}
+  m_Layer: 0
   m_Name: Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,7 +90,8 @@ GameObject:
   - component: {fileID: 4371821831063078}
   - component: {fileID: 33507802862957374}
   - component: {fileID: 23084009649085918}
-  m_Layer: 10
+  - component: {fileID: 114346753093240460}
+  m_Layer: 0
   m_Name: Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -531,6 +533,18 @@ MonoBehaviour:
   viewMode: 0
   numberPointLights: 0
   numberSpotLights: 0
+--- !u!114 &114346753093240460
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1473301405527320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 313514277d565454383ea4c1a1f8beb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showInNonZEDCameras: 1
 --- !u!114 &114495480594432558
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -557,14 +571,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 2
+  cameraID: 0
   depthMode: 1
+  inputType: 0
+  resolution: 2
+  FPS: 60
+  svoInputFileName: 
+  svoLoopBack: 1
+  svoRealTimeMode: 0
+  currentFrame: 0
+  numberFrameMax: 0
+  pauseSVOReading: 0
+  NeedNewFrameGrab: 0
+  streamInputIP: 127.0.0.1
+  streamInputPort: 30000
   enableTracking: 1
-  enableSpatialMemory: 0
+  enableSpatialMemory: 1
   pathSpatialMemory: 
+  estimateInitialPosition: 0
+  mappingResolutionPreset: 1
+  mappingRangePreset: 1
+  isMappingFilteringEnable: 0
+  isMappingTextured: 0
+  saveMeshWhenOver: 0
+  meshPath: Assets/ZEDMesh.obj
+  meshFilterParameters: 0
   depthOcclusion: 1
   postProcessing: 1
-  cameraBrightness: 1
+  m_cameraBrightness: 100
+  svoOutputFileName: Assets/Recording.svo
+  svoOutputCompressionMode: 3
+  needRecordFrame: 0
+  enableStreaming: 0
+  streamingCodec: 0
+  streamingPort: 30000
+  bitrate: 8000
+  gopSize: -1
+  adaptativeBitrate: 0
+  fadeInOnStart: 1
+  dontDestroyOnLoad: 0
+  greySkybox: 1
+  showarrig: 1
+  cameraModel: '-'
+  cameraSerialNumber: '-'
+  cameraFirmware: '-'
   versionZED: '-'
   engineFPS: '-'
   cameraFPS: '-'
@@ -575,6 +625,25 @@ MonoBehaviour:
   HMDSyncPosition: {x: 0, y: 0, z: 0}
   ZEDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
   HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
+  advancedPanelOpen: 1
+  spatialMappingFoldoutOpen: 0
+  recordingFoldoutOpen: 0
+  streamingOutFoldoutOpen: 0
+  camControlFoldoutOpen: 0
+  arlayer: 30
+  zedRigDisplayer: {fileID: 0}
+--- !u!114 &114833973883948664
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1386713500692820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 313514277d565454383ea4c1a1f8beb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showInNonZEDCameras: 1
 --- !u!114 &114878768509821778
 MonoBehaviour:
   m_ObjectHideFlags: 1

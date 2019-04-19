@@ -38,7 +38,6 @@ Shader "Custom/Spatial Mapping/Postprocess Blend"
 			float4 _ZEDMeshTex_ST;
 			float4 _MainTex_ST;
 			int _IsTextured;
-			int _IsPlaneRender;
 			float4 _WireColor;
 			v2f vert (appdata v)
 			{
@@ -53,18 +52,6 @@ Shader "Custom/Spatial Mapping/Postprocess Blend"
 			{
 
 				float4 meshColor = tex2D(_ZEDMeshTex, i.uv);
-
-				if (_IsPlaneRender == 1)
-				{
-					if (length(meshColor) < 0.1) {
-						return tex2D(_MainTex, i.uv);
-					}
-					float4 m =  clamp(tex2D(_MainTex, i.uv)*meshColor, float4(_WireColor.rgb - 0.05f,meshColor.a), float4(_WireColor.rgb + 0.05f, meshColor.a));
-#if !AWAY
-					m = tex2D(_MainTex, i.uv)*(0.5) + float4(meshColor.rgb,0.5);
-#endif
-					return m;
-				}
 
 				if (_IsTextured == 0) {
 					

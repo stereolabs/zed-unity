@@ -21,7 +21,7 @@ public class ZEDLogMessage
             return "v" + major + "." + minor;
         }
     }
- 
+
     /// <summary>
     /// Error categories returned by various camera functions, most often in GUIMessage.
     /// See ZEDCommon.ERROR_CODE for errors straignt from the SDK.  
@@ -44,6 +44,10 @@ public class ZEDLogMessage
 		/// The camera has not been initialized yet. 
 		/// </summary>
 		CAMERA_LOADING,
+		/// <summary>
+		/// SDK module are loading (tracking, object detection...)
+		/// </summary>
+		SDK_MODULE_LOADING,
         /// <summary>
         /// Could not open the camera.
         /// </summary>
@@ -146,7 +150,10 @@ public class ZEDLogMessage
 				return "Low USB bandwidth";
 
 			case ERROR.CAMERA_LOADING:
-				return "Loading...";
+				return "Loading camera...";
+
+		    case ERROR.SDK_MODULE_LOADING: 
+			   return " Loading modules...";
 
             case ERROR.VR_CAMERA_RIG_NOT_FOUND:
                 return "Warning: No SteamVR [Camera Rig] object found. Make sure you attach the CameraRig SteamVR Prefab in the project to be able to use a VR controller.\n " + 

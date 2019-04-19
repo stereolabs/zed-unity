@@ -97,10 +97,13 @@ public class Drone : MonoBehaviour, ILaserable
     /// </summary>
     private AudioSource audiosource; 
 
-    /// <summary>
-    /// The ZED camera reference, used for calling ZEDSupportFunctions as part of spawning. 
-    /// </summary>
-    private Camera leftcamera; 
+	/// <summary>
+	/// Main ZEDManager to use for determining where the drone spawns and what it attacks. 
+    /// If left empty, will choose the first available ZEDManager in the scene. 
+	/// </summary>
+    [Tooltip("Main ZEDManager to use for determining where the drone spawns and what it attacks. " +
+        "If left empty, will choose the first available ZEDManager in the scene. ")]
+	public ZEDManager zedManager = null;
 
     /// <summary>
     /// The Mesh Renderer of the drone, so we can modify its material when it takes damage.
@@ -161,7 +164,8 @@ public class Drone : MonoBehaviour, ILaserable
     void Start ()
     {
 		//Cache the ZED's left camera for occlusion testing purposes
-		leftcamera = ZEDManager.Instance.GetLeftCameraTransform().GetComponent<Camera>();
+		if (zedManager==null)
+			zedManager = FindObjectOfType<ZEDManager>();
 
 		// Set the default position of the Drone to the one he spawned at.
 		nextposition = transform.position;
@@ -394,7 +398,7 @@ public class Drone : MonoBehaviour, ILaserable
     private bool FindNewMovePosition(out Vector3 newpos)
     {
         //We can't move if the ZED isn't initialized. 
-        if (!ZEDManager.Instance.IsZEDReady)
+		if (!zedManager.IsZEDReady)
         {
             newpos = transform.position;
             return false;
@@ -403,13 +407,14 @@ public class Drone : MonoBehaviour, ILaserable
         Vector3 randomPosition;
         // Look Around For a New Position
         //If the Drone is on the screen, search around a smaller radius.
-        if (ZEDSupportFunctions.CheckScreenView(transform.position, leftcamera))
+        //Note that we only check the primary ZEDManager because we only want the drone to spawn in front of the player anyway. 
+        if (ZEDSupportFunctions.CheckScreenView(transform.position, zedManager.GetLeftCamera()))
             randomPosition = UnityEngine.Random.onUnitSphere * UnityEngine.Random.Range(2f, 3f) + transform.position;
         else //if the drone is outside, look around a bigger radius to find a position which is inside the screen.
             randomPosition = UnityEngine.Random.onUnitSphere * UnityEngine.Random.Range(4f, 5f) + transform.position;
 
         // Look For Any Collisions Through The ZED
-        bool hit = ZEDSupportFunctions.HitTestAtPoint(leftcamera, randomPosition);
+		bool hit = ZEDSupportFunctions.HitTestAtPoint(zedManager.zedCamera, zedManager.GetLeftCamera(), randomPosition);
 
         if (!hit)
         {
@@ -418,11 +423,11 @@ public class Drone : MonoBehaviour, ILaserable
         }
 
         //If we spawn the drone at that world point, it'll spawn inside a wall. Bring it closer by a distance of ClearRadius. 
-        Quaternion directiontoDrone = Quaternion.LookRotation(leftcamera.transform.position - randomPosition, Vector3.up);
+        Quaternion directiontoDrone = Quaternion.LookRotation(zedManager.GetLeftCameraTransform().position - randomPosition, Vector3.up);
         Vector3 newPosition = randomPosition + directiontoDrone * Vector3.forward * ClearRadius;
 
         //Check the new position isn't too close from the camera.
-        float dist = Vector3.Distance(leftcamera.transform.position, randomPosition);
+        float dist = Vector3.Distance(zedManager.GetLeftCamera().transform.position, randomPosition);
         if (dist < 1f)
         {
             newpos = transform.position;
@@ -430,7 +435,7 @@ public class Drone : MonoBehaviour, ILaserable
         }
 
         //Also check nearby points in a sphere of radius to make sure the whole drone has a clear space. 
-        if (ZEDSupportFunctions.HitTestOnSphere(leftcamera, newPosition, 1f, radiusCheckRate, percentageThreshold))
+		if (ZEDSupportFunctions.HitTestOnSphere(zedManager.zedCamera, zedManager.GetLeftCamera(), newPosition, 1f, radiusCheckRate, percentageThreshold))
         {
             newpos = transform.position;
             return false;

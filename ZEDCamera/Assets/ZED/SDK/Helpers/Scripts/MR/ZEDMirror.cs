@@ -34,12 +34,13 @@ public class ZEDMirror : MonoBehaviour
         }
     }
 
-    private void OnPostRender() //Called after the Camera component in this GameObject has rendered. 
+    private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
         if (textureOverlayLeft != null)
         {
-            Graphics.Blit(textureOverlayLeft.target, null as RenderTexture); //Copy ZEDRenderingPlane's texture as the final image. 
+            //Ignore source. Copy ZEDRenderingPlane's texture as the final image.
+            Graphics.Blit(textureOverlayLeft.target, destination);  
         }
-
     }
+
 }

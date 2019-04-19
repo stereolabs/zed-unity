@@ -50,9 +50,15 @@ public class ZEDRenderingPlane : MonoBehaviour
     private Camera cam;
 
     /// <summary>
-    /// Reference to the ZED SDK. 
+	/// zedCamera controlled by ZEDManager (one manager controls one camera)
     /// </summary>
-    private sl.ZEDCamera zedCamera;
+    private sl.ZEDCamera zedCamera = null;
+
+	/// <summary>
+	/// ZED Manager that controls the zed Camera
+	/// </summary>
+	private ZEDManager zedManager = null;
+
 
     /// <summary>
     /// Texture of the real world generated from the ZED. It may be the from the left or right 'eye.'
@@ -86,12 +92,12 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// <summary>
     /// The material used to integrate the depth in forward mode after the depth texture is created. Mainly used to get the shadows. Not needed for lighting otherwise.
     /// </summary>
-    private Material forwardMat;
+    public Material forwardMat { get; private set; }
 
     /// <summary>
     /// The material used to integrate the depth in deferred mode. Always used in deferred regardless of lighting/shadows. 
     /// </summary>
-    private Material deferredMat;
+    public Material deferredMat { get; private set; }
 
     /// <summary>
     /// The actual rendering path used. 
@@ -298,9 +304,20 @@ public class ZEDRenderingPlane : MonoBehaviour
     void Awake()
     {
         //Get the current camera and set the aspect ratio.
+		zedManager = gameObject.transform.parent.GetComponent<ZEDManager> ();
         cam = GetComponent<Camera>();
         cam.aspect = aspect;
         cam.renderingPath = RenderingPath.UsePlayerSettings; //Assigns the camera's rendering path to be consistent with the project's settings. 
+
+        //Make the canvas allow rendering this camera. 
+        HideFromWrongCameras.RegisterZEDCam(cam); //Makes all objects with a HideFromWrongCamera hide from this, unless set to this specifc one. 
+        HideFromWrongCameras hider = canvas.GetComponent<HideFromWrongCameras>();
+        if(!hider)
+        {
+            hider = canvas.AddComponent<HideFromWrongCameras>();
+        }
+
+        hider.SetRenderCamera(cam); //This canvas will allow this camera to render it. 
     }
 
     /// <summary>
@@ -324,11 +341,18 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// </summary>
     private void SetUpGI()
     {
-        RenderSettings.skybox = null;
-        Color c;
-        ColorUtility.TryParseHtmlString("#999999", out c);
-        RenderSettings.ambientLight = c;
-        DynamicGI.UpdateEnvironment();
+        //Only do this if "Hide Skybox" is enabled in ZEDManager, which is is by default.
+        if (zedManager)
+        {
+            if (zedManager.greySkybox)
+            {
+                RenderSettings.skybox = null;
+                Color c;
+                ColorUtility.TryParseHtmlString("#999999", out c);
+                RenderSettings.ambientLight = c;
+                DynamicGI.UpdateEnvironment();
+            }
+        }
     }
 
     /// <summary>
@@ -388,9 +412,14 @@ public class ZEDRenderingPlane : MonoBehaviour
     void ZEDReady()
     {
         //Add the fade-in effect for when the camera first becomes visible. 
-        if(ZEDManager.Instance.fadeInOnStart) gameObject.AddComponent<LoadingFade>();
+        if (zedManager.fadeInOnStart)
+            gameObject.AddComponent<LoadingFade>();
 
-        zedCamera = sl.ZEDCamera.GetInstance();
+		//This cannot happen but just in case...
+		if (zedManager == null)
+			return;
+
+		zedCamera = zedManager.zedCamera;
 		SetTextures(zedCamera,viewMode);
         canvas.SetActive(true);
 		canvas.transform.SetParent (cam.transform);
@@ -441,8 +470,22 @@ public class ZEDRenderingPlane : MonoBehaviour
 
         meshCanvas = gameObject.transform.GetChild(0).GetComponent<MeshFilter>();
         canvas.SetActive(false);
-        ZEDManager.OnZEDReady += ZEDReady;
-		ZEDManager.OnZEDDisconnected += ZEDDisconnected;
+
+		//iterate until we found the ZED Manager parent...
+		Transform ObjParent = gameObject.transform;
+		int tries = 0;
+		while (zedManager == null && tries<5) {
+			if (ObjParent!=null) 
+				zedManager= ObjParent.GetComponent<ZEDManager> ();
+			if (zedManager == null && ObjParent!=null)
+				ObjParent = ObjParent.parent;
+			tries++;
+		}
+	
+		if (zedManager != null) {
+			zedManager.OnZEDReady += ZEDReady;
+			zedManager.OnZEDDisconnected += ZEDDisconnected;
+		}
     }
 
     /// <summary>
@@ -450,8 +493,10 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// </summary>
     private void OnDisable()
     {
-        ZEDManager.OnZEDReady -= ZEDReady;
-		ZEDManager.OnZEDDisconnected -= ZEDDisconnected;
+		if (zedManager != null) {
+			zedManager.OnZEDReady -= ZEDReady;
+			zedManager.OnZEDDisconnected -= ZEDDisconnected;
+		}
         canvas.SetActive(false);
     }
 
@@ -512,6 +557,7 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// </summary>
     private void SetForward()
     {
+	//	cam.RemoveAllCommandBuffers ();
         ghasShadows = false;
 
         blitMaterial = new Material(Resources.Load("Materials/PostProcessing/Mat_ZED_Blit") as Material);
@@ -580,6 +626,7 @@ public class ZEDRenderingPlane : MonoBehaviour
         postProcessBuffer[(int)ZED_RENDERING_MODE.FORWARD].Blit(BuiltinRenderTextureType.CameraTarget, mask, blitMaterial, 0);
         postProcessBuffer[(int)ZED_RENDERING_MODE.FORWARD].SetGlobalTexture("_ZEDMaskVirtual", mask);
 
+		 
         cam.RemoveCommandBuffer(CameraEvent.AfterForwardAlpha, postProcessBuffer[(int)ZED_RENDERING_MODE.FORWARD]);
         cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, postProcessBuffer[(int)ZED_RENDERING_MODE.FORWARD]);
 
@@ -639,6 +686,7 @@ public class ZEDRenderingPlane : MonoBehaviour
 
         if (postProcessBuffer[(int)ZED_RENDERING_MODE.FORWARD] != null)
             cam.RemoveCommandBuffer(CameraEvent.AfterForwardAlpha, postProcessBuffer[(int)ZED_RENDERING_MODE.FORWARD]);
+		
         if (postProcessBuffer[(int)ZED_RENDERING_MODE.FORWARD] != null)
         {
             postProcessBuffer[(int)ZED_RENDERING_MODE.FORWARD].Dispose();
@@ -1053,10 +1101,28 @@ public class ZEDRenderingPlane : MonoBehaviour
 		screen.transform.localScale = new Vector3(width, height, 1);
 	}
 
+	public void Clear()
+	{
+ 
+		if (buffer[(int)ZED_RENDERING_MODE.FORWARD] != null)
+			cam.RemoveCommandBuffer(CameraEvent.BeforeDepthTexture, buffer[(int)ZED_RENDERING_MODE.FORWARD]);
+
+		if (buffer[(int)ZED_RENDERING_MODE.DEFERRED] != null)
+			cam.RemoveCommandBuffer(CameraEvent.AfterGBuffer, buffer[(int)ZED_RENDERING_MODE.DEFERRED]);
+	
+		if (postProcessBuffer [(int)ZED_RENDERING_MODE.FORWARD] != null)
+			cam.RemoveCommandBuffer (CameraEvent.AfterForwardAlpha, postProcessBuffer [(int)ZED_RENDERING_MODE.FORWARD]);
+
+		if (postProcessBuffer[(int)ZED_RENDERING_MODE.DEFERRED] != null)
+			cam.RemoveCommandBuffer(CameraEvent.AfterFinalPass, postProcessBuffer[(int)ZED_RENDERING_MODE.DEFERRED]);
+		
+
+		ClearDepthBuffers();
+
+	}
 
     void OnApplicationQuit()
     {
-
         if (computeBufferPointLight != null)
         {
             computeBufferPointLight.Release();
@@ -1078,6 +1144,9 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// </summary>
     void Update()
     {
+		if (zedManager == null)
+			return;
+		
         if(aspectRatio != null)
         {
             aspectRatio.Update();
@@ -1089,7 +1158,7 @@ public class ZEDRenderingPlane : MonoBehaviour
             UpdateLights();
         }
 
-		if(ZEDManager.Instance.IsZEDReady && (cam.nearClipPlane != nearplane || cam.farClipPlane != farplane))
+		if(zedManager.IsZEDReady && (cam.nearClipPlane != nearplane || cam.farClipPlane != farplane))
         {
             SetProjection(nearplane, farplane); //If the camera's near/far planes changed, update the matrix. 
         }
@@ -1128,21 +1197,11 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// <param name="destination"></param>
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-		if (ZEDSpatialMapping.display) //If displaying a mesh from spatial mapping, blend the wireframe into the image. 
+		if (zedManager.GetSpatialMapping.display) //If displaying a mesh from spatial mapping, blend the wireframe into the image. 
         {
 			RenderTexture tmpSource = RenderTexture.GetTemporary (source.width, source.height, source.depth, source.format, RenderTextureReadWrite.sRGB);
 			Graphics.Blit (source, tmpSource);
 			blender.SetInt ("_IsTextured", 0);
-			blender.SetInt ("_IsPlaneRender", 0); //set Rendering mode for mapping / no texture
-			Graphics.Blit (tmpSource, destination, blender);
-			RenderTexture.ReleaseTemporary (tmpSource);
-		}
-        else if (ZEDPlaneDetectionManager.isDisplay) //If displaying planes from plane detection, blend wireframes into the image. 
-        {
-			RenderTexture tmpSource = RenderTexture.GetTemporary (source.width, source.height, source.depth, source.format, RenderTextureReadWrite.sRGB);
-			Graphics.Blit (source, tmpSource);
-			blender.SetInt ("_IsTextured", 0);
-			blender.SetInt ("_IsPlaneRender", 1); //Set rendering mode for plane 
 			Graphics.Blit (tmpSource, destination, blender);
 			RenderTexture.ReleaseTemporary (tmpSource);
 		}

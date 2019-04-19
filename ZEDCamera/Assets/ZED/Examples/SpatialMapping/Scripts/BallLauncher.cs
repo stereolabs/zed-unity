@@ -116,18 +116,7 @@ public class BallLauncher : MonoBehaviour
 
     }
 
-    private void OnEnable()
-    {
-		ZEDManager.OnZEDReady += ZedReady;
-    }
-    private bool ready = false;
-
-	void ZedReady()
-	{
-		ready = true;
-	}
-
-
+ 
     static float EaseIn(float t, float b, float c, float d)
     {
         return -c * (Mathf.Sqrt(1 - (t /= d) * t) - 1) + b;
@@ -137,7 +126,7 @@ public class BallLauncher : MonoBehaviour
     void Update()
     {
   
-		if (ready && (Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1")))
+		if (Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1"))
         {
             if(timerball > timeballmax)
             {

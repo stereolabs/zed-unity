@@ -11,6 +11,37 @@ using UnityEngine;
 
 namespace sl
 {
+
+	public class ZEDCommon
+	{
+		public const string NameDLL = "sl_unitywrapper";
+	}
+
+	public enum ZED_CAMERA_ID
+	{
+		CAMERA_ID_01,
+		CAMERA_ID_02,
+		CAMERA_ID_03,
+		CAMERA_ID_04,
+	};
+
+
+    public enum INPUT_TYPE
+    {
+        INPUT_TYPE_USB,
+        INPUT_TYPE_SVO,
+        INPUT_TYPE_STREAM
+    };
+
+    /// <summary>
+    /// Constant for plugin. Should not be changed
+    /// </summary>
+    public enum Constant
+	{
+		MAX_CAMERA_PLUGIN = 4,
+		PLANE_DISTANCE = 10
+	};
+
     /// <summary>
     /// Holds a 3x3 matrix that can be marshaled between the ZED
     /// Unity wrapper and C# scripts. 
@@ -92,6 +123,9 @@ namespace sl
         /// </summary>
 		public int imu_image_sync_val; 
 	};
+
+
+
 
     /// <summary>
     /// Calibration information for an individual sensor on the ZED (left or right). </summary>
@@ -336,6 +370,10 @@ namespace sl
 		/// </summary>
 		SVO_RECORDING_ERROR,
 		/// <summary>
+		/// An SVO related error when NVIDIA based compression cannot be loaded
+		/// </summary>
+		SVO_UNSUPPORTED_COMPRESSION,
+		/// <summary>
 		/// The requested coordinate system is not available.
 		/// </summary>
 		INVALID_COORDINATE_SYSTEM, 
@@ -404,7 +442,16 @@ namespace sl
 		/// Plane not found. Either no plane is detected in the scene, at the location or corresponding to the floor, 
         /// or the floor plane doesn't match the prior given.
 		/// </summary>
-		ERROR_CODE_PLANE_NOT_FOUND, 
+		PLANE_NOT_FOUND, 
+		/// <summary>
+		/// Missing or corrupted AI module ressources. 
+		/// Please reinstall the ZED SDK with the AI (object detection) module to fix this issue
+		/// </summary>
+		AI_MODULE_NOT_AVAILABLE,
+		/// <summary>
+		/// The cuDNN library cannot be loaded, or is not compatible with this version of the ZED SDK
+		/// </summary>
+		INCOMPATIBLE_CUDNN_VERSION,
 		/// <summary>
 		/// End of error code. Used before init has been called. 
 		/// </summary>
@@ -584,9 +631,16 @@ namespace sl
         EXPOSURE,
         /// <summary>
         /// Color temperature control. Value should be between 2800 and 6500 with a step of 100. 
-        /// Setting to -1 enables AWB (automatic white balance).
         /// </summary>
-        WHITEBALANCE
+        WHITEBALANCE,
+		/// <summary>
+		/// Defines if the white balance is in automatic mode or not.
+		/// </summary>
+		AUTO_WHITEBALANCE,
+        /// <summary>
+        /// front LED status (1==enable, 0 == disable)
+        /// </summary>
+        LED_STATUS
     };
 
     /// <summary>
@@ -757,6 +811,22 @@ namespace sl
 		HEVC_BASED,
     }
 
+
+    /// <summary>
+    /// Streaming codecs
+    /// </summary>
+    public enum STREAMING_CODEC
+    {
+        /// <summary>
+        /// AVCHD Based compression (H264)
+        /// </summary>
+        AVCHD_BASED,
+        /// <summary>
+        /// HEVC Based compression (H265)
+        /// </summary>
+        HEVC_BASED
+    }
+
     /// <summary>
     /// Mesh formats that can be saved/loaded with spatial mapping. 
     /// </summary>
@@ -859,6 +929,7 @@ namespace sl
     /// </summary>
     public class InitParameters
     {
+        public sl.INPUT_TYPE inputType;
         /// <summary>
         /// Resolution the ZED will be set to.  
         /// </summary>
@@ -869,9 +940,8 @@ namespace sl
         public int cameraFPS;
         /// <summary>
         /// ID for identifying which of multiple connected ZEDs to use. 
-        /// NOT CURRENTLY SUPPORTED IN UNITY. 
         /// </summary>
-        public int cameraLinuxID;
+        public int cameraID;
         /// <summary>
         /// Path to a recorded SVO file to play, including filename.
         /// </summary>
@@ -934,15 +1004,28 @@ namespace sl
 		/// Optional path for searching configuration (calibration) file SNxxxx.conf. (introduced in ZED SDK 2.6)
 		/// </summary>
 		public string optionalSettingsPath = "";
+		/// <summary>
+		/// True to stabilize the depth map. Recommended. 
+		/// </summary>
+		public bool cameraDisableIMU;
+        /// <summary>
+        /// Path to a recorded SVO file to play, including filename.
+        /// </summary>
+        public string ipStream = "";
+        /// <summary>
+        /// Path to a recorded SVO file to play, including filename.
+        /// </summary>
+        public ushort portStream = 30000;
 
         /// <summary>
         /// Constructor. Sets default initialization parameters recommended for Unity. 
         /// </summary>
         public InitParameters()
         {
+            this.inputType = sl.INPUT_TYPE.INPUT_TYPE_USB;
             this.resolution = RESOLUTION.HD720;
             this.cameraFPS = 60;
-            this.cameraLinuxID = 0;
+            this.cameraID = 0;
             this.pathSVO = "";
             this.svoRealTimeMode = false;
             this.coordinateUnit = UNIT.METER;
@@ -958,6 +1041,9 @@ namespace sl
             this.enableRightSideMeasure = false;
             this.depthStabilization = true;
 			this.optionalSettingsPath = "";
+			this.cameraDisableIMU = false;
+            this.ipStream = "";
+            this.portStream = 30000;
         }
 
     }
@@ -1072,6 +1158,7 @@ namespace sl
 		RIGHT_EYE
 	};
 
+
 	/// <summary>
 	/// Types of USB device brands.
 	/// </summary>
@@ -1092,13 +1179,6 @@ namespace sl
 	};
 
 
-	/// <summary>
-	/// Constant for the distance of the rendering planes from the camera. Don't change this.
-	/// </summary>
-	public enum Constant
-    {
-		PLANE_DISTANCE = 10
-	};
 
 
 

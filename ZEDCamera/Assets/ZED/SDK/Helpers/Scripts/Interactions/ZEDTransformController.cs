@@ -33,6 +33,15 @@ public class ZEDTransformController : MonoBehaviour
     public bool repositionAtStart = true;
 
     /// <summary>
+    /// Reference to the scene's ZEDManager component. 
+    /// Used when RelativeMotion is set to Camera, for finding the current position of the ZED.
+    /// </summary>
+    [Tooltip("Reference to the scene's ZEDManager component. Used when RelativeMotion is set to Camera, " + 
+        "and also for positioning it at start. If left blank, the first ZED camera indexed will be set.")]
+    public ZEDManager zedManager = null;
+
+
+    /// <summary>
     /// How fast the object moves/translates, in meters per second. 
     /// </summary>
     [Space(5)]
@@ -86,11 +95,6 @@ public class ZEDTransformController : MonoBehaviour
     /// </summary>
     private Camera leftCamera;
 
-    /// <summary>
-    /// Reference to the scene's ZEDManager component. 
-    /// Used when RelativeMotion is set to Camera, for finding the current position of the ZED.
-    /// </summary>
-    private ZEDManager zedManager;
 
     /// <summary>
     /// Whether the object is moving/translating. 
@@ -100,7 +104,18 @@ public class ZEDTransformController : MonoBehaviour
     private IEnumerator Start()
     {
         isMoving = false;
-        zedManager = ZEDManager.Instance;
+
+        if (!zedManager)
+        {
+            zedManager = FindObjectOfType<ZEDManager>();
+            if(ZEDManager.GetInstances().Count > 1) //They let the plugin auto-assign a ZED but there are multiple ZED's. Warn the user. 
+            {
+                Debug.Log("Warning: ZEDTransformController's zedManager field was not specified, but there are multiple ZEDManagers in the scene " +
+                    "so first available ZED was assigned. This can cause the object to move relative to the wrong camera. " +
+                    "It's recommended to assign the desired ZEDManager in the Inspector.");
+            }
+        }
+       
 
         //Find the available VR controllers and assigning them to our List.
         yield return new WaitForSeconds(1f);
@@ -113,7 +128,7 @@ public class ZEDTransformController : MonoBehaviour
 
         if (repositionAtStart) //If the user wants, move the object in front of the ZED once it's initialized. 
         {
-            ZEDManager.OnZEDReady += RepositionInFrontOfZED;
+			zedManager.OnZEDReady += RepositionInFrontOfZED;
         }
     }
 
@@ -239,7 +254,6 @@ public class ZEDTransformController : MonoBehaviour
                 {
                     //moveaxissteamvr = SteamVR_Controller.Input((int)objectTrackers[0].index).GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0);
                     moveaxissteamvr = objectTrackers[0].GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0);
-
                     inputRotation += moveaxissteamvr.x * rotationSpeed * 360f * Time.deltaTime;
 
                     gravity = Quaternion.FromToRotation(zedManager.GetZedRootTansform().up, Vector3.up);
@@ -337,8 +351,8 @@ public class ZEDTransformController : MonoBehaviour
     /// </summary>
     void RepositionInFrontOfZED()
     {
-        transform.position = ZEDManager.Instance.OriginPosition + ZEDManager.Instance.OriginRotation * (Vector3.forward);
-        Quaternion newRot = Quaternion.LookRotation(ZEDManager.Instance.OriginPosition - transform.position, Vector3.up);
+		transform.position = zedManager.OriginPosition + zedManager.OriginRotation * (Vector3.forward);
+		Quaternion newRot = Quaternion.LookRotation(zedManager.OriginPosition - transform.position, Vector3.up);
         transform.eulerAngles = new Vector3(0, newRot.eulerAngles.y + 180, 0);
     }
 

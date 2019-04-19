@@ -11,6 +11,7 @@ using UnityEngine;
 public class ZEDMeshRenderer : MonoBehaviour
 {
 
+	private ZEDManager zedManager = null;
     /// <summary>
     /// Reference to the hidden camera we create at runtime. 
     /// </summary>
@@ -29,8 +30,7 @@ public class ZEDMeshRenderer : MonoBehaviour
     /// <summary>
     /// Checks if the mesh requested is textured. If so, deativate the wireframe.
     /// </summary>
-    [HideInInspector]
-    static public bool isTextured = false;
+    public bool isTextured = false;
 
     /// <summary>
     /// Shader used to render the wireframe. Normally Mat_ZED_Wireframe_Video_Overlay. 
@@ -43,62 +43,67 @@ public class ZEDMeshRenderer : MonoBehaviour
 	private ZEDRenderingPlane renderingPlane;
 
     /// <summary>
-    /// Creates the duplicate camera that renders only the scanned mesh.
-    /// Rendering targets a RenderTexture that ZEDRenderingPlane will blend in at OnRenderImage(). 
-    /// This gets called by ZEDManager.OnZEDReady when the ZED is finished initializing. 
+    /// Create the Mesh Rendering pipe
     /// </summary>
-    void ZEDReady()
+    public void Create()
     {
-        //Create the new GameObject and camera as a child of the corresponding ZED rig camera.
-        GameObject go = new GameObject("MeshCamera");
-        go.transform.parent = transform;
-        go.transform.localPosition = Vector3.zero;
-        go.transform.localRotation = Quaternion.identity;
-        go.transform.localScale = Vector3.one;
-        cam = go.AddComponent<Camera>();
-        go.hideFlags = HideFlags.HideAndDontSave;//This hides the new camera from scene view. Comment this out to see it in the hierarchy. 
 
-        //Set the target texture to a new RenderTexture that will be passed to ZEDRenderingPlane for blending. 
-        if (sl.ZEDCamera.GetInstance().IsCameraReady)
-        {
-            meshTex = new RenderTexture(sl.ZEDCamera.GetInstance().ImageWidth, sl.ZEDCamera.GetInstance().ImageHeight, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
-            meshTex.Create();
-        }
+		Transform ObjParent = gameObject.transform;
+		int tries = 0;
+		while (zedManager == null && tries<5) {
+			if (ObjParent!=null) 
+				zedManager= ObjParent.GetComponent<ZEDManager> ();
+			if (zedManager == null && ObjParent!=null)
+				ObjParent = ObjParent.parent;
+			tries++;
+		}
 
-        //Set the camera's parameters. 
-        cam.enabled = false;
-        cam.cullingMask = (1 << sl.ZEDCamera.TagOneObject); //Layer set aside for planes and spatial mapping meshes. 
-        cam.targetTexture = meshTex;
-        cam.nearClipPlane = 0.1f;
-        cam.farClipPlane = 500.0f;
-        cam.fieldOfView = sl.ZEDCamera.GetInstance().GetFOV() * Mathf.Rad2Deg;
-        cam.projectionMatrix = sl.ZEDCamera.GetInstance().Projection;
-        cam.backgroundColor = new Color(0, 0, 0, 0);
-        cam.clearFlags = CameraClearFlags.Color;
-        cam.renderingPath = RenderingPath.VertexLit;
-        cam.depth = 0;
-        cam.depthTextureMode = DepthTextureMode.None;
+		if (zedManager == null) {
+			return;
+		}
 
-#if UNITY_5_6_OR_NEWER
-        cam.allowMSAA = false;
-        cam.allowHDR = false;
-#endif
-        cam.useOcclusionCulling = false;
+		//Create the new GameObject and camera as a child of the corresponding ZED rig camera.
+		GameObject go = new GameObject("MeshCamera");
+		go.transform.parent = transform;
+		go.transform.localPosition = Vector3.zero;
+		go.transform.localRotation = Quaternion.identity;
+		go.transform.localScale = Vector3.one;
+		cam = go.AddComponent<Camera>();
+		go.hideFlags = HideFlags.HideAndDontSave;//This hides the new camera from scene view. Comment this out to see it in the hierarchy. 
 
-        shaderWireframe = (Resources.Load("Materials/SpatialMapping/Mat_ZED_Wireframe_Video_Overlay") as Material).shader;
+		//Set the target texture to a new RenderTexture that will be passed to ZEDRenderingPlane for blending. 
+		if (zedManager.zedCamera.IsCameraReady)
+		{
+			meshTex = new RenderTexture(zedManager.zedCamera.ImageWidth, zedManager.zedCamera.ImageHeight, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
+			meshTex.Create();
+		}
 
-        //Set the ZEDRenderingPlane blend texture to the one the new camera renders to.
-        renderingPlane = GetComponent<ZEDRenderingPlane>();
+		//Set the camera's parameters. 
+		cam.enabled = false;
+		cam.cullingMask = (1 << zedManager.zedCamera.TagOneObject); //Layer set aside for planes and spatial mapping meshes. 
+		cam.targetTexture = meshTex;
+		cam.nearClipPlane = 0.1f;
+		cam.farClipPlane = 500.0f;
+		cam.fieldOfView = zedManager.zedCamera.GetFOV() * Mathf.Rad2Deg;
+		cam.projectionMatrix = zedManager.zedCamera.Projection;
+		cam.backgroundColor = new Color(0, 0, 0, 0);
+		cam.clearFlags = CameraClearFlags.Color;
+		cam.renderingPath = RenderingPath.VertexLit;
+		cam.depth = 0;
+		cam.depthTextureMode = DepthTextureMode.None;
+
+		#if UNITY_5_6_OR_NEWER
+		cam.allowMSAA = false;
+		cam.allowHDR = false;
+		#endif
+		cam.useOcclusionCulling = false;
+
+		shaderWireframe = (Resources.Load("Materials/SpatialMapping/Mat_ZED_Wireframe_Video_Overlay") as Material).shader;
+
+		//Set the ZEDRenderingPlane blend texture to the one the new camera renders to.
+		renderingPlane = GetComponent<ZEDRenderingPlane>();
 		renderingPlane.SetTextureOverlayMapping(meshTex); 
-    }
-
-    /// <summary>
-    /// Subscribes to relevant events. 
-    /// </summary>
-    private void OnEnable()
-    {
-        ZEDSpatialMapping.OnMeshStarted += SpatialMappingStarted;
-        ZEDManager.OnZEDReady += ZEDReady;
+		hasStarted = true;
     }
 
     /// <summary>
@@ -106,18 +111,7 @@ public class ZEDMeshRenderer : MonoBehaviour
     /// </summary>
     private void OnDisable()
     {
-        ZEDSpatialMapping.OnMeshStarted -= SpatialMappingStarted;
-
-        ZEDManager.OnZEDReady -= ZEDReady;
-    }
-
-
-    /// <summary>
-    /// Sets hasStarted to true. Called from ZEDSpatialMapping once it has started scanning. 
-    /// </summary>
-    void SpatialMappingStarted()
-    {
-        hasStarted = true;
+		hasStarted = false;
     }
 
     /// <summary>
@@ -125,14 +119,15 @@ public class ZEDMeshRenderer : MonoBehaviour
     /// </summary>
     void Update()
     {
-        if (ZEDSpatialMapping.display && hasStarted)
-        {
-            cam.enabled = true;
-            GL.wireframe = true;
-			cam.RenderWithShader(shaderWireframe, "RenderType");
-            GL.wireframe = false;
-            cam.enabled = false;
-        }
+		if (zedManager!=null) {
+			if (zedManager.IsSpatialMappingDisplay && hasStarted) {
+				cam.enabled = true;
+				GL.wireframe = true;
+				cam.RenderWithShader (shaderWireframe, "RenderType");
+				GL.wireframe = false;
+				cam.enabled = false;
+			}
+		}
     }
 
     /// <summary>

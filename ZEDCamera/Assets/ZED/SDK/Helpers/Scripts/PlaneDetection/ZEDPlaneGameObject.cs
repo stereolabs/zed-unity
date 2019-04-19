@@ -120,6 +120,17 @@ public class ZEDPlaneGameObject : MonoBehaviour
     }
 
     /// <summary>
+    /// The MeshRenderer attached to this object. 
+    /// </summary>
+    MeshRenderer rend;
+
+    /// <summary>
+    /// Enabled state of the attached Renderer prior to Unity's rendering stage. 
+    /// <para>Used so that manually disabling the object's MeshRenderer won't be undone by this script.</para>
+    /// </summary>
+    private bool lastRenderState = true;
+
+    /// <summary>
     /// Creates a mesh from given plane data and assigns it to new MeshFilter, MeshRenderer and MeshCollider components. 
     /// </summary>
     /// <param name="plane"></param>
@@ -160,17 +171,17 @@ public class ZEDPlaneGameObject : MonoBehaviour
         mf.mesh.RecalculateBounds();
 
         //Get the MeshRenderer and set properties.
-        MeshRenderer mr = gameObject.GetComponent<MeshRenderer>();
-        if (mr == null)
-            mr = gameObject.AddComponent<MeshRenderer>();
-        mr.material = rendermaterial;
+        rend = gameObject.GetComponent<MeshRenderer>();
+        if (rend == null)
+            rend = gameObject.AddComponent<MeshRenderer>();
+        rend.material = rendermaterial;
 
         //Turn off light and shadow effects, as the planes are meant to highlight a real-world object, not be a distinct object. 
-        mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        mr.receiveShadows = false;
-        mr.enabled = true;
-        mr.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
-        mr.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+        rend.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        rend.receiveShadows = false;
+        rend.enabled = true;
+        rend.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+        rend.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
 
         //Get the MeshCollider and apply the new mesh to it. 
         MeshCollider mc = gameObject.GetComponent<MeshCollider>();
@@ -179,6 +190,8 @@ public class ZEDPlaneGameObject : MonoBehaviour
 
         // Set the mesh for the collider.
         mc.sharedMesh = mf.mesh;
+
+        lastRenderState = true; 
 
     }
 
@@ -190,9 +203,9 @@ public class ZEDPlaneGameObject : MonoBehaviour
     /// <param name="vertices">Vertices of the mesh.</param>
     /// <param name="triangles">Triangles of the mesh.</param>
     /// <param name="opt_count">If a hit plane, the total number of hit planes detected prior to and including this one.</param>
-    public void Create(PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count)
+    public void Create(Camera cam,PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count)
     {
-        Create(plane, vertices, triangles, opt_count, GetDefaultMaterial(plane.Type));
+		Create(cam,plane, vertices, triangles, opt_count, GetDefaultMaterial(plane.Type));
     }
 
     /// <summary>
@@ -204,7 +217,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
     /// <param name="triangles">Triangles of the mesh.</param>
     /// <param name="opt_count">If a hit plane, the total number of hit planes detected prior to and including this one.</param>
     /// <param name="rendermaterial">Material to replace the default wireframe plane material.</param>
-    public void Create(PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count, Material rendermaterial)
+	public void Create(Camera cam,PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count, Material rendermaterial)
     {
         //Copy the supplied PlaneData into this component's own PlaneData, for accessing later. 
         planeData.ErrorCode = plane.ErrorCode;
@@ -220,8 +233,8 @@ public class ZEDPlaneGameObject : MonoBehaviour
 		System.Array.Copy (plane.Bounds, planeData.Bounds, plane.BoundsSize);
 
         //Calculate the world space normal. 
-        Camera leftCamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
-        worldNormal = leftCamera.transform.TransformDirection(planeData.PlaneNormal);
+		Camera leftCamera = cam;
+		worldNormal = cam.transform.TransformDirection(planeData.PlaneNormal);
 
         //Create the MeshCollider.
         gameObject.AddComponent<MeshCollider>().sharedMesh = null;
@@ -232,13 +245,16 @@ public class ZEDPlaneGameObject : MonoBehaviour
 			gameObject.name = "Floor Plane";
 
 
-        gameObject.layer = sl.ZEDCamera.TagOneObject;
+		gameObject.layer = 12;//sl.ZEDCamera.TagOneObject;
 
         SetComponents(plane, vertices, triangles, rendermaterial);
 
         isCreated = true;
-    }
 
+        //Subscribe to events that let you govern visibility in the scene and game. 
+        Camera.onPreCull += PreCull;
+        Camera.onPostRender += PostRender;
+    }
 
     /// <summary>
     /// Updates the floor plane with new plane data, if 
@@ -348,9 +364,10 @@ public class ZEDPlaneGameObject : MonoBehaviour
 	/// </summary>
 	/// <returns>The minimum distance to boundaries.</returns>
 	/// <param name="worldPosition">World position.</param>
-	public float getMinimumDistanceToBoundaries(Vector3 worldPosition,out Vector3 minimumBoundsPosition)
+	public float getMinimumDistanceToBoundaries(Camera cam, Vector3 worldPosition,out Vector3 minimumBoundsPosition)
 	{
-		Camera leftCamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
+		
+		Camera leftCamera = cam;
 		float minimal_distance = ZEDSupportFunctions.DistancePointLine (worldPosition, leftCamera.transform.TransformPoint(planeData.Bounds [0]), leftCamera.transform.TransformPoint(planeData.Bounds [1]));
 
 		Vector3 BestFoundPoint = new Vector3(0.0f,0.0f,0.0f);
@@ -408,5 +425,41 @@ public class ZEDPlaneGameObject : MonoBehaviour
         }
 
         return defaultmaterial;
+    }
+
+    /// <summary>
+    /// Disables the MeshRenderer object for rendering a single camera, depending on display settings in ZEDPlaneDetectionManager. 
+    /// </summary>
+    /// <param name="currentcam"></param>
+    private void PreCull(Camera currentcam)
+    {
+        lastRenderState = rend.enabled;
+        if (!rend.enabled) return; //We weren't going to render this object anyway, so skip the rest of the logic. 
+
+        if (currentcam.name.ToLower().Contains("scenecamera"))
+        {
+            rend.enabled = ZEDPlaneDetectionManager.isSceneDisplay;
+
+        }
+        else
+        {
+            rend.enabled = ZEDPlaneDetectionManager.isGameDisplay;
+        }
+
+    }
+
+    /// <summary>
+    /// Re-enables the MeshRenderer after PreCull may disable it each time a camera renders. 
+    /// </summary>
+    /// <param name="currentcam"></param>
+    private void PostRender(Camera currentcam)
+    {
+        rend.enabled = lastRenderState;
+    }
+
+    private void OnDestroy()
+    {
+        Camera.onPreCull -= PreCull;
+        Camera.onPostRender -= PostRender;
     }
 }

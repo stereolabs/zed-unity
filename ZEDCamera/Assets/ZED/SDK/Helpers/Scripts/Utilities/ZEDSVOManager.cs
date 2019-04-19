@@ -1,4 +1,5 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+//       ##DEPRECATED
 
 using UnityEngine;
 
@@ -6,14 +7,16 @@ using UnityEngine;
 using UnityEditor;
 #endif
 /// <summary>
-/// Lets you play back a recorded SVO file, which works in place of the input from a real ZED, 
+/// [Obsolete] Lets you play back a recorded SVO file, which works in place of the input from a real ZED, 
 /// or record an SVO file from a live ZED. 
 /// <para>To use, attach to the same GameObject as ZED Manager (ZED_Rig_Mono or ZED_Rig_Stereo).</para
 /// </summary><remarks>
-/// When playing an SVO, the SDK behaves the same as if a real ZED were attached, so all regular features
+/// [Obsolete] When playing an SVO, the SDK behaves the same as if a real ZED were attached, so all regular features
 /// are available. The one exception is pass-through AR, as the ZED's timestamps and transform will both be 
 /// significantly out of sync with the VR headset. 
 /// </remarks>
+
+[System.Obsolete("SVO Management has been moved to ZEDManager directly. Not used anymore", true)]
 public class ZEDSVOManager : MonoBehaviour
 {
     /// <summary>
@@ -126,12 +129,18 @@ public class ZEDSVOManager : MonoBehaviour
     /// </summary>
     public bool NeedNewFrameGrab { get; set; }
 
+	/// <summary>
+	/// ZED Camera 
+	/// </summary>
+	public sl.ZEDCamera zedCam;
+
     /// <summary>
     /// Changes the value of record if recording fails, and gets the length of a read SVO file.
     /// </summary>
     /// <param name="zedCamera">Reference to the Scene's ZEDCamera instance.</param>
     public void InitSVO(sl.ZEDCamera zedCamera)
     {
+		zedCam = zedCamera;
         if (record)
         {
             sl.ERROR_CODE svoerror = zedCamera.EnableRecording(videoFile, compressionMode);
@@ -151,6 +160,10 @@ public class ZEDSVOManager : MonoBehaviour
             NumberFrameMax = zedCamera.GetSVONumberOfFrames();
         }
     }
+
+
+
+
 }
 
 #if UNITY_EDITOR
@@ -159,6 +172,7 @@ public class ZEDSVOManager : MonoBehaviour
 /// Custom editor for ZEDSVOManager to change how it's drawn in the Inspector.
 /// Adds a playback slider and pause button, and makes Record and Read mutually-exclusive. 
 /// </summary>
+[System.Obsolete("SVO Management has been moved to ZEDManager directly. Not used anymore", true)]
 [CustomEditor(typeof(ZEDSVOManager)), CanEditMultipleObjects]
 public class SVOManagerInspector : Editor
 {
@@ -229,19 +243,22 @@ public class SVOManagerInspector : Editor
         currentFrame.intValue = EditorGUILayout.IntSlider(sliderlabel, currentFrame.intValue, 0, numberFrameMax.intValue);
         if (EditorGUI.EndChangeCheck())
         {
-            if (sl.ZEDCamera.GetInstance() != null)
+			if (obj.zedCam != null)
             {
                 //If the slider of frame from the SVO has moved, manually grab the frame and update the textures.
-                sl.ZEDCamera.GetInstance().SetSVOPosition(currentFrame.intValue);
+				obj.zedCam.SetSVOPosition(currentFrame.intValue);
                 if (pause.boolValue)
                 {
 					obj.NeedNewFrameGrab = true;
                 }
             }
         }
-        GUI.enabled = true;
+      
+		GUI.enabled = false;
 
-		GUI.enabled = sl.ZEDCamera.GetInstance() != null && sl.ZEDCamera.GetInstance().IsCameraReady;
+		if (obj.zedCam != null)
+			GUI.enabled = obj.zedCam.IsCameraReady;
+	
         pauseText = pause.boolValue ? "Resume" : "Pause";
         GUIContent pauselabel = new GUIContent(pauseText, pauseText + pauseTooltip);
         if (GUILayout.Button(pauselabel))

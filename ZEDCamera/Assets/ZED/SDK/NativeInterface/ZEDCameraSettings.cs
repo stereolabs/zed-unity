@@ -10,15 +10,15 @@ using System.Runtime.InteropServices;
 /// The actual settings themselves are stored in an instance of CameraSettings, for easier manipulation. 
 /// But this class provides accessors for each value within it.
 /// </remarks>
-public class ZEDCameraSettingsManager
+public class ZEDCameraSettings
 {
     #region DLL Calls
-    const string nameDll = "sl_unitywrapper";
+    const string nameDll = sl.ZEDCommon.NameDLL;
     [DllImport(nameDll, EntryPoint = "dllz_set_camera_settings")]
-    private static extern void dllz_set_camera_settings(int mode, int value, int usedefault);
+    private static extern void dllz_set_camera_settings(int id, int mode, int value, int usedefault);
 
     [DllImport(nameDll, EntryPoint = "dllz_get_camera_settings")]
-    private static extern int dllz_get_camera_settings(int mode);
+    private static extern int dllz_get_camera_settings(int id, int mode);
 
     #endregion
 
@@ -43,7 +43,7 @@ public class ZEDCameraSettingsManager
         /// <param name="whiteBalance">Camera's white balance setting. -1 means automatic.</param>
         /// <param name="gain">Camera's gain setting. -1 means automatic.</param>
         /// <param name="exposure">Camera's exposure setting. -1 means automatic.</param>
-        public CameraSettings(int brightness = 4, int contrast = 4, int hue = 0, int saturation = 4, int whiteBalance = -1, int gain = -1, int exposure = -1)
+        public CameraSettings(int brightness = 4, int contrast = 4, int hue = 0, int saturation = 4, int whiteBalance = -1, int gain = -1, int exposure = -1,int ledStatus = 1)
         {
             settings = new int[System.Enum.GetNames(typeof(sl.CAMERA_SETTINGS)).Length];
             settings[(int)sl.CAMERA_SETTINGS.BRIGHTNESS] = brightness;
@@ -53,6 +53,7 @@ public class ZEDCameraSettingsManager
             settings[(int)sl.CAMERA_SETTINGS.WHITEBALANCE] = whiteBalance;
             settings[(int)sl.CAMERA_SETTINGS.GAIN] = gain;
             settings[(int)sl.CAMERA_SETTINGS.EXPOSURE] = exposure;
+            settings[(int)sl.CAMERA_SETTINGS.LED_STATUS] = ledStatus;
         }
 
         /// <summary>
@@ -69,6 +70,7 @@ public class ZEDCameraSettingsManager
             settings[(int)sl.CAMERA_SETTINGS.WHITEBALANCE] = other.settings[(int)sl.CAMERA_SETTINGS.WHITEBALANCE];
             settings[(int)sl.CAMERA_SETTINGS.GAIN] = other.settings[(int)sl.CAMERA_SETTINGS.GAIN];
             settings[(int)sl.CAMERA_SETTINGS.EXPOSURE] = other.settings[(int)sl.CAMERA_SETTINGS.EXPOSURE];
+            settings[(int)sl.CAMERA_SETTINGS.LED_STATUS] = other.settings[(int)sl.CAMERA_SETTINGS.LED_STATUS];
         }
 
         /// <summary>
@@ -192,6 +194,22 @@ public class ZEDCameraSettingsManager
             }
         }
 
+        /// <summary>
+        /// ZED camera's LED status
+        /// </summary>
+        public int LEDStatus
+        {
+            get
+            {
+                return settings[(int)sl.CAMERA_SETTINGS.LED_STATUS];
+            }
+
+            set
+            {
+                settings[(int)sl.CAMERA_SETTINGS.LED_STATUS] = value;
+            }
+        }
+
     }
     /// <summary>
     /// Reference to the settings container object. 
@@ -218,7 +236,7 @@ public class ZEDCameraSettingsManager
     /// <summary>
     /// Constructor. Creates a new instance of CameraSettings to contain all settings values. 
     /// </summary>
-    public ZEDCameraSettingsManager()
+    public ZEDCameraSettings()
     {
         settings_ = new CameraSettings();
     }
@@ -237,6 +255,7 @@ public class ZEDCameraSettingsManager
             zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, settings_.Saturation, false);
             zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, settings_.Gain, false);
             zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, settings_.Exposure, false);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, settings_.LEDStatus, false);
             if (settings_.WhiteBalance != -1)
             {
                 zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, settings_.WhiteBalance, false);
@@ -244,6 +263,25 @@ public class ZEDCameraSettingsManager
         } 
     }
 
+
+	/// <summary>
+	/// Applies all settings from the container to the actual ZED camera.
+	/// </summary>
+	/// <param name="zedCamera">Current instance of the ZEDCamera wrapper.</param>
+	public void ResetCameraSettings(sl.ZEDCamera zedCamera)
+	{
+		if (zedCamera != null)
+		{
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, 0, true);
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, 0 , true);
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.HUE, 0 , true);
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, 0 , true);
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, 0, true);
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, 0, true);
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, 0, true);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, 1, true);
+        } 
+	}
     /// <summary>
     /// Loads camera settings from a file, and sets them to the container and camera.
     /// File is loaded from the root project folder (one above Assets). 
@@ -300,6 +338,10 @@ public class ZEDCameraSettingsManager
                 {
                     settings_.Exposure = int.Parse(field);
                 }
+                else if (key == "LED")
+                {
+                    settings_.LEDStatus = int.Parse(field);
+                }
             }
         }
         SetSettings(zedCamera);
@@ -323,6 +365,7 @@ public class ZEDCameraSettingsManager
             settings_.Gain = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAIN);
             settings_.Exposure = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE);
             settings_.WhiteBalance = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE);
+            settings_.LEDStatus = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS);
         } 
     }
 
@@ -332,10 +375,10 @@ public class ZEDCameraSettingsManager
     /// <param name="settings">Setting to be changed (brightness, contrast, gain, exposure, etc.)</param>
     /// <param name="value">New value for the setting.</param>
     /// <param name="usedefault">If true, ignores the value and applies the default setting.</param>
-    public void SetCameraSettings(sl.CAMERA_SETTINGS settings, int value, bool usedefault = false)
+    public void SetCameraSettings(int cid, sl.CAMERA_SETTINGS settings, int value, bool usedefault = false)
     {
         settings_.settings[(int)settings] = !usedefault && value != -1 ? value : -1;
-        dllz_set_camera_settings((int)settings, value, System.Convert.ToInt32(usedefault));
+		dllz_set_camera_settings(cid, (int)settings, value, System.Convert.ToInt32(usedefault));
     }
 
     /// <summary>
@@ -343,9 +386,9 @@ public class ZEDCameraSettingsManager
     /// </summary>
     /// <param name="settings">Setting to be retrieved.</param>
     /// <returns>Current value.</returns>
-    public int GetCameraSettings(sl.CAMERA_SETTINGS settings)
+    public int GetCameraSettings(int cid, sl.CAMERA_SETTINGS settings)
     {
-        settings_.settings[(int)settings] = dllz_get_camera_settings((int)settings);
+		settings_.settings[(int)settings] = dllz_get_camera_settings(cid, (int)settings);
         return settings_.settings[(int)settings];
     }
 
@@ -364,6 +407,7 @@ public class ZEDCameraSettingsManager
             file.WriteLine("whiteBalance=" + settings_.WhiteBalance.ToString());
             file.WriteLine("gain=" + settings_.Gain.ToString());
             file.WriteLine("exposure=" + settings_.Exposure.ToString());
+            file.WriteLine("LED=" + settings_.LEDStatus.ToString());
             file.Close();
         }
     }
