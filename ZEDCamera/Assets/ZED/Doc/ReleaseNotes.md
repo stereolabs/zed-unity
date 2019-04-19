@@ -1,8 +1,8 @@
 <!------------------------- Release notes ------------------------------------->
 ### 2.8.0
 
-   * **Features**:
-    * Added Multi ZED Rig support:
+* **Features**:
+   * Added Multi ZED Rig support:
       - *Complete refactoring of the wrapper and plugin to change singleton implementation into multi instance support. The maximum number of instance is limited to 4 cameras.*
       - *Each ZEDManager now has a ZED_CAMERA_ID to define its own camera ID.*
       - *All static events in ZEDManager have been replaced by "local" events to make them specific to a rig/camera. Example: OnZEDReady*
@@ -11,18 +11,18 @@
       - *Spatial Mapping module and Camera settings module have been moved to ZEDManager to simplify their use in a multi or single ZED configuration.*
       - *Added MultiCam example to show how to use 2 ZEDs in a single application.*
       - *Overhauled many scripts to take advantage of multiple cameras when possible. For example, projectiles in the Drone Shooter sample can collide with the world seen by any camera.*
-    * Added Streaming module from ZED SDK 2.8:
+   * Added Streaming module from ZED SDK 2.8:
       - ***Input*** : *You can now receive a video stream from a ZED over the network, and process it locally. Do this by setting ZEDManager's Input Type to "Stream" in the Inspector, and specify the IP/Port configuration of the sender.*
       - ***Output*** : *To broadcast a stream, set the ZED's Input Type to USB or SVO, and open the "Streaming" section further down. Specify the codec/streaming configuration if necessayr and check "Enable Streaming Output".*
       - *You can adjust camera settings from a receiving PC, allowing you to control an entire scene from a single device.*
-    * Added initial camera position estimation option to ZEDManager:
+   * Added initial camera position estimation option to ZEDManager:
       - *If EnableTracking is activated, estimateInitialPosition will simply activate the TrackingParameters::set_floor_as_origin to estimate the floor position, and therefore the camera position, during tracking initialization. *
       - *If EnableTracking is not used, estimateInitialPosition will try to detect the floor planes multiple times and compute an average camera position from the floor position.*
-    * Pose smoothing added to spatial memory feature, so pose corrections no longer appear as "jumps."
-    * Added manually turning the ZED's LED light on and off, to be used for debugging. See ZEDCameraSettings.
-    * Added option in ZEDManager's Advanced Settings to grey out the skybox when the scene starts. This was done automatically before to avoid affecting AR lighting, but can be disabled for greenscreen use.
+     - Pose smoothing added to spatial memory feature, so pose corrections no longer appear as "jumps."
+     - Added manually turning the ZED's LED light on and off, to be used for debugging. See ZEDCameraSettings.
+     - Added option in ZEDManager's Advanced Settings to grey out the skybox when the scene starts. This was done automatically before to avoid affecting AR lighting, but can be disabled for greenscreen use.
 
-    * **Improvements**:
+* **Improvements**:
      * Removed ZED rigs' dependence on layers:
        - Previously, the "frame" quads in each ZED rig (including the hidden AR rig) were assigned their own layer, and all other cameras had this layer removed from their culling mask. This made it so no camera would see a frame meant for another eye, but left fewer layers available to the user and made the cameras' culling masks impossible to set from the Inspector.
        - Frames now use the HideFromWrongCamera script to prevent rendering to the wrong cameras without the use of layers. Cameras in ZED_Rig_Mono and ZED_Rig_Stereo can have their culling masks set freely.
@@ -33,7 +33,7 @@
      * Planes detected by the ZED no longer drawn with  a hidden camera, allowing them to be drawn at the same time as a spatial mapping wireframe.
      * ZEDPlaneDetectionManager can now have "Visible in Scene" disabled and "Visible in Scene" enabled at the same time.
 
-   * **Bug Fixes**:
+* **Bug Fixes**:
     - Fixed bug that overwrites camera position if user set one before starting the scene (when tracking is not activated).
     - Fixed latency compensation in ZEDControllerTracker causing the ZED to drift infinitely when a ZED rig was a child of it.
     - Fixed normally-hidden AR rig not appearing in the Hierarchy on start if "Show Final AR Rig" was enabled before runtime.
@@ -41,10 +41,9 @@
     - Fixed asteroids in Planetarium sample only being drawn to layer 8.
 
 
-   * **Compatibility**:
+* **Compatibility**:
     - Compatible with ZED SDK 2.8, CUDA 9.0 and 10.0.
     - Updated controller scripts to work with the new SteamVR Unity plugin v2.0, so long as its Action system has not been activated.
-
 
 
 ### 2.7.0
