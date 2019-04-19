@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Text;
+using System.IO;
 
 /// <summary>
 /// Holds numerous static functions for getting info about the real world in 
@@ -18,7 +20,13 @@ public class ZEDSupportFunctions
     /***********************************************************************************************
 	 ********************             BASIC "GET" FUNCTIONS             ****************************
 	 ***********************************************************************************************/
-
+	public static bool IsVector3NaN(Vector3 input)
+	{
+		if (float.IsNaN (input.x) || float.IsNaN (input.y) || float.IsNaN (input.z))
+			return true;
+		else
+			return false;
+	}
 
     /// <summary>
     /// Gets the normal vector (the direction a surface is pointing) at a given screen-space pixel (i,j).  
@@ -29,10 +37,15 @@ public class ZEDSupportFunctions
     /// <param name="cam">Unity Camera used for world-camera space conversion.</param>
     /// <out>Normal to be filled.</out>
     /// <returns>True if successful, false otherwise.</returns>
-    public static bool GetNormalAtPixel(Vector2 pixel, sl.REFERENCE_FRAME reference_frame, Camera cam, out Vector3 normal)
+	public static bool GetNormalAtPixel(sl.ZEDCamera zedCam,Vector2 pixel, sl.REFERENCE_FRAME reference_frame, Camera cam, out Vector3 normal)
     {
+		normal = Vector3.zero;
+
+		if (zedCam == null)
+			return false;
+		
         Vector4 n;
-		bool r = sl.ZEDCamera.GetInstance().GetNormalValue(new Vector3(pixel.x,pixel.y, 0), out n);
+		bool r = zedCam.GetNormalValue(new Vector3(pixel.x,pixel.y, 0), out n);
 
 		switch (reference_frame) {
 		case sl.REFERENCE_FRAME.CAMERA: //Relative to the provided camera. 
@@ -59,10 +72,15 @@ public class ZEDSupportFunctions
     /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
     /// <out>Normal vector to be filled.</out>
     /// <returns>True if successful, false otherwise.</returns>
-    public static bool GetNormalAtWorldLocation(Vector3 position, sl.REFERENCE_FRAME reference_frame,Camera cam, out Vector3 normal)
+	public static bool GetNormalAtWorldLocation(sl.ZEDCamera zedCam,Vector3 position, sl.REFERENCE_FRAME reference_frame,Camera cam, out Vector3 normal)
     {
+		normal = Vector3.zero;
+
+		if (zedCam == null)
+			return false;
+
  		Vector4 n;
-		bool r = sl.ZEDCamera.GetInstance().GetNormalValue(cam.WorldToScreenPoint(position), out n);
+		bool r = zedCam.GetNormalValue(cam.WorldToScreenPoint(position), out n);
 
 		switch (reference_frame) {
 		case sl.REFERENCE_FRAME.CAMERA:
@@ -92,9 +110,14 @@ public class ZEDSupportFunctions
     /// <param name="pixel">Pixel coordinates in screen space.</param>
     /// <param name="depth">Forward distance/depth to given pixel.</param>
     /// <returns></returns>
-    public static bool GetForwardDistanceAtPixel(Vector2 pixel, out float depth)
+	public static bool GetForwardDistanceAtPixel(sl.ZEDCamera zedCam,Vector2 pixel, out float depth)
     {
-		float d = sl.ZEDCamera.GetInstance().GetDepthValue(new Vector3(pixel.x, pixel.y, 0));
+		depth = 0.0f;
+
+		if (zedCam == null)
+			return false;
+		
+		float d = zedCam.GetDepthValue(new Vector3(pixel.x, pixel.y, 0));
         depth = d;
 
         if (d == -1) return false;
@@ -112,11 +135,16 @@ public class ZEDSupportFunctions
     /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
     /// <param name="depth">Forward distance/depth to given position.</out>
     /// <returns></returns>
-    public static bool GetForwardDistanceAtWorldLocation(Vector3 position, Camera cam, out float depth)
+	public static bool GetForwardDistanceAtWorldLocation(sl.ZEDCamera zedCam,Vector3 position, Camera cam, out float depth)
 	{
+		depth = 0.0f;
+
+		if (zedCam == null)
+			return false;
+		
 		Vector3 pixelPosition = cam.WorldToScreenPoint (position);
 
-		float d = sl.ZEDCamera.GetInstance().GetDepthValue(new Vector3(pixelPosition.x, pixelPosition.y, 0));
+		float d = zedCam.GetDepthValue(new Vector3(pixelPosition.x, pixelPosition.y, 0));
 		depth = d;
 
 		if (d == -1) return false;
@@ -134,9 +162,14 @@ public class ZEDSupportFunctions
     /// <param name="pixel">Pixel coordinates in screen space.</param>
     /// <param name="distance">Euclidean distance to given pixel.</param>
     /// <returns></returns>
-    public static bool GetEuclideanDistanceAtPixel(Vector2 pixel, out float distance)
+	public static bool GetEuclideanDistanceAtPixel(sl.ZEDCamera zedCam,Vector2 pixel, out float distance)
 	{
-		float d = sl.ZEDCamera.GetInstance().GetDistanceValue(new Vector3(pixel.x, pixel.y, 0));
+		distance = 0.0f;
+
+		if (zedCam == null)
+			return false;
+		
+		float d = zedCam.GetDistanceValue(new Vector3(pixel.x, pixel.y, 0));
 		distance = d;
 
 		if (d == -1) return false;
@@ -154,11 +187,16 @@ public class ZEDSupportFunctions
     /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
     /// <param name="distance">Euclidean distance to given position.</out>
     /// <returns></returns>
-    public static bool GetEuclideanDistanceAtWorldLocation(Vector3 position, Camera cam, out float distance)
+	public static bool GetEuclideanDistanceAtWorldLocation(sl.ZEDCamera zedCam,Vector3 position, Camera cam, out float distance)
 	{
+		distance = 0.0f;
+
+		if (zedCam == null)
+			return false;
+		
 		Vector3 pixelPosition = cam.WorldToScreenPoint (position);
 
-		float d = sl.ZEDCamera.GetInstance().GetDistanceValue(new Vector3(pixelPosition.x, pixelPosition.y, 0));
+		float d = zedCam.GetDistanceValue(new Vector3(pixelPosition.x, pixelPosition.y, 0));
 		distance = d;
 
 		if (d == -1) return false;
@@ -171,15 +209,20 @@ public class ZEDSupportFunctions
     /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
     /// <param name="worldPos">Filled with the world position of the specified pixel.</param>
     /// <returns>True if it found a value, false otherwise (such as if it's outside the camera's view frustum)</returns>
-    public static bool GetWorldPositionAtPixel(Vector2 pixel, Camera cam, out Vector3 worldPos)
+	public static bool GetWorldPositionAtPixel(sl.ZEDCamera zedCam,Vector2 pixel, Camera cam, out Vector3 worldPos)
     {
+		worldPos = Vector3.zero;
+
+		if (zedCam == null)
+			return false;
+		
  		float d;
 		worldPos = Vector3.zero;
-		if (!GetForwardDistanceAtPixel(pixel, out d)) return false;
+		if (!GetForwardDistanceAtPixel(zedCam,pixel, out d)) return false;
 
 		//Adjust for difference between screen size and ZED's image resolution.
-		float xp = pixel.x * sl.ZEDCamera.GetInstance().ImageWidth / Screen.width;
-		float yp = pixel.y * sl.ZEDCamera.GetInstance().ImageHeight / Screen.height;
+		float xp = pixel.x * zedCam.ImageWidth / Screen.width;
+		float yp = pixel.y * zedCam.ImageHeight / Screen.height;
 
 		//Extract world position using screen-to-world transform.
 		worldPos = cam.ScreenToWorldPoint(new Vector3(xp, yp,d));
@@ -194,11 +237,14 @@ public class ZEDSupportFunctions
 	/// <param name="position">Position to check in world space. Must be in camera's view to check against the real world.</param>
     /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
     /// <returns>True if visible, false if obscurred.</returns>
-    public static bool IsLocationVisible(Vector3 position, Camera cam)
+	public static bool IsLocationVisible(sl.ZEDCamera zedCam,Vector3 position, Camera cam)
     {
+		if (zedCam == null)
+			return false;
+		
         RaycastHit hit;
 		float d;
-		GetForwardDistanceAtWorldLocation(position, cam,out d);
+		GetForwardDistanceAtWorldLocation(zedCam,position, cam,out d);
         if (Physics.Raycast(cam.transform.position, position - cam.transform.position, out hit))
         {
             if (hit.distance < d) return false;
@@ -213,11 +259,14 @@ public class ZEDSupportFunctions
     /// <param name="pixel">Screen space coordinates of the real-world pixel.</param>
     /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
     /// <returns>True if visible, false if obscurred.</returns>
-    public static bool IsPixelVisible(Vector2 pixel, Camera cam)
+	public static bool IsPixelVisible(sl.ZEDCamera zedCam, Vector2 pixel, Camera cam)
 	{
+		if (zedCam == null)
+			return false;
+		
 		RaycastHit hit;
 		float d;
-		GetForwardDistanceAtPixel(pixel,out d);
+		GetForwardDistanceAtPixel(zedCam, pixel,out d);
 		Vector3 position = cam.ScreenToWorldPoint(new Vector3(pixel.x, pixel.y, d));
 		if (Physics.Raycast(cam.transform.position, position - cam.transform.position, out hit))
 		{
@@ -253,8 +302,11 @@ public class ZEDSupportFunctions
     /// <param name="realworldthickness">Sets the assumed thickness of the real world. Points further away than the world by
     /// more than this amount won't return true, considered "behind" the real world instead of inside it.</param>
     /// <returns>True if the test represents a valid hit test.</returns>
-    public static bool HitTestAtPoint(Camera camera, Vector3 point, bool countinvalidascollision = false, float realworldthickness = Mathf.Infinity)
+	public static bool HitTestAtPoint(sl.ZEDCamera zedCam, Camera camera, Vector3 point, bool countinvalidascollision = false, float realworldthickness = Mathf.Infinity)
 	{
+		if (zedCam == null)
+			return false;
+
 		//Transform the point into screen space.
 		Vector3 screenpoint = camera.WorldToScreenPoint(point);
 
@@ -265,7 +317,7 @@ public class ZEDSupportFunctions
 
 		//Compare distance in virtual camera to corresponding point in distance map.
 		float realdistance;
-		GetEuclideanDistanceAtPixel(new Vector2(screenpoint.x, screenpoint.y), out realdistance);
+		GetEuclideanDistanceAtPixel(zedCam, new Vector2(screenpoint.x, screenpoint.y), out realdistance);
 
 		//If we pass bad parameters, or we don't have an accurate reading on the depth, we can't test.
 		if(realdistance <= 0f)
@@ -296,9 +348,14 @@ public class ZEDSupportFunctions
     /// <param name="realworldthickness">Sets the assumed thickness of the real world. Points further away than the world by
     /// more than this amount won't return true, considered "behind" the real world instead of inside it.</param>
     /// <returns></returns>
-    public static bool HitTestOnRay(Camera camera, Vector3 startpos, Quaternion rot, float maxdistance, float distbetweendots, out Vector3 collisionpoint,
+	public static bool HitTestOnRay(sl.ZEDCamera zedCam, Camera camera, Vector3 startpos, Quaternion rot, float maxdistance, float distbetweendots, out Vector3 collisionpoint,
 		bool countinvalidascollision = false, float realworldthickness = Mathf.Infinity)
 	{
+		collisionpoint = Vector3.zero;
+
+		if (zedCam == null)
+			return false;
+
 		//Check for occlusion in a series of dots, spaced apart evenly.
 		Vector3 lastvalidpoint = startpos;
 		for (float i = 0; i < maxdistance; i += distbetweendots)
@@ -306,7 +363,7 @@ public class ZEDSupportFunctions
 			Vector3 pointtocheck = rot * new Vector3(0f, 0f, i);
 			pointtocheck += startpos;
 
-			bool hit = HitTestAtPoint(camera, pointtocheck,countinvalidascollision, realworldthickness);
+			bool hit = HitTestAtPoint(zedCam, camera, pointtocheck,countinvalidascollision, realworldthickness);
 
 			if (hit)
 			{
@@ -343,7 +400,7 @@ public class ZEDSupportFunctions
     /// <param name="realworldthickness">Sets the assumed thickness of the real world. Points further away than the world by
     /// more than this amount won't return true, considered "behind" the real world instead of inside it.</param>
     /// <returns>Whether the sphere is colliding with the real world.</returns>
-    public static bool HitTestOnSphere(Camera camera, Vector3 centerpoint, float radius, int numberofsamples, float blockedpercentagethreshold = 0.2f,
+	public static bool HitTestOnSphere(sl.ZEDCamera zedCam, Camera camera, Vector3 centerpoint, float radius, int numberofsamples, float blockedpercentagethreshold = 0.2f,
 		bool countinvalidascollision = true, float realworldthickness = Mathf.Infinity)
 	{
 		int occludedpoints = 0;
@@ -352,7 +409,7 @@ public class ZEDSupportFunctions
 		{
 			//Find a random point along the bounds of a sphere and check if it's occluded.
 			Vector3 randompoint = Random.onUnitSphere * radius + centerpoint;
-			if(HitTestAtPoint(camera, randompoint, countinvalidascollision, realworldthickness))
+			if(HitTestAtPoint(zedCam, camera, randompoint, countinvalidascollision, realworldthickness))
 			{
 				occludedpoints++;
 			}
@@ -387,7 +444,7 @@ public class ZEDSupportFunctions
     /// <param name="realworldthickness">Sets the assumed thickness of the real world. Points further away than the world by
     /// more than this amount won't return true, considered "behind" the real world instead of inside it.</param>
     /// <returns>True if the mesh collided with the real world.</returns>
-    public static bool HitTestOnMesh(Camera camera, Mesh mesh, Transform worldtransform, float blockedpercentagethreshold, float meshsamplepercent = 1,
+	public static bool HitTestOnMesh(sl.ZEDCamera zedCam, Camera camera, Mesh mesh, Transform worldtransform, float blockedpercentagethreshold, float meshsamplepercent = 1,
 		bool countinvalidascollision = false, float realworldthickness = Mathf.Infinity)
 	{
 		//Find how often we check samples, represented as an integer denominator.
@@ -399,7 +456,7 @@ public class ZEDSupportFunctions
 		int intersections = 0;
 		for(int i = 0; i < mesh.vertices.Length; i += checkfrequency)
 		{
-			if (HitTestAtPoint(camera, worldtransform.TransformPoint(mesh.vertices[i]),countinvalidascollision, realworldthickness))
+			if (HitTestAtPoint(zedCam, camera, worldtransform.TransformPoint(mesh.vertices[i]),countinvalidascollision, realworldthickness))
 			{
 				intersections++;
 			}
@@ -435,10 +492,10 @@ public class ZEDSupportFunctions
     /// <param name="realworldthickness">Sets the assumed thickness of the real world. Points further away than the world by
     /// more than this amount won't return true, considered "behind" the real world instead of inside it.</param>
     /// <returns>True if the mesh collided with the real world.</returns>
-	public static bool HitTestOnMesh(Camera camera, MeshFilter meshfilter, float blockedpercentagethreshold, float meshsamplepercent = 1,
+	public static bool HitTestOnMesh(sl.ZEDCamera zedCam, Camera camera, MeshFilter meshfilter, float blockedpercentagethreshold, float meshsamplepercent = 1,
 		bool countinvalidascollision = false, float realworldthickness = Mathf.Infinity)
 	{
-		return HitTestOnMesh(camera, meshfilter.mesh, meshfilter.transform, blockedpercentagethreshold, meshsamplepercent, countinvalidascollision, realworldthickness);
+		return HitTestOnMesh(zedCam, camera, meshfilter.mesh, meshfilter.transform, blockedpercentagethreshold, meshsamplepercent, countinvalidascollision, realworldthickness);
 	}
 
     /// <summary>
@@ -505,9 +562,58 @@ public class ZEDSupportFunctions
 
 
     /***********************************************************************************************
+	 ******************************        MESH UTILS            **********************************
+	 ***********************************************************************************************/
+    public static string MeshToString(MeshFilter mf)
+    {
+        Mesh m = mf.mesh;
+        Material[] mats = mf.GetComponent<Renderer>().sharedMaterials;
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("g ").Append(mf.name).Append("\n");
+        foreach (Vector3 v in m.vertices)
+        {
+            sb.Append(string.Format("v {0} {1} {2}\n", v.x, v.y, v.z));
+        }
+        sb.Append("\n");
+        foreach (Vector3 v in m.normals)
+        {
+            sb.Append(string.Format("vn {0} {1} {2}\n", v.x, v.y, v.z));
+        }
+        sb.Append("\n");
+        foreach (Vector3 v in m.uv)
+        {
+            sb.Append(string.Format("vt {0} {1}\n", v.x, v.y));
+        }
+        for (int material = 0; material < m.subMeshCount; material++)
+        {
+            sb.Append("\n");
+            sb.Append("usemtl ").Append(mats[material].name).Append("\n");
+            sb.Append("usemap ").Append(mats[material].name).Append("\n");
+
+            int[] triangles = m.GetTriangles(material);
+            for (int i = 0; i < triangles.Length; i += 3)
+            {
+                sb.Append(string.Format("f {0}/{0}/{0} {1}/{1}/{1} {2}/{2}/{2}\n",
+                    triangles[i] + 1, triangles[i + 1] + 1, triangles[i + 2] + 1));
+            }
+        }
+        return sb.ToString();
+    }
+
+    public static void MeshToFile(MeshFilter mf, string filename)
+    {
+        using (StreamWriter sw = new StreamWriter(filename))
+        {
+            sw.Write(MeshToString(mf));
+        }
+    }
+
+    /***********************************************************************************************
 	 ******************************        MATH UTILS            **********************************
 	 ***********************************************************************************************/
-    
+
     public static float DistancePointLine(Vector3 point, Vector3 lineStartPoint, Vector3 lineEndPoint)
 	{
 		return Vector3.Magnitude(ProjectPointLine(point, lineStartPoint, lineEndPoint) - point);

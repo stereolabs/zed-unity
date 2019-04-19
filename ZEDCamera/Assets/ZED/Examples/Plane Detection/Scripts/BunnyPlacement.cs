@@ -15,7 +15,7 @@ public class BunnyPlacement : MonoBehaviour
     /// Textures assigned to the placeholder object when placement is valid. 
     /// Index of each texture corresponds to the index of the material on the placeholder object. 
     /// </summary>
-    [Tooltip("Textures assigned to the placeholder object when placement is valid. " + 
+    [Tooltip("Textures assigned to the placeholder object when placement is valid. " +
         "Index of each texture corresponds to the index of the material on the placeholder object.")]
     public Texture[] goodPlacementTex;
 
@@ -26,7 +26,7 @@ public class BunnyPlacement : MonoBehaviour
     [Tooltip("Textures assigned to the placeholder object when placement is not valid. " +
         "Index of each texture corresponds to the index of the material on the placeholder object.")]
     public Texture[] badPlacementTex;
-    
+
     /// <summary>
     /// Light object in the placeholder object. We change its color based on placement validity. 
     /// </summary>
@@ -37,13 +37,6 @@ public class BunnyPlacement : MonoBehaviour
     /// </summary>
     private ZEDControllerTracker tracker;
 
-#if ZED_STEAM_VR
-    /// <summary>
-    /// Reference to the SteamVR Controller for Input purposes.
-    /// </summary>
-    //SteamVR_Controller.Device device;
-#endif
-
     /// <summary>
     /// The scene's ZED Plane Detection Manager.
     /// </summary>
@@ -53,11 +46,6 @@ public class BunnyPlacement : MonoBehaviour
     /// The BunnySpawner object, normally on the same object as this component. 
     /// </summary>
     private BunnySpawner bunnySpawner;
-
-    /// <summary>
-    /// The ZED rig's left camera component. Passed to ZEDSupportFunctions.cs for transforming between world and camera space. 
-    /// </summary>
-    private Camera leftCamera;
 
     /// <summary>
     /// The placeholder object's transform.
@@ -94,10 +82,6 @@ public class BunnyPlacement : MonoBehaviour
         tracker = GetComponent<ZEDControllerTracker>();
         zedPlane = FindObjectOfType<ZEDPlaneDetectionManager>();
         bunnySpawner = GetComponent<BunnySpawner>();
-        if (!leftCamera)
-        {
-            leftCamera = ZEDManager.Instance.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
-        }
     }
 
     /// <summary>
@@ -131,12 +115,6 @@ public class BunnyPlacement : MonoBehaviour
         else
         {
 #if ZED_STEAM_VR
-            //Check if a Controller tracked.
-            if ((int)tracker.index > 0)
-            {
-                //device = SteamVR_Controller.Input((int)tracker.index);
-            }
-
             //SteamVR provides OnButton responses for the Trigger input.
             //When pressing down, holding it, or releasing it.
             if ((int)tracker.index > 0)
@@ -227,16 +205,16 @@ public class BunnyPlacement : MonoBehaviour
                 bunnySpawner.canDisplayPlaceholder = true;
 
                 //If we were holding the baseball bat but the user wants to re-place the bunny, hide the baseball bat.
-                if(bunnySpawner.baseballBat != null)
-                bunnySpawner.baseballBat.SetActive(false); 
+                if (bunnySpawner.baseballBat != null)
+                    bunnySpawner.baseballBat.SetActive(false);
 
                 //Clean up the list of detected planes.
-				if (zedPlane.hitPlaneList.Count > 0)
+                if (zedPlane.hitPlaneList.Count > 0)
                 {
-					for (int i = 0; i < zedPlane.hitPlaneList.Count; i++)
+                    for (int i = 0; i < zedPlane.hitPlaneList.Count; i++)
                     {
-						Destroy(zedPlane.hitPlaneList[i].gameObject);
-						zedPlane.hitPlaneList.RemoveAt(i);
+                        Destroy(zedPlane.hitPlaneList[i].gameObject);
+                        zedPlane.hitPlaneList.RemoveAt(i);
                     }
                 }
                 //Destroy the current Bunny, if any, on the scene.
@@ -250,58 +228,61 @@ public class BunnyPlacement : MonoBehaviour
             //From the first input to the next ones as it keeps being hold down.
             if (button == state.Press || button == state.Down)
             {
-				if (zedPlane.hitPlaneList.Count == 0)
+                if (zedPlane.hitPlaneList.Count == 0)
                 {
                     //Start detecting planes through the ZED Plane Detection Manager.
-                    if (zedPlane.DetectPlaneAtHit(leftCamera.WorldToScreenPoint(placeholder.position)))
+                    foreach (ZEDManager manager in ZEDManager.GetInstances()) //Check all active ZED cameras for planes. 
                     {
-                        //Get the normal of the plane.
-						ZEDPlaneGameObject currentPlane = zedPlane.getHitPlane(zedPlane.hitPlaneList.Count - 1);
-						Vector3 planeNormal = currentPlane.worldNormal;
-
-                        //Check if the plane has a normal close enough to Y (horizontal surface) to be stable for the Bunny to spawn into.
-                        if (Vector3.Dot(planeNormal, Vector3.up) > 0.85f)
+                        if (zedPlane.DetectPlaneAtHit(manager, manager.GetLeftCamera().WorldToScreenPoint(placeholder.position)))
                         {
-                            //Allow spawning the Bunny, and set the placeholder to a positive color.
-                            if (canspawnbunny == false)
+                            //Get the normal of the plane.
+                            ZEDPlaneGameObject currentPlane = zedPlane.getHitPlane(zedPlane.hitPlaneList.Count - 1);
+                            Vector3 planeNormal = currentPlane.worldNormal;
+
+                            //Check if the plane has a normal close enough to Y (horizontal surface) to be stable for the Bunny to spawn into.
+                            if (Vector3.Dot(planeNormal, Vector3.up) > 0.85f)
                             {
-                                canspawnbunny = true;
-                                bunnySpawner.placeHolderMat[0].mainTexture = goodPlacementTex[0];
-                                bunnySpawner.placeHolderMat[1].mainTexture = goodPlacementTex[1];
-                                pointlight.color = Color.blue;
-                            }
-                            else //Clear the list of planes.
-                            {
-								for (int i = 0; i < zedPlane.hitPlaneList.Count; i++)
+                                //Allow spawning the Bunny, and set the placeholder to a positive color.
+                                if (canspawnbunny == false)
                                 {
-                                    if (i == 0)
+                                    canspawnbunny = true;
+                                    bunnySpawner.placeHolderMat[0].mainTexture = goodPlacementTex[0];
+                                    bunnySpawner.placeHolderMat[1].mainTexture = goodPlacementTex[1];
+                                    pointlight.color = Color.blue;
+                                }
+                                else //Clear the list of planes.
+                                {
+                                    for (int i = 0; i < zedPlane.hitPlaneList.Count; i++)
                                     {
-										Destroy(zedPlane.hitPlaneList[i].gameObject);
-										zedPlane.hitPlaneList.RemoveAt(i);
+                                        if (i == 0)
+                                        {
+                                            Destroy(zedPlane.hitPlaneList[i].gameObject);
+                                            zedPlane.hitPlaneList.RemoveAt(i);
+                                        }
                                     }
                                 }
                             }
-                        }
-                        else //Surface wasn't horizontal enough
-                        {
-                            //Don't allow the Bunny to spawn, and set the placeholder to a negative color.
-                            canspawnbunny = false;
-                            bunnySpawner.placeHolderMat[0].mainTexture = badPlacementTex[0];
-                            bunnySpawner.placeHolderMat[1].mainTexture = badPlacementTex[1];
-                            pointlight.color = Color.red;
-
-                            //Clear the list of planes.
-							for (int i = 0; i < zedPlane.hitPlaneList.Count; i++)
+                            else //Surface wasn't horizontal enough
                             {
-								Destroy(zedPlane.hitPlaneList[i].gameObject);
-								zedPlane.hitPlaneList.RemoveAt(i);
-                            }
-                        }
+                                //Don't allow the Bunny to spawn, and set the placeholder to a negative color.
+                                canspawnbunny = false;
+                                bunnySpawner.placeHolderMat[0].mainTexture = badPlacementTex[0];
+                                bunnySpawner.placeHolderMat[1].mainTexture = badPlacementTex[1];
+                                pointlight.color = Color.red;
 
+                                //Clear the list of planes.
+                                for (int i = 0; i < zedPlane.hitPlaneList.Count; i++)
+                                {
+                                    Destroy(zedPlane.hitPlaneList[i].gameObject);
+                                    zedPlane.hitPlaneList.RemoveAt(i);
+                                }
+                            }
+                            break; //If we detected a plane in one view, no need to go through the rest of the cameras. 
+                        }
                     }
                 }
 
-				else if (zedPlane.hitPlaneList.Count > 0)
+                else if (zedPlane.hitPlaneList.Count > 0)
                 {
                     if (!Physics.Raycast(transform.position, placeholder.position - transform.position))
                     {
@@ -311,10 +292,10 @@ public class BunnyPlacement : MonoBehaviour
                         bunnySpawner.placeHolderMat[1].mainTexture = badPlacementTex[1];
                         pointlight.color = Color.red;
                         //Clear the list of planes.
-						for (int i = 0; i < zedPlane.hitPlaneList.Count; i++)
+                        for (int i = 0; i < zedPlane.hitPlaneList.Count; i++)
                         {
-							Destroy(zedPlane.hitPlaneList[i].gameObject);
-							zedPlane.hitPlaneList.RemoveAt(i);
+                            Destroy(zedPlane.hitPlaneList[i].gameObject);
+                            zedPlane.hitPlaneList.RemoveAt(i);
                         }
                     }
                 }
@@ -326,14 +307,14 @@ public class BunnyPlacement : MonoBehaviour
                 //If at that moment the bunny was allowed to spawn, proceed ot make the call.
                 if (canspawnbunny)
                 {
-					bunnySpawner.SpawnBunny(placeholder.position);
+                    bunnySpawner.SpawnBunny(placeholder.position);
                 }
                 else //Clear the list of planes.
                 {
-					for (int i = 0; i < zedPlane.hitPlaneList.Count; i++)
+                    for (int i = 0; i < zedPlane.hitPlaneList.Count; i++)
                     {
-						Destroy(zedPlane.hitPlaneList[i].gameObject);
-						zedPlane.hitPlaneList.RemoveAt(i);
+                        Destroy(zedPlane.hitPlaneList[i].gameObject);
+                        zedPlane.hitPlaneList.RemoveAt(i);
                     }
                 }
 

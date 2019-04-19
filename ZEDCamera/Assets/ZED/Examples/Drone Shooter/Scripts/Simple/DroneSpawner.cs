@@ -73,6 +73,13 @@ public class DroneSpawner : MonoBehaviour
 	private Drone currentdrone;
 
     /// <summary>
+    /// Main ZEDManager to use for determining where the drone spawns and what it's looking at when it does. 
+    /// If left empty, will choose the first available ZEDManager in the scene. 
+    /// </summary>
+    [Tooltip("Main ZEDManager to use for determining where the drone spawns and what it's looking at when it does. " +
+        "If left empty, will choose the first available ZEDManager in the scene. ")]
+    public ZEDManager zedManager = null;
+    /// <summary>
     /// Needed for various calls to ZEDSupportFunctions.cs, so it can transform ZED depth info into world space. 
     /// </summary>
 	private Camera leftcamera;
@@ -99,17 +106,18 @@ public class DroneSpawner : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+		zedManager = FindObjectOfType<ZEDManager> ();
 		//Set the countdown Timer;
 		respawncountdown = respawnTimer;
 		//Get the ZED camera
-		leftcamera = ZEDManager.Instance.GetLeftCameraTransform().GetComponent<Camera>();
+		leftcamera = zedManager.GetLeftCameraTransform().GetComponent<Camera>();
     }
 
     // Update is called once per frame
     void Update()
     {
         //Reposition the screen in front our the Camera when its ready
-        if (ZEDManager.Instance.IsZEDReady && !displayedwarning)
+		if (zedManager && zedManager.IsZEDReady && !displayedwarning)
         {
             StartCoroutine(WarningDisplay());
             displayedwarning = true;
@@ -145,9 +153,11 @@ public class DroneSpawner : MonoBehaviour
     {
         GameObject warningMsg = Instantiate(spawnWarning); //Spawn the message prefab, which doesn't have the correct text yet. 
 
-        warningMsg.transform.position = ZEDManager.Instance.OriginPosition + ZEDManager.Instance.OriginRotation * (Vector3.forward*2);
-        Quaternion newRot = Quaternion.LookRotation(ZEDManager.Instance.OriginPosition - warningMsg.transform.position, Vector3.up);
-        warningMsg.transform.eulerAngles = new Vector3(0, newRot.eulerAngles.y + 180, 0);
+		if (zedManager != null) {
+			warningMsg.transform.position = zedManager.OriginPosition + zedManager.OriginRotation * (Vector3.forward * 2);
+			Quaternion newRot = Quaternion.LookRotation (zedManager.OriginPosition - warningMsg.transform.position, Vector3.up);
+			warningMsg.transform.eulerAngles = new Vector3 (0, newRot.eulerAngles.y + 180, 0);
+		}
 
         Text msg = warningMsg.GetComponentInChildren<Text>(); //Find the text in the prefab. 
 
@@ -194,7 +204,7 @@ public class DroneSpawner : MonoBehaviour
 	private bool CheckRandomSpawnLocation(out Vector3 newRandomPos)
     {
 		//We can't do anything if the ZED isn't initialized. 
-		if(!ZEDManager.Instance.IsZEDReady)
+		if(!zedManager.IsZEDReady)
 		{
 			newRandomPos = Vector3.zero;
 			return false;
@@ -205,7 +215,7 @@ public class DroneSpawner : MonoBehaviour
 
         //Get the world position of that position in the real world
 		Vector3 randomWorldPoint;
-		bool foundWorldPoint = ZEDSupportFunctions.GetWorldPositionAtPixel(randomScreenPoint, leftcamera, out randomWorldPoint);
+		bool foundWorldPoint = ZEDSupportFunctions.GetWorldPositionAtPixel(zedManager.zedCamera,randomScreenPoint, leftcamera, out randomWorldPoint);
 
 		if (!foundWorldPoint) //We can't read depth from that point. 
         {
@@ -235,7 +245,7 @@ public class DroneSpawner : MonoBehaviour
         }
 
 		//Also check nearby points in a sphere of radius=ClearRadius to make sure the whole drone has a clear space. 
-		if (ZEDSupportFunctions.HitTestOnSphere(leftcamera, closerWorldPoint, 1f, radiusCheckRate, percentagethreshold))
+		if (ZEDSupportFunctions.HitTestOnSphere(zedManager.zedCamera, leftcamera, closerWorldPoint, 1f, radiusCheckRate, percentagethreshold))
         {
             //Not clear. 
             newRandomPos = Vector3.zero;
@@ -270,7 +280,7 @@ public class DroneSpawner : MonoBehaviour
 
         //Set the drone's transform values
 		dronego.transform.position = newspawnposition; //Assign the random Pos generated in CheckRandomSpawnLocation();
-		dronego.transform.rotation = Quaternion.LookRotation(ZEDManager.Instance.GetLeftCameraTransform().position - spawnPosition, Vector3.up); //Make it look at the player.
+		dronego.transform.rotation = Quaternion.LookRotation(zedManager.GetLeftCameraTransform().position - spawnPosition, Vector3.up); //Make it look at the player.
 
         return dronecomponent;
 

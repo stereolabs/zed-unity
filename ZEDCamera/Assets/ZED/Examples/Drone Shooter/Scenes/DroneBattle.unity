@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.46323532, g: 0.46323532, b: 0.46323532, a: 1}
+  m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -77,17 +77,15 @@ LightmapSettings:
     m_PVRDirectSampleCount: 32
     m_PVRSampleCount: 500
     m_PVRBounces: 2
-    m_PVRFilterTypeDirect: 0
-    m_PVRFilterTypeIndirect: 0
-    m_PVRFilterTypeAO: 0
+    m_PVRFiltering: 0
     m_PVRFilteringMode: 1
     m_PVRCulling: 1
     m_PVRFilteringGaussRadiusDirect: 1
     m_PVRFilteringGaussRadiusIndirect: 5
     m_PVRFilteringGaussRadiusAO: 2
-    m_PVRFilteringAtrousPositionSigmaDirect: 0.5
-    m_PVRFilteringAtrousPositionSigmaIndirect: 2
-    m_PVRFilteringAtrousPositionSigmaAO: 1
+    m_PVRFilteringAtrousColorSigma: 1
+    m_PVRFilteringAtrousNormalSigma: 1
+    m_PVRFilteringAtrousPositionSigma: 1
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -383,6 +381,7 @@ GameObject:
   - component: {fileID: 374019521}
   - component: {fileID: 374019523}
   - component: {fileID: 374019522}
+  - component: {fileID: 374019524}
   m_Layer: 8
   m_Name: Frame
   m_TagString: Untagged
@@ -445,6 +444,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 374019520}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &374019524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 374019520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 313514277d565454383ea4c1a1f8beb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showInNonZEDCameras: 1
 --- !u!1 &390797088
 GameObject:
   m_ObjectHideFlags: 0
@@ -609,10 +620,16 @@ Prefab:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1222075980241000, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
+    - target: {fileID: 114575857264643554, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
+        type: 2}
+      propertyPath: zedManager
+      value: 
+      objectReference: {fileID: 1344833222}
+    - target: {fileID: 114228649437443144, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
+        type: 2}
+      propertyPath: zedManager
+      value: 
+      objectReference: {fileID: 1344833222}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 2}
   m_IsPrefabParent: 0
@@ -797,6 +814,7 @@ MonoBehaviour:
     type: 2}
   laserPointerBeadHolder: {fileID: 1888571830}
   laserSpawnLocation: {fileID: 1151804457}
+  zedManager: {fileID: 1344833222}
 --- !u!82 &1223027083
 AudioSource:
   m_ObjectHideFlags: 0
@@ -986,17 +1004,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 2
+  cameraID: 0
   depthMode: 1
+  inputType: 0
+  resolution: 2
+  FPS: 60
+  svoInputFileName: 
+  svoLoopBack: 1
+  svoRealTimeMode: 0
+  currentFrame: 0
+  numberFrameMax: 0
+  pauseSVOReading: 0
+  NeedNewFrameGrab: 0
+  streamInputIP: 127.0.0.1
+  streamInputPort: 30000
   enableTracking: 1
   enableSpatialMemory: 0
   pathSpatialMemory: 
+  estimateInitialPosition: 0
+  mappingResolutionPreset: 1
+  mappingRangePreset: 1
+  isMappingFilteringEnable: 1
+  isMappingTextured: 0
+  saveMeshWhenOver: 0
+  meshPath: Assets/ZEDMesh.obj
+  meshFilterParameters: 0
   depthOcclusion: 1
   postProcessing: 1
-  m_cameraBrightness: 1
+  m_cameraBrightness: 100
+  svoOutputFileName: Assets/Recording.svo
+  svoOutputCompressionMode: 3
+  needRecordFrame: 0
+  enableStreaming: 0
+  streamingCodec: 0
+  streamingPort: 30000
+  bitrate: 8000
+  gopSize: -1
+  adaptativeBitrate: 0
   fadeInOnStart: 1
   dontDestroyOnLoad: 0
-  showarrig: 0
+  greySkybox: 1
+  showarrig: 1
+  cameraModel: '-'
+  cameraSerialNumber: '-'
+  cameraFirmware: '-'
   versionZED: '-'
   engineFPS: '-'
   cameraFPS: '-'
@@ -1007,11 +1058,12 @@ MonoBehaviour:
   HMDSyncPosition: {x: 0, y: 0, z: 0}
   ZEDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
   HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
-  advancedPanelOpen: 0
-  lefteyelayer: 28
-  righteyelayer: 29
-  lefteyelayerfinal: 30
-  righteyelayerfinal: 31
+  advancedPanelOpen: 1
+  spatialMappingFoldoutOpen: 0
+  recordingFoldoutOpen: 1
+  streamingOutFoldoutOpen: 1
+  camControlFoldoutOpen: 0
+  arlayer: 30
   zedRigDisplayer: {fileID: 0}
 --- !u!114 &1344833223
 MonoBehaviour:
@@ -1039,46 +1091,6 @@ Transform:
   - {fileID: 1212828187}
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1475001193
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1475001195}
-  - component: {fileID: 1475001194}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1475001194
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1475001193}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac03a7068f57e04489786d0c79fe673e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1475001195
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1475001193}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.4865954, y: 0.68400717, z: -2.0945253}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1485011732
 GameObject:
@@ -1190,20 +1202,16 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 1222075980241000, guid: 558a4b76067e3e44089fbed55a2687e6, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114506010654110848, guid: 558a4b76067e3e44089fbed55a2687e6,
-        type: 2}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 114191359626448276, guid: 558a4b76067e3e44089fbed55a2687e6,
         type: 2}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
+      propertyPath: zedManager
+      value: 
+      objectReference: {fileID: 1344833222}
+    - target: {fileID: 114506010654110848, guid: 558a4b76067e3e44089fbed55a2687e6,
+        type: 2}
+      propertyPath: zedManager
+      value: 
+      objectReference: {fileID: 1344833222}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 558a4b76067e3e44089fbed55a2687e6, type: 2}
   m_IsPrefabParent: 0
@@ -1218,6 +1226,7 @@ GameObject:
   - component: {fileID: 1750122612}
   - component: {fileID: 1750122614}
   - component: {fileID: 1750122613}
+  - component: {fileID: 1750122615}
   m_Layer: 10
   m_Name: Frame
   m_TagString: Untagged
@@ -1280,6 +1289,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1750122611}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1750122615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1750122611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 313514277d565454383ea4c1a1f8beb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showInNonZEDCameras: 1
 --- !u!1 &1888571830
 GameObject:
   m_ObjectHideFlags: 0
@@ -1434,10 +1455,6 @@ Prefab:
     - target: {fileID: 4723432349376882, guid: 7a5f9c3559310d741bc7b70ccea08ada, type: 2}
       propertyPath: m_RootOrder
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1701142088804234, guid: 7a5f9c3559310d741bc7b70ccea08ada, type: 2}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7a5f9c3559310d741bc7b70ccea08ada, type: 2}

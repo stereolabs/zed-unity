@@ -2,6 +2,8 @@ using UnityEngine;
 using System;
 using System.Threading;
 using UnityEngine.VR;
+using System.Collections;
+using System.Collections.Generic;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -19,39 +21,177 @@ using UnityEditor;
 /// </remarks>
 public class ZEDManager : MonoBehaviour
 {
+
+    /// <summary>
+    /// Static function to get instance of the ZEDManager with a given camera_ID. See sl.ZED_CAMERA_ID for the available choices.
+    /// </summary>
+    public static object grabLock;
+    static ZEDManager[] ZEDManagerInstance = null;
+    public static ZEDManager GetInstance(sl.ZED_CAMERA_ID _id)
+    {
+        if (ZEDManagerInstance == null)
+            return null;
+        else
+            return ZEDManagerInstance[(int)_id];
+    }
+
+    /// <summary>
+    /// Static function to get all ZEDManagers that have been properly instantiated. 
+    /// <para>Cameras may not necessarily be connected, if they haven't finished connecting, have disconnected,
+    /// or if no camera is available.</para>
+    /// </summary>
+    /// <returns></returns>
+    public static List<ZEDManager> GetInstances()
+    {
+        List<ZEDManager> instances = new List<ZEDManager>();
+        for (int i = 0; i < (int)sl.Constant.MAX_CAMERA_PLUGIN; i++)
+        {
+            ZEDManager instance = GetInstance((sl.ZED_CAMERA_ID)i);
+            if (instance != null)
+                instances.Add(instance);
+        }
+        return instances;
+    }
+
+
     /// <summary>
     /// For advanced debugging. Default false. Set true for the Unity wrapper to log all SDK calls to a new file
     /// at C:/ProgramData/stereolabs/SL_Unity_wrapper.txt. This helps find issues that may occur within
     /// the protected .dll, but can decrease performance. 
     /// </summary>
-    private bool wrapperVerbose = false;
+    private bool wrapperVerbose = true;
 
-    ////////////////////////////
-    //////// Public ///////////
-    ////////////////////////////
     /// <summary>
     /// Current instance of the ZED Camera, which handles calls to the Unity wrapper .dll. 
     /// </summary>
-    public sl.ZEDCamera zedCamera;
+    public sl.ZEDCamera zedCamera = null;
 
+    /////////////////////////////////////////////////////////////////////////
+    ///////////////////////// Camera Settings ///////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
     /// <summary>
     /// Resolution setting for all images retrieved from the camera. Higher resolution means lower framerate.
     /// HD720 is strongly recommended for pass-through AR.
     /// </summary>
-    [Header("Camera")]
-    [Tooltip("Resolution setting for all images retrieved from the camera. Higher resolution means lower framerate. " + 
-        "HD720 is strongly recommended for pass-through AR.")]
-    public sl.RESOLUTION resolution = sl.RESOLUTION.HD720;
+
     /// <summary>
-    /// Targeted FPS, based on the resolution. VGA = 100, HD720 = 60, HD1080 = 30, HD2K = 15. 
+    /// Camera ID
     /// </summary>
-    private int FPS = 60;
+    [HideInInspector]
+    public sl.ZED_CAMERA_ID cameraID = sl.ZED_CAMERA_ID.CAMERA_ID_01;
+
     /// <summary>
     /// The accuracy of depth calculations. Higher settings mean more accurate occlusion and lighting but costs performance. 
     /// Note there's a significant jump in performance cost between QUALITY and ULTRA modes.
     /// </summary>
-    [Tooltip("The accuracy of depth calculations. Higher settings mean more accurate occlusion and lighting but costs performance.")]
+    /*[Tooltip("The accuracy of depth calculations. Higher settings mean more accurate occlusion and lighting but costs performance.")]*/
+    [HideInInspector]
     public sl.DEPTH_MODE depthMode = sl.DEPTH_MODE.PERFORMANCE;
+
+
+    /// <summary>
+    /// Input Type in SDK (USB, SVO or Stream)
+    /// </summary>
+    [HideInInspector]
+    public sl.INPUT_TYPE inputType = sl.INPUT_TYPE.INPUT_TYPE_USB;
+    /// <summary>
+    /// Camera Resolution
+    /// </summary>
+    [HideInInspector]
+    public sl.RESOLUTION resolution = sl.RESOLUTION.HD720;
+    /// <summary>
+    /// Targeted FPS, based on the resolution. VGA = 100, HD720 = 60, HD1080 = 30, HD2K = 15. 
+    /// </summary>
+	[HideInInspector]
+    public int FPS = 60;
+
+    /// <summary>
+    /// SVO Input FileName
+    /// </summary>
+    [HideInInspector]
+    public string svoInputFileName = "";
+
+    /// <summary>
+    /// SVO loop back option
+    /// </summary>
+    [HideInInspector]
+    public bool svoLoopBack = true;
+
+    /// <summary>
+    /// SVO loop back option
+    /// </summary>
+    [HideInInspector]
+    public bool svoRealTimeMode = false;
+
+    /// <summary>
+    /// Current frame being read from the SVO. Doesn't apply when recording. 
+    /// </summary>
+    [HideInInspector]
+    [SerializeField]
+    private int currentFrame = 0;
+    /// <summary>
+    /// Current frame being read from the SVO. Doesn't apply when recording. 
+    /// </summary>
+    public int CurrentFrame
+    {
+        get
+        {
+            return currentFrame;
+        }
+        set
+        {
+            currentFrame = value;
+        }
+    }
+
+    /// <summary>
+    /// Total number of frames in a loaded SVO. 
+    /// </summary>
+    [HideInInspector]
+    [SerializeField]
+    private int numberFrameMax = 0;
+    /// <summary>
+    /// Total number of frames in a loaded SVO. 
+    /// </summary>
+    public int NumberFrameMax
+    {
+        set
+        {
+            numberFrameMax = value;
+        }
+        get
+        {
+            return numberFrameMax;
+        }
+    }
+    [HideInInspector]
+    [SerializeField]
+    public bool pauseSVOReading = false;
+
+    /// <summary>
+    /// Ask a new frame is in pause (SVO only)
+    /// </summary>
+    [HideInInspector]
+    public bool NeedNewFrameGrab = false;
+
+    /// <summary>
+    /// Streaming Input IP (v2.8)
+    /// </summary>
+    [HideInInspector]
+    public string streamInputIP = "127.0.0.1";
+
+    /// <summary>
+    /// Streaming Input Port (v2.8)
+    /// </summary>
+    [HideInInspector]
+    public int streamInputPort = 30000;
+
+
+
+
+    /////////////////////////////////////////////////////////////////////////
+    ///////////////////////// Motion Tracking ///////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
 
     /// <summary>
     /// If enabled, the ZED will move/rotate itself using its own inside-out tracking.
@@ -59,25 +199,118 @@ public class ZEDManager : MonoBehaviour
     /// <para>Normally, ZEDManager's GameObject will move according to the tracking. But if in AR pass-through mode, 
     /// then the Camera_eyes object in ZED_Rig_Stereo will move while this object stays still. </para>
     /// </summary>
-    [Header("Motion Tracking")]
-
-    [Tooltip("If enabled, the ZED will move/rotate itself using its own inside-out tracking. " +
-        "If false, the camera tracking will move with the VR HMD if connected and available.")]
+    [HideInInspector]
     public bool enableTracking = true;
+
+
     /// <summary>
     /// Enables the spatial memory. Will detect and correct tracking drift by remembering features and anchors in the environment, 
-	/// but may cause visible jumps when it happens.
+    /// but may cause visible jumps when it happens.
     /// </summary>
-	[Tooltip("Enables the spatial memory. Will detect and correct tracking drift by remembering features and anchors in the environment, " 
-        + "but may cause visible jumps when it happens")]
+    [HideInInspector]
     public bool enableSpatialMemory = true;
     /// <summary>
     /// If using Spatial Memory, you can specify a path to an existing .area file to start with some memory already loaded. 
     /// .area files are created by scanning a scene with ZEDSpatialMappingManager and saving the scan. 
     /// </summary>
-    [Tooltip("If using Spatial Memory, you can specify a path to an existing .area file to start with some memory already loaded. " +
-        ".area files are created by scanning a scene with ZEDSpatialMappingManager and saving the scan.")]
+    [HideInInspector]
     public string pathSpatialMemory = "ZED_spatial_memory";
+
+    /// <summary>
+    /// Estimate initial position by detecting the floor.
+    /// </summary>
+    [HideInInspector]
+    public bool estimateInitialPosition = true;
+
+
+
+    /////////////////////////////////////////////////////////////////////////
+    ///////////////////////// Spatial Mapping ///////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Resolution setting for the scan. A higher resolution creates more submeshes and uses more memory, but is more accurate.
+    /// </summary>
+    [HideInInspector]
+    public ZEDSpatialMapping.RESOLUTION mappingResolutionPreset = ZEDSpatialMapping.RESOLUTION.MEDIUM;
+
+    /// <summary>
+    /// Maximum distance geometry can be from the camera to be scanned. Geometry scanned from farther away will be less accurate. 
+    /// </summary>
+    [HideInInspector]
+    public ZEDSpatialMapping.RANGE mappingRangePreset = ZEDSpatialMapping.RANGE.MEDIUM;
+
+    /// <summary>
+    /// Whether mesh filtering is needed.
+    /// </summary>
+    [HideInInspector]
+    public bool isMappingFilteringEnable = false;
+
+    /// <summary>
+    /// Whether surface textures will be scanned and applied. Note that texturing will add further delay to the post-scan finalizing period. 
+    /// </summary>
+    [HideInInspector]
+    public bool isMappingTextured = false;
+
+    /// <summary>
+    /// Whether to save the mesh .obj and .area files once the scan is finished. 
+    /// </summary>
+    [HideInInspector]
+    public bool saveMeshWhenOver = false;
+
+    /// <summary>
+    /// Path to save the .obj and .area files. 
+    /// </summary>
+    [HideInInspector]
+    public string meshPath = "Assets/ZEDMesh.obj";
+
+    /// <summary>
+    /// Filtering setting. More filtering results in fewer faces in the mesh, reducing both file size and accuracy. 
+    /// </summary>
+    [HideInInspector]
+    public sl.FILTER meshFilterParameters;
+
+    /// <summary>
+    /// Instance of the ZEDSpatialMapping class that handles the actual spatial mapping implementation within Unity. 
+    /// </summary>
+    [HideInInspector]
+    private ZEDSpatialMapping spatialMapping = null;
+    public ZEDSpatialMapping GetSpatialMapping { get { return spatialMapping; } }
+
+    /// <summary>
+    /// Whether the spatial mapping is currently scanning. 
+    /// </summary>
+    public bool IsMappingRunning { get { return spatialMapping != null ? spatialMapping.IsRunning() : false; } }
+
+    /// <summary>
+    /// List of the processed submeshes. This list isn't filled until StopSpatialMapping() is called. 
+    /// </summary>
+    public List<ZEDSpatialMapping.Chunk> MappingChunkList { get { return spatialMapping != null ? spatialMapping.ChunkList : null; } }
+
+    /// <summary>
+    /// Whether the mesh update thread is running. 
+    /// </summary>
+    public bool IsMappingUpdateThreadRunning { get { return spatialMapping != null ? spatialMapping.IsUpdateThreadRunning : false; } }
+
+    /// <summary>
+    /// Whether the spatial mapping was running but has been paused (not stopped) by the user. 
+    /// </summary>
+    public bool IsMappingPaused { get { return spatialMapping != null ? spatialMapping.IsPaused : false; } }
+
+    /// <summary>
+    /// Whether the mesh is in the texturing stage of finalization. 
+    /// </summary>
+    public bool IsMappingTexturingRunning { get { return spatialMapping != null ? spatialMapping.IsTexturingRunning : false; } }
+
+    /// <summary>
+    /// Gets a value indicating whether the spatial mapping display is enabled.
+    /// </summary>
+    public bool IsSpatialMappingDisplay { get { return spatialMapping != null ? spatialMapping.display : false; } }
+ 
+
+    /////////////////////////////////////////////////////////////////////////
+    ///////////////////////////// Rendering ///////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
 
     /// <summary>
     /// Rendering paths available to the ZED with the corresponding Unity rendering path. 
@@ -88,44 +321,108 @@ public class ZEDManager : MonoBehaviour
         DEFERRED = RenderingPath.DeferredShading
     };
 
-
     /// <summary>
     /// When enabled, the real world can occlude (cover up) virtual objects that are behind it. 
     /// Otherwise, virtual objects will appear in front.  
     /// </summary>
-    [Header("Rendering")]
-    [Tooltip("When enabled, the real world can occlude (cover up) virtual objects that are behind it. " +
-        "Otherwise, virtual objects will appear in front.")]
+    [HideInInspector]
     public bool depthOcclusion = true;
 
     /// <summary>
     /// Enables post-processing effects on virtual objects that blends them in with the real world.
     /// </summary>
-    [LabelOverride("AR Post-Processing")]
-    [Tooltip("Enables post-processing effects on virtual objects that blends them in with the real world.")]
+    [HideInInspector]
     public bool postProcessing = true;
 
     /// <summary>
     /// Brightness of the final real-world image. Default is 1. Lower to darken the environment in a realistic-looking way. 
     /// This is a rendering setting that doesn't affect the raw input from the camera.
     /// </summary>
-    [Range(0, 1)]
-    [Tooltip("Brightness of the final real-world image. Default is 1. Lower to darken the environment in a realistic-looking way. "  +
-        "This is a rendering setting that doesn't affect the raw input from the camera.")]
-    public float m_cameraBrightness = 1.0f;
+    [HideInInspector]
+    public int m_cameraBrightness = 100;
     /// <summary>
     /// Public accessor for m_cameraBrightness, which is the post-capture brightness setting of the real-world image. 
     /// </summary>
-	public float CameraBrightness
+	public int CameraBrightness
     {
-		get {return m_cameraBrightness;}
-        set {
-			if (m_cameraBrightness == value) return;
-			m_cameraBrightness = value;
-			if (OnCamBrightnessChange != null)
-				OnCamBrightnessChange(m_cameraBrightness);
+        get { return m_cameraBrightness; }
+        set
+        {
+            if (m_cameraBrightness == value) return;
+            m_cameraBrightness = value;
+            if (OnCamBrightnessChange != null)
+                OnCamBrightnessChange(m_cameraBrightness);
         }
     }
+
+    /////////////////////////////////////////////////////////////////////////
+    ///////////////////////// Recording Module //////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// SVO Output file name
+    /// </summary>
+    [HideInInspector]
+    public string svoOutputFileName = "Assets/Recording.svo";
+
+    /// <summary>
+    /// SVO Compression mode used for recording
+    /// </summary>
+    [HideInInspector]
+    public sl.SVO_COMPRESSION_MODE svoOutputCompressionMode = sl.SVO_COMPRESSION_MODE.AVCHD_BASED;
+    
+    /// <summary>
+    /// Indicates if frame must be recorded
+    /// </summary>
+    [HideInInspector]
+    public bool needRecordFrame = false;
+
+    /////////////////////////////////////////////////////////////////////////
+    ///////////////////////// Streaming Module //////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Enable/Disable Streaming module
+    /// </summary>
+    [HideInInspector]
+    public bool enableStreaming = false;
+    /// <summary>
+    /// Status of streaming request
+    /// </summary>
+    private bool isStreamingEnable = false;
+
+    /// <summary>
+    /// Codec used for Streaming
+    /// </summary>
+    [HideInInspector]
+    public sl.STREAMING_CODEC streamingCodec = sl.STREAMING_CODEC.AVCHD_BASED;
+
+    /// <summary>
+    /// port used for Streaming
+    /// </summary>
+    [HideInInspector]
+    public int streamingPort = 30000;
+    
+    /// <summary>
+    /// bitrate used for Streaming
+    /// </summary>
+    [HideInInspector]
+    public int bitrate = 8000;
+
+    /// <summary>
+    /// gop size used for Streaming
+    /// </summary>
+    [HideInInspector]
+    public int gopSize = -1;
+    
+    /// <summary>
+    /// Enable/Disable adaptative bitrate
+    /// </summary>
+    [HideInInspector]
+    public bool adaptativeBitrate = false;
+
+    /////////////////////////////////////////////////////////////////////////
+    ///////////////////////// Advanced  control /////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
+    /// 
     /// <summary>
     /// True to make the ZED image fade from black when the application starts. 
     /// </summary>
@@ -138,10 +435,17 @@ public class ZEDManager : MonoBehaviour
     public bool dontDestroyOnLoad = false;
 
     /// <summary>
+    /// Grey Out Skybox on Start", "True to set the background to a neutral gray when the scene starts.
+    /// Recommended for AR so that lighting on virtual objects better matches the real world.
+    /// </summary>
+    [HideInInspector]
+    public bool greySkybox = true;
+
+    /// <summary>
     /// Delegate for OnCamBrightnessChange, which is used to update shader properties when the brightness setting changes. 
     /// </summary>
     /// <param name="newVal"></param>
-	public delegate void onCamBrightnessChangeDelegate(float newVal);
+	public delegate void onCamBrightnessChangeDelegate(int newVal);
     /// <summary>
     /// Event fired when the camera brightness setting is changed. Used to update shader properties. 
     /// </summary>
@@ -165,7 +469,7 @@ public class ZEDManager : MonoBehaviour
         }
         set
         {
-            if(Application.isPlaying && showarrig != value && zedRigDisplayer != null)
+            if (Application.isPlaying && showarrig != value && zedRigDisplayer != null)
             {
                 zedRigDisplayer.hideFlags = value ? HideFlags.None : HideFlags.HideAndDontSave;
             }
@@ -174,11 +478,28 @@ public class ZEDManager : MonoBehaviour
         }
     }
 
+
+    /////////////////////////////////////////////////////////////////////////
+    ///////////////////////// Status Report /////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
+
     //Strings used for the Status display in the Inspector. 
+    [Header("Status")]
+    /// <summary>
+    /// The camera model (ZED or ZED-M).
+    /// </summary>
+    [ReadOnly("Camera S/N")] [HideInInspector] public string cameraModel = "-";
+    /// <summary>
+    /// The camera serial number.
+    /// </summary>
+    [ReadOnly("Camera S/N")] [HideInInspector] public string cameraSerialNumber = "-";
+    /// <summary>
+    /// The camera firmware version
+    /// </summary>
+    [ReadOnly("Camera Firmware")] [HideInInspector] public string cameraFirmware = "-";
     /// <summary>
     /// Version of the installed ZED SDK, for display in the Inspector.
     /// </summary>
-    [Header("Status")]
     [ReadOnly("Version")] [HideInInspector] public string versionZED = "-";
     /// <summary>
     /// How many frames per second the engine is rendering, for display in the Inspector. 
@@ -217,6 +538,14 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     private bool depthStabilizer = true;
     /// <summary>
+    /// Disable the IMU of the ZED-M
+    /// </summary>
+    private bool cameraDisableIMU = false;
+    /// <summary>
+    /// Set the camera in Flip mode
+    /// </summary>
+    private bool cameraFlipMode = false;
+    /// <summary>
     /// Whether the camera is currently being tracked using the ZED's inside-out tracking. 
     /// </summary>
     private bool isZEDTracked = false;
@@ -224,35 +553,46 @@ public class ZEDManager : MonoBehaviour
     /// Whether the ZED's inside-out tracking has been activated.
     /// </summary>
     private bool isTrackingEnable = false;
-	/// <summary>
-	/// Whether the camera is tracked in any way (ZED's tracking or a VR headset's tracking). 
-	/// </summary>
-	private bool isCameraTracked = false;
+    /// <summary>
+    /// Whether the camera is tracked in any way (ZED's tracking or a VR headset's tracking). 
+    /// </summary>
+    private bool isCameraTracked = false;
     /// <summary>
     /// Public accessor for whether the camera is tracked in any way (ZED's tracking or a VR headset's tracking). 
     /// </summary>
 	public bool IsCameraTracked
-	{
-		get { return isCameraTracked; }
-	}
+    {
+        get { return isCameraTracked; }
+    }
 
+    /// <summary>
+    /// Whether the camera has a new frame available.
+    /// </summary>
+    private bool isNewFrameGrabbed = false;
+    /// <summary>
+    /// Public accessor for whether the camera has a new frame available.
+    /// </summary>
+    public bool IsNewFrameGrabbed
+    {
+        get { return isNewFrameGrabbed; }
+    }
 
     /// <summary>
     /// Orientation last returned by the ZED's tracking.
     /// </summary>
-	private Quaternion zedOrientation = Quaternion.identity;
+    private Quaternion zedOrientation = Quaternion.identity;
     /// <summary>
     /// Position last returned by the ZED's tracking.
     /// </summary>
-	private Vector3 zedPosition = new Vector3();
+	private Vector3 zedPosition = Vector3.zero;
     /// <summary>
     /// Instance of the manager that handles reading/recording SVO files, which are video files
     /// with metadata that you can treat like regular ZED input. 
     /// </summary>
-    private ZEDSVOManager zedSVOManager;
-    
+    //private ZEDSVOManager zedSVOManager;
+
     /// <summary>
-	/// Position of the camera (zedRigRoot) when the scene starts. Not used in Stereo AR. 
+    /// Position of the camera (zedRigRoot) when the scene starts. Not used in Stereo AR. 
     /// </summary>
     private Vector3 initialPosition = new Vector3();
     /// <summary>
@@ -273,15 +613,18 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     private Vector3 positionOffset;
     /// <summary>
-    /// Enables pose smoothing during drift correction. For AR, this is especially important when 
-    /// spatial memory is activated. 
+    /// Enables pose smoothing during drift correction. Leave it to true.
     /// </summary>
-    private bool enablePoseSmoothing = false;
+    private bool enablePoseSmoothing = true;
     /// <summary>
     /// The engine FPS, updated every frame. 
     /// </summary>
     private float fps_engine = 90.0f;
 
+    /// <summary>
+    /// Recording state
+    /// </summary>
+    private bool isRecording = false;
 
     ///////////////////////////////////////
     /////////// Static States /////////////
@@ -290,12 +633,12 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Whether AR mode is activated. 
     /// </summary>
-    private static bool isStereoRig = false;
+    private bool isStereoRig = false;
     /// <summary>
     /// Whether AR mode is activated. Assigned by ZEDManager.CheckStereoMode() in Awake().
     /// Will be true if the ZED_Rig_Stereo prefab (or a similarly-structured prefab) is used.
     /// </summary>
-    public static bool IsStereoRig
+    public bool IsStereoRig
     {
         get { return isStereoRig; }
     }
@@ -339,6 +682,7 @@ public class ZEDManager : MonoBehaviour
     public Quaternion OriginRotation { get; private set; }
 
 
+
     ///////////////////////////////////////////////////
     [HideInInspector] public Quaternion gravityRotation = Quaternion.identity;
     [HideInInspector] public Vector3 ZEDSyncPosition;
@@ -350,11 +694,7 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Image acquisition thread.
     /// </summary>
-    private Thread threadGrab = null; 
-    /// <summary>
-    /// Mutex for the image acquisition thread. 
-    /// </summary>
-    public object grabLock = new object(); 
+    private Thread threadGrab = null;
     /// <summary>
     /// State of the image acquisition thread. 
     /// </summary>
@@ -363,24 +703,32 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Initialization thread. 
     /// </summary>
-    private Thread threadOpening = null; 
+    private Thread threadOpening = null;
     /// <summary>
     /// Result of the latest attempt to initialize the ZED. 
     /// </summary>
-    public static sl.ERROR_CODE LastInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST; 
-    /// <summary>
-    /// Result of last frame's attempt to initialize the ZED. 
-    /// </summary>
-    public static sl.ERROR_CODE PreviousInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
+    private sl.ERROR_CODE lastInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
+    public sl.ERROR_CODE LastInitStatus { get { return lastInitStatus; } }
     /// <summary>
     /// State of the ZED initialization thread. 
     /// </summary>
     private bool openingLaunched;
-    
+
+    /// <summary>
+    /// Wait Handle used to safely tell the init thread to shut down. 
+    /// </summary>
+    EventWaitHandle initQuittingHandle;
+    /// <summary>
+    /// When true, the init thread will close early instead of completing all its connection attempts. 
+    /// Set to true when the application is closed before a camera finishes its initialization. 
+    /// </summary>
+    private bool forceCloseInit = false;
+
     /// <summary>
     /// Tracking initialization thread. Used as the tracking takes some time to start.
     /// </summary>
-    private Thread trackerThread;
+    private Thread trackerThread = null;
+
 
     ///////////////////////////////////////////
     //////  Camera and Player Transforms //////
@@ -388,12 +736,12 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Transform of the left camera in the ZED rig. 
     /// </summary>
-    private Transform cameraLeft = null;
+    private Transform camLeftTransform = null;
 
     /// <summary>
     /// Transform of the right camera in the ZED rig. Only exists in a stereo rig (like ZED_Rig_Stereo). 
     /// </summary>
-	private Transform cameraRight = null;
+	private Transform camRightTransform = null;
 
     /// <summary>
 	/// Contains the position of the player's head, which is different from the ZED's position in AR mode.
@@ -403,12 +751,15 @@ public class ZEDManager : MonoBehaviour
 	private Transform zedRigRoot = null;
 
     /// <summary>
-    /// Whether the 'Advanced Settings' panel in the editor was open when used last, so the editor will
-    /// display it as it was last time. 
+    /// Left camera in the ZED rig. Also the "main" camera if in ZED_Rig_Mono.
     /// </summary>
-    [SerializeField]
-    [HideInInspector]
-    private bool advancedPanelOpen = false;
+    private Camera cameraLeft;
+
+    /// <summary>
+    /// Right camera of the ZED rig. Only exists in a stereo rig (like ZED_Rig_Stereo).
+    /// </summary>
+    private Camera cameraRight;
+
 
     /// <summary>
     /// Gets the center transform, which is the transform moved by the tracker in AR mode. 
@@ -420,39 +771,76 @@ public class ZEDManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the left camera in the ZED rig. It's best to use this one as it's available in all configurations.
+    /// Gets the left camera transform in the ZED rig. It's best to use this one as it's available in all configurations.
     /// </summary>
     public Transform GetLeftCameraTransform()
     {
+        return camLeftTransform;
+    }
+
+    /// <summary>
+    /// Get the right camera transform in the ZED rig. Only available in the stereo rig (ZED_Rig_Stereo).
+    /// </summary>
+    public Transform GetRightCameraTransform()
+    {
+        return camRightTransform;
+    }
+
+    /// <summary>
+    /// Gets the left camera in the ZED rig. It's best to use this one as it's available in all configurations.
+    /// </summary>
+    public Camera GetLeftCamera()
+    {
+        if (cameraLeft == null && camLeftTransform != null)
+            cameraLeft = camLeftTransform.GetComponent<Camera>();
         return cameraLeft;
     }
 
     /// <summary>
     /// Get the right camera in the ZED rig. Only available in the stereo rig (ZED_Rig_Stereo).
     /// </summary>
-    /// <returns></returns>
-    public Transform GetRightCameraTransform()
+    public Camera GetRightCamera()
     {
+        if (cameraRight == null && camRightTransform != null)
+            cameraRight = camRightTransform.GetComponent<Camera>();
         return cameraRight;
     }
 
 
+    /// <summary>
+    /// Save the foldout options as it was used last time
+    /// </summary>
+    [SerializeField]
+    [HideInInspector]
+    private bool advancedPanelOpen = false;
+    [SerializeField]
+    [HideInInspector]
+    private bool spatialMappingFoldoutOpen = false;
+    [SerializeField]
+    [HideInInspector]
+    private bool recordingFoldoutOpen = false;
+    [SerializeField]
+    [HideInInspector]
+    private bool streamingOutFoldoutOpen = false;
+    [SerializeField]
+    [HideInInspector]
+    private bool camControlFoldoutOpen = false;
 
-	/////////////////////////////////////
-	//////  Timestamps             //////
-	/////////////////////////////////////
+    /////////////////////////////////////
+    //////  Timestamps             //////
+    /////////////////////////////////////
 
     /// <summary>
     /// Timestamp of the last ZED image grabbed. Textures from this grab may not have updated yet.
     /// </summary>
-	private ulong cameraTimeStamp = 0;
+    private ulong cameraTimeStamp = 0;
     /// <summary>
     /// Timestamp of the last ZED image grabbed. Textures from this grab may not have updated yet.
     /// </summary>
 	public ulong CameraTimeStamp
-	{
-		get { return cameraTimeStamp; }
-	}
+    {
+        get { return cameraTimeStamp; }
+    }
 
     /// <summary>
     /// Timestamp of the images used to create the current textures. 
@@ -462,9 +850,9 @@ public class ZEDManager : MonoBehaviour
     /// Timestamp of the images used to create the current textures. 
     /// </summary>
 	public ulong ImageTimeStamp
-	{
-		get { return imageTimeStamp; }
-	}
+    {
+        get { return imageTimeStamp; }
+    }
 
     /// <summary>
     /// Whether the grabbing thread should grab a new frame from the ZED SDK. 
@@ -476,87 +864,27 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
 	private bool newFrameAvailable = false;
 
- 
 
-	/////////////////////////////////////
-	//////  Layers for ZED         //////
-	/////////////////////////////////////
+
+    /////////////////////////////////////
+    //////  Layers for ZED         //////
+    /////////////////////////////////////
 
     /// <summary>
-    /// Layer that the left canvas GameObject (showing the image from the left eye) is set to.
-    /// The right camera in ZED_Rig_Stereo can't see this layer. 
+    /// Layer assigned to the cameras and objects of a (normally hidden) AR camera rig created to handle
+    /// pass-through AR. This allows the cameras to see nothing but two canvas objects with the final MR images. 
     /// </summary>
-    [SerializeField]
     [HideInInspector]
-    private int lefteyelayer = 28;
-    /// <summary>
-    /// Layer that the left canvas GameObject (showing the image from the left eye) is set to.
-    /// The right camera in ZED_Rig_Stereo can't see this layer. 
-    /// </summary>
-    public int leftEyeLayer
+    public int arLayer
     {
         get
         {
-            return lefteyelayer;
+            return arlayer;
         }
     }
-    /// <summary>
-    /// Layer that the right canvas GameObject (showing the image from the right eye) is set to.
-    /// The left camera in ZED_Rig_Stereo can't see this layer. 
-    /// </summary>
     [SerializeField]
     [HideInInspector]
-    private int righteyelayer = 29;
-    /// <summary>
-    /// Layer that the right canvas GameObject (showing the image from the right eye) is set to.
-    /// The left camera in ZED_Rig_Stereo can't see this layer. 
-    /// </summary>
-    public int rightEyeLayer
-    {
-        get
-        {
-            return righteyelayer;
-        }
-    }
-
-    /// <summary>
-    /// Layer that the final left image canvas in the hidden AR rig is set to. (See CreateZEDRigDisplayer())
-    /// Hidden from all ZED cameras except the final left camera. 
-    /// </summary>
-    [SerializeField]
-    [HideInInspector]
-    private int lefteyelayerfinal = 30;
-    /// <summary>
-    /// Layer that the final left image canvas in the hidden AR rig is set to. (See CreateZEDRigDisplayer())
-    /// Hidden from all ZED cameras except the final left camera. 
-    /// </summary>
-    public int leftEyeLayerFinal
-    {
-        get
-        {
-            return lefteyelayerfinal;
-        }
-    }
-
-    /// <summary>
-    /// Layer that the final right image canvas in the hidden AR rig is set to. (See CreateZEDRigDisplayer())
-    /// Hidden from all ZED cameras except the final right camera. 
-    /// </summary>
-    [SerializeField]
-    [HideInInspector]
-    private int righteyelayerfinal = 31;
-    /// <summary>
-    /// Layer that the final right image canvas in the hidden AR rig is set to. (See CreateZEDRigDisplayer())
-    /// Hidden from all ZED cameras except the final right camera. 
-    /// </summary>
-    public int rightEyeLayerFinal
-    {
-        get
-        {
-            return righteyelayerfinal;
-        }
-    }
-
+    private int arlayer = 30;
 
     /////////////////////////////////////
     //////  ZED specific events    //////
@@ -570,7 +898,7 @@ public class ZEDManager : MonoBehaviour
     /// Called when the ZED has finished initializing successfully. 
     /// Used by many scripts to run startup logic that requires that the ZED is active. 
     /// </summary>
-    public static event OnZEDManagerReady OnZEDReady;
+    public event OnZEDManagerReady OnZEDReady;
 
     /// <summary>
     /// Delegate for OnZEDDisconnected. 
@@ -579,23 +907,16 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Event called when ZED was running but became disconnected. 
     /// </summary>
-    public static event OnZEDManagerDisconnected OnZEDDisconnected;
-
-
-    /// <summary>
-    /// ZEDManager instance for singleton implementation.
-    /// </summary>
-    // Static singleton instance
-    private static ZEDManager instance;
+    public event OnZEDManagerDisconnected OnZEDDisconnected;
 
     /// <summary>
-    /// Singleton implementation: Gets the scene's instance of ZEDManager, and creates one in if nonexistant.
+    /// Delegate for new Frame grabbed for external module update
     /// </summary>
-    public static ZEDManager Instance
-    {
-        get { return instance ?? (instance = new GameObject("ZEDManager").AddComponent<ZEDManager>()); }
-    }
-
+    public delegate void OnGrabAction();
+    /// <summary>
+    /// Event called when ZED has grabbed a new frame.
+    /// </summary>
+    public event OnGrabAction OnGrab;
 
 
     #region CHECK_AR
@@ -618,23 +939,12 @@ public class ZEDManager : MonoBehaviour
             {
                 if (cam.stereoTargetEye == StereoTargetEyeMask.Left)
                 {
-                    cameraLeft = cam.transform;
-                    SetLayerRecursively(cameraLeft.gameObject, lefteyelayer);
-
-                    cam.cullingMask &= ~(1 << righteyelayer);
-                    cam.cullingMask &= ~(1 << righteyelayerfinal);
-                    cam.cullingMask &= ~(1 << lefteyelayerfinal);
-                    cam.cullingMask &= ~(1 << sl.ZEDCamera.TagOneObject);
+                    camLeftTransform = cam.transform;
+                    cameraLeft = cam;
                 }
                 else if (cam.stereoTargetEye == StereoTargetEyeMask.Right)
                 {
-                    cameraRight = cam.transform;
-                    SetLayerRecursively(cameraRight.gameObject, righteyelayer);
-                    cam.cullingMask &= ~(1 << lefteyelayer);
-                    cam.cullingMask &= ~(1 << lefteyelayerfinal);
-                    cam.cullingMask &= ~(1 << righteyelayerfinal);
-                    cam.cullingMask &= ~(1 << sl.ZEDCamera.TagOneObject);
-
+                    camRightTransform = cam.transform;
                 }
             }
         }
@@ -645,41 +955,28 @@ public class ZEDManager : MonoBehaviour
             {
                 if (cam.stereoTargetEye == StereoTargetEyeMask.None)
                 {
-                    cameraLeft = cam.transform;
-                    cam.cullingMask = -1;
-                    cam.cullingMask &= ~(1 << sl.ZEDCamera.TagOneObject);
+                    camLeftTransform = cam.transform;
+                    cameraLeft = cam;
                 }
             }
         }
 
 
 
-        if (cameraLeft && cameraRight) //We found a Camera_eyes object and both a left- and right-eye camera. 
+        if (camLeftTransform && camRightTransform) //We found a Camera_eyes object and both a left- and right-eye camera. 
         {
             isStereoRig = true;
-            if (cameraLeft.transform.parent != null)
-                zedRigRoot = cameraLeft.transform.parent; //Make Camera_eyes the new zedRigRoot to be tracked. 
+            if (camLeftTransform.transform.parent != null)
+                zedRigRoot = camLeftTransform.transform.parent; //Make Camera_eyes the new zedRigRoot to be tracked. 
         }
         else //Not all conditions for a stereo rig were met. Set culling masks accordingly. 
         {
             isStereoRig = false;
-            Camera temp = cameraLeft.gameObject.GetComponent<Camera>();
+            Camera caml = camLeftTransform.gameObject.GetComponent<Camera>();
+            cameraLeft = caml;
 
-            if (cameraLeft.transform.parent != null)
-                zedRigRoot = cameraLeft.transform.parent;
-
-            foreach (Camera c in Camera.allCameras) //Child cameras to leftCamera get matching cullingMasks.
-            {
-                if (c != temp) 
-                {
-					c.cullingMask &= ~(1 << lefteyelayer);
-                    c.cullingMask &= ~(1 << sl.ZEDCamera.Tag);
-                }
-            }
-            if (cameraLeft.gameObject.transform.childCount > 0)
-            {
-				cameraLeft.transform.GetChild(0).gameObject.layer = lefteyelayer;
-            }
+            if (camLeftTransform.transform.parent != null)
+                zedRigRoot = camLeftTransform.transform.parent;
         }
     }
     #endregion
@@ -710,6 +1007,10 @@ public class ZEDManager : MonoBehaviour
         //In case the opening thread is still running.
         if (threadOpening != null)
         {
+            initQuittingHandle.Reset();
+            forceCloseInit = true;
+            initQuittingHandle.Set();
+
             threadOpening.Join();
             threadOpening = null;
         }
@@ -721,6 +1022,10 @@ public class ZEDManager : MonoBehaviour
             threadGrab = null;
         }
 
+        if (IsMappingRunning)
+            StopSpatialMapping();
+
+
         Thread.Sleep(10);
     }
 
@@ -730,80 +1035,129 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     void OnApplicationQuit()
     {
+
+        CloseManager();
+        //StopCoroutine("InitZED");
+        //sl.ZEDCamera.UnloadPlugin();
+    }
+
+    private void CloseManager()
+    {
+        if (spatialMapping != null)
+            spatialMapping.Dispose();
+
+        ClearRendering();
+
         zedReady = false;
-		OnCamBrightnessChange -= CameraBrightnessChangeHandler;
+        OnCamBrightnessChange -= SetCameraBrightness;
         Destroy(); //Close the grab and initialization threads. 
 
         if (zedCamera != null)
         {
-            if (zedSVOManager != null)
+            if (isRecording)
             {
-                if (zedSVOManager.record)
-                {
-                    zedCamera.DisableRecording();
-                }
-            }
-            zedCamera.Destroy(); 
+                zedCamera.DisableRecording();
+            }       
+            zedCamera.Destroy();
             zedCamera = null;
         }
 
         //Restore the AR layers that were hidden, if necessary. 
         if (!showarrig)
         {
-            LayerMask layerNumberBinary = (1 << righteyelayerfinal); //Convert layer index into binary number. 
-            layerNumberBinary |= (1 << lefteyelayerfinal);
-#if UNITY_EDITOR
+            LayerMask layerNumberBinary = (1 << arLayer); //Convert layer index into binary number. 
+                                                          //layerNumberBinary |= (1 << leftEyeLayerFinal);
+#if UNITY_EDITOR //Prevents building the app otherwise. 
             UnityEditor.Tools.visibleLayers |= (layerNumberBinary);
 #endif
         }
+
+        sl.ZEDCamera.UnloadInstance((int)cameraID);
     }
+
+    private void ClearRendering()
+    {
+        ZEDRenderingPlane leftRenderingPlane = GetLeftCameraTransform().GetComponent<ZEDRenderingPlane>();
+        if (leftRenderingPlane)
+        {
+            leftRenderingPlane.Clear();
+        }
+
+        if (IsStereoRig)
+        {
+            ZEDRenderingPlane rightRenderingPlane = GetRightCameraTransform().GetComponent<ZEDRenderingPlane>();
+            rightRenderingPlane.Clear();
+        }
+
+
+    }
+
 
     /// <summary>
     /// Sets up starting properties and starts the ZED initialization co-routine. 
     /// </summary>
     void Awake()
     {
-        instance = this;
+
+        // If never initialized, init the array of instances linked to each ZEDManager that could be created.
+        if (ZEDManagerInstance == null)
+        {
+            ZEDManagerInstance = new ZEDManager[(int)sl.Constant.MAX_CAMERA_PLUGIN];
+            for (int i = 0; i < (int)sl.Constant.MAX_CAMERA_PLUGIN; i++)
+                ZEDManagerInstance[i] = null;
+        }
+
+
+        initialPosition = transform.localPosition;
+        initialRotation = transform.localRotation;
+
         zedReady = false;
-        
-        if(dontDestroyOnLoad) DontDestroyOnLoad(transform.root); //If you want the ZED rig not to be destroyed when loading a scene. 
-        
+        ZEDManagerInstance[(int)cameraID] = this;
+        zedCamera = new sl.ZEDCamera();
+        LayerHandler.GetInstance().setUsed(cameraID, true);
+        if (dontDestroyOnLoad) DontDestroyOnLoad(transform.root); //If you want the ZED rig not to be destroyed when loading a scene. 
+
         //Set first few parameters for initialization. This will get passed to the ZED SDK when initialized. 
         initParameters = new sl.InitParameters();
         initParameters.resolution = resolution;
+        initParameters.cameraFPS = FPS;
+        initParameters.cameraID = (int)cameraID;
         initParameters.depthMode = depthMode;
         initParameters.depthStabilization = depthStabilizer;
+        initParameters.cameraDisableIMU = cameraDisableIMU;
+        initParameters.cameraImageFlip = cameraFlipMode;
 
         //Check if this rig is a stereo rig. Will set isStereoRig accordingly.
         CheckStereoMode();
 
         //Set initialization parameters that may change depending on what was done in CheckStereoMode(). 
         isZEDTracked = enableTracking;
-        initialPosition = zedRigRoot.transform.localPosition; 
         zedPosition = initialPosition;
         zedOrientation = initialRotation;
 
-        //Create a ZEDCamera instance and return an error message if the ZED SDK's dependencies are not detected.
-        zedCamera = sl.ZEDCamera.GetInstance();
-        LastInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
+        lastInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
 
-        zedSVOManager = GetComponent<ZEDSVOManager>(); 
-        zedCamera.CreateCamera(wrapperVerbose);
-
-        if (zedSVOManager != null) //If we have a ZEDSVOManager, change settings to read to/write from it. 
+        bool res = zedCamera.CreateCamera((int)cameraID, wrapperVerbose);
+        if (!res)
         {
-            if ((zedSVOManager.read || zedSVOManager.record) && zedSVOManager.videoFile.Length == 0) //Path to SVO is empty. 
-            {
-                zedSVOManager.record = false;
-                zedSVOManager.read = false;
-            }
-            if (zedSVOManager.read) //Playing back an SVO. We'll use that for input instead of actual ZED. 
-            {
-                zedSVOManager.record = false;
-                initParameters.pathSVO = zedSVOManager.videoFile;
-                initParameters.svoRealTimeMode = zedSVOManager.realtimePlayback;
-                initParameters.depthStabilization = depthStabilizer;
-            }
+            Debug.LogError("ZEDManager on " + gameObject.name + " couldn't connect to camera: " + cameraID +
+               ". Check if another ZEDManager is already connected.");
+            //this.gameObject.SetActive (false);
+            //return;
+        }
+        initParameters.inputType = inputType;
+        if (inputType == sl.INPUT_TYPE.INPUT_TYPE_USB)
+        {
+        }
+        else if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO)
+        {
+            initParameters.pathSVO = svoInputFileName;
+            initParameters.svoRealTimeMode = svoRealTimeMode;
+        }
+        else if (inputType == sl.INPUT_TYPE.INPUT_TYPE_STREAM)
+        {
+            initParameters.ipStream = streamInputIP;
+            initParameters.portStream = (ushort)streamInputPort;
         }
 
         versionZED = "[SDK]: " + sl.ZEDCamera.GetSDKVersion().ToString() + " [Plugin]: " + sl.ZEDCamera.PluginVersion.ToString();
@@ -814,90 +1168,93 @@ public class ZEDManager : MonoBehaviour
         {
             //Creates a hidden camera rig that handles final output to the headset. 
             GameObject o = CreateZEDRigDisplayer();
-            o.hideFlags = HideFlags.HideAndDontSave; 
+            if (!showarrig) o.hideFlags = HideFlags.HideAndDontSave;
             o.transform.parent = transform;
 
             //Force some initParameters that are required for a good AR experience.
             initParameters.enableRightSideMeasure = isStereoRig; //Creates a depth map for both eyes, not just one. 
             initParameters.depthMinimumDistance = 0.1f; //Allow depth calculation to very close objects. 
-            initParameters.depthStabilization = depthStabilizer; //Improve depth stability and accuracy. 
 
             //For the Game/output window, mirror the headset view using a custom script that avoids stretching. 
             CreateMirror();
         }
 
         //Starts a coroutine that initializes the ZED without freezing the game. 
-        LastInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
+        lastInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
         openingLaunched = false;
         StartCoroutine("InitZED");
 
-		OnCamBrightnessChange += CameraBrightnessChangeHandler; //Subscribe event for adjusting brightness setting. 
 
+        OnCamBrightnessChange += SetCameraBrightness; //Subscribe event for adjusting brightness setting. 
+
+
+        //Create Module Object
+        //Create the spatial mapping module object (even if not used necessarly)
+        spatialMapping = new ZEDSpatialMapping(transform, this);
 
     }
 
+
+    void Start()
+    {
+        //adjust layers for multiple camera
+        //setLayersForMultiCamera ();
+    }
 
     #region INITIALIZATION
-
-	/// <summary>
-	/// ZED opening function. Should be called in the initialization thread (threadOpening).
-	/// </summary>
-    void OpenZEDInBackground()
+    const int MAX_OPENING_TRIES = 10;
+    private uint numberTriesOpening = 0;/// Counter of tries to open the ZED
+    /// <summary>
+    /// ZED opening function. Should be called in the initialization thread (threadOpening).
+    /// </summary>
+    private void OpenZEDInBackground()
     {
         openingLaunched = true;
-        LastInitStatus = zedCamera.Init(ref initParameters);
-        openingLaunched = false;
+        int timeout = 0;
+
+        do
+        {
+            initQuittingHandle.WaitOne(0); //Makes sure we haven't been turned off early, which only happens in Destroy() from OnApplicationQuit(). 
+            if (forceCloseInit) break;
+
+            lastInitStatus = zedCamera.Init(ref initParameters);
+            timeout++;
+            numberTriesOpening++;
+        } while (lastInitStatus != sl.ERROR_CODE.SUCCESS && timeout < MAX_OPENING_TRIES);
     }
 
+    /// <summary>
+    /// Initialization coroutine.
+    /// </summary>
 
-	/// <summary>
-	/// Initialization coroutine.
-	/// </summary>
-	private uint numberTriesOpening = 0;/// Counter of tries to open the ZED
-	const int MAX_OPENING_TRIES = 50;
-    System.Collections.IEnumerator InitZED()
+    private System.Collections.IEnumerator InitZED()
     {
         zedReady = false;
-        while (LastInitStatus != sl.ERROR_CODE.SUCCESS)
+        if (!openingLaunched)
         {
-            //Initialize the camera
-            if (!openingLaunched) //Don't try initializing again if the last attempt is still going. 
+            initQuittingHandle = new EventWaitHandle(true, EventResetMode.ManualReset);
+            threadOpening = new Thread(new ThreadStart(OpenZEDInBackground)); //Assign thread. 
+            threadOpening.Start();
+        }
+
+        while (lastInitStatus != sl.ERROR_CODE.SUCCESS)
+        {
+            if (numberTriesOpening >= MAX_OPENING_TRIES)
             {
-                threadOpening = new Thread(new ThreadStart(OpenZEDInBackground)); //Assign thread. 
-
-                if (LastInitStatus != sl.ERROR_CODE.SUCCESS) //If it failed, report it and log one failure. 
-                {
-#if UNITY_EDITOR
-                    numberTriesOpening++;
-                    if (numberTriesOpening % 2 == 0 && LastInitStatus == PreviousInitStatus)
-                    {
-                        Debug.LogWarning("[ZEDPlugin]: " + LastInitStatus);
-                    }
-
-                    if (numberTriesOpening > MAX_OPENING_TRIES) //Failed too many times. Give up. 
-                    {
-                        Debug.Log("[ZEDPlugin]: Stopping initialization.");
-                        yield break;
-                    }
-#endif
-
-
-                    PreviousInitStatus = LastInitStatus;
-                }
-
-
-                threadOpening.Start(); 
+                //this.gameObject.SetActive (false);
+                yield break;
             }
 
             yield return new WaitForSeconds(0.3f);
         }
 
 
-        //ZED has initialized successfully. 
-        if (LastInitStatus == sl.ERROR_CODE.SUCCESS)
-        {
-            threadOpening.Join();
 
+        //ZED has initialized successfully. 
+        if (lastInitStatus == sl.ERROR_CODE.SUCCESS)
+        {
+
+            threadOpening.Join();
             //Initialize the tracking thread, AR initial transforms and SVO read/write as needed.
             ZEDReady();
 
@@ -921,6 +1278,33 @@ public class ZEDManager : MonoBehaviour
                 Debug.LogWarning(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SCREEN_RESOLUTION));
             }
 
+            //get informations from camera (S/N, firmware, model...)
+            cameraModel = zedCamera.GetCameraModel().ToString();
+            cameraFirmware = zedCamera.GetZEDFirmwareVersion().ToString();
+            cameraSerialNumber = zedCamera.GetZEDSerialNumber().ToString();
+
+            if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO)
+            {
+                numberFrameMax = zedCamera.GetSVONumberOfFrames();
+            }
+
+            // If streaming has been switched on before play
+            if (enableStreaming && !isStreamingEnable)
+            {
+                lock (zedCamera.grabLock)
+                {
+                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate);
+                    if (err == sl.ERROR_CODE.SUCCESS)
+                    {
+                        isStreamingEnable = true;
+                    }
+                    else
+                    {
+                        enableStreaming = false;
+                        isStreamingEnable = false;
+                    }
+                }
+            }
 
             //If not already launched, launch the image grabbing thread.
             if (!running)
@@ -939,8 +1323,8 @@ public class ZEDManager : MonoBehaviour
 
             setRenderingSettings(); //Find the ZEDRenderingPlanes in the rig and configure them. 
             AdjustZEDRigCameraPosition(); //If in AR mode, move cameras to proper offset relative to zedRigRoot.
-
         }
+
     }
 
 
@@ -957,72 +1341,75 @@ public class ZEDManager : MonoBehaviour
             //zedRigRoot transform (origin of the global camera) is placed on the HMD headset. Therefore, we move the 
             //camera in front of it by offsetHmdZEDPosition to compensate for the ZED's position on the headset. 
             //If values are wrong, tweak calibration file created in ZEDMixedRealityPlugin. 
-            cameraLeft.localPosition = arRig.HmdToZEDCalibration.translation;
-            cameraLeft.localRotation = arRig.HmdToZEDCalibration.rotation;
-            if (cameraRight) cameraRight.localPosition = cameraLeft.localPosition + rightCameraOffset; //Space the eyes apart. 
-            if (cameraRight) cameraRight.localRotation = cameraLeft.localRotation;
+            camLeftTransform.localPosition = arRig.HmdToZEDCalibration.translation;
+            camLeftTransform.localRotation = arRig.HmdToZEDCalibration.rotation;
+            if (camRightTransform) camRightTransform.localPosition = camLeftTransform.localPosition + rightCameraOffset; //Space the eyes apart. 
+            if (camRightTransform) camRightTransform.localRotation = camLeftTransform.localRotation;
         }
         else if (isStereoRig && !VRDevice.isPresent) //Using stereo rig, but no VR headset. 
         {
             //When no VR HMD is available, simply put the origin at the left camera.
-            cameraLeft.localPosition = Vector3.zero;
-            cameraLeft.localRotation = Quaternion.identity;
-            if (cameraRight) cameraRight.localPosition = rightCameraOffset; //Space the eyes apart. 
-            if (cameraRight) cameraRight.localRotation = Quaternion.identity;
+            camLeftTransform.localPosition = Vector3.zero;
+            camLeftTransform.localRotation = Quaternion.identity;
+            if (camRightTransform) camRightTransform.localPosition = rightCameraOffset; //Space the eyes apart. 
+            if (camRightTransform) camRightTransform.localRotation = Quaternion.identity;
         }
         else //Using mono rig (ZED_Rig_Mono). No offset needed. 
         {
-            cameraLeft.localPosition = Vector3.zero;
-            cameraLeft.localRotation = Quaternion.identity;
+            camLeftTransform.localPosition = Vector3.zero;
+            camLeftTransform.localRotation = Quaternion.identity;
         }
     }
 
-	/// <summary>
-	/// Find the ZEDRenderingPlane components in the ZED rig and set their rendering settings 
+    /// <summary>
+    /// Find the ZEDRenderingPlane components in the ZED rig and set their rendering settings 
     /// (rendering path, shader values, etc.) for left and right cameras. Also activate/deactivate depth occlusions.
-	/// </summary>
+    /// </summary>
     void setRenderingSettings()
     {
         ZEDRenderingPlane leftRenderingPlane = GetLeftCameraTransform().GetComponent<ZEDRenderingPlane>();
         leftRenderingPlane.SetPostProcess(postProcessing);
-		GetLeftCameraTransform().GetComponent<Camera>().renderingPath = RenderingPath.UsePlayerSettings;
-        Shader.SetGlobalFloat("_ZEDFactorAffectReal", m_cameraBrightness);
+        GetLeftCameraTransform().GetComponent<Camera>().renderingPath = RenderingPath.UsePlayerSettings;
+        //Shader.SetGlobalFloat("_ZEDFactorAffectReal", m_cameraBrightness);
+        SetCameraBrightness(m_cameraBrightness);
 
-		ZEDRenderingPlane rightRenderingPlane = null; 
+        ZEDRenderingPlane rightRenderingPlane = null;
 
-		if (IsStereoRig)
+        if (IsStereoRig)
         {
             rightRenderingPlane = GetRightCameraTransform().GetComponent<ZEDRenderingPlane>();
             rightRenderingPlane.SetPostProcess(postProcessing);
-       }
-        
-        ZEDRenderingMode renderingPath = (ZEDRenderingMode)GetLeftCameraTransform().GetComponent<Camera>().actualRenderingPath;
-        
-		//Make sure we're in either forward or deferred rendering. Default to forward otherwise. 
-		if (renderingPath != ZEDRenderingMode.FORWARD && renderingPath != ZEDRenderingMode.DEFERRED)
-        {
-			Debug.LogError ("[ZED Plugin] Only Forward and Deferred Shading rendering path are supported");
-			GetLeftCameraTransform ().GetComponent<Camera> ().renderingPath = RenderingPath.Forward;
-			if (IsStereoRig)
-				GetRightCameraTransform ().GetComponent<Camera> ().renderingPath = RenderingPath.Forward;
-		} 
+        }
 
-		//Set depth occlusion. 
-		if (renderingPath == ZEDRenderingMode.FORWARD)
-		{
-			leftRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH_OCC");
-			if (rightRenderingPlane) 
-				rightRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH_OCC");
-		 
-		}else if (renderingPath == ZEDRenderingMode.DEFERRED) {
-			leftRenderingPlane.ManageKeywordDeferredMat(!depthOcclusion, "NO_DEPTH_OCC");
-			if (rightRenderingPlane) 
-				rightRenderingPlane.ManageKeywordDeferredMat(!depthOcclusion, "NO_DEPTH_OCC");
-		}
+        ZEDRenderingMode renderingPath = (ZEDRenderingMode)GetLeftCameraTransform().GetComponent<Camera>().actualRenderingPath;
+
+        //Make sure we're in either forward or deferred rendering. Default to forward otherwise. 
+        if (renderingPath != ZEDRenderingMode.FORWARD && renderingPath != ZEDRenderingMode.DEFERRED)
+        {
+            Debug.LogError("[ZED Plugin] Only Forward and Deferred Shading rendering path are supported");
+            GetLeftCameraTransform().GetComponent<Camera>().renderingPath = RenderingPath.Forward;
+            if (IsStereoRig)
+                GetRightCameraTransform().GetComponent<Camera>().renderingPath = RenderingPath.Forward;
+        }
+
+        //Set depth occlusion. 
+        if (renderingPath == ZEDRenderingMode.FORWARD)
+        {
+            leftRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH_OCC");
+            if (rightRenderingPlane)
+                rightRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH_OCC");
+
+        }
+        else if (renderingPath == ZEDRenderingMode.DEFERRED)
+        {
+            leftRenderingPlane.ManageKeywordDeferredMat(!depthOcclusion, "NO_DEPTH_OCC");
+            if (rightRenderingPlane)
+                rightRenderingPlane.ManageKeywordDeferredMat(!depthOcclusion, "NO_DEPTH_OCC");
+        }
 
 
     }
-	#endregion
+    #endregion
 
     #region IMAGE_ACQUIZ
     /// <summary>
@@ -1043,8 +1430,8 @@ public class ZEDManager : MonoBehaviour
 
             AcquireImages();
         }
-
     }
+
 
     /// <summary>
     /// Grabs images from the ZED SDK and updates tracking, FPS and timestamp values.
@@ -1052,30 +1439,28 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     private void AcquireImages()
     {
-
-		if (requestNewFrame && zedReady)
+        if (requestNewFrame && zedReady)
         {
+            sl.ERROR_CODE e = sl.ERROR_CODE.FAILURE;
+            if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO)
+            {
+                //handle pause
+                if(NeedNewFrameGrab && pauseSVOReading)
+                {
+                    e = zedCamera.Grab(ref runtimeParameters);
+                    NeedNewFrameGrab = false;
+                }
+                else if (!pauseSVOReading)
+                    e = zedCamera.Grab(ref runtimeParameters);
 
-			sl.ERROR_CODE e = sl.ERROR_CODE.NOT_A_NEW_FRAME;
-
-			// Live or SVO? If SVO is paused, we don't need to call Grab() again as the image will not change.
-			if (zedSVOManager == null)
-				e = zedCamera.Grab (ref runtimeParameters);
-			else {
-				if (!zedSVOManager.pause)
-					e = zedCamera.Grab (ref runtimeParameters);
-				else {
-					if (zedSVOManager.NeedNewFrameGrab) {
-						e = zedCamera.Grab (ref runtimeParameters);
-						zedSVOManager.NeedNewFrameGrab = false;
-					}
-					else
-						e = sl.ERROR_CODE.SUCCESS;
-				}
-			}
+                currentFrame = zedCamera.GetSVOPosition();
+            }
+            else
+                e = zedCamera.Grab(ref runtimeParameters);
+                       
 
 
-            lock (grabLock)
+            lock (zedCamera.grabLock)
             {
                 if (e == sl.ERROR_CODE.CAMERA_NOT_DETECTED)
                 {
@@ -1086,33 +1471,29 @@ public class ZEDManager : MonoBehaviour
                 }
                 else if (e == sl.ERROR_CODE.SUCCESS)
                 {
-
-                    //Save the timestamp
-                    cameraTimeStamp = zedCamera.GetCameraTimeStamp();
-
-#if UNITY_EDITOR
+                    #if UNITY_EDITOR
                     float camera_fps = zedCamera.GetCameraFPS();
-                    cameraFPS = camera_fps.ToString() + "Fps";
-                    
-                    if (camera_fps <= FPS * 0.8)
-                        cameraFPS += " WARNING: Low USB bandwidth detected";
-#endif
-
+                    cameraFPS = camera_fps.ToString() + " FPS";
+                    #endif
                     //Get position of camera
                     if (isTrackingEnable)
                     {
-						zedtrackingState = zedCamera.GetPosition(ref zedOrientation, ref zedPosition, sl.TRACKING_FRAME.LEFT_EYE);
+                        zedtrackingState = zedCamera.GetPosition(ref zedOrientation, ref zedPosition, sl.TRACKING_FRAME.LEFT_EYE);
                     }
                     else
+                    {
                         zedtrackingState = sl.TRACKING_STATE.TRACKING_OFF;
+                    }
 
+                    if (needRecordFrame)
+                        zedCamera.Record();
 
                     // Indicate that a new frame is available and pause the thread until a new request is called
                     newFrameAvailable = true;
                     requestNewFrame = false;
                 }
-				else
-				   Thread.Sleep(1);
+                else
+                    Thread.Sleep(1);
             }
         }
         else
@@ -1122,7 +1503,6 @@ public class ZEDManager : MonoBehaviour
         }
     }
     #endregion
-
 
     /// <summary>
     /// Initialize the SVO, and launch the thread to initialize tracking. Called once the ZED
@@ -1136,47 +1516,39 @@ public class ZEDManager : MonoBehaviour
             trackerThread = new Thread(EnableTrackingThreaded);
             trackerThread.Start();
         }
-
-        if (zedSVOManager != null)
+        else if (estimateInitialPosition)
         {
-            if (zedSVOManager.record)
-            {
-                sl.ERROR_CODE svorec = zedCamera.EnableRecording(zedSVOManager.videoFile, zedSVOManager.compressionMode);
-                if (svorec != sl.ERROR_CODE.SUCCESS)
-                {
-                    zedSVOManager.record = false;
-                    Debug.LogError("SVO recording failed. Check that there is enough space on the drive and that the "
-                    + "path provided is valid.");
-                }
-            }
+            sl.ERROR_CODE err = zedCamera.EstimateInitialPosition(ref initialRotation, ref initialPosition);
+            if (zedCamera.GetCameraModel() == sl.MODEL.ZED_M)
+                zedCamera.GetInternalIMUOrientation(ref initialRotation, sl.TIME_REFERENCE.IMAGE);
 
-            if (zedSVOManager.read)
-            {
-                zedSVOManager.NumberFrameMax = zedCamera.GetSVONumberOfFrames();
-            }
+            if (err != sl.ERROR_CODE.SUCCESS)
+                Debug.LogWarning("Failed to estimate initial camera position");
         }
-
 
         if (enableTracking)
             trackerThread.Join();
+
 
         if (isStereoRig && VRDevice.isPresent)
         {
             ZEDMixedRealityPlugin.Pose pose = arRig.InitTrackingAR();
             OriginPosition = pose.translation;
             OriginRotation = pose.rotation;
-            zedRigRoot.localPosition = OriginPosition;
-            zedRigRoot.localRotation = OriginRotation;
 
-			if (!zedCamera.IsHmdCompatible && zedCamera.IsCameraReady)
-				Debug.LogWarning("WARNING: AR Passtrough with a ZED is not recommended. Consider using ZED Mini, designed for this purpose.");
+            if (!zedCamera.IsHmdCompatible && zedCamera.IsCameraReady)
+                Debug.LogWarning("WARNING: AR Passtrough with a ZED is not recommended. Consider using ZED Mini, designed for this purpose.");
         }
         else
         {
             OriginPosition = initialPosition;
             OriginRotation = initialRotation;
         }
-			
+
+        //Set the original transform for the Rig
+        zedRigRoot.localPosition = OriginPosition;
+        zedRigRoot.localRotation = OriginRotation;
+
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.playmodeStateChanged = HandleOnPlayModeChanged;
 #endif
@@ -1187,19 +1559,8 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     void EnableTrackingThreaded()
     {
-        enablePoseSmoothing = enableSpatialMemory;
-        lock (grabLock)
+        lock (zedCamera.grabLock)
         {
-            //Make sure we have grabbed a frame first. 
-            sl.ERROR_CODE e = zedCamera.Grab(ref runtimeParameters);
-            int timeOut_grab = 0;
-            while (e != sl.ERROR_CODE.SUCCESS && timeOut_grab < 100)
-            {
-                e = zedCamera.Grab(ref runtimeParameters);
-                Thread.Sleep(10);
-                timeOut_grab++;
-            }
-
             //If using spatial memory and given a path to a .area file, make sure that path is valid.
             if (enableSpatialMemory && pathSpatialMemory != "" && !System.IO.File.Exists(pathSpatialMemory))
             {
@@ -1207,9 +1568,10 @@ public class ZEDManager : MonoBehaviour
                 pathSpatialMemory = "";
             }
 
+
             //Now enable the tracking with the proper parameters.
-            if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, 
-                enablePoseSmoothing, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
+            if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
+                enablePoseSmoothing, estimateInitialPosition, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
             {
                 throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
             }
@@ -1219,6 +1581,7 @@ public class ZEDManager : MonoBehaviour
             }
         }
     }
+
 
 #if UNITY_EDITOR
     /// <summary>
@@ -1236,8 +1599,11 @@ public class ZEDManager : MonoBehaviour
 #endif
 
 
-    #region ENGINE_UPDATE
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////// ENGINE UPDATE REGION   /////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    #region ENGINE_UPDATE
     /// <summary>
     /// If a new frame is available, this function retrieves the images and updates the Unity textures. Called in Update().
     /// </summary>
@@ -1248,53 +1614,40 @@ public class ZEDManager : MonoBehaviour
 
         if (newFrameAvailable) //ThreadedZEDGrab()/AcquireImages() grabbed images we haven't updated yet. 
         {
-            lock (grabLock)
+            lock (zedCamera.grabLock)
             {
                 zedCamera.RetrieveTextures(); //Tell the wrapper to compute the textures. 
                 zedCamera.UpdateTextures(); //Tell the wrapper to update the textures. 
                 imageTimeStamp = zedCamera.GetImagesTimeStamp();
+
             }
 
+            //For external module ... Trigger the capture done event.
+            if (OnGrab != null)
+                OnGrab();
+
+            //SVO and loop back ? --> reset position if needed
+            if (zedCamera.GetInputType() == sl.INPUT_TYPE.INPUT_TYPE_SVO && svoLoopBack)
+            {
+                int maxSVOFrame = zedCamera.GetSVONumberOfFrames();
+                if (zedCamera.GetSVOPosition() >= maxSVOFrame - 1)
+                {
+                    zedCamera.SetSVOPosition(0);
+                    if (enableTracking)
+                    {
+                        if (!(enableTracking = (zedCamera.ResetTracking(initialRotation, initialPosition) == sl.ERROR_CODE.SUCCESS)))
+                        {
+
+                            Debug.LogError("ZED Tracking disabled: Not available during SVO playback when Loop is enabled.");
+                        }
+                    }
+                    zedRigRoot.localPosition = initialPosition;
+                    zedRigRoot.localRotation = initialRotation;
+                }
+            }
             requestNewFrame = true; //Lets ThreadedZEDGrab/AcquireImages() start grabbing again. 
             newFrameAvailable = false;
         }
-
-        #region SVO Manager
-        if (zedSVOManager != null) //If using an SVO, call SVO-specific functions. 
-        {
-            if (!zedSVOManager.pause)
-            {
-                if (zedSVOManager.record)
-                {
-                    zedCamera.Record();
-                }
-                else if (zedSVOManager.read)
-                {
-                    zedSVOManager.CurrentFrame = zedCamera.GetSVOPosition();
-                    if (zedSVOManager.loop && zedSVOManager.CurrentFrame >= zedCamera.GetSVONumberOfFrames() - 1)
-                    {
-                        zedCamera.SetSVOPosition(0);
-
-                        if (enableTracking)
-                        {
-                            if (!(enableTracking = (zedCamera.ResetTracking(initialRotation, initialPosition) == sl.ERROR_CODE.SUCCESS)))
-                            {
-                                Debug.LogError("ZED Tracking disabled: Not available during SVO playback when Loop is enabled.");
-                            }
-
-                            zedRigRoot.localPosition = initialPosition;
-                            zedRigRoot.localRotation = initialRotation;
-                        }
-                    }
-                }
-            }
-            else if (zedSVOManager.read)
-            {
-                zedCamera.SetSVOPosition(zedSVOManager.CurrentFrame); //As this wasn't updated, it's effectively the last frame. 
-            }
-        }
-        #endregion
-
     }
 
 
@@ -1306,46 +1659,48 @@ public class ZEDManager : MonoBehaviour
     {
         if (!zedReady)
             return;
-		 
-		if (isZEDTracked) //ZED inside-out tracking is enabled and initialized. 
+
+        if (isZEDTracked) //ZED inside-out tracking is enabled and initialized. 
         {
-			Quaternion r;
-			Vector3 v;
+            Quaternion r;
+            Vector3 v;
 
-			isCameraTracked = true;
+            isCameraTracked = true;
 
-			if (VRDevice.isPresent && isStereoRig) //AR pass-through mode. 
+            if (VRDevice.isPresent && isStereoRig) //AR pass-through mode. 
             {
-				if (calibrationHasChanged) //If the HMD offset calibration file changed during runtime. 
+                if (calibrationHasChanged) //If the HMD offset calibration file changed during runtime. 
                 {
-					AdjustZEDRigCameraPosition(); //Re-apply the ZED's offset from the VR headset. 
-					calibrationHasChanged = false;
-				}
+                    AdjustZEDRigCameraPosition(); //Re-apply the ZED's offset from the VR headset. 
+                    calibrationHasChanged = false;
+                }
 
-				arRig.ExtractLatencyPose (imageTimeStamp); //Find what HMD's pose was at ZED image's timestamp for latency compensation. 
-                arRig.AdjustTrackingAR (zedPosition, zedOrientation, out r, out v);
-				zedRigRoot.localRotation = r;
-				zedRigRoot.localPosition = v;
+                arRig.ExtractLatencyPose(imageTimeStamp); //Find what HMD's pose was at ZED image's timestamp for latency compensation. 
+                arRig.AdjustTrackingAR(zedPosition, zedOrientation, out r, out v);
+                zedRigRoot.localRotation = r;
+                zedRigRoot.localPosition = v;
 
-				ZEDSyncPosition = v;
-				ZEDSyncRotation = r;
-				HMDSyncPosition = arRig.LatencyPose ().translation;
-				HMDSyncRotation = arRig.LatencyPose ().rotation;
-			}
+                ZEDSyncPosition = v;
+                ZEDSyncRotation = r;
+                HMDSyncPosition = arRig.LatencyPose().translation;
+                HMDSyncRotation = arRig.LatencyPose().rotation;
+            }
             else //Not AR pass-through mode. 
             {
-				zedRigRoot.localRotation = zedOrientation;
-				zedRigRoot.localPosition = zedPosition;
-			}
-		} else if (VRDevice.isPresent && isStereoRig) //ZED tracking is off but HMD tracking is on. Fall back to that. 
+                zedRigRoot.localRotation = zedOrientation;
+                if (!ZEDSupportFunctions.IsVector3NaN(zedPosition))
+                    zedRigRoot.localPosition = zedPosition;
+            }
+        }
+        else if (VRDevice.isPresent && isStereoRig) //ZED tracking is off but HMD tracking is on. Fall back to that. 
         {
-			isCameraTracked = true;
-			arRig.ExtractLatencyPose (imageTimeStamp); //Find what HMD's pose was at ZED image's timestamp for latency compensation. 
-            zedRigRoot.localRotation = arRig.LatencyPose ().rotation;
-			zedRigRoot.localPosition = arRig.LatencyPose ().translation;
-		}
+            isCameraTracked = true;
+            arRig.ExtractLatencyPose(imageTimeStamp); //Find what HMD's pose was at ZED image's timestamp for latency compensation. 
+            zedRigRoot.localRotation = arRig.LatencyPose().rotation;
+            zedRigRoot.localPosition = arRig.LatencyPose().translation;
+        }
         else //The ZED is not tracked by itself or an HMD. 
-			isCameraTracked = false;
+            isCameraTracked = false;
     }
 
     /// <summary>
@@ -1365,10 +1720,6 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
 	void Update()
     {
-        // Then update the tracking
-        UpdateImages(); //Image is updated first so we have its timestamp for latency compensation. 
-        UpdateHmdPose(); //Store the HMD's pose at the current timestamp. 
-        UpdateTracking(); //Apply position/rotation changes to zedRigRoot. 
 
         //Check if ZED is disconnected; invoke event and call function if so. 
         if (isDisconnected)
@@ -1377,33 +1728,43 @@ public class ZEDManager : MonoBehaviour
                 OnZEDDisconnected(); //Invoke event. Used for GUI message and pausing ZEDRenderingPlanes. 
 
             ZEDDisconnected(); //Tries to reset the camera. 
+            return;
         }
 
-		#if UNITY_EDITOR
-        //Update strings used for displaying stats in the Inspector. 
+
+        // Then update all modules
+        UpdateImages(); //Image is updated first so we have its timestamp for latency compensation. 
+        UpdateHmdPose(); //Store the HMD's pose at the current timestamp. 
+        UpdateTracking(); //Apply position/rotation changes to zedRigRoot. 
+        UpdateMapping(); //Update mapping if activated
+
+
+        /// If in Unity Editor, update the ZEDManager status list
+#if UNITY_EDITOR
+        //Update strings used for 	di	splaying stats in the Inspector. 
         if (zedCamera != null)
         {
             float frame_drop_count = zedCamera.GetFrameDroppedPercent();
             float CurrentTickFPS = 1.0f / Time.deltaTime;
             fps_engine = (fps_engine + CurrentTickFPS) / 2.0f;
-            engineFPS = fps_engine.ToString("F1") + " FPS";
+            engineFPS = fps_engine.ToString("F0") + " FPS";
             if (frame_drop_count > 30 && fps_engine < 45)
                 engineFPS += "WARNING: Low engine framerate detected";
-           
-			if (isZEDTracked)
-				trackingState = ZEDTrackingState.ToString();
-			else if (VRDevice.isPresent && isStereoRig)
-				trackingState = "HMD Tracking";
-			else
-				trackingState = "Camera Not Tracked";
+
+            if (isZEDTracked)
+                trackingState = ZEDTrackingState.ToString();
+            else if (VRDevice.isPresent && isStereoRig)
+                trackingState = "HMD Tracking";
+            else
+                trackingState = "Camera Not Tracked";
         }
-		#endif
+#endif
 
     }
 
     public void LateUpdate()
     {
-        if (IsStereoRig && VRDevice.isPresent)
+        if (IsStereoRig)
         {
             arRig.LateUpdateHmdRendering(); //Update textures on final AR rig for output to the headset. 
         }
@@ -1416,7 +1777,6 @@ public class ZEDManager : MonoBehaviour
     void ZEDDisconnected()
     {
         cameraFPS = "Disconnected";
-
         isDisconnected = true;
 
         if (zedReady)
@@ -1427,10 +1787,119 @@ public class ZEDManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        LayerHandler.GetInstance().setUsed(cameraID, false);
         OnApplicationQuit();
     }
 
 
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////// SPATIAL MAPPING REGION   /////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    #region MAPPING_MODULE
+    /// <summary>
+    /// Tells ZEDSpatialMapping to begin a new scan. This clears the previous scan from the scene if there is one. 
+    /// </summary>
+    public void StartSpatialMapping()
+    {
+        transform.position = Vector3.zero;
+        transform.rotation = Quaternion.identity;
+
+        spatialMapping.StartStatialMapping(mappingResolutionPreset, mappingRangePreset, isMappingTextured);
+    }
+
+    /// <summary>
+    /// Ends the current spatial mapping. Once called, the current mesh will be filtered, textured (if enabled) and saved (if enabled), 
+    /// and a mesh collider will be added. 
+    /// </summary>
+    public void StopSpatialMapping()
+    {
+        if (spatialMapping != null)
+        {
+            spatialMapping.StopStatialMapping();
+            if (saveMeshWhenOver)
+                SaveMesh(meshPath);
+        }
+    }
+
+    /// <summary>
+    /// Updates the filtering parameters and call the ZEDSpatialMapping instance's Update() function. 
+    /// </summary>
+    private void UpdateMapping()
+    {
+        if (spatialMapping != null)
+        {
+            if (IsMappingUpdateThreadRunning)
+            {
+                spatialMapping.filterParameters = meshFilterParameters;
+                spatialMapping.Update();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Toggles whether to display the mesh or not. 
+    /// </summary>
+    /// <param name="state"><c>True</c> to make the mesh visible, <c>false</c> to make it invisible. </param>
+    public void SwitchDisplayMeshState(bool state)
+    {
+        if (spatialMapping != null)
+            spatialMapping.SwitchDisplayMeshState(state);
+    }
+
+    public void ClearAllMeshes()
+    {
+        if (spatialMapping != null)
+            spatialMapping.ClearAllMeshes();
+    }
+
+    /// <summary>
+    /// Pauses the current scan. 
+    /// </summary>
+    /// <param name="state"><c>True</c> to pause the scanning, <c>false</c> to unpause it.</param>
+    public void SwitchPauseState(bool state)
+    {
+        if (spatialMapping != null)
+            spatialMapping.SwitchPauseState(state);
+    }
+
+    /// <summary>
+    /// Saves the mesh into a 3D model (.obj, .ply or .bin) file. Also saves an .area file for spatial memory for better tracking. 
+    /// Calling this will end the spatial mapping if it's running. Note it can take a significant amount of time to finish. 
+    /// </summary>
+    /// <param name="meshPath">Path where the mesh and .area files will be saved.</param>
+    public bool SaveMesh(string meshPath = "ZEDMeshObj.obj")
+    {
+        return spatialMapping.SaveMesh(meshPath);
+    }
+
+    /// <summary>
+    /// Loads a mesh and spatial memory data from a file.
+    /// If scanning is running, it will be stopped. Existing scans in the scene will be cleared. 
+    /// </summary>
+    /// <param name="meshPath">Path to the 3D mesh file (.obj, .ply or .bin) to load.</param>
+    /// <returns><c>True</c> if successfully loaded, <c>false</c> otherwise.</returns>
+    public bool LoadMesh(string meshPath = "ZEDMeshObj.obj")
+    {
+        //Cache the save setting and set to false, to avoid overwriting the mesh file during the load. 
+        bool oldSaveWhenOver = saveMeshWhenOver;
+        saveMeshWhenOver = false;
+
+        gravityRotation = Quaternion.identity;
+
+        spatialMapping.SetMeshRenderer();
+        bool loadresult = spatialMapping.LoadMesh(meshPath);
+
+        saveMeshWhenOver = oldSaveWhenOver; //Restoring old setting.
+        return loadresult;
+    }
+    #endregion
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////// AR REGION //////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     #region AR_CAMERAS
     /// <summary>
     /// Stereo rig that adjusts images from ZED_Rig_Stereo to look correct in the HMD. 
@@ -1453,6 +1922,7 @@ public class ZEDManager : MonoBehaviour
 
         /*Screens left and right */
         GameObject leftScreen = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        leftScreen.name = "Quad - Left";
         MeshRenderer meshLeftScreen = leftScreen.GetComponent<MeshRenderer>();
         meshLeftScreen.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
         meshLeftScreen.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
@@ -1460,10 +1930,11 @@ public class ZEDManager : MonoBehaviour
         meshLeftScreen.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
         meshLeftScreen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         meshLeftScreen.sharedMaterial = Resources.Load("Materials/Unlit/Mat_ZED_Unlit") as Material;
-        leftScreen.layer = lefteyelayerfinal;
+        leftScreen.layer = arLayer;
         GameObject.Destroy(leftScreen.GetComponent<MeshCollider>());
 
         GameObject rightScreen = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        rightScreen.name = "Quad - Right";
         MeshRenderer meshRightScreen = rightScreen.GetComponent<MeshRenderer>();
         meshRightScreen.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
         meshRightScreen.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
@@ -1472,7 +1943,7 @@ public class ZEDManager : MonoBehaviour
         meshRightScreen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         GameObject.Destroy(rightScreen.GetComponent<MeshCollider>());
         meshRightScreen.sharedMaterial = Resources.Load("Materials/Unlit/Mat_ZED_Unlit") as Material;
-        rightScreen.layer = righteyelayerfinal;
+        rightScreen.layer = arLayer;
 
         /*Camera left and right*/
         GameObject camLeft = new GameObject("cameraLeft");
@@ -1482,9 +1953,10 @@ public class ZEDManager : MonoBehaviour
         camL.renderingPath = RenderingPath.Forward;//Minimal overhead
         camL.clearFlags = CameraClearFlags.Color;
         camL.backgroundColor = Color.black;
-        camL.cullingMask = 1 << lefteyelayerfinal;
+        camL.cullingMask = 1 << arLayer;
         camL.allowHDR = false;
         camL.allowMSAA = false;
+        camL.depth = camLeftTransform.GetComponent<Camera>().depth;
 
         GameObject camRight = new GameObject("cameraRight");
         camRight.transform.SetParent(zedRigDisplayer.transform);
@@ -1492,20 +1964,30 @@ public class ZEDManager : MonoBehaviour
         camR.renderingPath = RenderingPath.Forward;//Minimal overhead
         camR.clearFlags = CameraClearFlags.Color;
         camR.backgroundColor = Color.black;
-		camR.stereoTargetEye = StereoTargetEyeMask.Both; //Temporary setting to fix loading screen issue.
-        camR.cullingMask = 1 << righteyelayerfinal;
+        camR.stereoTargetEye = StereoTargetEyeMask.Both; //Temporary setting to fix loading screen issue.
+        camR.cullingMask = 1 << arLayer;
         camR.allowHDR = false;
         camR.allowMSAA = false;
- 
-		SetLayerRecursively (camRight, righteyelayerfinal);
-		SetLayerRecursively (camLeft, lefteyelayerfinal);
+        camR.depth = camRightTransform.GetComponent<Camera>().depth;
+
+        HideFromWrongCameras.RegisterZEDCam(camL);
+        HideFromWrongCameras lhider = leftScreen.AddComponent<HideFromWrongCameras>();
+        lhider.SetRenderCamera(camL);
+        lhider.showInNonZEDCameras = false;
+
+        HideFromWrongCameras.RegisterZEDCam(camR);
+        HideFromWrongCameras rhider = rightScreen.AddComponent<HideFromWrongCameras>();
+        rhider.SetRenderCamera(camR);
+        rhider.showInNonZEDCameras = false;
+
+        SetLayerRecursively(camRight, arLayer);
+        SetLayerRecursively(camLeft, arLayer);
 
         //Hide camera in editor.
 #if UNITY_EDITOR
         if (!showarrig)
         {
-            LayerMask layerNumberBinary = (1 << righteyelayerfinal); //Convert layer index into binary number. 
-            layerNumberBinary |= (1 << lefteyelayerfinal);
+            LayerMask layerNumberBinary = (1 << arLayer); //Convert layer index into binary number. 
             LayerMask flippedVisibleLayers = ~UnityEditor.Tools.visibleLayers;
             UnityEditor.Tools.visibleLayers = ~(flippedVisibleLayers | layerNumberBinary);
         }
@@ -1516,8 +1998,8 @@ public class ZEDManager : MonoBehaviour
 
         arRig.finalCameraLeft = camLeft;
         arRig.finalCameraRight = camRight;
-        arRig.ZEDEyeLeft = cameraLeft.gameObject;
-        arRig.ZEDEyeRight = cameraRight.gameObject;
+        arRig.ZEDEyeLeft = camLeftTransform.gameObject;
+        arRig.ZEDEyeRight = camRightTransform.gameObject;
         arRig.quadLeft = leftScreen.transform;
         arRig.quadRight = rightScreen.transform;
 
@@ -1526,12 +2008,13 @@ public class ZEDManager : MonoBehaviour
         if (UnityEngine.VR.VRDevice.isPresent)
             HMDDevice = UnityEngine.VR.VRDevice.model;
 
+
         return zedRigDisplayer;
     }
 
-#endregion
+    #endregion
 
-#region MIRROR
+    #region MIRROR
     private ZEDMirror mirror = null;
     private GameObject mirrorContainer = null;
     void CreateMirror()
@@ -1556,17 +2039,18 @@ public class ZEDManager : MonoBehaviour
         }
 
         camLeft.transform.parent = mirrorContainer.transform;
-        camL.gameObject.layer = 8;
         camL.stereoTargetEye = StereoTargetEyeMask.None;
         camL.renderingPath = RenderingPath.Forward;//Minimal overhead
         camL.clearFlags = CameraClearFlags.Color;
         camL.backgroundColor = Color.black;
-        camL.cullingMask = 0;
+        camL.cullingMask = 0; //It should see nothing. It gets its final image entirely from a Graphics.Blit call in ZEDMirror. 
         camL.allowHDR = false;
         camL.allowMSAA = false;
         camL.useOcclusionCulling = false;
+
+        camL.depth = cameraLeft.GetComponent<Camera>().depth; //Make sure it renders after the left cam so we can copy texture from latest frame. 
     }
-#endregion
+    #endregion
 
     /// <summary>
     /// Closes out the current stream, then starts it up again while maintaining tracking data. 
@@ -1581,7 +2065,7 @@ public class ZEDManager : MonoBehaviour
             zedCamera.GetPosition(ref zedOrientation, ref zedPosition);
         }
 
-        OnApplicationQuit();
+        CloseManager();
 
         openingLaunched = false;
         running = false;
@@ -1591,32 +2075,46 @@ public class ZEDManager : MonoBehaviour
     }
 
 
-#region EventHandler
-	/// <summary>
-	/// Changes the real-world brightness by setting the brightness value in the shaders.
-	/// </summary>
-	/// <param name="newVal">New value to be applied.</param>
-	private void CameraBrightnessChangeHandler(float newVal)
-	{
-		Shader.SetGlobalFloat ("_ZEDFactorAffectReal", m_cameraBrightness);
-	}
+    #region EventHandler
+    /// <summary>
+    /// Changes the real-world brightness by setting the brightness value in the shaders.
+    /// </summary>
+    /// <param name="newVal">New value to be applied.</param>
+    private void SetCameraBrightness(int newVal)
+    {
+      
+        ZEDRenderingPlane leftRenderingPlane = GetLeftCameraTransform().GetComponent<ZEDRenderingPlane>();
+        if (leftRenderingPlane)
+        {
+            Material canvasmat = leftRenderingPlane.canvas.GetComponent<Renderer>().material;
+            canvasmat.SetFloat("_ZEDFactorAffectReal", newVal / 100.0f); 
+        }
+
+        if (IsStereoRig)
+        {
+            ZEDRenderingPlane rightRenderingPlane = GetRightCameraTransform().GetComponent<ZEDRenderingPlane>();
+
+            Material canvasmat = rightRenderingPlane.canvas.GetComponent<Renderer>().material;
+            canvasmat.SetFloat("_ZEDFactorAffectReal", newVal / 100.0f);
+        }
+    }
 
 
-	/// <summary>
-	/// Flag set to true when the HMD-to-ZED calibration file has changed during runtime. 
+    /// <summary>
+    /// Flag set to true when the HMD-to-ZED calibration file has changed during runtime. 
     /// Causes values from the new file to be applied during Update(). 
-	/// </summary>
-	private bool calibrationHasChanged = false;
+    /// </summary>
+    private bool calibrationHasChanged = false;
 
     /// <summary>
     /// Sets the calibrationHasChanged flag to true, which causes the next Update() to 
     /// re-apply the HMD-to-ZED offsets. 
     /// </summary>
 	private void CalibrationHasChanged()
-	{
-		calibrationHasChanged = true;
-	}
-#endregion
+    {
+        calibrationHasChanged = true;
+    }
+    #endregion
 
 
 
@@ -1625,43 +2123,70 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Handles changes to tracking or graphics settings changed from the Inspector. 
     /// </summary>
-	void OnValidate()
-	{
-		if (zedCamera != null)
-		{
-			if (!isTrackingEnable && enableTracking) //If the user switched on tracking. 
-			{
-				//Enables tracking and initializes the first position of the camera.
-				enablePoseSmoothing = enableSpatialMemory;
-				if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, 
-                    enablePoseSmoothing, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
-				{
-					isZEDTracked = false;
-					throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
-				}
-				else
-				{
-					isZEDTracked = true;
-					isTrackingEnable = true;
-				}
-			}
+    void OnValidate()
+    {
+        if (zedCamera != null)
+        {
+            // If tracking has been switched on
+            if (!isTrackingEnable && enableTracking) 
+            {
+                //Enables tracking and initializes the first position of the camera.
+                if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, estimateInitialPosition, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
+                {
+                    isZEDTracked = false;
+                    throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
+                }
+                else
+                {
+                    isZEDTracked = true;
+                    isTrackingEnable = true;
+                }
+            }
 
+            // If tracking has been switched off
+            if (isTrackingEnable && !enableTracking)  
+            {
+                isZEDTracked = false;
+                lock (zedCamera.grabLock)
+                {
+                    zedCamera.DisableTracking();
+                }
+                isTrackingEnable = false;
+            }
 
-			if (isTrackingEnable && !enableTracking) //If the user switched off tracking. 
-			{
-				isZEDTracked = false;
-				lock (grabLock)
-				{
-					zedCamera.DisableTracking();
-				}
-				isTrackingEnable = false;
-			}
+            // If streaming has been switched on
+            if (enableStreaming && !isStreamingEnable)
+            {
+                lock (zedCamera.grabLock)
+                {
+                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate);
+                    if (err == sl.ERROR_CODE.SUCCESS)
+                    {
+                        isStreamingEnable = true;
+                    }
+                    else
+                    {
+                        enableStreaming = false;
+                        isStreamingEnable = false;
+                    }
+                }
+            }
 
+            // If streaming has been switched off
+            if (!enableStreaming && isStreamingEnable)
+            {
+                lock (zedCamera.grabLock)
+                {
+                    zedCamera.DisableStreaming();
+                    isStreamingEnable = false;
+                }
+            }
 
-			setRenderingSettings(); //Reapplies graphics settings based on current values. 
-		}
+            //Reapplies graphics settings based on current values. 
+            setRenderingSettings(); 
+        }
 
-	}
+    }
 #endif
 
 

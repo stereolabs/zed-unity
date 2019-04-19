@@ -1,15 +1,9 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
-//       ##DEPRECATED
-
 
 using UnityEngine;
 using System.IO;
 #if UNITY_EDITOR
 using UnityEditor;
-#endif
-
-#if ZED_STEAM_VR
-    using Valve.VR;
 #endif
 
 /// <summary>
@@ -49,7 +43,7 @@ public class ZEDOffsetController : MonoBehaviour
     /// </summary>
     public void SaveZEDPos()
     {
-		using (System.IO.StreamWriter file = new System.IO.StreamWriter(path))
+        using (System.IO.StreamWriter file = new System.IO.StreamWriter(path))
         {
             string tx = "x=" + transform.localPosition.x.ToString() + " //Translation x";
             string ty = "y=" + transform.localPosition.y.ToString() + " //Translation y";
@@ -65,21 +59,27 @@ public class ZEDOffsetController : MonoBehaviour
             file.WriteLine(rx);
             file.WriteLine(ry);
             file.WriteLine(rz);
-			if (sl.ZEDCamera.GetInstance().IsCameraReady)
-            {
-                string fov = "fov=" + (sl.ZEDCamera.GetInstance().GetFOV() * Mathf.Rad2Deg).ToString();
-                file.WriteLine(fov);
-
-            }
 
 
 #if ZED_STEAM_VR
-            if (TrackerComponentExist()) 
+            if (TrackerComponentExist())
             {
                 //If using SteamVR, get the serial number of the tracked device, or write "NONE" to indicate we checked but couldn't find it. 
                 //This is used by ZEDControllerManager later to know specifically which device the loaded offset has been calibrated to, in the event of multiple controllers/trackers. 
-                string i = "indexController=" + (controllerTracker.index > 0 ? SteamVR.instance.GetStringProperty(Valve.VR.ETrackedDeviceProperty.Prop_SerialNumber_String, (uint)controllerTracker.index) : "NONE") + " //SN of the pad attached to the camera (NONE to set no pad on it)";
-                file.WriteLine(i);
+                string result = "indexController = ";
+                if (controllerTracker.index > 0)
+                {
+                    var snerror = Valve.VR.ETrackedPropertyError.TrackedProp_Success;
+                    var snresult = new System.Text.StringBuilder((int)64);
+                    result += Valve.VR.OpenVR.System.GetStringTrackedDeviceProperty((uint)controllerTracker.index, Valve.VR.ETrackedDeviceProperty.Prop_SerialNumber_String, snresult, 64, ref snerror);
+                    //OpenVR.System.GetStringTrackedDeviceProperty((uint)index, ETrackedDeviceProperty.Prop_SerialNumber_String, snresult, 64, ref snerror);
+
+                }
+                else
+                {
+                    result += "NONE";
+                }
+                file.WriteLine(result);
             }
 #endif
 
@@ -118,7 +118,7 @@ public class ZEDOffsetController : MonoBehaviour
         if (zct != null)
             controllerTracker = zct;
     }
-	
+
     /// <summary>
     /// Tries to find the relevant ZEDControllerTracker object, and loads the existing
     /// offset file if there is one. 
@@ -133,18 +133,18 @@ public class ZEDOffsetController : MonoBehaviour
 
         // Check if folder exists and if not, create it
         if (!Directory.Exists(specificFolder))
-			Directory.CreateDirectory(specificFolder);
+            Directory.CreateDirectory(specificFolder);
 
 
         LoadZEDPos();
-		CreateFileWatcher(specificFolder);
+        CreateFileWatcher(specificFolder);
 
-		isReady = true;
+        isReady = true;
     }
 
     private void Update()
     {
-        if (ZEDManager.Instance.IsZEDReady)
+        if (isReady)
             LoadZEDPos();
     }
 
@@ -153,12 +153,12 @@ public class ZEDOffsetController : MonoBehaviour
     /// </summary>
     public void LoadZEDPos()
     {
-		if (!System.IO.File.Exists(path)) return;
+        if (!System.IO.File.Exists(path)) return;
 
         string[] lines = null;
         try
         {
-			lines = System.IO.File.ReadAllLines(path);
+            lines = System.IO.File.ReadAllLines(path);
         }
         catch (System.Exception)
         {
@@ -204,7 +204,7 @@ public class ZEDOffsetController : MonoBehaviour
                 {
                     eulerRotation.z = float.Parse(field, System.Globalization.CultureInfo.InvariantCulture);
                 }
-                else if(key == "indexController")
+                else if (key == "indexController")
                 {
                     LoadTrackerComponent();
 
@@ -285,7 +285,7 @@ public class ZEDPositionEditor : Editor
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
 
-		GUI.enabled = positionManager.isReady;
+        GUI.enabled = positionManager.isReady;
         GUIContent savecontent = new GUIContent("Save Offset", "Saves the object's local position/rotation to a text file to be loaded anytime in the future.");
         if (GUILayout.Button(savecontent))
         {

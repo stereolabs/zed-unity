@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4793680779092208}
   - component: {fileID: 33378363811565528}
   - component: {fileID: 23631011804935366}
+  - component: {fileID: 114192821986450582}
   m_Layer: 0
   m_Name: Frame
   m_TagString: Untagged
@@ -37,8 +38,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4979374518171668}
   - component: {fileID: 20601934564663844}
-  - component: {fileID: 114220671445463034}
   - component: {fileID: 114949237780401958}
+  - component: {fileID: 114220671445463034}
   - component: {fileID: 114744244247048828}
   m_Layer: 0
   m_Name: Camera_Left
@@ -84,7 +85,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1886245529942436}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -120,7 +121,7 @@ Camera:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1
+    width: 0.5
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
@@ -181,6 +182,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1066271739911124}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &114192821986450582
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1066271739911124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 313514277d565454383ea4c1a1f8beb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showInNonZEDCameras: 1
 --- !u!114 &114220671445463034
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -209,8 +222,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   index: -1
   deviceToTrack: 0
-  _latencyCompensation: 78
+  latencyCompensation: 78
   SNHolder: 
+  zedManager: {fileID: 114684879225796312}
 --- !u!114 &114684879225796312
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -222,14 +236,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 1
+  cameraID: 0
   depthMode: 1
+  inputType: 0
+  resolution: 1
+  FPS: 60
+  svoInputFileName: 
+  svoLoopBack: 1
+  svoRealTimeMode: 0
+  currentFrame: 0
+  numberFrameMax: 0
+  pauseSVOReading: 0
+  NeedNewFrameGrab: 0
+  streamInputIP: 127.0.0.1
+  streamInputPort: 30000
   enableTracking: 0
   enableSpatialMemory: 0
   pathSpatialMemory: 
+  estimateInitialPosition: 0
+  mappingResolutionPreset: 1
+  mappingRangePreset: 1
+  isMappingFilteringEnable: 1
+  isMappingTextured: 0
+  saveMeshWhenOver: 0
+  meshPath: Assets/ZEDMesh.obj
+  meshFilterParameters: 0
   depthOcclusion: 1
-  postProcessing: 0
-  m_cameraBrightness: 1
+  postProcessing: 1
+  m_cameraBrightness: 100
+  svoOutputFileName: Assets/Recording.svo
+  svoOutputCompressionMode: 3
+  needRecordFrame: 0
+  enableStreaming: 0
+  streamingCodec: 0
+  streamingPort: 30000
+  bitrate: 8000
+  gopSize: -1
+  adaptativeBitrate: 0
+  fadeInOnStart: 1
+  dontDestroyOnLoad: 0
+  greySkybox: 0
+  showarrig: 0
+  cameraModel: '-'
+  cameraSerialNumber: '-'
+  cameraFirmware: '-'
   versionZED: '-'
   engineFPS: '-'
   cameraFPS: '-'
@@ -240,6 +290,13 @@ MonoBehaviour:
   HMDSyncPosition: {x: 0, y: 0, z: 0}
   ZEDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
   HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
+  advancedPanelOpen: 0
+  spatialMappingFoldoutOpen: 0
+  recordingFoldoutOpen: 0
+  streamingOutFoldoutOpen: 0
+  camControlFoldoutOpen: 0
+  arlayer: 30
+  zedRigDisplayer: {fileID: 0}
 --- !u!114 &114707931465606152
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -262,7 +319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6e37f9a7dba18f489fce17f647b73a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  padManager: {fileID: 0}
+  controllerTracker: {fileID: 0}
   isReady: 0
 --- !u!114 &114949237780401958
 MonoBehaviour:
@@ -275,15 +332,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f764233cdca02140a49fbe2d778754c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraManager: {fileID: 0}
   screenManager: {fileID: 0}
   keys:
     color: {r: 0, g: 0, b: 0, a: 0}
     smoothness: 0
     range: 0
   keyColors: {r: 0, g: 1, b: 0, a: 1}
-  smoothness: 0.08
-  range: 0.42
-  spill: 0.1
+  smoothness: 0
+  range: 0.51
+  spill: 0
   finalMat: {fileID: 0}
   canal: 4
   erosion: 0

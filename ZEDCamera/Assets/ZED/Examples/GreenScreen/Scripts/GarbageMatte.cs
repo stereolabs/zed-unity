@@ -114,12 +114,14 @@ public class GarbageMatte
     /// <param name="greenScreenMaterial">Material reference, usually Mat_ZED_Greenscreen</param>
     /// <param name="target">Center location of the matte effect</param>
     /// <param name="matte">Optional reference to another garbage matte, used to copy its current edit mode. </param>
-	public GarbageMatte(Camera cam, Material greenScreenMaterial, Transform target, GarbageMatte matte)
+	public GarbageMatte(ZEDManager camManager, Material greenScreenMaterial, Transform target, GarbageMatte matte)
     {
         this.target = target;
         currentPlaneIndex = 0;
-        zed = sl.ZEDCamera.GetInstance();
-        this.cam = cam;
+
+
+		zed = camManager.zedCamera;
+		this.cam = camManager.GetComponentInChildren<Camera>();
         points.Clear();
 
         outlineMaterial = Resources.Load("Materials/Mat_ZED_Outlined") as Material;

@@ -18,7 +18,7 @@ public class PlaceOnScreen : MonoBehaviour
     /// <summary>
     /// The ZEDManager in the scene.
     /// </summary>
-    private ZEDManager ZedManager;
+    private ZEDManager zedManager;
 
     /// <summary>
     /// The left camera in the ZED rig. Passed to ZEDSupportFunctions for transforming between camera and world space. 
@@ -27,15 +27,16 @@ public class PlaceOnScreen : MonoBehaviour
 
     // Use this for initialization
     void Awake() {
-        ZedManager = FindObjectOfType<ZEDManager>();
-        LeftCamera = ZedManager.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
+        //zedManager = gameObject.transform.parent.GetComponentInChildren<ZEDManager>();
+        zedManager = ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_01);
+		LeftCamera = zedManager.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
 
         Cursor.visible = true; //Make sure cursor is visible so we can click on the world accurately. 
     }
 
     // Update is called once per frame
     void Update () {
-		if(!sl.ZEDCamera.GetInstance().IsCameraReady)
+		if(!zedManager.zedCamera.IsCameraReady)
         {
             return;
         }
@@ -48,8 +49,8 @@ public class PlaceOnScreen : MonoBehaviour
             //Get Normal and real world position defined by the pixel .
             Vector3 Normal;
             Vector3 WorldPos;
-			ZEDSupportFunctions.GetNormalAtPixel(ScreenPosition,sl.REFERENCE_FRAME.WORLD,LeftCamera,out Normal);
-			ZEDSupportFunctions.GetWorldPositionAtPixel(ScreenPosition, LeftCamera,out WorldPos);
+			ZEDSupportFunctions.GetNormalAtPixel(zedManager.zedCamera,ScreenPosition,sl.REFERENCE_FRAME.WORLD,LeftCamera,out Normal);
+			ZEDSupportFunctions.GetWorldPositionAtPixel(zedManager.zedCamera,ScreenPosition, LeftCamera,out WorldPos);
 
 			//To consider the location as a flat surface, we check that the normal is valid and is closely aligned with gravity.
             bool validFloor = Normal.x != float.NaN && Vector3.Dot(Normal, Vector3.up) > 0.85f;
@@ -59,7 +60,7 @@ public class PlaceOnScreen : MonoBehaviour
             {
                 GameObject newgo = Instantiate(ObjectToPlace);
                 newgo.transform.localPosition = WorldPos;
-                newgo.transform.LookAt(new Vector3(ZedManager.transform.position.x, newgo.transform.position.y, ZedManager.transform.position.z), Vector3.up);
+                newgo.transform.LookAt(new Vector3(zedManager.transform.position.x, newgo.transform.position.y, zedManager.transform.position.z), Vector3.up);
             }
             else
             {

@@ -20,11 +20,6 @@ public class Bunny : MonoBehaviour
     public bool IsMoving { get; private set; }
 
     /// <summary>
-    /// Reference to the ZED rig's left camera component.
-    /// </summary>
-    private Camera leftcamera;
-
-    /// <summary>
     /// Reference to the BunnySpawner that spawned this GameObject.
     /// </summary>
     private BunnySpawner bunnyspawner;
@@ -52,13 +47,7 @@ public class Bunny : MonoBehaviour
 
     // Use this for initialization.
     void Start()
-    {
-        //Find the left camera object if we didn't assign it at start. 
-        if (!leftcamera)
-        {
-            leftcamera = ZEDManager.Instance.GetLeftCameraTransform().GetComponent<Camera>();
-        }
-        
+    {      
         IsMoving = false; //we're not moving at start.
 
         //Caching
@@ -139,20 +128,26 @@ public class Bunny : MonoBehaviour
             //Look for our next position based on our current velocity.
             Vector3 predictedPos = centerpoint.position + (rb.velocity * (Time.deltaTime * 2.5f));
             transform.rotation = Quaternion.LookRotation(rb.velocity.normalized);
+
             //Collision check with the real world at that next position.
-            if (ZEDSupportFunctions.HitTestAtPoint(leftcamera, predictedPos))
+            foreach (ZEDManager manager in ZEDManager.GetInstances()) //Check all active cameras. 
             {
-                //We hit something, but is it a flat surface?
-                if (planeManager.DetectPlaneAtHit(leftcamera.WorldToScreenPoint(predictedPos)))
+                if (ZEDSupportFunctions.HitTestAtPoint(manager.zedCamera, manager.GetLeftCamera(), predictedPos))
                 {
-                    bunnyspawner.SpawnUI(predictedPos); 
-                    IsMoving = false;
-                }
-                else//If not, bounce off of it but still show the flag. 
-                {
-                    IsMoving = false; //Not moving anymore, so update our state.
-                    bunnyspawner.SpawnUI(predictedPos); //Start spawning the UI on our current location.
-                    rb.velocity = Vector3.Reflect(rb.velocity /2 , transform.forward); //Bounce off the surface we hit 
+                    //We hit something, but is it a flat surface?
+                    if (planeManager.DetectPlaneAtHit(manager, manager.GetLeftCamera().WorldToScreenPoint(predictedPos)))
+                    {
+                        bunnyspawner.SpawnUI(predictedPos);
+                        IsMoving = false;
+                    }
+                    else//If not, bounce off of it but still show the flag. 
+                    {
+                        IsMoving = false; //Not moving anymore, so update our state.
+                        bunnyspawner.SpawnUI(predictedPos); //Start spawning the UI on our current location.
+                        rb.velocity = Vector3.Reflect(rb.velocity / 2, transform.forward); //Bounce off the surface we hit 
+                    }
+
+                    break; //If it hit the real world in one camera's view, no need to check the other cameras. 
                 }
             }
         }

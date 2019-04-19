@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -38,12 +38,12 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.17276844, g: 0.21589246, b: 0.2978263, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 11
-  m_GIWorkflowMode: 0
+  m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -77,17 +77,15 @@ LightmapSettings:
     m_PVRDirectSampleCount: 32
     m_PVRSampleCount: 500
     m_PVRBounces: 2
-    m_PVRFilterTypeDirect: 0
-    m_PVRFilterTypeIndirect: 0
-    m_PVRFilterTypeAO: 0
+    m_PVRFiltering: 0
     m_PVRFilteringMode: 1
     m_PVRCulling: 1
     m_PVRFilteringGaussRadiusDirect: 1
     m_PVRFilteringGaussRadiusIndirect: 5
     m_PVRFilteringGaussRadiusAO: 2
-    m_PVRFilteringAtrousPositionSigmaDirect: 0.5
-    m_PVRFilteringAtrousPositionSigmaIndirect: 2
-    m_PVRFilteringAtrousPositionSigmaAO: 1
+    m_PVRFilteringAtrousColorSigma: 1
+    m_PVRFilteringAtrousNormalSigma: 1
+    m_PVRFilteringAtrousPositionSigma: 1
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -97,19 +95,19 @@ NavMeshSettings:
   m_BuildSettings:
     serializedVersion: 2
     agentTypeID: 0
-    agentRadius: 0.5
-    agentHeight: 2
-    agentSlope: 45
-    agentClimb: 0.4
-    ledgeDropHeight: 0
+    agentRadius: 0.1
+    agentHeight: 1.5
+    agentSlope: 35.4
+    agentClimb: 0.71
+    ledgeDropHeight: 1
     maxJumpAcrossDistance: 0
-    minRegionArea: 2
+    minRegionArea: 1
     manualCellSize: 0
-    cellSize: 0.16666667
+    cellSize: 0.033333335
     manualTileSize: 0
     tileSize: 256
-    accuratePlacement: 0
-  m_NavMeshData: {fileID: 0}
+    accuratePlacement: 1
+  m_NavMeshData: {fileID: 23800000, guid: b5d52b4982bfa244d846207ca7eec313, type: 2}
 --- !u!1 &237737847
 GameObject:
   m_ObjectHideFlags: 0
@@ -119,10 +117,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 237737851}
-  - component: {fileID: 237737850}
   - component: {fileID: 237737848}
   m_Layer: 0
-  m_Name: ZED_Spatial_Mapping
+  m_Name: Navigation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -139,28 +136,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a27380817aa20b54aa9c7677c181ec98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  zedManagerSpatialMapping: {fileID: 1524001769}
   agentTypeID: 0
   hideFlag: 0
   isOver: 0
---- !u!114 &237737850
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114238232927226582, guid: 78c3e7155ac644d4faf82f285accb534,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 237737847}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ad2bacfa07338f4ead2bb275508b02b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  resolution_preset: 1
-  range_preset: 1
-  isFilteringEnable: 1
-  isTextured: 0
-  saveWhenOver: 0
-  meshPath: Assets/ZEDMesh.obj
-  filterParameters: 0
 --- !u!4 &237737851
 Transform:
   m_ObjectHideFlags: 0
@@ -222,6 +201,56 @@ Prefab:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 2}
       propertyPath: enableSpatialMemory
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 2}
+      propertyPath: advancedPanelOpen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 2}
+      propertyPath: cameraID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 2}
+      propertyPath: lefteyelayer
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 2}
+      propertyPath: righteyelayer
+      value: 29
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 2}
+      propertyPath: lefteyelayerfinal
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 2}
+      propertyPath: righteyelayerfinal
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 2}
+      propertyPath: isMappingFilteringEnable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 2}
+      propertyPath: spatialMappingFoldoutOpen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 2}
+      propertyPath: m_cameraBrightness
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 2}
+      propertyPath: streamingOutFoldoutOpen
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -306,6 +335,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cachedLight: {fileID: 0}
   interiorCone: 0.1
+--- !u!114 &1524001769 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+    type: 2}
+  m_PrefabInternal: {fileID: 426975323}
+  m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
 --- !u!1 &1729039477
 GameObject:
   m_ObjectHideFlags: 0

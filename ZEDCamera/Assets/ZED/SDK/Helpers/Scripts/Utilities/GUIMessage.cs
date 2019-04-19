@@ -87,18 +87,27 @@ public class GUIMessage : MonoBehaviour
 	/// </summary>
 	private sl.ERROR_CODE oldInitStatus;
 
+	/// <summary>
+	/// The zed manager.
+	/// </summary>
+	private ZEDManager zedManager;
+
     /// <summary>
     /// Creates canvas(es) and canvas elements depending on whether the ZED rig is mono (ZED_Rig_Mono) 
     /// or stereo (ZED_Rig_Stereo). 
     /// </summary>
     private void Awake()
     {
+		zedManager = GetComponent<ZEDManager> ();
 		oldInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
-        if (!ZEDManager.IsStereoRig) //Without VR, we use a Screen Space - Overlay canvas. 
+		if (!zedManager.IsStereoRig) //Without VR, we use a Screen Space - Overlay canvas. 
         {
             //Instantiate the mono warning prefab and set basic settings for it. 
             warningmono = Instantiate(Resources.Load("PrefabsUI/Warning") as GameObject, transform);
             warningmono.SetActive(true);
+			warningmono.GetComponent<Canvas> ().renderMode = RenderMode.ScreenSpaceCamera;
+			warningmono.GetComponent<Canvas> ().worldCamera = zedManager.GetLeftCameraTransform().GetComponent<Camera>();
+
             textmono = warningmono.GetComponentInChildren<UnityEngine.UI.Text>();
             textmono.color = Color.white;
 
@@ -113,9 +122,9 @@ public class GUIMessage : MonoBehaviour
         else //In VR, we use two Screen Space - Camera canvases, one for each eye. 
         {
             //Instantiate the left warning prefab and set basic settings for it.
-            warningleft = Instantiate(Resources.Load("PrefabsUI/Warning_VR") as GameObject, ZEDManager.Instance.GetLeftCameraTransform());
+			warningleft = Instantiate(Resources.Load("PrefabsUI/Warning_VR") as GameObject, zedManager.GetLeftCameraTransform());
             warningleft.SetActive(true);
-            warningleft.GetComponent<Canvas>().worldCamera = ZEDManager.Instance.GetLeftCameraTransform().GetComponent<Camera>();
+			warningleft.GetComponent<Canvas>().worldCamera = zedManager.GetLeftCameraTransform().GetComponent<Camera>();
             warningleft.GetComponent<Canvas>().planeDistance = 1;
             textleft = warningleft.GetComponentInChildren<UnityEngine.UI.Text>();
             textleft.color = Color.white;
@@ -123,9 +132,9 @@ public class GUIMessage : MonoBehaviour
             imageleft.transform.parent.gameObject.SetActive(true);
 
             //Instantiate the right warning prefab and set basic settings for it.
-            warningright = Instantiate(Resources.Load("PrefabsUI/Warning_VR") as GameObject, ZEDManager.Instance.GetRightCameraTransform());
+			warningright = Instantiate(Resources.Load("PrefabsUI/Warning_VR") as GameObject, zedManager.GetRightCameraTransform());
             warningright.SetActive(true);
-            warningright.GetComponent<Canvas>().worldCamera = ZEDManager.Instance.GetRightCameraTransform().GetComponent<Camera>();
+			warningright.GetComponent<Canvas>().worldCamera = zedManager.GetRightCameraTransform().GetComponent<Camera>();
             warningright.GetComponent<Canvas>().planeDistance = 1;
             textright = warningright.GetComponentInChildren<UnityEngine.UI.Text>();
             textright.color = Color.white;
@@ -147,8 +156,8 @@ public class GUIMessage : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-        ZEDManager.OnZEDReady += Ready;
-        ZEDManager.OnZEDDisconnected += ZEDDisconnected;
+		zedManager.OnZEDReady += Ready;
+		zedManager.OnZEDDisconnected += ZEDDisconnected;
     }
 
     /// <summary>
@@ -156,8 +165,8 @@ public class GUIMessage : MonoBehaviour
     /// </summary>
     private void OnDisable()
     {
-        ZEDManager.OnZEDReady -= Ready;
-        ZEDManager.OnZEDDisconnected -= ZEDDisconnected;
+		zedManager.OnZEDReady -= Ready;
+		zedManager.OnZEDDisconnected -= ZEDDisconnected;
     }
 
     /// <summary>
@@ -203,36 +212,42 @@ public class GUIMessage : MonoBehaviour
     {
         if (!init) //This check will pass until 0.5 seconds after the ZED is done initializing. 
         {
-            sl.ERROR_CODE e = ZEDManager.LastInitStatus;
+			sl.ERROR_CODE e = zedManager.LastInitStatus;
 
             if (e == sl.ERROR_CODE.SUCCESS) //Last initialization attempt was successful. 
             {
-                timer += Time.deltaTime; //Clear text after a short delay. 
-                if (timer > 0.2f)
-                {
-                    if (textmono)
-                    {
-                        textmono.text = "";
-                    }
-                    else if (textleft)
-                    {
-                        textleft.text = "";
-                        textright.text = "";
-                    }
-
-                }
-
-                if (imagemono) //Disable mono rig canvas. 
-                {
-                    imagemono.gameObject.SetActive(false);
-                }
-                else if (imageleft) //Disable stereo rig canvases. 
-                {
-                    imageleft.gameObject.SetActive(false);
-                    imageright.gameObject.SetActive(false);
-                }
+				if (!ready) {
+					
+					if (textmono)
+					{
+						textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_MODULE_LOADING);
+					}
+					else if (textleft)
+					{
+						textleft.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_MODULE_LOADING);
+						textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_MODULE_LOADING);
+					}
 
 
+				} else {
+					timer += Time.deltaTime; //Clear text after a short delay. 
+					if (timer > 0.2f) {
+						if (textmono) {
+							textmono.text = "";
+						} else if (textleft) {
+							textleft.text = "";
+							textright.text = "";
+						}
+
+					}
+
+					if (imagemono) { //Disable mono rig canvas. 
+						imagemono.gameObject.SetActive (false);
+					} else if (imageleft) { //Disable stereo rig canvases. 
+						imageleft.gameObject.SetActive (false);
+						imageright.gameObject.SetActive (false);
+					}
+				}
             }
 			else if (e == sl.ERROR_CODE.ERROR_CODE_LAST) //"Loading..."
             {

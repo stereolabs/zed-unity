@@ -91,7 +91,7 @@ public class ReadOnlyDrawer : PropertyDrawer
                                SerializedProperty property,
                                GUIContent label)
     {
-        GUI.enabled = false;
+		GUI.enabled = false;
 		var propertyAttribute = this.attribute as ReadOnlyAttribute;
 		label.text = propertyAttribute.label;
         EditorGUI.PropertyField(position, property, label, true);

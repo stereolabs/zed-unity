@@ -147,13 +147,6 @@ class GreenScreenManagerEditor : Editor
         GUI.enabled = true;
 
         EditorGUILayout.EndHorizontal();
-        GUILayout.Space(20);
-        if (GUILayout.Button("Camera Control"))
-        {
-			EditorWindow.GetWindow(typeof(ZEDCameraSettingsEditor), false, "ZED Camera").Show();
-        }
-
-
         serializedObject.ApplyModifiedProperties();
     }
 

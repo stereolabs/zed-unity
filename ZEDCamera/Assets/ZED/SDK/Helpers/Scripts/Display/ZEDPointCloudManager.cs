@@ -20,9 +20,14 @@ public class ZEDPointCloudManager : MonoBehaviour
     private int numberPoints = 0;
 
     /// <summary>
-    /// Instance of the ZEDCamera interface. 
+    /// Instance of the ZEDManager interface
     /// </summary>
-    private sl.ZEDCamera zed;
+    public ZEDManager zedManager = null;
+
+	/// <summary>
+	/// zed Camera controller by zedManager
+	/// </summary>
+	private sl.ZEDCamera zed = null;
 
     /// <summary>
     /// Texture that holds the 3D position of the points.
@@ -69,7 +74,19 @@ public class ZEDPointCloudManager : MonoBehaviour
 
     void Start()
     {
-        zed = sl.ZEDCamera.GetInstance();
+        if(zedManager == null)
+        {
+            zedManager = FindObjectOfType<ZEDManager>();
+            if(ZEDManager.GetInstances().Count > 1) //We chose a ZED arbitrarily, but there are multiple cams present. Warn the user. 
+            {
+                Debug.Log("Warning: " + gameObject.name + "'s zedManager was not specified, so the first available ZEDManager instance was " +
+                    "assigned. However, there are multiple ZEDManager's in the scene. It's recommended to specify which ZEDManager you want to " +
+                    "use to display a point cloud.");
+            }
+        }
+
+		if (zedManager != null)
+			zed = zedManager.zedCamera;
     }
 
     // Update is called once per frame
@@ -86,7 +103,7 @@ public class ZEDPointCloudManager : MonoBehaviour
                 numberPoints = zed.ImageWidth * zed.ImageHeight;
 
                 //Load and set the material properties.
-                mat = Resources.Load("Materials/PointCloud/Mat_ZED_PointCloud") as Material;
+                mat = new Material(Resources.Load("Materials/PointCloud/Mat_ZED_PointCloud") as Material);
                 if (mat != null)
                 {
                     mat.SetTexture("_XYZTex", XYZTexture);
