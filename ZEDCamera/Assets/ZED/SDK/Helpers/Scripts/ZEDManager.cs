@@ -1181,7 +1181,7 @@ public class ZEDManager : MonoBehaviour
         //Starts a coroutine that initializes the ZED without freezing the game. 
         lastInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
         openingLaunched = false;
-        StartCoroutine("InitZED");
+        StartCoroutine(InitZED);
 
 
         OnCamBrightnessChange += SetCameraBrightness; //Subscribe event for adjusting brightness setting. 
@@ -2067,6 +2067,8 @@ public class ZEDManager : MonoBehaviour
 
         openingLaunched = false;
         running = false;
+        numberTriesOpening = 0;
+        forceCloseInit = false;
 
         Awake();
 

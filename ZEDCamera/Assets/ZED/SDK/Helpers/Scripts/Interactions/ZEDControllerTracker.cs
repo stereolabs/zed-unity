@@ -573,7 +573,7 @@ public class ZEDVRDependencies : Editor
 
     public override void OnInspectorGUI() //Called when the Inspector is visible. 
     {
-        if (CheckPackageExists("OpenVR"))
+        if (CheckPackageExists("SteamVR_Camera"))
         {
             defineName = "ZED_STEAM_VR";
             packageName = "SteamVR";
@@ -685,10 +685,11 @@ public class ZEDVRDependencies : Editor
             }
             else
             {
+                defineName = "ZED_OCULUS";
                 DeactivateDefine("Oculus");
             }
 
-            if (CheckPackageExists("OpenVR"))
+            if (CheckPackageExists("SteamVR_Camera"))
             {
                 defineName = "ZED_STEAM_VR";
                 packageName = "SteamVR";
@@ -696,6 +697,7 @@ public class ZEDVRDependencies : Editor
             }
             else
             {
+                defineName = "ZED_STEAM_VR";
                 DeactivateDefine("SteamVR");
             }
         }
