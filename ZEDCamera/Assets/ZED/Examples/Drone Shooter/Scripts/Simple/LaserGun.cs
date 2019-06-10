@@ -88,7 +88,7 @@ public class LaserGun : MonoBehaviour
                 yield break;
 #endif
 #if ZED_OCULUS
-            if (OVRInput.GetConnectedControllers().ToString() == "Touch")
+            if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
                 yield break;
 #endif
             // If it got here then there's no VR Controller connected
@@ -121,7 +121,7 @@ public class LaserGun : MonoBehaviour
 #if ZED_OCULUS
                 if (OVRManager.isHmdPresent)
                 {
-                    if (OVRInput.GetConnectedControllers().ToString() == "Touch")
+                    if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
                     {
                         for (int i = 0; i < children; ++i)
                             transform.GetChild(i).gameObject.SetActive(false);
@@ -179,7 +179,7 @@ public class LaserGun : MonoBehaviour
         int children = transform.childCount;
         if (OVRManager.isHmdPresent)
         {
-            if (OVRInput.GetConnectedControllers().ToString() == "Touch")
+            if (IsConnectedController())
             {
                 for (int i = 0; i < children; ++i)
                     transform.GetChild(i).gameObject.SetActive(true);
@@ -195,7 +195,7 @@ public class LaserGun : MonoBehaviour
         //We're controlling the fire Rate.  OVRInput doesn't have a GetDown function for the IndexTrigger. Only an axis output.
         if (objecttracker != null)
         {
-            if (OVRInput.GetConnectedControllers().ToString() == "Touch")
+            if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
             {
                 if ((int)objecttracker.deviceToTrack == 0)
                 {
@@ -320,4 +320,27 @@ public class LaserGun : MonoBehaviour
             audiosource.Play();
         }
     }
+
+#if ZED_OCULUS
+    /// <summary>
+    /// Returns if this script is bound to an Oculus Touch controller that is currently not connected. 
+    /// For example, if it's a Right Controller but only the left is connected, it returns false. 
+    /// If not bound to a controller, returns true. 
+    /// </summary>
+    /// <returns></returns>
+    private bool IsConnectedController()
+    {
+        if (!objecttracker) return true; //Not attached to a tracker. Return true since it doesn't depend on a controller to be alive. 
+        if (objecttracker.deviceToTrack != ZEDControllerTracker.Devices.LeftController && objecttracker.deviceToTrack != ZEDControllerTracker.Devices.RightController)
+            return true; //Not bound to a left or right controller, so let it live. 
+
+
+        string connectedcontrollers = OVRInput.GetConnectedControllers().ToString().ToLower();
+        if (connectedcontrollers == "touch") return true; //Both controllers are connected, so 
+        if (objecttracker.deviceToTrack == ZEDControllerTracker.Devices.LeftController && connectedcontrollers == "ltouch") return true; //Left controller only.
+        if (objecttracker.deviceToTrack == ZEDControllerTracker.Devices.RightController && connectedcontrollers == "rtouch") return true; //Right controller only. 
+
+        return false;
+    }
+#endif
 }

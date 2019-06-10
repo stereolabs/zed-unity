@@ -9,6 +9,26 @@ using UnityEngine.Rendering;
 public class ZEDPostProcessingTools
 {
     /// <summary>
+    /// Cached property ID for _horizontal. Use horizontalPropertyID property instead. 
+    /// </summary>
+    private static int? _horizpropID;
+    /// <summary>
+    /// Cached shader ID for "_horizontal" property, to optimize shader assignment. 
+    /// We do this since this is a property we may set every frame. 
+    /// </summary>
+    private static int horizontalPropertyID
+    {
+        get
+        {
+            if (_horizpropID == null)
+            {
+                _horizpropID = Shader.PropertyToID("horizontal");
+            }
+            return (int)_horizpropID;
+        }
+    }
+
+    /// <summary>
     /// Returns the gaussian value for f(x) = (1/2*3.14*s)*e(-x*x/(2*s)).
     /// </summary>
     /// <param name="x"></param>
@@ -60,6 +80,8 @@ public class ZEDPostProcessingTools
         }
     }
 
+
+
     /// <summary>
     /// Blurs a render texture.
     /// </summary>
@@ -71,7 +93,6 @@ public class ZEDPostProcessingTools
     /// <param name="downscale">The downscale of the source, which increases blur and decreases computation time.</param>
     public static void Blur(RenderTexture source, RenderTexture dest, Material mat, int pass, int numberIterations = -1, int downscale = 2)
     {
-
         if (numberIterations == -1 || numberIterations == 0)
         {
             Graphics.Blit(source, dest, mat, pass);
@@ -97,7 +118,8 @@ public class ZEDPostProcessingTools
             //To each pass, alternate the buffer, and set the blur direction.
             for (int i = 0; i < numberIterations * 2; i++)
             {
-                mat.SetInt("horizontal", System.Convert.ToInt32(oddEven));
+                //mat.SetInt("horizontal", System.Convert.ToInt32(oddEven));
+                mat.SetInt(horizontalPropertyID, System.Convert.ToInt32(oddEven));
                 if (i < numberIterations * 2 - 1)
                 {
                     Graphics.Blit(oddEven ? buffer2 : buffer, !oddEven ? buffer2 : buffer, mat, pass);
@@ -105,8 +127,9 @@ public class ZEDPostProcessingTools
                 }
                 else
                 {
-                    mat.SetInt("horizontal", System.Convert.ToInt32(oddEven));
-
+                    //mat.SetInt("horizontal", System.Convert.ToInt32(oddEven));
+                    mat.SetInt(horizontalPropertyID, System.Convert.ToInt32(oddEven));
+                    
                     //Copy the buffer to the final texture.
                     if (oddEven)
                     {
@@ -168,7 +191,8 @@ public class ZEDPostProcessingTools
         //To each pass alternate the buffer, and set the blur direction
         for (int i = 0; i < numberIterations * 2; i++)
         {
-            mat.SetInt("horizontal", System.Convert.ToInt32(oddEven));
+            //mat.SetInt("horizontal", System.Convert.ToInt32(oddEven));
+            mat.SetInt(horizontalPropertyID, System.Convert.ToInt32(oddEven));
             if (i < numberIterations * 2 - 1)
             {
                 cb.Blit(oddEven ? Uniforms._TempRT2 : Uniforms._TempRT, !oddEven ? Uniforms._TempRT2 : Uniforms._TempRT, mat, pass);
@@ -176,7 +200,8 @@ public class ZEDPostProcessingTools
             }
             else
             {
-                mat.SetInt("horizontal", System.Convert.ToInt32(oddEven));
+                //mat.SetInt("horizontal", System.Convert.ToInt32(oddEven));
+                mat.SetInt(horizontalPropertyID, System.Convert.ToInt32(oddEven));
 
                 //Copy the buffer to the final texture
                 if (oddEven)

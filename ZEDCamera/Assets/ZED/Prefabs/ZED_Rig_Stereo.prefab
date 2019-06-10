@@ -611,7 +611,7 @@ MonoBehaviour:
   fadeInOnStart: 1
   dontDestroyOnLoad: 0
   greySkybox: 1
-  showarrig: 1
+  showarrig: 0
   cameraModel: '-'
   cameraSerialNumber: '-'
   cameraFirmware: '-'

@@ -236,7 +236,7 @@ public class BunnyPlacement : MonoBehaviour
                         if (zedPlane.DetectPlaneAtHit(manager, manager.GetLeftCamera().WorldToScreenPoint(placeholder.position)))
                         {
                             //Get the normal of the plane.
-                            ZEDPlaneGameObject currentPlane = zedPlane.getHitPlane(zedPlane.hitPlaneList.Count - 1);
+                            ZEDPlaneGameObject currentPlane = zedPlane.hitPlaneList[zedPlane.hitPlaneList.Count - 1]; 
                             Vector3 planeNormal = currentPlane.worldNormal;
 
                             //Check if the plane has a normal close enough to Y (horizontal surface) to be stable for the Bunny to spawn into.

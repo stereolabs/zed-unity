@@ -36,7 +36,7 @@ public class ZEDTransformController : MonoBehaviour
     /// Reference to the scene's ZEDManager component. 
     /// Used when RelativeMotion is set to Camera, for finding the current position of the ZED.
     /// </summary>
-    [Tooltip("Reference to the scene's ZEDManager component. Used when RelativeMotion is set to Camera, " + 
+    [Tooltip("Reference to the scene's ZEDManager component. Used when RelativeMotion is set to Camera, " +
         "and also for positioning it at start. If left blank, the first ZED camera indexed will be set.")]
     public ZEDManager zedManager = null;
 
@@ -108,14 +108,14 @@ public class ZEDTransformController : MonoBehaviour
         if (!zedManager)
         {
             zedManager = FindObjectOfType<ZEDManager>();
-            if(ZEDManager.GetInstances().Count > 1) //They let the plugin auto-assign a ZED but there are multiple ZED's. Warn the user. 
+            if (ZEDManager.GetInstances().Count > 1) //They let the plugin auto-assign a ZED but there are multiple ZED's. Warn the user. 
             {
                 Debug.Log("Warning: ZEDTransformController's zedManager field was not specified, but there are multiple ZEDManagers in the scene " +
                     "so first available ZED was assigned. This can cause the object to move relative to the wrong camera. " +
                     "It's recommended to assign the desired ZEDManager in the Inspector.");
             }
         }
-       
+
 
         //Find the available VR controllers and assigning them to our List.
         yield return new WaitForSeconds(1f);
@@ -128,7 +128,7 @@ public class ZEDTransformController : MonoBehaviour
 
         if (repositionAtStart) //If the user wants, move the object in front of the ZED once it's initialized. 
         {
-			zedManager.OnZEDReady += RepositionInFrontOfZED;
+            zedManager.OnZEDReady += RepositionInFrontOfZED;
         }
     }
 
@@ -205,7 +205,7 @@ public class ZEDTransformController : MonoBehaviour
 #if ZED_OCULUS
             if (UnityEngine.VR.VRSettings.loadedDeviceName == "Oculus")
             {
-                if (OVRInput.GetConnectedControllers().ToString() == "Touch")
+                if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
                 {
                     Vector3 moveaxisoculus = new Vector3(); //Position change by controller. Added to keyboard version if both are applied. 
 
@@ -351,9 +351,42 @@ public class ZEDTransformController : MonoBehaviour
     /// </summary>
     void RepositionInFrontOfZED()
     {
-		transform.position = zedManager.OriginPosition + zedManager.OriginRotation * (Vector3.forward);
-		Quaternion newRot = Quaternion.LookRotation(zedManager.OriginPosition - transform.position, Vector3.up);
-        transform.eulerAngles = new Vector3(0, newRot.eulerAngles.y + 180, 0);
+        //If the ZEDManager uses Estimate Initial Position and tracking, then the position will change shortly after OnZEDReady.
+        //We'll make a non-async call to EstimateInitialPosition to determine what the angle will be. 
+        if (zedManager.estimateInitialPosition && zedManager.enableTracking)
+        {
+            Vector3 initpos = Vector3.zero;
+            Quaternion initrot = Quaternion.identity;
+            zedManager.zedCamera.EstimateInitialPosition(ref initrot, ref initpos);
+
+            transform.position = initpos + (initrot * Vector3.forward);
+            Quaternion newRot = Quaternion.LookRotation(initpos - transform.position, Vector3.up);
+            transform.eulerAngles = new Vector3(0, newRot.eulerAngles.y + 180, 0);
+
+        }
+        else
+        {
+            transform.position = zedManager.OriginPosition + zedManager.OriginRotation * (Vector3.forward);
+            Quaternion newRot = Quaternion.LookRotation(zedManager.OriginPosition - transform.position, Vector3.up);
+            transform.eulerAngles = new Vector3(0, newRot.eulerAngles.y + 180, 0);
+        }
+
+        //If we're going to know where the floor is, then make sure the object doesn't spawn in the floor if the user is looking down. 
+        if(zedManager.estimateInitialPosition)
+        {
+            if (transform.position.y < 0.5f) transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
+        }
+    }
+
+    IEnumerator RepositionAfterZEDReady()
+    {
+        for (int i = 0; i < 50; i++)
+        {
+            print(zedManager.GetZedRootTansform().position);
+            yield return null;
+        }
+
+
     }
 
     /// <summary>

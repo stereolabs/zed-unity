@@ -82,7 +82,7 @@ public class BallLauncher : MonoBehaviour
     void Start()
     {
         launcher = new GameObject("Launcher");
-        launcher.hideFlags = HideFlags.HideAndDontSave;
+        launcher.hideFlags = HideFlags.HideInHierarchy;
         launcher.transform.parent = transform;
         launcher.transform.localPosition = offset;
         ballcolors = new Color[10];

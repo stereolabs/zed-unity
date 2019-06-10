@@ -183,7 +183,7 @@ public class ZEDControllerTracker : MonoBehaviour
         //Check if the VR headset is connected.
         if (OVRManager.isHmdPresent && loadeddevice == "Oculus")
         {
-            if (OVRInput.GetConnectedControllers().ToString() == "Touch")
+            if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
             {
                 //Depending on which tracked device we are looking for, start tracking it.
                 if (deviceToTrack == Devices.LeftController) //Track the Left Oculus Controller.
@@ -498,7 +498,8 @@ public class ZEDControllerTracker : MonoBehaviour
                         p.rotation = rot;
 
                         //Add drift correction, but only if the zedRigRoot position won't be affected.
-                        if ((deviceToTrack == Devices.LeftController || deviceToTrack == Devices.RightController) && !zedManager.transform.IsChildOf(transform))
+                        if (zedManager.IsStereoRig == true && !zedManager.transform.IsChildOf(transform) &&
+                            (deviceToTrack == Devices.LeftController || deviceToTrack == Devices.RightController))
                         {
                             //Compensate for positional drift by measuring the distance between HMD and ZED rig root (the head's center). 
                             Vector3 zedhmdposoffset = zedRigRoot.position - InputTracking.GetLocalPosition(VRNode.Head);
@@ -573,7 +574,7 @@ public class ZEDVRDependencies : Editor
 
     public override void OnInspectorGUI() //Called when the Inspector is visible. 
     {
-        if (CheckPackageExists("SteamVR_Camera"))
+        if (CheckPackageExists("OpenVR"))
         {
             defineName = "ZED_STEAM_VR";
             packageName = "SteamVR";
@@ -689,7 +690,8 @@ public class ZEDVRDependencies : Editor
                 DeactivateDefine("Oculus");
             }
 
-            if (CheckPackageExists("SteamVR_Camera"))
+            //if (CheckPackageExists("OpenVR"))
+            if (CheckPackageExists("SteamVR_Camera")) //"OpenVR" and "SteamVR" exist in script names in the Oculus plugin. 
             {
                 defineName = "ZED_STEAM_VR";
                 packageName = "SteamVR";

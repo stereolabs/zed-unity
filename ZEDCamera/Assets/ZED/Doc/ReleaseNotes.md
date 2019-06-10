@@ -1,4 +1,33 @@
 <!------------------------- Release notes ------------------------------------->
+### 2.8.1
+
+   * **Improvements**:
+    - Updated ZEDControllerTracker:
+      - *Added input support for SteamVR plugin 2.0 and greater*
+      - *Added ZEDControllerTracker_DemoInputs, which inherits from ZEDControllerTracker, but with generic button/axis check functions*
+      - *These functions work whether using SteamVR or Oculus Unity plugins*
+      - *Several scripts in Example scenes are now simplified to call these functions instead of having plugin-specific code.*
+    - Removed limit on how long ZEDManager would attempt to connect to the ZED camera - previously 10 seconds
+    - ZEDTransformController, used to move object like the Planetarium and Movie Screen in example scenes, now takes into account the Reposition At Start feature added to ZEDManager in 2.8
+    - Shader properties that are retrieved or modified more than once per scene now have their property IDs cached, saving lookups
+    - ZEDManager can now be used outside of the included prefabs, and is more flexible when determining if it's in "stereo" mode (like the ZED_Rig_Stereo prefab) for loading AR pass-through features.
+    - ZEDManager's process for closing cameras when the scene closes is now more stable
+
+   * **Bug Fixes**:
+    - Fixed ZEDControllerTracker's latency compensation feature moving the controller incorrectly when using ZED in third person
+    - Fixed non-rendering Camera objects not getting properly disposed at scene close, causing performance issues after running scene in editor repeatedly
+    - Camera Brightness adjustment now works in deferred rendering (Global Shader value)
+    - Fixed #ZED_OCULUS compiler directive not getting activated when newer Oculus package is imported
+    - Fixed newer Oculus package causing #ZED_STEAM_VR compiler directive getting activated when importing Oculus package. This would also happen when importing the OpenVR package in Unity 2019
+    - Fixed ZEDControllerTracker not updating Oculus Touch controller position if only one controller is connected
+    - Fixed ZEDSupportFunctions.GetForwardDistanceAtPixel not properly accounting for screen size
+    - Fixed "ZED Disconnected" error message not being locked to the headset when using ZED_Rig_Stereo
+    - Fixed Planetarium example scene being way too dark in deferred rendering
+    - Fixed plugin not recognizing Dell VISOR or Lenovo Explorer WMR headsets when using them in SteamVR, or any WMR controllers at all.
+    - Updated video stream link in Movie Screen example scene as the old video link was taken down (same video, new host)
+    - Fixed SVO Loop feature not working when real-time mode is enabled
+
+
 ### 2.8.0
 
 * **Features**:

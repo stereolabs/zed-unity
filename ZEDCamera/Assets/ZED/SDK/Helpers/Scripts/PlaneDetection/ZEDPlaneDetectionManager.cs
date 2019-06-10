@@ -70,19 +70,6 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 	public List<ZEDPlaneGameObject> hitPlaneList = null;
 
     /// <summary>
-    /// Returns a ZEDPlaneGameObject with the provided index in hitPlaneList. 
-    /// </summary>
-    /// <param name="i">Index within hitPlaneList.</param>
-    /// <returns></returns>
-	public ZEDPlaneGameObject getHitPlane(int i)
-    {
-        if (i < hitPlaneList.Count)
-            return hitPlaneList[i];
-        else
-            return null;
-    }
-
-    /// <summary>
     /// Buffer for holding a new plane's vertex data from the SDK.
     /// </summary>
 	private Vector3[] planeMeshVertices;
@@ -289,6 +276,8 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
     /// <summary>
     /// Detects the floor plane. Replaces the current floor plane, if there is one, unlike DetectPlaneAtHit(). 
     /// If a floor is detected, also assigns the user's height from the floor to estimatedPlayerHeight.
+    /// <para>Note that this can't be called the first frame the ZED is ready. Use a coroutine to wait one frame,
+    /// or until ZEDManager.isZEDReady is true.</para>
     /// </summary>
     /// <returns><c>true</c>, if floor plane was detected, <c>false</c> otherwise.</returns>
     public bool DetectFloorPlane(ZEDManager manager, bool auto)

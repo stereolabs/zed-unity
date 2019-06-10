@@ -69,7 +69,7 @@ public class ZEDMeshRenderer : MonoBehaviour
 		go.transform.localRotation = Quaternion.identity;
 		go.transform.localScale = Vector3.one;
 		cam = go.AddComponent<Camera>();
-		go.hideFlags = HideFlags.HideAndDontSave;//This hides the new camera from scene view. Comment this out to see it in the hierarchy. 
+		go.hideFlags = HideFlags.HideInHierarchy;//This hides the new camera from scene view. Comment this out to see it in the hierarchy. 
 
 		//Set the target texture to a new RenderTexture that will be passed to ZEDRenderingPlane for blending. 
 		if (zedManager.zedCamera.IsCameraReady)

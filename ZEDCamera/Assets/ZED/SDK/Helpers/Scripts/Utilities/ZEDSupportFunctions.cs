@@ -220,12 +220,8 @@ public class ZEDSupportFunctions
 		worldPos = Vector3.zero;
 		if (!GetForwardDistanceAtPixel(zedCam,pixel, out d)) return false;
 
-		//Adjust for difference between screen size and ZED's image resolution.
-		float xp = pixel.x * zedCam.ImageWidth / Screen.width;
-		float yp = pixel.y * zedCam.ImageHeight / Screen.height;
-
 		//Extract world position using screen-to-world transform.
-		worldPos = cam.ScreenToWorldPoint(new Vector3(xp, yp,d));
+		worldPos = cam.ScreenToWorldPoint(new Vector3(pixel.x, pixel.y,d));
 	    return true;
     }
 

@@ -55,6 +55,61 @@ public class ZEDPointCloudManager : MonoBehaviour
     private Material mat;
 
     /// <summary>
+    /// Cached property index of _Position shader property, so we only look it up once. Do not use. 
+    /// </summary>
+    private static int? _positionid;
+    /// <summary>
+    /// Returns the property index of the _Position property, and looks it up if it hasn't been looked up yet. 
+    /// </summary>
+    private static int positionID
+    {
+        get
+        {
+            if (_positionid == null)
+            {
+                _positionid = Shader.PropertyToID("_Position");
+            }
+            return (int)_positionid;
+        }
+    }
+    /// <summary>
+    /// Cached property index of the _ColorTex shader property, so we only look it up once. Use colorTexID instead.
+    /// </summary>
+    private static int? _colortexid;
+    /// <summary>
+    /// Returns the property index of the _ColorTex property, which is the RGB color texture from the ZED.
+    /// </summary>
+    private static int colorTexID
+    {
+        get
+        {
+            if (_colortexid == null)
+            {
+                _colortexid = Shader.PropertyToID("_ColorTex");
+            }
+            return (int)_colortexid;
+        }
+    }
+    /// <summary>
+    /// Cached property index of _XYZTex shader property, so we only look it up once. Use xyzTexID instead.
+    /// </summary>
+    private static int? _xyztexid;
+    /// <summary>
+    /// Returns the property index of the _XYZTex property, which is the XYZ position of each pixel relative to the ZED. 
+    /// </summary>
+    private static int xyzTexID
+    {
+        get
+        {
+            if (_xyztexid == null)
+            {
+                _xyztexid = Shader.PropertyToID("_XYZTex");
+            }
+            return (int)_xyztexid;
+        }
+    }
+
+    /// <summary>
     /// Whether the point cloud should be visible or not. 
     /// </summary>
     [Tooltip("Whether the point cloud should be visible or not. ")]
@@ -106,8 +161,10 @@ public class ZEDPointCloudManager : MonoBehaviour
                 mat = new Material(Resources.Load("Materials/PointCloud/Mat_ZED_PointCloud") as Material);
                 if (mat != null)
                 {
-                    mat.SetTexture("_XYZTex", XYZTexture);
-                    mat.SetTexture("_ColorTex", colorTexture);
+                    //mat.SetTexture("_XYZTex", XYZTexture);
+                    mat.SetTexture(xyzTexID, XYZTexture);
+                    //mat.SetTexture("_ColorTex", colorTexture);
+                    mat.SetTexture(colorTexID, colorTexture);
 
                 }
             }
@@ -132,15 +189,19 @@ public class ZEDPointCloudManager : MonoBehaviour
 
             if (mat != null)
             {
-                mat.SetTexture("_XYZTex", XYZTextureCopy);
-                mat.SetTexture("_ColorTex", ColorTextureCopy);
+                //mat.SetTexture("_XYZTex", XYZTextureCopy);
+                mat.SetTexture(xyzTexID, XYZTextureCopy);
+                //mat.SetTexture("_ColorTex", ColorTextureCopy);
+                mat.SetTexture(colorTexID, ColorTextureCopy);
             }
         }
         //Send the textures to the material/shader. 
         if (update && previousUpdate != update && mat != null)
         {
-            mat.SetTexture("_XYZTex", XYZTexture);
-            mat.SetTexture("_ColorTex", colorTexture);
+            //mat.SetTexture("_XYZTex", XYZTexture);
+            mat.SetTexture(xyzTexID, XYZTexture);
+            //mat.SetTexture("_ColorTex", colorTexture);
+            mat.SetTexture(colorTexID, colorTexture);
 
 
         }
@@ -172,7 +233,8 @@ public class ZEDPointCloudManager : MonoBehaviour
             
             if (!display) return; //Don't draw anything if the user doesn't want to. 
 
-            mat.SetMatrix("_Position", transform.localToWorldMatrix);
+            //mat.SetMatrix("_Position", transform.localToWorldMatrix);
+            mat.SetMatrix(positionID, transform.localToWorldMatrix);
             mat.SetPass(0);
             Graphics.DrawProcedural(MeshTopology.Points, 1, numberPoints);
         }
