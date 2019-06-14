@@ -167,6 +167,8 @@ public class ZEDManager : MonoBehaviour
     [HideInInspector]
     [SerializeField]
     public bool pauseSVOReading = false;
+    [HideInInspector]
+    public bool pauseLiveReading = false;
 
     /// <summary>
     /// Ask a new frame is in pause (SVO only)
@@ -1490,7 +1492,7 @@ public class ZEDManager : MonoBehaviour
             if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO)
             {
                 //handle pause
-                if(NeedNewFrameGrab && pauseSVOReading)
+                if (NeedNewFrameGrab && pauseSVOReading)
                 {
                     e = zedCamera.Grab(ref runtimeParameters);
                     NeedNewFrameGrab = false;
@@ -1500,9 +1502,10 @@ public class ZEDManager : MonoBehaviour
 
                 currentFrame = zedCamera.GetSVOPosition();
             }
-            else
+            else if (!pauseLiveReading)
+            {
                 e = zedCamera.Grab(ref runtimeParameters);
-                       
+            }
 
 
             lock (zedCamera.grabLock)
@@ -2129,7 +2132,34 @@ public class ZEDManager : MonoBehaviour
     /// <param name="newVal">New value to be applied.</param>
     private void SetCameraBrightness(int newVal)
     {
-        Shader.SetGlobalFloat("_ZEDFactorAffectReal", newVal / 100.0f);
+      
+        ZEDRenderingPlane leftRenderingPlane = GetLeftCameraTransform().GetComponent<ZEDRenderingPlane>();
+        if (leftRenderingPlane)
+        {
+            Material rendmat;
+            if (leftRenderingPlane.ActualRenderingPath == RenderingPath.Forward) rendmat = leftRenderingPlane.canvas.GetComponent<Renderer>().material;
+            else if (leftRenderingPlane.ActualRenderingPath == RenderingPath.DeferredShading) rendmat = leftRenderingPlane.deferredMat;
+            else
+            {
+                Debug.LogError("Can't set camera brightness for Rendering Path " + leftRenderingPlane.ActualRenderingPath +
+                    ": only Forward and DeferredShading are supported.");
+                return;
+            }
+            rendmat.SetFloat("_ZEDFactorAffectReal", newVal / 100.0f); 
+        }
+
+        if (IsStereoRig)
+        {
+            ZEDRenderingPlane rightRenderingPlane = GetRightCameraTransform().GetComponent<ZEDRenderingPlane>();
+            Material rendmat;
+            if (rightRenderingPlane.ActualRenderingPath == RenderingPath.Forward) rendmat = rightRenderingPlane.canvas.GetComponent<Renderer>().material;
+            else if (rightRenderingPlane.ActualRenderingPath == RenderingPath.DeferredShading) rendmat = rightRenderingPlane.deferredMat;
+            else
+            {
+                return; //Don't log the error twice as the left and right rendering paths are almost certainly the same, and the left cam already logged it. 
+            }
+            rendmat.SetFloat("_ZEDFactorAffectReal", newVal / 100.0f);
+        }
     }
 
 

@@ -87,7 +87,7 @@ public class ZEDTransformController : MonoBehaviour
     /// <summary>
     /// List of all ZEDControllerTrackers in the scene. Used to get input in an SDK/agnostic way. 
     /// </summary>
-    private List<ZEDControllerTracker> objectTrackers = new List<ZEDControllerTracker>();
+    private List<ZEDControllerTracker_DemoInputs> objectTrackers = new List<ZEDControllerTracker_DemoInputs>();
 
     /// <summary>
     /// Left Camera component in the ZED rig, that represents the ZED's left sensor. 
@@ -121,7 +121,7 @@ public class ZEDTransformController : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         var trackers = FindObjectsOfType<ZEDControllerTracker>();
-        foreach (ZEDControllerTracker tracker in trackers)
+        foreach (ZEDControllerTracker_DemoInputs tracker in trackers)
         {
             objectTrackers.Add(tracker);
         }
@@ -202,94 +202,46 @@ public class ZEDTransformController : MonoBehaviour
 
         if (zedManager)
         {
-#if ZED_OCULUS
-            if (UnityEngine.VR.VRSettings.loadedDeviceName == "Oculus")
+            Vector3 moveaxis = new Vector3(); //Position change by controller. Added to keyboard version if both are applied. 
+
+            //Looks for any input from this controller through SteamVR.
+            //Left controller controls rotation and increasing scale. 
+            if (objectTrackers.Count > 0)
             {
-                if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
+                moveaxis = objectTrackers[0].CheckNavigateUIAxis();
+                if (Mathf.Abs(moveaxis.x) < 0.1f) moveaxis.x = 0; //Add slight deadzone. 
+                if (Mathf.Abs(moveaxis.y) < 0.1f) moveaxis.y = 0;
+                inputRotation += moveaxis.x * rotationSpeed * 360f * Time.deltaTime;
+
+                gravity = Quaternion.FromToRotation(zedManager.GetZedRootTansform().up, Vector3.up);
+                transform.localPosition += gravity * zedManager.GetLeftCameraTransform().up * moveaxis.y * movementSpeed * Time.deltaTime;
+
+                if (objectTrackers[0].CheckClickButton(ControllerButtonState.Held))
                 {
-                    Vector3 moveaxisoculus = new Vector3(); //Position change by controller. Added to keyboard version if both are applied. 
-
-                    if (objectTrackers.Count > 0)
-                    {
-
-                        moveaxisoculus = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, OVRInput.Controller.RTouch);
-                        inputRotation += moveaxisoculus.x * rotationSpeed * 360 * Time.deltaTime;
-
-
-                        gravity = Quaternion.FromToRotation(zedManager.GetZedRootTansform().up, Vector3.up);
-                        transform.localPosition += gravity * zedManager.GetLeftCameraTransform().up * moveaxisoculus.y * movementSpeed * Time.deltaTime;
-
-                        if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger, OVRInput.Controller.RTouch) > 0.75f)
-                            inputScale = 1f;
-                    }
-
-                    if (objectTrackers.Count > 1)
-                    {
-                        moveaxisoculus = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, OVRInput.Controller.LTouch);
-                        if (moveaxisoculus.x != 0 || moveaxisoculus.y != 0)
-                        {
-                            isMoving = true;
-                            gravity = Quaternion.FromToRotation(zedManager.GetZedRootTansform().up, Vector3.up);
-                            transform.localPosition += zedManager.GetLeftCameraTransform().right * moveaxisoculus.x * movementSpeed * Time.deltaTime;
-                            transform.localPosition += gravity * zedManager.GetLeftCameraTransform().forward * moveaxisoculus.y * movementSpeed * Time.deltaTime;
-                        }
-                        else
-                            isMoving = false;
-
-                        if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger, OVRInput.Controller.LTouch) > 0.75f)
-                            inputScale = -1f;
-                    }
+                    inputScale = 1f;
                 }
-
-                OVRInput.Update();
             }
-#endif
-#if ZED_STEAM_VR
-            if (UnityEngine.VR.VRSettings.loadedDeviceName == "OpenVR")
+            //Right controller controls translation and lowering scale. 
+            if (objectTrackers.Count > 1)
             {
-                Vector3 moveaxissteamvr = new Vector3(); //Position change by controller. Added to keyboard version if both are applied. 
-
-                //Looks for any input from this controller through SteamVR.
-                if (objectTrackers.Count > 0 && objectTrackers[0].index >= 0)
+                moveaxis = objectTrackers[1].CheckNavigateUIAxis();
+                if (Mathf.Abs(moveaxis.x) < 0.1f) moveaxis.x = 0; //Add slight deadzone. 
+                if (Mathf.Abs(moveaxis.y) < 0.1f) moveaxis.y = 0;
+                if (moveaxis.x != 0 || moveaxis.y != 0)
                 {
-                    //moveaxissteamvr = SteamVR_Controller.Input((int)objectTrackers[0].index).GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0);
-                    moveaxissteamvr = objectTrackers[0].GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0);
-                    inputRotation += moveaxissteamvr.x * rotationSpeed * 360f * Time.deltaTime;
-
+                    isMoving = true;
                     gravity = Quaternion.FromToRotation(zedManager.GetZedRootTansform().up, Vector3.up);
-                    transform.localPosition += gravity * zedManager.GetLeftCameraTransform().up * moveaxissteamvr.y * movementSpeed * Time.deltaTime;
-
-                    //if (objectTrackers[0].index > 0 && SteamVR_Controller.Input((int)objectTrackers[0].index).GetHairTrigger())
-                    if (objectTrackers[0].index > 0 && objectTrackers[0].GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger).x > 0.1f)
-                    {
-                        inputScale = 1f;
-                    }
+                    transform.localPosition += zedManager.GetLeftCameraTransform().right * moveaxis.x * movementSpeed * Time.deltaTime;
+                    transform.localPosition += gravity * zedManager.GetLeftCameraTransform().forward * moveaxis.y * movementSpeed * Time.deltaTime;
                 }
+                else
+                    isMoving = false;
 
-                if (objectTrackers.Count > 1 && objectTrackers[1].index >= 0)
+                if (objectTrackers[1].CheckClickButton(ControllerButtonState.Held))
                 {
-                    //moveaxissteamvr = SteamVR_Controller.Input((int)objectTrackers[1].index).GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0);
-                    moveaxissteamvr = objectTrackers[1].GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0);
-
-                    if (moveaxissteamvr.x != 0 || moveaxissteamvr.y != 0)
-                    {
-                        isMoving = true;
-                        gravity = Quaternion.FromToRotation(zedManager.GetZedRootTansform().up, Vector3.up);
-                        transform.localPosition += zedManager.GetLeftCameraTransform().right * moveaxissteamvr.x * movementSpeed * Time.deltaTime;
-                        transform.localPosition += gravity * zedManager.GetLeftCameraTransform().forward * moveaxissteamvr.y * movementSpeed * Time.deltaTime;
-                    }
-                    else
-                        isMoving = false;
-
-                    //if (objectTrackers[1].index > 0 && SteamVR_Controller.Input((int)objectTrackers[1].index).GetHairTrigger())
-                    if (objectTrackers[1].index > 0 && objectTrackers[1].GetAxis(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger).x > 0.1f)
-                    {
-                        inputScale = -1f;
-                    }
+                    inputScale = -1f;
                 }
             }
-#endif
-
         }
 
         //Rotation
