@@ -1112,9 +1112,9 @@ public class ZEDManager : MonoBehaviour
         {
             LayerMask layerNumberBinary = (1 << arLayer); //Convert layer index into binary number. 
             UnityEditor.Tools.visibleLayers |= (layerNumberBinary);
-#endif
-        }
 
+        }
+#endif
         sl.ZEDCamera.UnloadInstance((int)cameraID);
     }
 
