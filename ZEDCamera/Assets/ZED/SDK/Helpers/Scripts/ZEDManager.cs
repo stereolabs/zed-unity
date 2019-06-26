@@ -1160,7 +1160,6 @@ public class ZEDManager : MonoBehaviour
         zedReady = false;
         ZEDManagerInstance[(int)cameraID] = this;
         zedCamera = new sl.ZEDCamera();
-        LayerHandler.GetInstance().setUsed(cameraID, true);
         if (dontDestroyOnLoad) DontDestroyOnLoad(transform.root); //If you want the ZED rig not to be destroyed when loading a scene. 
 
         //Set first few parameters for initialization. This will get passed to the ZED SDK when initialized. 
