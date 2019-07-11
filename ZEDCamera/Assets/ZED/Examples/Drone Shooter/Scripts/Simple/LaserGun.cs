@@ -179,7 +179,7 @@ public class LaserGun : MonoBehaviour
         int children = transform.childCount;
         if (OVRManager.isHmdPresent)
         {
-            if (IsConnectedController())
+            if (OVRInput.GetConnectedControllers().ToString() == "Touch")
             {
                 for (int i = 0; i < children; ++i)
                     transform.GetChild(i).gameObject.SetActive(true);
