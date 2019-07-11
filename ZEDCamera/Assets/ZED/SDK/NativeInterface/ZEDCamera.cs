@@ -245,15 +245,6 @@ namespace sl
 		{
 			get { return cameraModel == sl.MODEL.ZED_M; }
 		}
-        /// <summary>
-        /// List of DLLs needed to run the plugin. 
-        /// </summary>
-        static private string[] dependenciesNeeded =
-        {
-            "sl_zed64.dll",
-            "sl_core64.dll",
-            "sl_input64.dll"
-		};
 
         /// <summary>
         /// Layer that only the ZED is able to see. Used in ZEDSteamVRControllerManager for 'clone' controllers. 
@@ -761,35 +752,18 @@ namespace sl
         /// </summary>
         public static bool CheckPlugin()
         {
-			pluginIsReady = false;
-			string env = Environment.GetEnvironmentVariable("ZED_SDK_ROOT_DIR"); 
-			if (env != null) //Found path to the ZED SDK in PC's environmental variables. 
-			{
-				bool error = CheckDependencies(System.IO.Directory.GetFiles(env + "\\bin")); //Make sure ZED dlls exist and work. 
-				if (error) {
-					Debug.LogError (ZEDLogMessage.Error2Str (ZEDLogMessage.ERROR.SDK_NOT_INSTALLED)); //Print that SDK isn't installed. 
-					return false;
-				} else { //Found DLLs in ZED install directory. 
+			pluginIsReady = false;	 
+		    try {
+			    if (dllz_check_plugin (PluginVersion.Major, PluginVersion.Minor) != 0) { //0 = installed SDK is compatible with plugin. 1 otherwise.
+				    Debug.LogError (ZEDLogMessage.Error2Str (ZEDLogMessage.ERROR.SDK_DEPENDENCIES_ISSUE));
+				    return false;
+			    }
+		    }
+		    catch(DllNotFoundException) {
 
-					try {
-						if (dllz_check_plugin (PluginVersion.Major, PluginVersion.Minor) != 0) { //0 = installed SDK is compatible with plugin. 1 otherwise.
-							Debug.LogError (ZEDLogMessage.Error2Str (ZEDLogMessage.ERROR.SDK_DEPENDENCIES_ISSUE));
-							return false;
-						}
-					}
-					catch(DllNotFoundException) {
-
-						Debug.LogError (ZEDLogMessage.Error2Str (ZEDLogMessage.ERROR.SDK_DEPENDENCIES_ISSUE));
-						return false;
-					}
-				}
-			}
-			else //Couldn't find the ZED SDK in the computer's environmental variables. 
-			{
-				Debug.LogError(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_NOT_INSTALLED));
-				return false;
-			}
-
+			    Debug.LogError (ZEDLogMessage.Error2Str (ZEDLogMessage.ERROR.SDK_DEPENDENCIES_ISSUE));
+			    return false;
+		    }
 			pluginIsReady = true;
 			return true;
          }
@@ -808,40 +782,7 @@ namespace sl
 				return false;
 		}
 
-        /// <summary>
-        /// Checks if all the required DLLs are available and tries calling a dummy function from each one. 
-        /// </summary>
-        /// <param name="filesFound">All files in a specified directory.</param>
-        /// <returns>True if the dependencies were not found. False if they were all found.</returns>
-        static private bool CheckDependencies(string[] filesFound)
-        {
-            bool isASDKPb = false;
-			if (filesFound == null) {
-				return true;
-			}
-            foreach (string dependency in dependenciesNeeded)
-            {
-                bool found = false;
-                foreach (string file in filesFound)
-                {
-                    if (System.IO.Path.GetFileName(file).Equals(dependency))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    isASDKPb = true;
-                    Debug.LogError("[ZED Plugin ] : " + dependency + " is not found");
-                }
-            }
-
-			return isASDKPb;
-        }
-
-
+ 
         /// <summary>
         /// Private constructor. Initializes lists to hold references to textures and texture requests. 
         /// </summary>
