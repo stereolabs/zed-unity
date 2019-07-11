@@ -29,30 +29,6 @@
       "type": "vibration"
     },
     {
-      "name": "/actions/platformer/in/Move",
-      "type": "vector2"
-    },
-    {
-      "name": "/actions/platformer/in/Jump",
-      "type": "boolean"
-    },
-    {
-      "name": "/actions/buggy/in/Steering",
-      "type": "vector2"
-    },
-    {
-      "name": "/actions/buggy/in/Throttle",
-      "type": "vector1"
-    },
-    {
-      "name": "/actions/buggy/in/Brake",
-      "type": "boolean"
-    },
-    {
-      "name": "/actions/buggy/in/Reset",
-      "type": "boolean"
-    },
-    {
       "name": "/actions/mixedreality/in/ExternalCamera",
       "type": "pose",
       "requirement": "optional"
@@ -64,30 +40,8 @@
       "usage": "single"
     },
     {
-      "name": "/actions/platformer",
-      "usage": "single"
-    },
-    {
-      "name": "/actions/buggy",
-      "usage": "single"
-    },
-    {
       "name": "/actions/mixedreality",
       "usage": "single"
-    },
-    {
-      "name": "/actions/NewSet",
-      "usage": "single"
-    }
-  ],
-  "default_bindings": [
-    {
-      "controller_type": "vive_controller",
-      "binding_url": "application_generated_unity_newmrcalibrationapp_exe_binding_vive_controller.json"
-    },
-    {
-      "controller_type": "vive_tracker_handed",
-      "binding_url": "application_generated_unity_newmrcalibrationapp_exe_binding_vive_tracker_handed.json"
     }
   ],
   "localization": [
