@@ -669,7 +669,7 @@ public class ZEDCameraEditor : Editor
 
                 if (manager.zedRigDisplayer != null && Application.isPlaying)
                 {
-                    manager.zedRigDisplayer.hideFlags = showarrig.boolValue ? HideFlags.None : HideFlags.HideAndDontSave;
+                    manager.zedRigDisplayer.hideFlags = showarrig.boolValue ? HideFlags.None : HideFlags.HideInHierarchy;
                 }
             }
 

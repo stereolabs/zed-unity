@@ -226,6 +226,38 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// </summary>
     private int numberSpotLightsID;
 
+    /// <summary>
+    /// Cached property id for _IsTextured. use isTexturedID property instead. 
+    /// </summary>
+    private int? _istexturedid;
+    /// <summary>
+    /// Property id for _IsTextured, which is whether the rendered image has a texture overlay. 
+    /// </summary>
+    private int isTexturedID
+    {
+        get
+        {
+            if (_istexturedid == null) _istexturedid = Shader.PropertyToID("_IsTextured");
+            return (int)_istexturedid;
+        }
+    }
+
+    /// <summary>
+    /// Cached property id for _Mask. use maskPropID property instead. 
+    /// </summary>
+    private int? _maskpropid;
+    /// <summary>
+    /// Property id for _Mask, which is the RenderTexture property for an overlay texture. 
+    /// </summary>
+    private int maskPropID
+    {
+        get
+        {
+            if (_maskpropid == null) _maskpropid = Shader.PropertyToID("_Mask");
+            return (int)_maskpropid;
+        }
+    }
+
     /*** Post-process definitions***/
 
     /// <summary>
@@ -381,7 +413,8 @@ public class ZEDRenderingPlane : MonoBehaviour
         blurMaterial = new Material(Resources.Load("Materials/PostProcessing/Mat_ZED_Blur") as Material);
         blurMaterial.SetFloatArray("weights", weights);
         blurMaterial.SetFloatArray("offset", offsets);
-        blurMaterial.SetTexture("_Mask", mask);
+        //blurMaterial.SetTexture("_Mask", mask);
+        blurMaterial.SetTexture(maskPropID, mask);
 
 
         //Force Unity into 16:9 mode to match the ZED's output. 
@@ -749,7 +782,7 @@ public class ZEDRenderingPlane : MonoBehaviour
         forceShadowObject.transform.localPosition = new Vector3(0, 0, cam.nearClipPlane);
         forceShadowObject.GetComponent<MeshRenderer>().sharedMaterial = Resources.Load("Materials/Lighting/Mat_ZED_Hide") as Material;
         Destroy(forceShadowObject.GetComponent<MeshCollider>());
-        forceShadowObject.hideFlags = HideFlags.HideAndDontSave;
+        forceShadowObject.hideFlags = HideFlags.HideInHierarchy;
     }
 
     /// <summary>
@@ -766,7 +799,7 @@ public class ZEDRenderingPlane : MonoBehaviour
     {
         transform.localRotation = Quaternion.identity;
         transform.localPosition = new Vector3(0, 0, 0);
-        if (cam.stereoTargetEye != StereoTargetEyeMask.None)
+        if (cam.stereoTargetEye != StereoTargetEyeMask.None && zedManager.IsStereoRig == true)
         {
 			if (zedCamera != null && zedCamera.IsCameraReady)
             {
@@ -817,7 +850,7 @@ public class ZEDRenderingPlane : MonoBehaviour
             depth = zedCamera.CreateTextureMeasureType(sl.MEASURE.DEPTH, resolution);
 
         }
-        else if (StereoTargetEyeMask.Right == cam.stereoTargetEye) //This camera is for the right HMD eye. 
+        else if (StereoTargetEyeMask.Right == cam.stereoTargetEye && zedManager.IsStereoRig == true) //This camera is for the right HMD eye. 
         {
 			side = 1;
 			if (zedCamera != null && zedCamera.IsCameraReady)
@@ -1201,8 +1234,11 @@ public class ZEDRenderingPlane : MonoBehaviour
         {
 			RenderTexture tmpSource = RenderTexture.GetTemporary (source.width, source.height, source.depth, source.format, RenderTextureReadWrite.sRGB);
 			Graphics.Blit (source, tmpSource);
-			blender.SetInt ("_IsTextured", 0);
-			Graphics.Blit (tmpSource, destination, blender);
+
+			//blender.SetInt ("_IsTextured", 0);
+			blender.SetInt (isTexturedID, 0);
+
+            Graphics.Blit (tmpSource, destination, blender);
 			RenderTexture.ReleaseTemporary (tmpSource);
 		}
         else 
@@ -1225,7 +1261,8 @@ public class ZEDRenderingPlane : MonoBehaviour
 
                     //Compose the second mask retrieved in the forward pass. The shader should set the stencil to 148.
                     Graphics.Blit(mask, bluredMask);
-                    matComposeMask.SetTexture("_Mask", bluredMask);
+                    //matComposeMask.SetTexture("_Mask", bluredMask);
+                    matComposeMask.SetTexture(maskPropID, bluredMask);
                     Graphics.Blit(buffer, mask, matComposeMask);
 
                     ApplyPostProcess(source, destination, bluredMask);
@@ -1260,7 +1297,8 @@ public class ZEDRenderingPlane : MonoBehaviour
         Graphics.Blit(source, tempDestination, postprocessMaterial);
         ZEDPostProcessingTools.Blur(mask, bluredMask, blurMaterial, 3, 1, 1);
 
-        blurMaterial.SetTexture("_Mask", bluredMask);
+        //blurMaterial.SetTexture("_Mask", bluredMask);
+        blurMaterial.SetTexture(maskPropID, bluredMask);
         ZEDPostProcessingTools.Blur(tempDestination, destination, blurMaterial, 2, 1, 1);
         mask.SetGlobalShaderProperty("_ZEDMaskVirtual");
         RenderTexture.ReleaseTemporary(tempDestination);
@@ -1341,7 +1379,7 @@ public class ZEDRenderingPlane : MonoBehaviour
 #endif
             cam.stereoTargetEye = StereoTargetEyeMask.None;
             cam.renderingPath = RenderingPath.Forward;
-            o.hideFlags = HideFlags.HideAndDontSave;
+            o.hideFlags = HideFlags.HideInHierarchy;
             return o;
 
         }

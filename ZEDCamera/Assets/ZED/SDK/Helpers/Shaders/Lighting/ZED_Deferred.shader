@@ -79,6 +79,7 @@ Properties
 			uniform int _ZEDReferenceMeasure;
 			uniform int ZEDGreenScreenActivated;
 			sampler2D ZEDMaskTexGreenScreen;
+			float _ZEDFactorAffectReal;
 			void frag(v2f i, 
 					  out half4 outColor : SV_Target0, 
 					  out half4 outSpecRoughness : SV_Target1, 
@@ -102,6 +103,7 @@ Properties
 				
 				float3 normals = tex2D(_NormalsTex, i.depthUV).rgb;
 				outColor = saturate(tex2D (_MainTex, i.depthUV).bgra);
+				outColor *= _ZEDFactorAffectReal;
 
 				#ifdef NO_DEPTH_OCC
 					    outDepth = 0;

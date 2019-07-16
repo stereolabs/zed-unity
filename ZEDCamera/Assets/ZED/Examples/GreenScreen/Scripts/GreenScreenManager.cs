@@ -252,25 +252,50 @@ public class GreenScreenManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets up the greenscreen with saved data.
-    /// Used exclusively by ZEDSteamVRControllerManager to make sure this happens after controllers are set up. 
-    /// Otherwise, included logic gets set elsewhere in different places. 
+    /// Cached property id for _MaskTex. use the maskTexID property instead. 
     /// </summary>
-    public void PadReady()
+    private int? _masktexid;
+    /// <summary>
+    /// Property id for _MaskTex, which is the RenderTexture property for the mask texture. 
+    /// </summary>
+    private int maskTexID
     {
-		cameraManager = gameObject.GetComponentInParent<ZEDManager>();
-        if(!cameraManager)
+        get
         {
-            cameraManager = ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_01);
+            if (_masktexid == null) _masktexid = Shader.PropertyToID("_MaskTex");
+            return (int)_masktexid;
         }
+    }
 
-		if (garbageMatteData.numberMeshes != 0 && garbageMatte != null && cameraManager!=null)
+    /// <summary>
+    /// Cached property id for weights. use the weightsID property instead. 
+    /// </summary>
+    private int? _weightsid;
+    /// <summary>
+    /// Property id for weights, which affects post-processing blurring. 
+    /// </summary>
+    private int weightsID
+    {
+        get
         {
-            if (enableGarbageMatte)
-            {
-				garbageMatte = new GarbageMatte(cameraManager, finalMat, transform, garbageMatte);
-            }
-            garbageMatte.LoadData(garbageMatteData);
+            if (_masktexid == null) _masktexid = Shader.PropertyToID("weights");
+            return (int)_masktexid;
+        }
+    }
+
+    /// <summary>
+    /// Cached property id for offset. use the offsetID property instead. 
+    /// </summary>
+    private int? _offsetid;
+    /// <summary>
+    /// Property id for offset, which affects post-processing blurring. 
+    /// </summary>
+    private int offsetID
+    {
+        get
+        {
+            if (_masktexid == null) _masktexid = Shader.PropertyToID("offset");
+            return (int)_masktexid;
         }
     }
 
@@ -595,7 +620,6 @@ public class GreenScreenManager : MonoBehaviour
         }
     }
 
-
     /// <summary>
     /// Where various image processing effects are applied, including the green screen effect itself. 
     /// </summary>
@@ -603,13 +627,13 @@ public class GreenScreenManager : MonoBehaviour
     {
         if (screenManager.TextureEye == null || screenManager.TextureEye.width == 0) return;
         if (canal.Equals(CANAL.FOREGROUND)) return;
-        print(screenManager.transform.parent);
 
         RenderTexture tempAlpha = RenderTexture.GetTemporary(finalTexture.width, finalTexture.height, 0, RenderTextureFormat.RFloat, RenderTextureReadWrite.Linear);
         RenderTexture tempFinalAlpha = RenderTexture.GetTemporary(finalTexture.width, finalTexture.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
 
         Graphics.Blit(screenManager.TextureEye, tempAlpha, greenScreenMat);
-        preprocessMat.SetTexture("_MaskTex", tempAlpha);
+        //preprocessMat.SetTexture("_MaskTex", tempAlpha);
+        preprocessMat.SetTexture(maskTexID, tempAlpha);
 
         Graphics.Blit(screenManager.TextureEye, tempFinalAlpha, preprocessMat);
 
@@ -623,8 +647,10 @@ public class GreenScreenManager : MonoBehaviour
                 ZEDPostProcessingTools.ComputeWeights(currentSigma, out weights_, out offsets_);
 
                 //Send the values to the current shader
-                blurMaterial.SetFloatArray("weights", weights_);
-                blurMaterial.SetFloatArray("offset", offsets_);
+                //blurMaterial.SetFloatArray("weights", weights_);
+                blurMaterial.SetFloatArray(weightsID, weights_);
+                //blurMaterial.SetFloatArray("offset", offsets_);
+                blurMaterial.SetFloatArray(offsetID, offsets_);
             }
             ZEDPostProcessingTools.Blur(tempFinalAlpha, finalTexture, blurMaterial, 0, 1, 1);
         }

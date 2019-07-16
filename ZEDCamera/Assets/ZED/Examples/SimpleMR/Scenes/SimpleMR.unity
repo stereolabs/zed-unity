@@ -1324,7 +1324,7 @@ Prefab:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 2}
       propertyPath: inputType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 2}
@@ -1336,34 +1336,14 @@ Prefab:
       propertyPath: FPS
       value: 60
       objectReference: {fileID: 0}
+    - target: {fileID: 20287226139793380, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 2}
+      propertyPath: m_RenderingPath
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &1437909257 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1180261165772202, guid: 76db3eb81fd21ae45bab5204e324ae42,
-    type: 2}
-  m_PrefabInternal: {fileID: 1437909256}
---- !u!114 &1437909258
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1437909257}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d533f8f5ad2836d459869909806be714, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  record: 0
-  read: 0
-  videoFile: Assets/ZEDRecording.svo
-  loop: 0
-  realtimePlayback: 0
-  currentFrame: 0
-  numberFrameMax: 0
-  pause: 0
-  compressionMode: 3
 --- !u!1 &1508528278
 GameObject:
   m_ObjectHideFlags: 0

@@ -47,7 +47,7 @@ public class LaserGun : MonoBehaviour
     /// <summary>
     /// The gameobject's controller for tracking and input.
     /// </summary>
-    private ZEDControllerTracker objecttracker;
+    private ZEDControllerTracker_DemoInputs objecttracker;
 
 #if ZED_OCULUS
     private int fireCount = 0;
@@ -78,7 +78,7 @@ public class LaserGun : MonoBehaviour
         //Wait for VR Controllers to initilize
         yield return new WaitForSeconds(1f);
 
-        objecttracker = GetComponent<ZEDControllerTracker>();
+        objecttracker = GetComponent<ZEDControllerTracker_DemoInputs>();
 
         if (objecttracker != null)
         {
@@ -88,7 +88,7 @@ public class LaserGun : MonoBehaviour
                 yield break;
 #endif
 #if ZED_OCULUS
-            if (OVRInput.GetConnectedControllers().ToString() == "Touch")
+            if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
                 yield break;
 #endif
             // If it got here then there's no VR Controller connected
@@ -121,7 +121,7 @@ public class LaserGun : MonoBehaviour
 #if ZED_OCULUS
                 if (OVRManager.isHmdPresent)
                 {
-                    if (OVRInput.GetConnectedControllers().ToString() == "Touch")
+                    if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
                     {
                         for (int i = 0; i < children; ++i)
                             transform.GetChild(i).gameObject.SetActive(false);
@@ -179,7 +179,7 @@ public class LaserGun : MonoBehaviour
         int children = transform.childCount;
         if (OVRManager.isHmdPresent)
         {
-            if (OVRInput.GetConnectedControllers().ToString() == "Touch")
+            if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
             {
                 for (int i = 0; i < children; ++i)
                     transform.GetChild(i).gameObject.SetActive(true);
@@ -195,49 +195,19 @@ public class LaserGun : MonoBehaviour
         //We're controlling the fire Rate.  OVRInput doesn't have a GetDown function for the IndexTrigger. Only an axis output.
         if (objecttracker != null)
         {
-            if (OVRInput.GetConnectedControllers().ToString() == "Touch")
-            {
-                if ((int)objecttracker.deviceToTrack == 0)
-                {
-                    if (fireCount == 0 && OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger, OVRInput.Controller.RTouch) > 0.75f)
-                    {
-                        buttondown = true;
-                        fireCount++;
-                    }
-                    else if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger, OVRInput.Controller.RTouch) < 0.75f)
-                        fireCount = 0;
-
-                }
-                if ((int)objecttracker.deviceToTrack == 1)
-                {
-                    if (fireCount == 0 && OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger, OVRInput.Controller.LTouch) > 0.75f)
-                    {
-                        buttondown = true;
-                        fireCount++;
-                    }
-                    else if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger, OVRInput.Controller.LTouch) < 0.75f)
-                        fireCount = 0;
-                }
-            }
-            OVRInput.Update();
+            buttondown = objecttracker.CheckFireButton(ControllerButtonState.Down);
+            //OVRInput.Update();
         }
+
+
+
 #endif
+
 #if ZED_STEAM_VR
         //Looks for any input from this controller through SteamVR
         if (objecttracker != null)
         {
-            if ((int)objecttracker.deviceToTrack == 0 && objecttracker.index >= 0)
-                //if (SteamVR_Controller.Input((int)objecttracker.index).GetHairTriggerDown())
-                if (objecttracker.GetVRButtonDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger))
-                {
-                    buttondown = true;
-                }
-            if ((int)objecttracker.deviceToTrack == 1 && objecttracker.index >= 0)
-                //if (SteamVR_Controller.Input((int)objecttracker.index).GetHairTriggerDown())
-                if (objecttracker.GetVRButtonDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger))
-                {
-                    buttondown = true;
-                }
+            buttondown = objecttracker.CheckFireButton(ControllerButtonState.Down);
         }
 #endif
 
@@ -246,6 +216,7 @@ public class LaserGun : MonoBehaviour
             Fire();
         }
     }
+
 
     /// <summary>
     /// Tests the depth of both the real and virtual in the center of the screen, and returns the world position of the closest one. 
@@ -266,7 +237,6 @@ public class LaserGun : MonoBehaviour
             realdistance = Vector3.Distance(laserPointerBeadHolder.transform.position, realpoint);
             foundrealdistance = true;
         }
-
 
 
         //Find the distance to the virtual. The bool will be false if there are no colliders ahead of you. 
@@ -296,8 +266,8 @@ public class LaserGun : MonoBehaviour
             collisionnormal = hitinfo.normal;
             return true;
         }
-
     }
+
 
     /// <summary>
     /// Spawns the laser prefab at the spawn anchor. 

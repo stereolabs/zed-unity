@@ -1,0 +1,58 @@
+{
+  "actions": [
+    {
+      "name": "/actions/zed-default/in/Grab",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/zed-default/in/Pose",
+      "type": "pose"
+    },
+    {
+      "name": "/actions/zed-default/in/NavigateUI",
+      "type": "vector2"
+    },
+    {
+      "name": "/actions/zed-default/in/Click",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/zed-default/in/Back",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/zed-default/in/Fire",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/zed-default/out/Haptic",
+      "type": "vibration"
+    },
+    {
+      "name": "/actions/mixedreality/in/ExternalCamera",
+      "type": "pose",
+      "requirement": "optional"
+    }
+  ],
+  "action_sets": [
+    {
+      "name": "/actions/zed-default",
+      "usage": "single"
+    },
+    {
+      "name": "/actions/mixedreality",
+      "usage": "single"
+    }
+  ],
+  "localization": [
+    {
+      "language_tag": "en_US",
+      "/actions/platformer/in/Jump": "Jump",
+      "/actions/zed-default/in/Fire": "Fire",
+      "/actions/zed-default/in/Back": "Back",
+      "/actions/zed-default/in/Click": "Click",
+      "/actions/zed-default/in/Grab": "Grab",
+      "/actions/zed-default/in/NavigateUI": "NavigateUI"
+    }
+  ]
+}

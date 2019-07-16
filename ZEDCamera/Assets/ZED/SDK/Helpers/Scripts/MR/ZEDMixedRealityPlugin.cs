@@ -274,14 +274,28 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     /// </summary>
 	public static event OnHmdCalibrationChanged OnHmdCalibChanged;
 
+    /// <summary>
+    /// Cached property id for _MainTex. use the mainTexID property instead. 
+    /// </summary>
+    private int? _maintexid;
+    /// <summary>
+    /// Property id for _MainTex, which is the main texture from the ZED. 
+    /// </summary>
+    private int mainTexID
+    {
+        get
+        {
+            if (_maintexid == null) _maintexid = Shader.PropertyToID("_MainTex");
+            return (int)_maintexid;
+        }
+    }
 
-
-	#if UNITY_2017_OR_NEWER
+#if UNITY_2017_OR_NEWER
 	List<UnityEngine.VR.VRNodeState> nodes = new List<UnityEngine.VR.VRNodeState>();
 
 	UnityEngine.VR.VRNodeState nodeState = new UnityEngine.VR.VRNodeState();
-	#endif
-	private void Awake()
+#endif
+    private void Awake()
 	{
         //Initialize the latency tracking only if a supported headset is detected. 
         //You can force it to work for unsupported headsets by implementing your own logic for calling 
@@ -290,7 +304,10 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 		if (hasVRDevice) {
 			if (VRDevice.model.ToLower().Contains ("vive")) //Vive or Vive Pro
 				dllz_latency_corrector_initialize (0);
-			else if (VRDevice.model.ToLower().Contains ("oculus")) //Oculus Rift
+			else if (VRDevice.model.ToLower().Contains ("oculus") || //Oculus Rift
+                VRDevice.model.ToLower().Contains("windows") || //Most WMR headsets
+                VRDevice.model.ToLower().Contains("visor") || //Dell Visor
+                VRDevice.model.ToLower().Contains("explorer")) //Lenovo Explorer
 				dllz_latency_corrector_initialize (1);
 			else if (VRDevice.model.ToLower().Contains ("windows")) //Windows MR through SteamVR Only (Beta)
 				dllz_latency_corrector_initialize (1);
@@ -611,13 +628,14 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 		{
 			if (leftScreen.target != null && leftScreen.target.IsCreated())
 			{
-				leftMaterial.SetTexture("_MainTex", leftScreen.target);
+				//leftMaterial.SetTexture("_MainTex", leftScreen.target);
+				leftMaterial.SetTexture(mainTexID, leftScreen.target);
 				ready = true;
 			}
 			else ready = false;
 			if (rightScreen.target != null && rightScreen.target.IsCreated())
 			{
-				rightMaterial.SetTexture("_MainTex", rightScreen.target);
+				rightMaterial.SetTexture(mainTexID, rightScreen.target);
 				ready = true;
 			}
 			else ready = false;
@@ -641,7 +659,8 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	{
 		if (cam == finalLeftEye || cam == finalRightEye)
 		{
-			if ((!zedReady && manager.IsStereoRig))
+            
+			if ((!manager.IsZEDReady && manager.IsStereoRig))
 			{
 				quadLeft.localRotation = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.Head);
 				quadLeft.localPosition = UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.Head) + quadLeft.localRotation * offset;

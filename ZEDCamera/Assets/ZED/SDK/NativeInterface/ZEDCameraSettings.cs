@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 public class ZEDCameraSettings
 {
     #region DLL Calls
-    const string nameDll = sl.ZEDCommon.NameDLL;
+    const string nameDll = "sl_unitywrapper";
     [DllImport(nameDll, EntryPoint = "dllz_set_camera_settings")]
     private static extern void dllz_set_camera_settings(int id, int mode, int value, int usedefault);
 
