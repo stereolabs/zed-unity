@@ -17,7 +17,7 @@ using Valve.VR;
 public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 {
     //#if ZED_STEAM_VR
-#if ZED_STEAM_VR_2_0_INPUT
+#if ZED_SVR_2_0_INPUT
 
     /// <summary>
     /// SteamVR action to cause a Fire event when checked or subscribed to.
@@ -156,7 +156,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     /// <param name="state">Whether to check if the button/action is just pressed, just released, or is being held down.</param>
     public bool CheckFireButton(ControllerButtonState state)
     {
-#if ZED_STEAM_VR_2_0_INPUT
+#if ZED_SVR_2_0_INPUT
         return CheckSteamVRBoolActionState(fireBinding, state);
 #elif ZED_STEAM_VR
         return CheckSteamVRButtonState_Legacy(fireBinding_Legacy, state);
@@ -174,7 +174,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     /// <param name="state">Whether to check if the button/action is just pressed, just released, or is being held down.</param>
     public bool CheckClickButton(ControllerButtonState state)
     {
-#if ZED_STEAM_VR_2_0_INPUT
+#if ZED_SVR_2_0_INPUT
         return CheckSteamVRBoolActionState(clickBinding, state);
 #elif ZED_STEAM_VR
         return CheckSteamVRButtonState_Legacy(clickBinding_Legacy, state);
@@ -192,7 +192,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     /// <param name="state">Whether to check if the button/action is just pressed, just released, or is being held down.</param>
     public bool CheckBackButton(ControllerButtonState state)
     {
-#if ZED_STEAM_VR_2_0_INPUT
+#if ZED_SVR_2_0_INPUT
         return CheckSteamVRBoolActionState(backBinding, state);
 #elif ZED_STEAM_VR
         return CheckSteamVRButtonState_Legacy(backBinding_Legacy, state);
@@ -209,7 +209,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     /// <param name="state">Whether to check if the button/action is just pressed, just released, or is being held down.</param>
     public bool CheckGrabButton(ControllerButtonState state)
     {
-#if ZED_STEAM_VR_2_0_INPUT
+#if ZED_SVR_2_0_INPUT
         return CheckSteamVRBoolActionState(grabBinding, state);
 #elif ZED_STEAM_VR
         return CheckSteamVRButtonState_Legacy(grabBinding_Legacy, state);
@@ -225,7 +225,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     /// </summary>
     public Vector2 CheckNavigateUIAxis()
     {
-#if ZED_STEAM_VR_2_0_INPUT
+#if ZED_SVR_2_0_INPUT
         return CheckSteamVR2DAxis(navigateUIBinding);
 #elif ZED_STEAM_VR
         return CheckSteamVRAxis_Legacy(navigateUIBinding_Legacy);
@@ -241,7 +241,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     {
         base.Awake();
 
-#if ZED_STEAM_VR_2_0_INPUT
+#if ZED_SVR_2_0_INPUT
         if (!useLegacySteamVRInput)
         {
             if(!SteamVR.active) SteamVR.Initialize(true); //Force SteamVR to activate, so we can use the input system. 
@@ -276,14 +276,14 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         base.UpdateControllerState();
 
         //If using legacy SteamVR input, we check buttons directly from the OpenVR API. 
-    #if ZED_STEAM_VR_2_0_INPUT //If using SteamVR plugin 2.0 or higher, give the option to use legacy input. 
+#if ZED_SVR_2_0_INPUT //If using SteamVR plugin 2.0 or higher, give the option to use legacy input. 
         if (useLegacySteamVRInput)
         {
             openvrsystem.GetControllerState((uint)index, ref controllerstate, controllerstatesize);
         }
-    #else //We're using an older SteamVR plugin, so we need to use the legacy input. 
+#else //We're using an older SteamVR plugin, so we need to use the legacy input. 
         openvrsystem.GetControllerState((uint)index, ref controllerstate, controllerstatesize);
-    #endif
+#endif
     }
 #endif
 
@@ -339,11 +339,33 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         else if (deviceToTrack == Devices.RightController) return OVRInput.Controller.RTouch;
         else return OVRInput.Controller.None;
     }
+
+    /// <summary>
+    /// Returns if this script is bound to an Oculus Touch controller that is currently not connected. 
+    /// For example, if it's a Right Controller but only the left is connected, it returns false. 
+    /// If not bound to a controller, returns true. 
+    /// </summary>
+    /// <returns></returns>
+    private bool IsConnectedController()
+    {
+        if (!objecttracker) return true; //Not attached to a tracker. Return true since it doesn't depend on a controller to be alive. 
+        if (objecttracker.deviceToTrack != ZEDControllerTracker.Devices.LeftController && objecttracker.deviceToTrack != ZEDControllerTracker.Devices.RightController)
+            return true; //Not bound to a left or right controller, so let it live. 
+
+
+        string connectedcontrollers = OVRInput.GetConnectedControllers().ToString().ToLower();
+        if (connectedcontrollers == "touch") return true; //Both controllers are connected, so 
+        if (objecttracker.deviceToTrack == ZEDControllerTracker.Devices.LeftController && connectedcontrollers == "ltouch") return true; //Left controller only.
+        if (objecttracker.deviceToTrack == ZEDControllerTracker.Devices.RightController && connectedcontrollers == "rtouch") return true; //Right controller only. 
+
+        return false;
+    }
+
 #endif
 
 
-        //#if ZED_STEAM_VR
-#if ZED_STEAM_VR_2_0_INPUT
+    //#if ZED_STEAM_VR
+#if ZED_SVR_2_0_INPUT
     /// <summary>
     /// Checks the button state of a given SteamVR boolean action.
     /// </summary>
@@ -462,12 +484,12 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     }
 
 #endif
-    }
+}
 
-    /// <summary>
-    /// List of possible button states, used to check inputs. 
-    /// </summary>
-    public enum ControllerButtonState
+/// <summary>
+/// List of possible button states, used to check inputs. 
+/// </summary>
+public enum ControllerButtonState
 {
     /// <summary>
     /// The button was pressed this frame. 

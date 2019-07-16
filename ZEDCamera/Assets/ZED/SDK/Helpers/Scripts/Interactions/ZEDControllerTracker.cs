@@ -724,13 +724,13 @@ public class ZEDVRDependencies : Editor
 
             if (CheckPackageExists("SteamVR_Input_Sources"))
             {
-                defineName = "ZED_STEAM_VR_2_0_INPUT";
+                defineName = "ZED_SVR_2_0_INPUT";
                 //packageName = "SteamVR";
                 ActivateDefine();
             }
             else
             {
-                defineName = "ZED_STEAM_VR_2_0_INPUT";
+                defineName = "ZED_SVR_2_0_INPUT";
                 DeactivateDefine("SteamVR");
             }
         }

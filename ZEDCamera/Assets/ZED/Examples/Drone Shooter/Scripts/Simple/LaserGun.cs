@@ -179,7 +179,7 @@ public class LaserGun : MonoBehaviour
         int children = transform.childCount;
         if (OVRManager.isHmdPresent)
         {
-            if (OVRInput.GetConnectedControllers().ToString() == "Touch")
+            if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
             {
                 for (int i = 0; i < children; ++i)
                     transform.GetChild(i).gameObject.SetActive(true);
@@ -198,7 +198,11 @@ public class LaserGun : MonoBehaviour
             buttondown = objecttracker.CheckFireButton(ControllerButtonState.Down);
             //OVRInput.Update();
         }
+
+
+
 #endif
+
 #if ZED_STEAM_VR
         //Looks for any input from this controller through SteamVR
         if (objecttracker != null)
@@ -212,6 +216,7 @@ public class LaserGun : MonoBehaviour
             Fire();
         }
     }
+
 
     /// <summary>
     /// Tests the depth of both the real and virtual in the center of the screen, and returns the world position of the closest one. 
@@ -261,8 +266,8 @@ public class LaserGun : MonoBehaviour
             collisionnormal = hitinfo.normal;
             return true;
         }
-
     }
+
 
     /// <summary>
     /// Spawns the laser prefab at the spawn anchor. 

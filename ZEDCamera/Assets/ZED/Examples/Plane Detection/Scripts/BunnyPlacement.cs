@@ -35,7 +35,7 @@ public class BunnyPlacement : MonoBehaviour
     /// <summary>
     /// The ZEDControllerTracker object in the VR controller used to place the object, if applicable. 
     /// </summary>
-    private ZEDControllerTracker tracker;
+    private ZEDControllerTracker_DemoInputs tracker;
 
     /// <summary>
     /// The scene's ZED Plane Detection Manager.
@@ -79,7 +79,7 @@ public class BunnyPlacement : MonoBehaviour
     void Awake()
     {
         canspawnbunny = false;
-        tracker = GetComponent<ZEDControllerTracker>();
+        tracker = GetComponent<ZEDControllerTracker_DemoInputs>();
         zedPlane = FindObjectOfType<ZEDPlaneDetectionManager>();
         bunnySpawner = GetComponent<BunnySpawner>();
     }
@@ -103,9 +103,7 @@ public class BunnyPlacement : MonoBehaviour
     {
         if (tracker == null)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-                button = state.Down;
-            else if (Input.GetKey(KeyCode.Space))
+            if (Input.GetKey(KeyCode.Space))
                 button = state.Press;
             else if (Input.GetKeyUp(KeyCode.Space))
                 button = state.Up;
@@ -114,86 +112,13 @@ public class BunnyPlacement : MonoBehaviour
         }
         else
         {
-#if ZED_STEAM_VR
-            //SteamVR provides OnButton responses for the Trigger input.
-            //When pressing down, holding it, or releasing it.
-            if ((int)tracker.index > 0)
-            {
-                //if (device.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
-                if (tracker.GetVRButtonDown(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger))
-                {
-                    button = state.Down;
-                }
-                //else if (device.GetPress(SteamVR_Controller.ButtonMask.Trigger))
-                else if (tracker.GetVRButtonHeld(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger))
-                {
-                    button = state.Press;
-                }
-                //else if (device.GetPressUp(SteamVR_Controller.ButtonMask.Trigger))
-                else if (tracker.GetVRButtonReleased(Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger))
-                {
-                    button = state.Up;
-                }
-                else
-                    button = state.Idle;
-            }
-#elif ZED_OCULUS
-        //Check if a Controller is tracked.
-        if ((int)tracker.deviceToTrack == 0)
-        {
-            //Oculus Touch Triggers aren't of Button type, but Axis.
-            //So we have to create our own state for this Input, based on sensitivity from 0 to 1.
-            if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger, OVRInput.Controller.RTouch) > 0.5f)
-            {
-                if (button == state.Idle)
-                {
-                    button = state.Down;
-                }
-                else if (button == state.Down)
-                {
-                    button = state.Press;
-                }
-            }
-            else
-            {
-                if (button == state.Press || button == state.Down)
-                {
-                    button = state.Up;
-                }
-                else if (button == state.Up)
-                {
-                    button = state.Idle;
-                }
-            }
-        }
-
-        if ((int)tracker.deviceToTrack == 1)
-        {
-            if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger, OVRInput.Controller.LTouch) > 0.5f)
-            {
-                if (button == state.Idle)
-                {
-                    button = state.Down;
-                }
-                else if (button == state.Down)
-                {
-                    button = state.Press;
-                }
-            }
-            else
-            {
-                if (button == state.Press || button == state.Down)
-                {
-                    button = state.Up;
-                }
-                else if (button == state.Up)
-                {
-                    button = state.Idle;
-                }
-            }
-        }
-
-#endif
+            if (tracker.CheckClickButton(ControllerButtonState.Down))
+                button = state.Down;
+            else if (tracker.CheckClickButton(ControllerButtonState.Held))
+                button = state.Press;
+            else if (tracker.CheckClickButton(ControllerButtonState.Up))
+                button = state.Up;
+            else button = state.Idle;
         }
         //If the Trigger Button is being used.
         if (button != state.Idle)
