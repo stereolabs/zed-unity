@@ -26,6 +26,7 @@
   * Fixed plugin not recognizing Dell VISOR or Lenovo Explorer WMR headsets when using them in SteamVR, or any WMR controllers at all.
   * Updated video stream link in Movie Screen example scene as the old video link was taken down (same video, new host)
   * Fixed SVO Loop feature not working when real-time mode is enabled
+  * Fixed Multicam crash if both cameras share the same CAMERA_ID
 
 
 ### 2.8.0

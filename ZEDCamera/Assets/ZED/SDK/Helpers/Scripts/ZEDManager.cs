@@ -1187,8 +1187,8 @@ public class ZEDManager : MonoBehaviour
         {
             Debug.LogError("ZEDManager on " + gameObject.name + " couldn't connect to camera: " + cameraID +
                ". Check if another ZEDManager is already connected.");
-            //this.gameObject.SetActive (false);
-            //return;
+            this.gameObject.SetActive (false);
+            return;
         }
         initParameters.inputType = inputType;
         if (inputType == sl.INPUT_TYPE.INPUT_TYPE_USB)
