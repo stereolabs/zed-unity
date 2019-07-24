@@ -106,7 +106,11 @@ Properties
 				outColor *= _ZEDFactorAffectReal;
 
 				#ifdef NO_DEPTH_OCC
-					    outDepth = 0;
+					#if SHADER_API_D3D11
+						outDepth = 0;
+					#elif SHADER_API_GLCORE
+						outDepth = 1000;//fake infinite depth
+					#endif
 				#else
 						outDepth = saturate(d);
 				#endif

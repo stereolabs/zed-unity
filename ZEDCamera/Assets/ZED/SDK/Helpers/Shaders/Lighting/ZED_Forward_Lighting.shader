@@ -97,7 +97,11 @@
 		float3 zed_xyz = tex2D(_DepthXYZTex, uv.zw).xxx;
 
 	#ifdef NO_DEPTH_OCC
-	    outDepth = 0;
+		#if SHADER_API_D3D11
+		outDepth = 0;
+		#elif SHADER_API_GLCORE
+		outDepth = 1000;//fake infinite depth
+		#endif
 	#else
 		outDepth = computeDepthXYZ(zed_xyz.z);
 	#endif
