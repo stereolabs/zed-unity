@@ -246,12 +246,12 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 1000
   field of view: 56
   orthographic: 0
   orthographic size: 5
-  m_Depth: -1
+  m_Depth: -1.1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294964479
@@ -282,7 +282,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 1000
   field of view: 56
   orthographic: 0
@@ -530,6 +530,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 1473301405527320}
+  viewSide: 1
   viewMode: 0
   numberPointLights: 0
   numberSpotLights: 0
@@ -557,6 +558,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 1386713500692820}
+  viewSide: 0
   viewMode: 0
   numberPointLights: 0
   numberSpotLights: 0
@@ -582,6 +584,7 @@ MonoBehaviour:
   currentFrame: 0
   numberFrameMax: 0
   pauseSVOReading: 0
+  pauseLiveReading: 0
   NeedNewFrameGrab: 0
   streamInputIP: 127.0.0.1
   streamInputPort: 30000
@@ -599,6 +602,7 @@ MonoBehaviour:
   depthOcclusion: 1
   postProcessing: 1
   m_cameraBrightness: 100
+  m_maxDepthRange: 20
   svoOutputFileName: Assets/Recording.svo
   svoOutputCompressionMode: 3
   needRecordFrame: 0
@@ -611,6 +615,7 @@ MonoBehaviour:
   fadeInOnStart: 1
   dontDestroyOnLoad: 0
   greySkybox: 1
+  m_confidenceThreshold: 100
   showarrig: 0
   cameraModel: '-'
   cameraSerialNumber: '-'
@@ -620,16 +625,17 @@ MonoBehaviour:
   cameraFPS: '-'
   HMDDevice: '-'
   trackingState: '-'
+  sensingMode: 1
   gravityRotation: {x: 0, y: 0, z: 0, w: 1}
   ZEDSyncPosition: {x: 0, y: 0, z: 0}
   HMDSyncPosition: {x: 0, y: 0, z: 0}
   ZEDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
   HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
-  advancedPanelOpen: 1
+  advancedPanelOpen: 0
   spatialMappingFoldoutOpen: 0
   recordingFoldoutOpen: 0
   streamingOutFoldoutOpen: 0
-  camControlFoldoutOpen: 0
+  camControlFoldoutOpen: 1
   arlayer: 30
   zedRigDisplayer: {fileID: 0}
 --- !u!114 &114833973883948664

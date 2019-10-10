@@ -185,9 +185,9 @@ public class ZEDTransformController : MonoBehaviour
             else if (motion == RelativeMotion.Camera)
             {
                 gravity = Quaternion.FromToRotation(zedManager.GetZedRootTansform().up, Vector3.up);
-                transform.localPosition += zedManager.GetLeftCameraTransform().right * moveAxis.x;
-                transform.localPosition += zedManager.GetLeftCameraTransform().forward * moveAxis.z;
-                transform.localPosition += gravity * zedManager.GetLeftCameraTransform().up * moveAxis.y;
+                transform.localPosition += zedManager.GetMainCameraTransform().right * moveAxis.x;
+                transform.localPosition += zedManager.GetMainCameraTransform().forward * moveAxis.z;
+                transform.localPosition += gravity * zedManager.GetMainCameraTransform().up * moveAxis.y;
             }
         }
         else
@@ -214,7 +214,7 @@ public class ZEDTransformController : MonoBehaviour
                 inputRotation += moveaxis.x * rotationSpeed * 360f * Time.deltaTime;
 
                 gravity = Quaternion.FromToRotation(zedManager.GetZedRootTansform().up, Vector3.up);
-                transform.localPosition += gravity * zedManager.GetLeftCameraTransform().up * moveaxis.y * movementSpeed * Time.deltaTime;
+                transform.localPosition += gravity * zedManager.GetMainCameraTransform().up * moveaxis.y * movementSpeed * Time.deltaTime;
 
                 if (objectTrackers[0].CheckClickButton(ControllerButtonState.Held))
                 {
@@ -231,8 +231,8 @@ public class ZEDTransformController : MonoBehaviour
                 {
                     isMoving = true;
                     gravity = Quaternion.FromToRotation(zedManager.GetZedRootTansform().up, Vector3.up);
-                    transform.localPosition += zedManager.GetLeftCameraTransform().right * moveaxis.x * movementSpeed * Time.deltaTime;
-                    transform.localPosition += gravity * zedManager.GetLeftCameraTransform().forward * moveaxis.y * movementSpeed * Time.deltaTime;
+                    transform.localPosition += zedManager.GetMainCameraTransform().right * moveaxis.x * movementSpeed * Time.deltaTime;
+                    transform.localPosition += gravity * zedManager.GetMainCameraTransform().forward * moveaxis.y * movementSpeed * Time.deltaTime;
                 }
                 else
                     isMoving = false;

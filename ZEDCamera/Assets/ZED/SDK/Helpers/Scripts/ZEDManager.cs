@@ -308,7 +308,7 @@ public class ZEDManager : MonoBehaviour
     /// Gets a value indicating whether the spatial mapping display is enabled.
     /// </summary>
     public bool IsSpatialMappingDisplay { get { return spatialMapping != null ? spatialMapping.display : false; } }
- 
+
 
     /////////////////////////////////////////////////////////////////////////
     ///////////////////////////// Rendering ///////////////////////////////////
@@ -337,15 +337,15 @@ public class ZEDManager : MonoBehaviour
     public bool postProcessing = true;
 
     /// <summary>
-    /// Brightness of the final real-world image. Default is 1. Lower to darken the environment in a realistic-looking way. 
+    /// Field version of CameraBrightness property. 
+    /// </summary>
+    [SerializeField]
+    [HideInInspector]
+    private int m_cameraBrightness = 100;
+    /// Brightness of the final real-world image. Default is 100. Lower to darken the environment in a realistic-looking way. 
     /// This is a rendering setting that doesn't affect the raw input from the camera.
     /// </summary>
-    [HideInInspector]
-    public int m_cameraBrightness = 100;
-    /// <summary>
-    /// Public accessor for m_cameraBrightness, which is the post-capture brightness setting of the real-world image. 
-    /// </summary>
-	public int CameraBrightness
+    public int CameraBrightness
     {
         get { return m_cameraBrightness; }
         set
@@ -354,6 +354,27 @@ public class ZEDManager : MonoBehaviour
             m_cameraBrightness = value;
             if (OnCamBrightnessChange != null)
                 OnCamBrightnessChange(m_cameraBrightness);
+        }
+    }
+
+    /// <summary>
+    /// Field version of MaxDepthRange property. 
+    /// </summary>
+    [SerializeField]
+    [HideInInspector]
+    private float m_maxDepthRange = 20f;
+    /// <summary>
+    /// Maximum depth at which the camera will display the real world, in meters. Pixels further than this value will be invisible. 
+    /// </summary>
+    public float MaxDepthRange
+    {
+        get { return m_maxDepthRange; }
+        set
+        {
+            if (m_maxDepthRange == value) return;
+            m_maxDepthRange = value;
+            if (OnMaxDepthChange != null)
+                OnMaxDepthChange(m_maxDepthRange);
         }
     }
 
@@ -371,7 +392,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public sl.SVO_COMPRESSION_MODE svoOutputCompressionMode = sl.SVO_COMPRESSION_MODE.AVCHD_BASED;
-    
+
     /// <summary>
     /// Indicates if frame must be recorded
     /// </summary>
@@ -402,7 +423,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public int streamingPort = 30000;
-    
+
     /// <summary>
     /// bitrate used for Streaming
     /// </summary>
@@ -414,7 +435,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public int gopSize = -1;
-    
+
     /// <summary>
     /// Enable/Disable adaptative bitrate
     /// </summary>
@@ -444,14 +465,49 @@ public class ZEDManager : MonoBehaviour
     public bool greySkybox = true;
 
     /// <summary>
+    /// Field version of confidenceThreshold property. 
+    /// </summary>
+    [SerializeField]
+    [HideInInspector]
+    private int m_confidenceThreshold = 100;
+    /// <summary>
+    /// How tolerant the ZED SDK is to low confidence values. Lower values filter more pixels.
+    /// </summary>
+    public int confidenceThreshold
+    {
+        get
+        {
+            return m_confidenceThreshold;
+        }
+        set
+        {
+            if (value == m_confidenceThreshold) return;
+
+            m_confidenceThreshold = Mathf.RoundToInt(Mathf.Clamp(value, 0, 100));
+            if (Application.isPlaying && zedReady)
+            {
+                zedCamera.SetConfidenceThreshold(m_confidenceThreshold);
+            }
+
+        }
+    }
+
+    /// <summary>
     /// Delegate for OnCamBrightnessChange, which is used to update shader properties when the brightness setting changes. 
     /// </summary>
-    /// <param name="newVal"></param>
 	public delegate void onCamBrightnessChangeDelegate(int newVal);
     /// <summary>
     /// Event fired when the camera brightness setting is changed. Used to update shader properties. 
     /// </summary>
 	public event onCamBrightnessChangeDelegate OnCamBrightnessChange;
+    /// <summary>
+    /// Delegate for OnCamBrightnessChange, which is used to update shader properties when the max depth setting changes. 
+    /// </summary>
+    public delegate void onMaxDepthChangeDelegate(float newVal);
+    /// <summary>
+    /// Event fired when the max depth setting is changed. Used to update shader properties. 
+    /// </summary>
+    public event onMaxDepthChangeDelegate OnMaxDepthChange;
 
     /// <summary>
     /// Whether to show the hidden camera rig used in stereo AR mode to prepare images for HMD output. 
@@ -477,6 +533,23 @@ public class ZEDManager : MonoBehaviour
             }
 
             showarrig = value;
+        }
+    }
+
+    private float maxdepthrange = 20f;
+    public float maxDepthRange
+    {
+        get
+        {
+            return maxdepthrange;
+        }
+        set
+        {
+            maxdepthrange = Mathf.Clamp(value, 0, 20);
+            if (Application.isPlaying)
+            {
+                setRenderingSettings();
+            }
         }
     }
 
@@ -587,11 +660,6 @@ public class ZEDManager : MonoBehaviour
     /// Position last returned by the ZED's tracking.
     /// </summary>
 	private Vector3 zedPosition = Vector3.zero;
-    /// <summary>
-    /// Instance of the manager that handles reading/recording SVO files, which are video files
-    /// with metadata that you can treat like regular ZED input. 
-    /// </summary>
-    //private ZEDSVOManager zedSVOManager;
 
     /// <summary>
     /// Position of the camera (zedRigRoot) when the scene starts. Not used in Stereo AR. 
@@ -605,7 +673,9 @@ public class ZEDManager : MonoBehaviour
     /// Sensing mode: STANDARD or FILL. FILL corrects for missing depth values. 
     /// Almost always better to use FILL, since we need depth without holes for proper occlusion.
     /// </summary>
-    private sl.SENSING_MODE sensingMode = sl.SENSING_MODE.FILL;
+    [SerializeField]
+    [HideInInspector]
+    public sl.SENSING_MODE sensingMode = sl.SENSING_MODE.FILL;
     /// <summary>
     /// Rotation offset used to retrieve the tracking with a rotational offset.
     /// </summary>
@@ -683,7 +753,14 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     public Quaternion OriginRotation { get; private set; }
 
-
+    /// <summary>
+    /// In AR pass-through mode, whether to compare the ZED's IMU data against the reported position of
+    /// the VR headset. This helps compensate for drift and should usually be left on.
+    /// However, in some setups, like when using a custom mount, this can cause tracking errors.
+    /// </summary><remarks>
+    /// Read more about the potential errors here: https://support.stereolabs.com/hc/en-us/articles/360026482413
+    /// </remarks>
+    public bool setIMUPriorInAR = true;
 
     ///////////////////////////////////////////////////
     [HideInInspector] public Quaternion gravityRotation = Quaternion.identity;
@@ -773,6 +850,18 @@ public class ZEDManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Returns the left ZED camera transform. If there is no left camera but there is a right camera, 
+    /// returns the right camera transform instead. 
+    /// </summary>
+    /// <returns></returns>
+    public Transform GetMainCameraTransform()
+    {
+        if (camLeftTransform) return camLeftTransform;
+        else if (camRightTransform) return camRightTransform;
+        else return null;
+    }
+
+    /// <summary>
     /// Gets the left camera transform in the ZED rig. It's best to use this one as it's available in all configurations.
     /// </summary>
     public Transform GetLeftCameraTransform()
@@ -789,7 +878,19 @@ public class ZEDManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the left camera in the ZED rig. It's best to use this one as it's available in all configurations.
+    /// Returns the left ZED camera. If there is no left camera but there is a right camera, 
+    /// returns the right camera instead. 
+    /// </summary>
+    /// <returns></returns>
+    public Camera GetMainCamera()
+    {
+        if (cameraLeft) return cameraLeft;
+        else if (cameraRight) return cameraRight;
+        else return null;
+    }
+
+    /// <summary>
+    /// Gets the left camera in the ZED rig. Both ZED_Rig_Mono and ZED_Rig_Stereo have a left camera by default. 
     /// </summary>
     public Camera GetLeftCamera()
     {
@@ -799,7 +900,7 @@ public class ZEDManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Get the right camera in the ZED rig. Only available in the stereo rig (ZED_Rig_Stereo).
+    /// Get the right camera in the ZED rig. Only available in the stereo rig (ZED_Rig_Stereo) unless configured otherwise. 
     /// </summary>
     public Camera GetRightCamera()
     {
@@ -935,37 +1036,56 @@ public class ZEDManager : MonoBehaviour
 
         //Set first left eye
         Component[] cams = gameObject.GetComponentsInChildren<Camera>();
-        Camera firstmonocam = null;
-        foreach(Camera cam in cams)
+        //Camera firstmonocam = null;
+        List<Camera> monocams = new List<Camera>();
+        foreach (Camera cam in cams)
         {
-            switch(cam.stereoTargetEye)
+            switch (cam.stereoTargetEye)
             {
                 case StereoTargetEyeMask.Left:
-                    if(!cameraLeft)
+                    if (!cameraLeft)
                     {
                         cameraLeft = cam;
                         camLeftTransform = cam.transform;
                     }
                     break;
                 case StereoTargetEyeMask.Right:
-                    if(!cameraRight)
+                    if (!cameraRight)
                     {
                         cameraRight = cam;
                         camRightTransform = cam.transform;
                     }
                     break;
                 case StereoTargetEyeMask.None:
-                    if (firstmonocam == null) firstmonocam = cam;
+                    monocams.Add(cam);
                     break;
                 case StereoTargetEyeMask.Both:
                 default:
                     break;
             }
         }
-        if(cameraLeft == null && firstmonocam != null)
+
+        //If the left camera or right camera haven't been assigned via stereo target eyes, search the monocams
+        //based on their ZEDRenderingPlane assignments. 
+        //This won't affect whether the rig is in stereo mode, but allows the cameras to be accessed via GetLeftCamera() and GetRightCamera(). 
+        if (cameraLeft == null || cameraRight == null)
         {
-            cameraLeft = firstmonocam;
-            camLeftTransform = firstmonocam.transform;
+            foreach(Camera cam in monocams)
+            {
+                ZEDRenderingPlane rendplane = cam.gameObject.GetComponent<ZEDRenderingPlane>();
+                if (!rendplane) continue;
+
+                if(!cameraLeft && (rendplane.viewSide == ZEDRenderingPlane.ZED_CAMERA_SIDE.LEFT || rendplane.viewSide == ZEDRenderingPlane.ZED_CAMERA_SIDE.LEFT_FORCE))
+                {
+                    cameraLeft = cam;
+                    camLeftTransform = cam.transform;
+                }
+                else if(!cameraRight && (rendplane.viewSide == ZEDRenderingPlane.ZED_CAMERA_SIDE.RIGHT || rendplane.viewSide == ZEDRenderingPlane.ZED_CAMERA_SIDE.RIGHT_FORCE))
+                {
+                    cameraRight = cam;
+                    camRightTransform = cam.transform;
+                }
+            }
         }
 
         if (camLeftTransform && camRightTransform && cameraLeft.stereoTargetEye == StereoTargetEyeMask.Left) //We found both a left- and right-eye camera. 
@@ -975,8 +1095,8 @@ public class ZEDManager : MonoBehaviour
             {
                 zedRigRoot = camLeftTransform.parent; //Make the camera's parent object (Camera_eyes in the ZED_Rig_Stereo prefab) the new zedRigRoot to be tracked. 
             }
-            
-            if(UnityEngine.VR.VRDevice.isPresent)
+
+            if (UnityEngine.VR.VRDevice.isPresent)
             {
                 isStereoRig = true;
             }
@@ -1069,9 +1189,9 @@ public class ZEDManager : MonoBehaviour
 
         //If this was the last camera to close, make sure all instances are closed. 
         bool notlast = false;
-        foreach(ZEDManager manager in ZEDManagerInstance)
+        foreach (ZEDManager manager in ZEDManagerInstance)
         {
-            if(manager != null && manager.IsZEDReady == true)
+            if (manager != null && manager.IsZEDReady == true)
             {
                 notlast = true;
                 break;
@@ -1093,6 +1213,7 @@ public class ZEDManager : MonoBehaviour
 
         zedReady = false;
         OnCamBrightnessChange -= SetCameraBrightness;
+        OnMaxDepthChange -= SetMaxDepthRange;
         Destroy(); //Close the grab and initialization threads. 
 
         if (zedCamera != null)
@@ -1100,7 +1221,7 @@ public class ZEDManager : MonoBehaviour
             if (isRecording)
             {
                 zedCamera.DisableRecording();
-            }       
+            }
             zedCamera.Destroy();
             zedCamera = null;
         }
@@ -1112,9 +1233,10 @@ public class ZEDManager : MonoBehaviour
         {
             LayerMask layerNumberBinary = (1 << arLayer); //Convert layer index into binary number. 
             UnityEditor.Tools.visibleLayers |= (layerNumberBinary);
-
         }
 #endif
+
+
         sl.ZEDCamera.UnloadInstance((int)cameraID);
     }
 
@@ -1160,6 +1282,7 @@ public class ZEDManager : MonoBehaviour
         zedReady = false;
         ZEDManagerInstance[(int)cameraID] = this;
         zedCamera = new sl.ZEDCamera();
+        LayerHandler.GetInstance().setUsed(cameraID, true);
         if (dontDestroyOnLoad) DontDestroyOnLoad(transform.root); //If you want the ZED rig not to be destroyed when loading a scene. 
 
         //Set first few parameters for initialization. This will get passed to the ZED SDK when initialized. 
@@ -1231,7 +1354,7 @@ public class ZEDManager : MonoBehaviour
 
 
         OnCamBrightnessChange += SetCameraBrightness; //Subscribe event for adjusting brightness setting. 
-
+        OnMaxDepthChange += SetMaxDepthRange;
 
         //Create Module Object
         //Create the spatial mapping module object (even if not used necessarly)
@@ -1249,9 +1372,9 @@ public class ZEDManager : MonoBehaviour
     #region INITIALIZATION
     //const int MAX_OPENING_TRIES = 10;
     private uint numberTriesOpening = 0;/// Counter of tries to open the ZED
-    /// <summary>
-    /// ZED opening function. Should be called in the initialization thread (threadOpening).
-    /// </summary>
+                                        /// <summary>
+                                        /// ZED opening function. Should be called in the initialization thread (threadOpening).
+                                        /// </summary>
     private void OpenZEDInBackground()
     {
         openingLaunched = true;
@@ -1388,17 +1511,17 @@ public class ZEDManager : MonoBehaviour
         else if (isStereoRig && !VRDevice.isPresent) //Using stereo rig, but no VR headset. 
         {
             //When no VR HMD is available, simply put the origin at the left camera.
-            camLeftTransform.localPosition = Vector3.zero;
-            camLeftTransform.localRotation = Quaternion.identity;
+            if(camLeftTransform) camLeftTransform.localPosition = Vector3.zero;
+            if (camLeftTransform) camLeftTransform.localRotation = Quaternion.identity;
             if (camRightTransform) camRightTransform.localPosition = rightCameraOffset; //Space the eyes apart. 
             if (camRightTransform) camRightTransform.localRotation = Quaternion.identity;
         }
         else //Using mono rig (ZED_Rig_Mono). No offset needed. 
         {
-            if (camLeftTransform)
+            if (GetMainCameraTransform())
             {
-                camLeftTransform.localPosition = Vector3.zero;
-                camLeftTransform.localRotation = Quaternion.identity;
+                GetMainCameraTransform().localPosition = Vector3.zero;
+                GetMainCameraTransform().localRotation = Quaternion.identity;
             }
         }
     }
@@ -1414,41 +1537,46 @@ public class ZEDManager : MonoBehaviour
         {
             leftRenderingPlane = GetLeftCameraTransform().GetComponent<ZEDRenderingPlane>();
             leftRenderingPlane.SetPostProcess(postProcessing);
-            GetLeftCameraTransform().GetComponent<Camera>().renderingPath = RenderingPath.UsePlayerSettings;
-            SetCameraBrightness(m_cameraBrightness);
+            cameraLeft.renderingPath = RenderingPath.UsePlayerSettings;
         }
 
         ZEDRenderingPlane rightRenderingPlane = null;
-        if (IsStereoRig)
+        if (GetRightCameraTransform() != null)
         {
             rightRenderingPlane = GetRightCameraTransform().GetComponent<ZEDRenderingPlane>();
             rightRenderingPlane.SetPostProcess(postProcessing);
+            cameraRight.renderingPath = RenderingPath.UsePlayerSettings;
         }
 
-        if (camLeftTransform != null)
+        SetCameraBrightness(m_cameraBrightness);
+        SetMaxDepthRange(m_maxDepthRange);
+
+        Camera maincam = GetMainCamera();
+        if (maincam != null)
         {
-            ZEDRenderingMode renderingPath = (ZEDRenderingMode)camLeftTransform.GetComponent<Camera>().actualRenderingPath;
+            ZEDRenderingMode renderingPath = (ZEDRenderingMode)maincam.actualRenderingPath;
 
             //Make sure we're in either forward or deferred rendering. Default to forward otherwise. 
             if (renderingPath != ZEDRenderingMode.FORWARD && renderingPath != ZEDRenderingMode.DEFERRED)
             {
                 Debug.LogError("[ZED Plugin] Only Forward and Deferred Shading rendering path are supported");
-                GetLeftCameraTransform().GetComponent<Camera>().renderingPath = RenderingPath.Forward;
-                if (IsStereoRig)
-                    GetRightCameraTransform().GetComponent<Camera>().renderingPath = RenderingPath.Forward;
+                if(cameraLeft) cameraLeft.renderingPath = RenderingPath.Forward;
+                if (cameraRight) cameraRight.renderingPath = RenderingPath.Forward;
             }
 
             //Set depth occlusion. 
             if (renderingPath == ZEDRenderingMode.FORWARD)
             {
-                if (leftRenderingPlane) leftRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH_OCC");
+                if (leftRenderingPlane)
+                    leftRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH_OCC");
                 if (rightRenderingPlane)
                     rightRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH_OCC");
 
             }
             else if (renderingPath == ZEDRenderingMode.DEFERRED)
             {
-                if (leftRenderingPlane) leftRenderingPlane.ManageKeywordDeferredMat(!depthOcclusion, "NO_DEPTH_OCC");
+                if (leftRenderingPlane)
+                    leftRenderingPlane.ManageKeywordDeferredMat(!depthOcclusion, "NO_DEPTH_OCC");
                 if (rightRenderingPlane)
                     rightRenderingPlane.ManageKeywordDeferredMat(!depthOcclusion, "NO_DEPTH_OCC");
             }
@@ -1473,6 +1601,8 @@ public class ZEDManager : MonoBehaviour
         {
             if (zedCamera == null)
                 return;
+
+            if (runtimeParameters.sensingMode != sensingMode) runtimeParameters.sensingMode = sensingMode;
 
             AcquireImages();
         }
@@ -1518,10 +1648,10 @@ public class ZEDManager : MonoBehaviour
                 }
                 else if (e == sl.ERROR_CODE.SUCCESS)
                 {
-                    #if UNITY_EDITOR
+#if UNITY_EDITOR
                     float camera_fps = zedCamera.GetCameraFPS();
                     cameraFPS = camera_fps.ToString() + " FPS";
-                    #endif
+#endif
                     //Get position of camera
                     if (isTrackingEnable)
                     {
@@ -1595,6 +1725,9 @@ public class ZEDManager : MonoBehaviour
         //Set the original transform for the Rig
         zedRigRoot.localPosition = OriginPosition;
         zedRigRoot.localRotation = OriginRotation;
+
+        //Set confidence threshold if needed.
+        if (m_confidenceThreshold != 100) zedCamera.SetConfidenceThreshold(m_confidenceThreshold);
 
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.playmodeStateChanged = HandleOnPlayModeChanged;
@@ -1723,7 +1856,7 @@ public class ZEDManager : MonoBehaviour
                 }
 
                 arRig.ExtractLatencyPose(imageTimeStamp); //Find what HMD's pose was at ZED image's timestamp for latency compensation. 
-                arRig.AdjustTrackingAR(zedPosition, zedOrientation, out r, out v);
+                arRig.AdjustTrackingAR(zedPosition, zedOrientation, out r, out v, setIMUPriorInAR);
                 zedRigRoot.localRotation = r;
                 zedRigRoot.localPosition = v;
 
@@ -1863,9 +1996,10 @@ public class ZEDManager : MonoBehaviour
     {
         if (spatialMapping != null)
         {
-            spatialMapping.StopStatialMapping();
             if (saveMeshWhenOver)
                 SaveMesh(meshPath);
+            spatialMapping.StopStatialMapping();
+
         }
     }
 
@@ -1876,7 +2010,8 @@ public class ZEDManager : MonoBehaviour
     {
         if (spatialMapping != null)
         {
-            if (IsMappingUpdateThreadRunning)
+            //if (IsMappingUpdateThreadRunning)
+            if (spatialMapping.IsRunning())
             {
                 spatialMapping.filterParameters = meshFilterParameters;
                 spatialMapping.Update();
@@ -1915,9 +2050,9 @@ public class ZEDManager : MonoBehaviour
     /// Calling this will end the spatial mapping if it's running. Note it can take a significant amount of time to finish. 
     /// </summary>
     /// <param name="meshPath">Path where the mesh and .area files will be saved.</param>
-    public bool SaveMesh(string meshPath = "ZEDMeshObj.obj")
+    public void SaveMesh(string meshPath = "ZEDMeshObj.obj")
     {
-        return spatialMapping.SaveMesh(meshPath);
+        spatialMapping.RequestSaveMesh(meshPath);
     }
 
     /// <summary>
@@ -2128,36 +2263,46 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Changes the real-world brightness by setting the brightness value in the shaders.
     /// </summary>
-    /// <param name="newVal">New value to be applied.</param>
-    private void SetCameraBrightness(int newVal)
+    /// <param name="newVal">New brightness value to be applied. Should be between 0 and 100.</param>
+    public void SetCameraBrightness(int newVal)
     {
-      
-        ZEDRenderingPlane leftRenderingPlane = GetLeftCameraTransform().GetComponent<ZEDRenderingPlane>();
-        if (leftRenderingPlane)
+        SetFloatValueOnPlaneMaterials("_ZEDFactorAffectReal", newVal / 100f);
+    }
+
+    /// <summary>
+    /// Sets the maximum depth range of real-world objects. Pixels further than this range are discarded. 
+    /// </summary>
+    /// <param name="newVal">Furthest distance, in meters, that the camera will display pixels for. Should be between 0 and 20.</param>
+    public void SetMaxDepthRange(float newVal)
+    {
+        if (newVal < 0 || newVal > 20)
+        {
+            Debug.LogWarning("Tried to set max depth range to " + newVal + "m. Must be within 0m and 20m.");
+            newVal = Mathf.Clamp(newVal, 0, 20);
+        }
+        SetFloatValueOnPlaneMaterials("_MaxDepth", newVal);
+    }
+
+    /// <summary>
+    /// Sets a value of a float property on the material(s) rendering the ZED image. 
+    /// Used to set things like brightness and maximum depth. 
+    /// </summary>
+    /// <param name="propertyname">Name of value/property within Shader. </param>
+    /// <param name="newvalue">New value for the specified property.</param>
+    private void SetFloatValueOnPlaneMaterials(string propertyname, float newvalue)
+    {
+        foreach (ZEDRenderingPlane renderPlane in GetComponentsInChildren<ZEDRenderingPlane>())
         {
             Material rendmat;
-            if (leftRenderingPlane.ActualRenderingPath == RenderingPath.Forward) rendmat = leftRenderingPlane.canvas.GetComponent<Renderer>().material;
-            else if (leftRenderingPlane.ActualRenderingPath == RenderingPath.DeferredShading) rendmat = leftRenderingPlane.deferredMat;
+            if (renderPlane.ActualRenderingPath == RenderingPath.Forward) rendmat = renderPlane.canvas.GetComponent<Renderer>().material;
+            else if (renderPlane.ActualRenderingPath == RenderingPath.DeferredShading) rendmat = renderPlane.deferredMat;
             else
             {
-                Debug.LogError("Can't set camera brightness for Rendering Path " + leftRenderingPlane.ActualRenderingPath +
+                Debug.LogError("Can't set " + propertyname + " value  for Rendering Path " + renderPlane.ActualRenderingPath +
                     ": only Forward and DeferredShading are supported.");
                 return;
             }
-            rendmat.SetFloat("_ZEDFactorAffectReal", newVal / 100.0f); 
-        }
-
-        if (IsStereoRig)
-        {
-            ZEDRenderingPlane rightRenderingPlane = GetRightCameraTransform().GetComponent<ZEDRenderingPlane>();
-            Material rendmat;
-            if (rightRenderingPlane.ActualRenderingPath == RenderingPath.Forward) rendmat = rightRenderingPlane.canvas.GetComponent<Renderer>().material;
-            else if (rightRenderingPlane.ActualRenderingPath == RenderingPath.DeferredShading) rendmat = rightRenderingPlane.deferredMat;
-            else
-            {
-                return; //Don't log the error twice as the left and right rendering paths are almost certainly the same, and the left cam already logged it. 
-            }
-            rendmat.SetFloat("_ZEDFactorAffectReal", newVal / 100.0f);
+            rendmat.SetFloat(propertyname, newvalue);
         }
     }
 
@@ -2190,7 +2335,7 @@ public class ZEDManager : MonoBehaviour
         if (zedCamera != null)
         {
             // If tracking has been switched on
-            if (!isTrackingEnable && enableTracking) 
+            if (!isTrackingEnable && enableTracking)
             {
                 //Enables tracking and initializes the first position of the camera.
                 if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, estimateInitialPosition, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
@@ -2206,7 +2351,7 @@ public class ZEDManager : MonoBehaviour
             }
 
             // If tracking has been switched off
-            if (isTrackingEnable && !enableTracking)  
+            if (isTrackingEnable && !enableTracking)
             {
                 isZEDTracked = false;
                 lock (zedCamera.grabLock)
@@ -2245,7 +2390,7 @@ public class ZEDManager : MonoBehaviour
             }
 
             //Reapplies graphics settings based on current values. 
-            setRenderingSettings(); 
+            setRenderingSettings();
         }
 
     }

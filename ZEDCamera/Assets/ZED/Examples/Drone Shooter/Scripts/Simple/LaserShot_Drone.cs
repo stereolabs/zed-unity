@@ -21,7 +21,7 @@ public class LaserShot_Drone : ZEDProjectile
 
     private void Update()
     {
-        camdistance = Vector3.Distance(transform.position, leftcamera.transform.position);
+        camdistance = Vector3.Distance(transform.position, cam.transform.position);
         if (camdistance < 1.5f)
             speed = 1f;
         else

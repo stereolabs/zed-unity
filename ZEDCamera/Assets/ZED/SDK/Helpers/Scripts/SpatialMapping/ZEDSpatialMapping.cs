@@ -3,6 +3,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
+using System.Text;
+using System;
 
 /// <summary>
 /// Processes the mesh taken from the ZED's Spatial Mapping feature so it can be used within Unity.
@@ -104,6 +106,17 @@ public class ZEDSpatialMapping
     /// Amount of filtering to apply to the mesh. Higher values result in lower face counts/memory usage, but also lower precision. 
     /// </summary>
     public sl.FILTER filterParameters = sl.FILTER.MEDIUM;
+
+    /// <summary>
+    /// True when RequestSaveMesh has been called, so that ongoing threads know to stop and save the mesh
+    /// when everything is finished processing. 
+    /// </summary>
+    private bool saveRequested = false;
+    /// <summary>
+    /// Where the new mesh will be saved. Should end in .obj.
+    /// If textured, a .mtl (material) file and .png file will appear in the same folder with the same base filename. 
+    /// </summary>
+    private string savePath = "Assets/ZEDMesh.obj";
 
 #if UNITY_EDITOR
     /// <summary>
@@ -335,13 +348,13 @@ public class ZEDSpatialMapping
     /// <param name="transform">Transform of the scene's ZEDSpatialMappingManager.</param>
     /// <param name="zedCamera">Reference to the ZEDCamera instance.</param>
     /// <param name="zedManager">The scene's ZEDManager component.</param>
-    public ZEDSpatialMapping(Transform transform,ZEDManager zedManager)
+    public ZEDSpatialMapping(Transform transform, ZEDManager zedManager)
     {
         //Instantiate the low-level mesh processing helper. 
-		spatialMappingHelper = new ZEDSpatialMappingHelper(zedManager.zedCamera, Resources.Load("Materials/SpatialMapping/Mat_ZED_Texture") as Material, Resources.Load("Materials/SpatialMapping/Mat_ZED_Geometry_Wireframe") as Material);
+        spatialMappingHelper = new ZEDSpatialMappingHelper(zedManager.zedCamera, Resources.Load("Materials/SpatialMapping/Mat_ZED_Texture") as Material, Resources.Load("Materials/SpatialMapping/Mat_ZED_Geometry_Wireframe") as Material);
 
         //Assign basic values. 
-		this.zedCamera = zedManager.zedCamera;
+        this.zedCamera = zedManager.zedCamera;
         this.zedManager = zedManager;
         scanningInitState = sl.ERROR_CODE.FAILURE;
 
@@ -356,12 +369,12 @@ public class ZEDSpatialMapping
     /// <param name="isTextured">Whether to scan texture, or only the geometry.</param>
     public void StartStatialMapping(RESOLUTION resolutionPreset, RANGE rangePreset, bool isTextured)
     {
-		//Create the Holder object, to which all scanned chunks will be parented.
-		holder = new GameObject();
-		holder.name = "[ZED Mesh Holder ("+ zedManager.name+ ")]";
-		holder.transform.position = Vector3.zero;
-		holder.transform.rotation = Quaternion.identity;
-		StaticBatchingUtility.Combine(holder);
+        //Create the Holder object, to which all scanned chunks will be parented.
+        holder = new GameObject();
+        holder.name = "[ZED Mesh Holder (" + zedManager.name + ")]";
+        holder.transform.position = Vector3.zero;
+        holder.transform.rotation = Quaternion.identity;
+        StaticBatchingUtility.Combine(holder);
 
         holder.transform.position = Vector3.zero;
         holder.transform.rotation = Quaternion.identity;
@@ -389,12 +402,12 @@ public class ZEDSpatialMapping
     {
         sl.ERROR_CODE error;
         this.isTextured = isTextured;
-        
+
         //Tell the helper to start scanning. This call gets passed directly to the wrapper call in ZEDCamera. 
         error = spatialMappingHelper.EnableSpatialMapping(ZEDSpatialMappingHelper.ConvertResolutionPreset(resolutionPreset), ZEDSpatialMappingHelper.ConvertRangePreset(rangePreset), isTextured);
-		if (meshRenderer[0]) meshRenderer[0].isTextured = isTextured;
-		if (meshRenderer[1]) meshRenderer[1].isTextured = isTextured;
-		stopWanted = false; 
+        if (meshRenderer[0]) meshRenderer[0].isTextured = isTextured;
+        if (meshRenderer[1]) meshRenderer[1].isTextured = isTextured;
+        stopWanted = false;
         running = true;
 
         if (error == sl.ERROR_CODE.SUCCESS) //If the scan was started successfully. 
@@ -429,34 +442,34 @@ public class ZEDSpatialMapping
     /// </summary>
     public void SetMeshRenderer()
     {
-	    if (!setMeshRenderer) //Make sure we haven't do this yet. 
-	    {
-	        if (zedManager != null) 
-	        {
-	            Transform left = zedManager.GetLeftCameraTransform(); //Find the left camera. This exists in both ZED_Rig_Mono and ZED_Rig_Stereo. 
-	            if (left != null)
-	            {
-	                meshRenderer[0] = left.gameObject.GetComponent<ZEDMeshRenderer>();
-	                if (!meshRenderer[0])
-	                {
-	                    meshRenderer[0] = left.gameObject.AddComponent<ZEDMeshRenderer>();
-	                }
-					meshRenderer [0].Create ();
-	            }
-	            Transform right = zedManager.GetRightCameraTransform(); //Find the right camera. This only exists in ZED_Rig_Stereo or a similar stereo rig. 
-	            if (right != null)
-	            {
-	                meshRenderer[1] = right.gameObject.GetComponent<ZEDMeshRenderer>();
-	                if (!meshRenderer[1])
-	                {
-	                    meshRenderer[1] = right.gameObject.AddComponent<ZEDMeshRenderer>();
-	                }
+        if (!setMeshRenderer) //Make sure we haven't do this yet. 
+        {
+            if (zedManager != null)
+            {
+                Transform left = zedManager.GetLeftCameraTransform(); //Find the left camera. This exists in both ZED_Rig_Mono and ZED_Rig_Stereo. 
+                if (left != null)
+                {
+                    meshRenderer[0] = left.gameObject.GetComponent<ZEDMeshRenderer>();
+                    if (!meshRenderer[0])
+                    {
+                        meshRenderer[0] = left.gameObject.AddComponent<ZEDMeshRenderer>();
+                    }
+                    meshRenderer[0].Create();
+                }
+                Transform right = zedManager.GetRightCameraTransform(); //Find the right camera. This only exists in ZED_Rig_Stereo or a similar stereo rig. 
+                if (right != null)
+                {
+                    meshRenderer[1] = right.gameObject.GetComponent<ZEDMeshRenderer>();
+                    if (!meshRenderer[1])
+                    {
+                        meshRenderer[1] = right.gameObject.AddComponent<ZEDMeshRenderer>();
+                    }
 
-					meshRenderer [1].Create ();
-	            }
-	            setMeshRenderer = true;
-	        }
-	    }
+                    meshRenderer[1].Create();
+                }
+                setMeshRenderer = true;
+            }
+        }
     }
 
     /// <summary>
@@ -477,6 +490,7 @@ public class ZEDSpatialMapping
             stopRunning = true;
             stopWanted = false;
             Stop();
+
         }
 
         //If it's time to stop the scan, disable the spatial mapping and store the gravity estimation in ZEDManager.
@@ -484,11 +498,12 @@ public class ZEDSpatialMapping
         {
             isFilteringOver = false;
             UpdateMeshMainthread(false);
+
             Thread disabling = new Thread(DisableSpatialMapping);
             disabling.Start();
             if (hasColliders)
             {
-				if (!zedManager.IsStereoRig && gravityEstimation != Vector3.zero && zedManager.transform.parent != null)
+                if (!zedManager.IsStereoRig && gravityEstimation != Vector3.zero && zedManager.transform.parent != null)
                 {
                     Quaternion rotationToApplyForGravity = Quaternion.Inverse(Quaternion.FromToRotation(Vector3.up, -gravityEstimation.normalized));
                     holder.transform.localRotation = rotationToApplyForGravity;
@@ -512,7 +527,7 @@ public class ZEDSpatialMapping
     /// </summary>
     private void UpdateMesh()
     {
-        while (updateThreadRunning) 
+        while (updateThreadRunning)
         {
             if (!remainMeshes) //If we don't have leftover meshes to apply from the last update. 
             {
@@ -551,12 +566,14 @@ public class ZEDSpatialMapping
     /// </summary>
     private void ClearMeshes()
     {
-		if (holder != null) {
-			foreach (Transform child in holder.transform) {
-				GameObject.Destroy (child.gameObject);
-			}
-			spatialMappingHelper.Clear ();
-		}
+        if (holder != null)
+        {
+            foreach (Transform child in holder.transform)
+            {
+                GameObject.Destroy(child.gameObject);
+            }
+            spatialMappingHelper.Clear();
+        }
     }
 
     /// <summary>
@@ -580,7 +597,7 @@ public class ZEDSpatialMapping
     {
         //Cache the start time so we can measure how long this function is taking.
         //We'll check when updating the submeshes so that if it takes too long, we'll stop updating until the next frame. 
-        int startTimeMS = (int)(Time.realtimeSinceStartup * 1000); 
+        int startTimeMS = (int)(Time.realtimeSinceStartup * 1000);
         int indexUpdate = 0;
         lock (lockScanning) //Don't update if another thread is accessing. 
         {
@@ -604,14 +621,15 @@ public class ZEDSpatialMapping
             {
                 ClearMeshes();
                 spatialMappingHelper.SetMeshAndTexture();
-				meshRenderer[0].isTextured = isTextured;
-				meshRenderer[1].isTextured = isTextured;
+                if (meshRenderer[0]) meshRenderer[0].isTextured = isTextured;
+                if (meshRenderer[1]) meshRenderer[1].isTextured = isTextured;
 
             }
 
             //Process the last meshes.
             for (; indexUpdate < spatialMappingHelper.NumberUpdatedSubMesh; indexUpdate++)
             {
+
                 spatialMappingHelper.SetMesh(indexUpdate, ref verticesOffset, ref trianglesOffset, ref uvsOffset, holder.transform, updatedTexture);
                 if (spreadUpdateOverTime && GoneOverTimeBudget(startTimeMS)) //Check if it's taken too long this frame. 
                 {
@@ -627,6 +645,7 @@ public class ZEDSpatialMapping
             {
                 indexLastFrame = 0;
             }
+
 
             //If all the meshes have been updated, reset values used to process 'leftover' meshes and get more data from the ZED.
             if ((indexUpdate == spatialMappingHelper.NumberUpdatedSubMesh) || spatialMappingHelper.NumberUpdatedSubMesh == 0)
@@ -648,6 +667,16 @@ public class ZEDSpatialMapping
                 verticesOffsetLastFrame = verticesOffset;
                 trianglesOffsetLastFrame = trianglesOffset;
                 uvsOffsetLastFrame = uvsOffset;
+            }
+
+            //Save the mesh here if we requested it to be saved, as we just updated the meshes, including textures, if applicable. 
+            if (saveRequested && remainMeshes == false)
+            {
+                if (!isTextured || updatedTexture)
+                {
+                    SaveMeshNow(savePath);
+                    saveRequested = false;
+                }
             }
         }
 
@@ -676,19 +705,21 @@ public class ZEDSpatialMapping
     }
 
 
-	public void ClearAllMeshes()
-	{ 
+    public void ClearAllMeshes()
+    {
 
-		GameObject[] gos = GameObject.FindObjectsOfType<GameObject> () as GameObject[];
+        GameObject[] gos = GameObject.FindObjectsOfType<GameObject>() as GameObject[];
 
-		spatialMappingHelper.Clear ();
-		for (int i = 0; i < gos.Length; i++) {
-			string targetName =  "[ZED Mesh Holder ("+ zedManager.name+ ")]";
-			if (gos[i] != null && gos[i].name.Contains(targetName)) {
-				GameObject.Destroy (gos [i]);
-			}
-		}
-	}
+        spatialMappingHelper.Clear();
+        for (int i = 0; i < gos.Length; i++)
+        {
+            string targetName = "[ZED Mesh Holder (" + zedManager.name + ")]";
+            if (gos[i] != null && gos[i].name.Contains(targetName))
+            {
+                GameObject.Destroy(gos[i]);
+            }
+        }
+    }
 
     /// <summary>
     /// Changes the visibility state of the meshes. 
@@ -696,7 +727,7 @@ public class ZEDSpatialMapping
     /// </summary>
     /// <param name="newDisplayState"> If true, the mesh will be displayed, else it will be hide. </param>
     public void SwitchDisplayMeshState(bool newDisplayState)
-    { 
+    {
         display = newDisplayState;
     }
 
@@ -755,7 +786,7 @@ public class ZEDSpatialMapping
     private void DisableSpatialMapping()
     {
         lock (lockScanning)
-		{
+        {
             updateThreadRunning = false;
             spatialMappingHelper.DisableSpatialMapping();
             scanningInitState = sl.ERROR_CODE.FAILURE;
@@ -765,37 +796,19 @@ public class ZEDSpatialMapping
     }
 
     /// <summary>
-    /// Save the mesh as an .obj, .ply or .bin file, and the area database as an .area file. 
+    /// Save the mesh as an .obj file, and the area database as an .area file. 
     /// This can be quite time-comsuming if you mapped a large area.
     /// </summary>
-    public bool SaveMesh(string meshFilePath = "Assets/ZEDMesh.obj")
+    public void RequestSaveMesh(string meshFilePath = "Assets/ZEDMesh.obj")
     {
-        bool err = false;
+        saveRequested = true;
+        savePath = meshFilePath;
 
         if (updateThreadRunning)
         {
             StopStatialMapping(); //Stop the mapping if it hasn't stopped already. 
         }
-        lock (lockScanning)
-        {
-            string[] splitPath = meshFilePath.Split('.');
-            if (splitPath[splitPath.Length - 1].Contains("obj"))
-            {
-                err = zedCamera.SaveMesh(meshFilePath, sl.MESH_FILE_FORMAT.OBJ);
-            }
-            else if (splitPath[splitPath.Length - 1].Contains("ply"))
-            {
-                err = zedCamera.SaveMesh(meshFilePath, sl.MESH_FILE_FORMAT.BIN);
-            }
-            else
-            {
-                err = zedCamera.SaveMesh(meshFilePath + ".obj", sl.MESH_FILE_FORMAT.OBJ);
-            }
-        }
-        string areaName = meshFilePath.Substring(0, meshFilePath.LastIndexOf(".")) + ".area";
 
-        zedCamera.SaveCurrentArea(areaName);
-        return err;
     }
 
     /// <summary>
@@ -807,16 +820,17 @@ public class ZEDSpatialMapping
     /// </summary>
     public bool LoadMesh(string meshFilePath = "ZEDMesh.obj")
     {
-		if (holder == null) {
-			holder = new GameObject ();
-			holder.name = "[ZED Mesh Holder (" + zedManager.name + ")]";
-			holder.transform.position = Vector3.zero;
-			holder.transform.rotation = Quaternion.identity;
-			StaticBatchingUtility.Combine (holder);
-		}
+        if (holder == null)
+        {
+            holder = new GameObject();
+            holder.name = "[ZED Mesh Holder (" + zedManager.name + ")]";
+            holder.transform.position = Vector3.zero;
+            holder.transform.rotation = Quaternion.identity;
+            StaticBatchingUtility.Combine(holder);
+        }
 
 
-        if(OnMeshStarted != null)
+        if (OnMeshStarted != null)
         {
             OnMeshStarted();
         }
@@ -825,13 +839,14 @@ public class ZEDSpatialMapping
 
         //Find and load the area
         string basePath = meshFilePath.Substring(0, meshFilePath.LastIndexOf("."));
-        if(!System.IO.File.Exists(basePath + ".area")) {
+        if (!System.IO.File.Exists(basePath + ".area"))
+        {
             Debug.LogWarning(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_BASE_AREA_NOT_FOUND));
         }
 
         zedCamera.DisableTracking();
         Quaternion quat = Quaternion.identity; Vector3 tr = Vector3.zero;
-		if (zedCamera.EnableTracking(ref quat, ref tr, true,false,false, System.IO.File.Exists(basePath + ".area") ? basePath + ".area" : "") != sl.ERROR_CODE.SUCCESS)
+        if (zedCamera.EnableTracking(ref quat, ref tr, true, false, false, System.IO.File.Exists(basePath + ".area") ? basePath + ".area" : "") != sl.ERROR_CODE.SUCCESS)
         {
             Debug.LogWarning(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
         }
@@ -864,12 +879,12 @@ public class ZEDSpatialMapping
         if (meshUpdatedLoad)
         {
             //Update the buffer on Unity's side.
-            UpdateMeshMainthread(false); 
+            UpdateMeshMainthread(false);
 
             //Add colliders and scan for gravity.
             if (hasColliders)
             {
-				if (!zedManager.IsStereoRig && gravityEstimation != Vector3.zero)
+                if (!zedManager.IsStereoRig && gravityEstimation != Vector3.zero)
                 {
                     Quaternion rotationToApplyForGravity = Quaternion.Inverse(Quaternion.FromToRotation(Vector3.up, -gravityEstimation.normalized));
                     holder.transform.rotation = rotationToApplyForGravity;
@@ -882,13 +897,13 @@ public class ZEDSpatialMapping
                 }
 
             }
-            
+
             if (OnMeshReady != null)
             {
                 OnMeshReady(); //Call the event if it has at least one listener. 
             }
 
-            return true; 
+            return true;
         }
         return false;
     }
@@ -927,7 +942,7 @@ public class ZEDSpatialMapping
     /// actual meshes in Unity. 
     /// </summary>
     public void MergeChunks()
-    {        
+    {
         lock (lockScanning)
         {
             spatialMappingHelper.MergeChunks();
@@ -989,13 +1004,13 @@ public class ZEDSpatialMapping
             }
 
             ClearMeshes();
-			PostProcessMesh (true);
+            PostProcessMesh(true);
             //filterThread = new Thread(() => PostProcessMesh(true));
             //filterThread.Start();
             stopRunning = true;
         }
 
-		SwitchDisplayMeshState(true); //Make it default to visible. 
+        SwitchDisplayMeshState(true); //Make it default to visible. 
     }
 
     /// <summary>
@@ -1013,6 +1028,167 @@ public class ZEDSpatialMapping
     public void StopStatialMapping()
     {
         stopWanted = true;
+    }
+
+    /// <summary>
+    /// Combines the meshes from all the current chunks and saves them into a single mesh. If textured, 
+    /// will also save a .mtl file and .png file. 
+    /// This must only be called once all the chunks are completely finalized, or else they won't be filtered
+    /// or have their UVs set. 
+    /// Called after RequestSaveMesh has been called after the main thread has the chance to stop the scan
+    /// and finalize everything.
+    /// </summary>
+    /// <param name="meshFilePath">Where the mesh, material, and texture files will be saved.</param>
+    private void SaveMeshNow(string meshFilePath = "Assets/ZEDMesh.obj")
+    {
+        
+        //Make sure the destination file ends in .obj - only .obj file format is supported. 
+        string extension = meshFilePath.Substring(meshFilePath.Length - 4);
+        if (extension.ToLower() != ".obj")
+        {
+            Debug.LogError("Couldn't save to " + meshFilePath + ": Must save as .obj.");
+        }
+
+        lock (lockScanning)
+        {
+            Debug.Log("Saving mesh to " + meshFilePath);
+            //Count how many vertices and triangles are in all the chunk meshes so we know how large of an array to allocate. 
+            int vertcount = 0;
+            int tricount = 0;
+
+            foreach (Chunk chunk in Chunks.Values)
+            {
+                vertcount += chunk.mesh.vertices.Length;
+                tricount += chunk.mesh.triangles.Length;
+            }
+            if (vertcount == 0) return;
+
+            Vector3[] vertices = new Vector3[vertcount];
+            Vector2[] uvs = new Vector2[vertcount];
+            Vector3[] normals = new Vector3[vertcount];
+            int[] triangles = new int[tricount];
+
+            int vertssofar = 0; //We keep an ongoing tally of how many verts/tris we've put so far so as to increment
+            int trissofar = 0; //where we copy to in the arrays, and also to increment the vertex indices in the triangle array. 
+
+            for (int i = 0; i < Chunks.Keys.Count; i++)
+            {
+                Mesh chunkmesh = Chunks[i].mesh; //Shorthand.
+
+                Array.Copy(chunkmesh.vertices, 0, vertices, vertssofar, chunkmesh.vertices.Length);
+                Array.Copy(chunkmesh.uv, 0, uvs, vertssofar, chunkmesh.uv.Length);
+
+                chunkmesh.RecalculateNormals();
+                Array.Copy(chunkmesh.normals, 0, normals, vertssofar, chunkmesh.normals.Length);
+
+                Array.Copy(chunkmesh.triangles, 0, triangles, trissofar, chunkmesh.triangles.Length);
+                for (int t = trissofar; t < trissofar + chunkmesh.triangles.Length; t++)
+                {
+                    triangles[t] += vertssofar;
+                }
+
+                vertssofar += chunkmesh.vertices.Length;
+                trissofar += chunkmesh.triangles.Length;
+            }
+
+            Material savemat = Chunks[0].o.GetComponent<MeshRenderer>().material; //All chunks share the same material.
+
+            //We'll need to know the base file name for this and the .mtl file. We'll extract it. 
+            //Since both forward and backslashes are valid for the file pack, determine which they used last. 
+            int forwardindex = meshFilePath.LastIndexOf('/');
+            int backindex = meshFilePath.LastIndexOf('\\');
+            int slashindex = forwardindex > backindex ? forwardindex : backindex;
+            string basefilename = meshFilePath.Substring(slashindex + 1, meshFilePath.LastIndexOf(".") - slashindex - 1);
+
+            //Create the string file. 
+            //Importantly, we flip the X value (and reverse the triangles) since the scanning module uses a different handedness than Unity. 
+            StringBuilder objstring = new StringBuilder();
+
+            objstring.Append("mtllib " + basefilename + "\n");
+
+            objstring.Append("g ").Append("ZEDScan").Append("\n");
+            foreach (Vector3 vec in vertices)
+            {
+                //X is flipped because of Unity's handedness. 
+                objstring.Append(string.Format("v {0} {1} {2}\n", -vec.x, vec.y, vec.z)); 
+            }
+            objstring.Append("\n");
+            foreach (Vector2 uv in uvs)
+            {
+                objstring.Append(string.Format("vt {0} {1}\n", uv.x, uv.y));
+            }
+            objstring.Append("\n");
+            foreach (Vector3 norm in normals)
+            {
+                objstring.Append(string.Format("vn {0} {1} {2}\n", -norm.x, norm.y, norm.z));
+            }
+            objstring.Append("\n");
+
+            if (isTextured)
+            {
+                objstring.Append("usemtl ").Append(basefilename).Append("\n");
+                objstring.Append("usemap ").Append(basefilename).Append("\n");
+            }
+
+            for (int i = 0; i < triangles.Length; i += 3)
+            {
+                //Triangles are reversed so that surface normals face the right way after the X vertex flip. 
+                objstring.Append(string.Format("f {0}/{0}/{0} {1}/{1}/{1} {2}/{2}/{2}\n",
+                    triangles[i + 2] + 1, triangles[i + 1] + 1, triangles[i + 0] + 1));
+            }
+
+
+            System.IO.StreamWriter swriter = new System.IO.StreamWriter(meshFilePath);
+            swriter.Write(objstring.ToString());
+            swriter.Close();
+
+            //Create a texture and .mtl file for your scan, if textured. 
+            if (isTextured)
+            {
+                //First, the texture. 
+                //You can't save a Texture2D directly to a file since it's stored on the GPU. 
+                //So we use a RenderTexture as a buffer, which we can read into a new Texture2D on the CPU-side. 
+                Texture textosave = savemat.mainTexture;
+
+                RenderTexture buffertex = new RenderTexture(textosave.width, textosave.height, 0);
+                Graphics.Blit(textosave, buffertex);
+
+                RenderTexture oldactivert = RenderTexture.active;
+                RenderTexture.active = buffertex;
+
+                Texture2D texcopy = new Texture2D(textosave.width, textosave.height);
+                texcopy.ReadPixels(new Rect(0, 0, buffertex.width, buffertex.height), 0, 0); 
+                texcopy.Apply(); //It's now on the CPU! 
+
+                byte[] imagebytes = texcopy.EncodeToPNG();
+                string imagepath = meshFilePath.Substring(0, meshFilePath.LastIndexOf(".")) + ".png";
+                System.IO.File.WriteAllBytes(imagepath, imagebytes);
+
+                RenderTexture.active = oldactivert;
+
+                //Now the material file. 
+                StringBuilder mtlstring = new StringBuilder();
+
+                mtlstring.Append("newmtl " + basefilename + "\n");
+
+                mtlstring.Append("Ka 1.000000 1.000000 1.000000\n");
+                mtlstring.Append("Kd 1.000000 1.000000 1.000000\n");
+                mtlstring.Append("Ks 0.000000 0.000000 0.000000\n");
+                mtlstring.Append("Tr 1.000000\n");
+                mtlstring.Append("illum 1\n");
+                mtlstring.Append("Ns 1.000000\n");
+                mtlstring.Append("map_Kd " + basefilename + ".png");
+
+                string mtlpath = meshFilePath.Substring(0, meshFilePath.LastIndexOf(".")) + ".mtl";
+                swriter = new System.IO.StreamWriter(mtlpath);
+                swriter.Write(mtlstring.ToString());
+                swriter.Close();
+            }
+        }
+
+        //Save the .area file for spatial memory. 
+        string areaName = meshFilePath.Substring(0, meshFilePath.LastIndexOf(".")) + ".area";
+        zedCamera.SaveCurrentArea(areaName);
     }
 
     /// <summary>
@@ -1099,7 +1275,7 @@ public class ZEDSpatialMapping
         /// </summary>
         private int[] texturesSize = new int[2];
 
-	    /// <summary>
+        /// <summary>
         /// Dictionary of all existing chunks. 
         /// </summary>
         public Dictionary<int, ZEDSpatialMapping.Chunk> chunks = new Dictionary<int, ZEDSpatialMapping.Chunk>(MAX_SUBMESH);
@@ -1135,9 +1311,9 @@ public class ZEDSpatialMapping
         /// </summary>
         /// <param name="materialTexture"></param>
         /// <param name="materialMesh"></param>
-		public ZEDSpatialMappingHelper(sl.ZEDCamera camera,Material materialTexture, Material materialMesh)
+		public ZEDSpatialMappingHelper(sl.ZEDCamera camera, Material materialTexture, Material materialMesh)
         {
-			zedCamera = camera;
+            zedCamera = camera;
             this.materialTexture = materialTexture;
             this.materialMesh = materialMesh;
         }
@@ -1209,7 +1385,7 @@ public class ZEDSpatialMapping
             //Initialize the chunk and create a GameObject for it. 
             ZEDSpatialMapping.Chunk chunk = new ZEDSpatialMapping.Chunk();
             chunk.o = GameObject.CreatePrimitive(PrimitiveType.Quad);
-			chunk.o.layer = zedCamera.TagOneObject;
+            chunk.o.layer = zedCamera.TagOneObject;
             chunk.o.GetComponent<MeshCollider>().sharedMesh = null;
             chunk.o.name = "Chunk" + chunks.Count;
             chunk.o.transform.localPosition = Vector3.zero;
@@ -1230,7 +1406,7 @@ public class ZEDSpatialMapping
 
             //Sets the position and parent of the chunk.
             chunk.o.transform.parent = holder;
-			chunk.o.layer = zedCamera.TagOneObject;
+            chunk.o.layer = zedCamera.TagOneObject;
 
             //Add the chunk to the dictionary.
             chunk.proceduralMesh.mesh = chunk.o.GetComponent<MeshFilter>();
@@ -1372,6 +1548,7 @@ public class ZEDSpatialMapping
                 System.Array.Copy(uvs, uvsOffset, localUvs, 0, numVerticesInSubmesh[indexUpdate]);
                 uvsOffset += numVerticesInSubmesh[indexUpdate];
                 currentMesh.uv = localUvs;
+
             }
         }
 
@@ -1396,7 +1573,7 @@ public class ZEDSpatialMapping
                 uvs = new Vector2[numVertices];
                 triangles = new int[3 * numTriangles];
 
-                zedCamera.RetrieveMesh(vertices, triangles, MAX_SUBMESH, uvs, texture); 
+                zedCamera.RetrieveMesh(vertices, triangles, MAX_SUBMESH, uvs, texture);
             }
         }
 
@@ -1421,6 +1598,11 @@ public class ZEDSpatialMapping
         public int GetWidthTexture()
         {
             return texturesSize[0];
+        }
+
+        public int GetHeightTexture()
+        {
+            return texturesSize[1];
         }
 
         /// <summary>

@@ -132,10 +132,10 @@ public class Bunny : MonoBehaviour
             //Collision check with the real world at that next position.
             foreach (ZEDManager manager in ZEDManager.GetInstances()) //Check all active cameras. 
             {
-                if (ZEDSupportFunctions.HitTestAtPoint(manager.zedCamera, manager.GetLeftCamera(), predictedPos))
+                if (ZEDSupportFunctions.HitTestAtPoint(manager.zedCamera, manager.GetMainCamera(), predictedPos))
                 {
                     //We hit something, but is it a flat surface?
-                    if (planeManager.DetectPlaneAtHit(manager, manager.GetLeftCamera().WorldToScreenPoint(predictedPos)))
+                    if (planeManager.DetectPlaneAtHit(manager, manager.GetMainCamera().WorldToScreenPoint(predictedPos)))
                     {
                         bunnyspawner.SpawnUI(predictedPos);
                         IsMoving = false;

@@ -5,6 +5,7 @@
 
 	Properties{
 		[MaterialToggle] directionalLightEffect("Directional light affects image", Int) = 0
+		_MaxDepth("Max Depth Range", Range(1,20)) = 20
 	}
 		SubShader{
 
@@ -67,6 +68,7 @@
 		float4 ZED_directionalLight[2];
 		int directionalLightEffect;
 		float _ZEDFactorAffectReal;
+		float _MaxDepth;
 
 		// vertex shader
 		v2f_surf vert_surf(appdata_full v) {
@@ -96,12 +98,14 @@
 
 		float3 zed_xyz = tex2D(_DepthXYZTex, uv.zw).xxx;
 
+		//Filter out depth values beyond the max value. 
+		if (_MaxDepth < 20.0) //Avoid clipping out FAR values when not using feature. 
+		{
+			if (zed_xyz.z > _MaxDepth) discard;
+		}
+
 	#ifdef NO_DEPTH_OCC
-		#if SHADER_API_D3D11
-		outDepth = 0;
-		#elif SHADER_API_GLCORE
-		outDepth = 1000;//fake infinite depth
-		#endif
+	    outDepth = 0;
 	#else
 		outDepth = computeDepthXYZ(zed_xyz.z);
 	#endif

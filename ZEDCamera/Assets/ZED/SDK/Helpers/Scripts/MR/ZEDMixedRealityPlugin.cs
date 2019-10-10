@@ -591,7 +591,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     /// <param name="orientation">Current rotation as returned by the ZED's tracking.</param>
     /// <param name="r">Final rotation.</param>
     /// <param name="t">Final translation/position.</param>
-	public void AdjustTrackingAR(Vector3 position, Quaternion orientation, out Quaternion r, out Vector3 t)
+	public void AdjustTrackingAR(Vector3 position, Quaternion orientation, out Quaternion r, out Vector3 t, bool setimuprior)
 	{
 		hasVRDevice = VRDevice.isPresent;
 	
@@ -599,7 +599,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 		trackingData.trackingState = (int)manager.ZEDTrackingState; //Whether the ZED's tracking is currently valid (not off or unable to localize).
 		trackingData.zedPathTransform = new Pose (position, orientation);
 
-		if (zedReady && latencyCorrectionReady) {
+		if (zedReady && latencyCorrectionReady && setimuprior == true) {
 			zedCamera.SetIMUOrientationPrior (ref latencyPose.rotation);
 		}
 

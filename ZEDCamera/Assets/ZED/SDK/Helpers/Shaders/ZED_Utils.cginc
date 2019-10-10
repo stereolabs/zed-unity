@@ -67,17 +67,18 @@ float3 applyQuatToVec3(float4 q, float3 v)
 //Compute the depth of ZED to the Unity scale
 float computeDepthXYZ(float colorXYZ) {
 
-
 	if (isinf(colorXYZ) && colorXYZ > 0) return FAR_DEPTH;
 	if (isinf(colorXYZ) && colorXYZ < 0) return NEAR_DEPTH;
 
-	if (colorXYZ != colorXYZ) return NEAR_DEPTH;
+	if (!isinf(colorXYZ) && !isfinite(colorXYZ)) return FAR_DEPTH;
+	//if (colorXYZ != colorXYZ) return FAR_DEPTH; //Doesn't correctly check for a NaN, and neither does isnan().
 	colorXYZ = clamp(colorXYZ, 0.01, 20);
 
 #if SHADER_API_D3D11
 	colorXYZ = -colorXYZ;
 #elif SHADER_API_GLCORE
-	colorXYZ = -colorXYZ * 2 + 1;
+	//colorXYZ = -colorXYZ * 2 + 1;
+	colorXYZ = -colorXYZ * 2;
 #endif
 
 	float4 v = float4(0,0, colorXYZ, 1);

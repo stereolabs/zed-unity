@@ -46,7 +46,7 @@ public class ZEDCameraEditor : Editor
     //Rendering Prop
     private SerializedProperty depthOcclusionProperty;
     private SerializedProperty arpostProcessingPropery;
-    private SerializedProperty camBrightnessProperty ;
+    private SerializedProperty camBrightnessProperty;
 
 
     //Recording Prop
@@ -60,7 +60,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty streamingOutBitrateProperty;
     private SerializedProperty streamingOutGopSizeProperty;
     private SerializedProperty streamingOutAdaptBitrateProperty;
-     
+
 
     /// <summary>
     /// Layout option used to draw the '...' button for opening a File Explorer window to find a mesh file. 
@@ -73,88 +73,85 @@ public class ZEDCameraEditor : Editor
     /// Text on the mesh visibility button. Switches between 'Hide Mesh' and 'Display Mesh'.
     /// </summary>
     private string displayText = "Hide Mesh";
-	/// <summary>
-	/// Serialized version of ZEDSpatialMappingManager's range_preset property. 
-	/// </summary>
-	private SerializedProperty range;
-	/// <summary>
-	/// Serialized version of ZEDSpatialMappingManager's resolution_preset property. 
-	/// </summary>
-	private SerializedProperty mappingResolution;
-	/// <summary>
-	/// Serialized version of ZEDSpatialMappingManager's isFilteringEnable property. 
-	/// </summary>
-	private SerializedProperty isFilteringEnable;
-	/// <summary>
-	/// Serialized version of ZEDSpatialMappingManager's filterParameters property. 
-	/// </summary>
-	private SerializedProperty filterParameters;
-	/// <summary>
-	/// Serialized version of ZEDSpatialMappingManager's isTextured property. 
-	/// </summary>
-	private SerializedProperty saveWhenOver;
-	/// <summary>
-	/// Serialized version of ZEDSpatialMappingManager's saveWhenOver property. 
-	/// </summary>
-	private SerializedProperty isTextured;
-	/// <summary>
-	/// Serialized version of ZEDSpatialMappingManager's meshPath property. 
-	/// </summary>
-	private SerializedProperty meshPath;
+    /// <summary>
+    /// Serialized version of ZEDSpatialMappingManager's range_preset property. 
+    /// </summary>
+    private SerializedProperty range;
+    /// <summary>
+    /// Serialized version of ZEDSpatialMappingManager's resolution_preset property. 
+    /// </summary>
+    private SerializedProperty mappingResolution;
+    /// <summary>
+    /// Serialized version of ZEDSpatialMappingManager's isFilteringEnable property. 
+    /// </summary>
+    private SerializedProperty isFilteringEnable;
+    /// <summary>
+    /// Serialized version of ZEDSpatialMappingManager's filterParameters property. 
+    /// </summary>
+    private SerializedProperty filterParameters;
+    /// <summary>
+    /// Serialized version of ZEDSpatialMappingManager's isTextured property. 
+    /// </summary>
+    private SerializedProperty saveWhenOver;
+    /// <summary>
+    /// Serialized version of ZEDSpatialMappingManager's saveWhenOver property. 
+    /// </summary>
+    private SerializedProperty isTextured;
+    /// <summary>
+    /// Serialized version of ZEDSpatialMappingManager's meshPath property. 
+    /// </summary>
+    private SerializedProperty meshPath;
 
-	 
-    SerializedProperty arlayer;
-
+    SerializedProperty sensingModeProperty;
+    SerializedProperty maxDepthProperty;
+    SerializedProperty confidenceThresholdProperty;
     SerializedProperty showarrig;
+    SerializedProperty greyskybox;
     SerializedProperty fadeinonstart;
     SerializedProperty dontdestroyonload;
- 
-	SerializedProperty showadvanced; //Show advanced settings or not. 
-	SerializedProperty showSpatialMapping ;  //Show spatial mapping or not. 
+    SerializedProperty arlayer;
+    SerializedProperty setIMUPrior;
+
+    SerializedProperty showadvanced; //Show advanced settings or not. 
+    SerializedProperty showSpatialMapping;  //Show spatial mapping or not. 
     SerializedProperty showRecording;  //Show recording or not. 
     SerializedProperty showStreamingOut;  //Show streaming out or not 
     SerializedProperty showcamcontrol; //Show cam control settings or not. 
 
-   
+
     /// <summary>
     /// Default value for camera controls
     /// </summary>
     private const int cbrightness = 4;
-	private const int ccontrast = 4;
-	private const int chue = 0;
-	private const int csaturation = 4;
-	private const int cwhiteBalance = 2600;
+    private const int ccontrast = 4;
+    private const int chue = 0;
+    private const int csaturation = 4;
+    private const int cwhiteBalance = 2600;
 
-	/// <summary>
-	/// Current value for camera controls
-	/// </summary>
-	private int brightness = 4;
-	private int contrast = 4;
-	private int hue = 0;
-	private int saturation = 4;
+    /// <summary>
+    /// Current value for camera controls
+    /// </summary>
+    private int brightness = 4;
+    private int contrast = 4;
+    private int hue = 0;
+    private int saturation = 4;
 
-	private bool aex_agc_control = true;
-	private int exposure;
-	private int gain;
+    private bool aex_agc_control = true;
+    private int exposure;
+    private int gain;
 
-	private bool awb_control = true;
-	private int whitebalance;
+    private bool awb_control = true;
+    private int whitebalance;
     private bool ledStatus = true;
 
-	/// <summary>
-	/// Whether we've set a manual value to gain and exposure or if they're in auto mode. 
-	/// </summary>
-	private bool setManualValue = true;
-	/// <summary>
-	/// Whether we've set a manual value to white balance or if it's in auto mode. 
-	/// </summary>
-	private bool setManualWhiteBalance = true;
-    SerializedProperty greyskybox;
-
-    private const string LEFT_EYE_LAYER_NAME = "ZED Rig - Left";
-    private const string RIGHT_EYE_LAYER_NAME = "ZED Rig - Right";
-    private const string LEFT_EYE_FINAL_LAYER_NAME = "ZED HMD Out - Left";
-    private const string RIGHT_EYE_FINAL_LAYER_NAME = "ZED HMD Out - Right";
+    /// <summary>
+    /// Whether we've set a manual value to gain and exposure or if they're in auto mode. 
+    /// </summary>
+    private bool setManualValue = true;
+    /// <summary>
+    /// Whether we've set a manual value to white balance or if it's in auto mode. 
+    /// </summary>
+    private bool setManualWhiteBalance = true;
 
     private string[] toolbarStrings = new string[] { "USB", "SVO", "Stream" };
     private string pauseText = "Pause";
@@ -165,7 +162,7 @@ public class ZEDCameraEditor : Editor
     {
         manager = (ZEDManager)target;
 
-     
+
         resolution = manager.resolution;
         depthmode = manager.depthMode;
         usespatialmemory = manager.enableSpatialMemory;
@@ -207,12 +204,12 @@ public class ZEDCameraEditor : Editor
 
         ///Spatial Mapping Serialized Property
         range = serializedObject.FindProperty("mappingRangePreset");
-		mappingResolution = serializedObject.FindProperty("mappingResolutionPreset");
-		isFilteringEnable = serializedObject.FindProperty("isMappingFilteringEnable");
-		filterParameters = serializedObject.FindProperty("meshFilterParameters");
-		isTextured = serializedObject.FindProperty("isMappingTextured");
-		saveWhenOver = serializedObject.FindProperty("saveMeshWhenOver");
-		meshPath = serializedObject.FindProperty("meshPath");
+        mappingResolution = serializedObject.FindProperty("mappingResolutionPreset");
+        isFilteringEnable = serializedObject.FindProperty("isMappingFilteringEnable");
+        filterParameters = serializedObject.FindProperty("meshFilterParameters");
+        isTextured = serializedObject.FindProperty("isMappingTextured");
+        saveWhenOver = serializedObject.FindProperty("saveMeshWhenOver");
+        meshPath = serializedObject.FindProperty("meshPath");
 
         ///Recording Serialized Property
         svoOutputFileNameProperty = serializedObject.FindProperty("svoOutputFileName");
@@ -228,12 +225,15 @@ public class ZEDCameraEditor : Editor
 
         ///Advanced Settings Serialized Property
         arlayer = serializedObject.FindProperty("arlayer");
-		showarrig = serializedObject.FindProperty("showarrig");
+        showarrig = serializedObject.FindProperty("showarrig");
         fadeinonstart = serializedObject.FindProperty("fadeInOnStart");
         greyskybox = serializedObject.FindProperty("greySkybox");
         dontdestroyonload = serializedObject.FindProperty("dontDestroyOnLoad");
         showarrig = serializedObject.FindProperty("showarrig");
-
+        sensingModeProperty = serializedObject.FindProperty("sensingMode");
+        maxDepthProperty = serializedObject.FindProperty("m_maxDepthRange");
+        confidenceThresholdProperty = serializedObject.FindProperty("m_confidenceThreshold");
+        setIMUPrior = serializedObject.FindProperty("setIMUPriorInAR");
     }
 
     public override void OnInspectorGUI()
@@ -242,7 +242,7 @@ public class ZEDCameraEditor : Editor
         boldfoldout.fontStyle = FontStyle.Bold;
         //DrawDefaultInspector(); //Draws what you'd normally see in the inspector in absence of a custom inspector. 
 
-        EditorGUIUtility.labelWidth = EditorGUIUtility.currentViewWidth * 0.4f ;
+        EditorGUIUtility.labelWidth = EditorGUIUtility.currentViewWidth * 0.4f;
         ///////////////////////////////////////////////////////////////
         ///  Inputlayout  /////////////////////////////////
         /////////////////////////////////////////////////////////////
@@ -259,7 +259,7 @@ public class ZEDCameraEditor : Editor
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Input Type", GUILayout.Width(EditorGUIUtility.labelWidth));
         GUI.enabled = !Application.isPlaying;
-        inputTypeProperty.intValue = GUILayout.Toolbar(inputTypeProperty.intValue, toolbarStrings,GUILayout.ExpandWidth(true));
+        inputTypeProperty.intValue = GUILayout.Toolbar(inputTypeProperty.intValue, toolbarStrings, GUILayout.ExpandWidth(true));
         GUI.enabled = true;
         EditorGUILayout.EndHorizontal();
         GUILayout.Space(5);
@@ -267,17 +267,17 @@ public class ZEDCameraEditor : Editor
         {
             case 0:
                 GUIContent cameraResolutionLabel = new GUIContent("Resolution", "Camera resolution");
-                GUI.enabled = !Application.isPlaying;
+                //GUI.enabled = !Application.isPlaying;
                 usbResolutionProperty.enumValueIndex = (int)(sl.RESOLUTION)EditorGUILayout.EnumPopup(cameraResolutionLabel, (sl.RESOLUTION)usbResolutionProperty.enumValueIndex);
-                GUI.enabled = true;
+                //GUI.enabled = true;
                 GUIContent cameraFPSLabel = new GUIContent("FPS", "Camera FPS");
                 GUI.enabled = !Application.isPlaying;
-                usbFPSProperty.intValue = EditorGUILayout.IntField(cameraFPSLabel,usbFPSProperty.intValue);
+                usbFPSProperty.intValue = EditorGUILayout.IntField(cameraFPSLabel, usbFPSProperty.intValue);
                 GUI.enabled = true;
                 serializedObject.ApplyModifiedProperties();
 
-                /* Multicam features have caused the reset button to not work. Will re-implement in future version. 
-                if (Application.isPlaying && manager.IsZEDReady && CheckChange()) //Checks if we need to restart the camera.
+                //Check if we need to restart the camera, and create a button for the user to do so. 
+                if (Application.isPlaying && manager.IsZEDReady && CheckChange())
                 {
                     GUILayout.Space(10);
                     GUIStyle orangetext = new GUIStyle(EditorStyles.label);
@@ -296,7 +296,7 @@ public class ZEDCameraEditor : Editor
                         depthmode = manager.depthMode;
 
                     }
-                }*/
+                }
 
                 break;
 
@@ -361,9 +361,9 @@ public class ZEDCameraEditor : Editor
                 streamPortProperty.intValue = EditorGUILayout.IntField(streamPortLabel, streamPortProperty.intValue);
                 GUI.enabled = true;
                 serializedObject.ApplyModifiedProperties();
-                break;    
+                break;
         }
-        
+
         EditorGUI.indentLevel--;
         ///////////////////////////////////////////////////////////////
         ///  Motion Tracking layout  /////////////////////////////////
@@ -402,144 +402,160 @@ public class ZEDCameraEditor : Editor
         GUIContent arpostProcessingProperyLabel = new GUIContent("AR Post-Processing", "Enables post-processing effects on virtual objects that blends them in with the real world.");
         arpostProcessingPropery.boolValue = EditorGUILayout.Toggle(arpostProcessingProperyLabel, arpostProcessingPropery.boolValue);
 
-        GUIContent camBrightnessPropertyLabel = new GUIContent("Camera Brightness", "Brightness of the final real-world image. Default is 1. Lower to darken the environment in a realistic-looking way. " +
+        GUIContent camBrightnessPropertyLabel = new GUIContent("Camera Brightness", "Brightness of the final real-world image. Default is 100. Lower to darken the environment in a realistic-looking way. " +
         "This is a rendering setting that doesn't affect the raw input from the camera.");
-        camBrightnessProperty.intValue = EditorGUILayout.IntSlider("Camera Brightness", camBrightnessProperty.intValue, 0, 100);
+        camBrightnessProperty.intValue = EditorGUILayout.IntSlider(camBrightnessPropertyLabel, camBrightnessProperty.intValue, 0, 100);
         EditorGUI.indentLevel--;
 
         ///////////////////////////////////////////////////////////////
         ///  Spatial Mapping layout  /////////////////////////////////
         /////////////////////////////////////////////////////////////
         GUILayout.Space(10);
-		showSpatialMapping.boolValue = EditorGUILayout.Foldout(showSpatialMapping.boolValue, "Spatial Mapping", boldfoldout);
-		if (showSpatialMapping.boolValue) {
-			EditorGUI.indentLevel++;
-			bool cameraIsReady = false;
+        showSpatialMapping.boolValue = EditorGUILayout.Foldout(showSpatialMapping.boolValue, "Spatial Mapping", boldfoldout);
+        if (showSpatialMapping.boolValue)
+        {
+            EditorGUI.indentLevel++;
+            bool cameraIsReady = false;
 
-			if (manager)
-				cameraIsReady = manager.zedCamera != null ? manager.zedCamera.IsCameraReady : false;
+            if (manager)
+                cameraIsReady = manager.zedCamera != null ? manager.zedCamera.IsCameraReady : false;
 
-			displayText = manager.IsSpatialMappingDisplay ? "Hide Mesh" : "Display Mesh";
+            displayText = manager.IsSpatialMappingDisplay ? "Hide Mesh" : "Display Mesh";
 
-			EditorGUILayout.BeginHorizontal ();
- 
-			GUILayout.Space(5);
-		 
-			EditorGUILayout.EndHorizontal ();
+            EditorGUILayout.BeginHorizontal();
 
-			GUIContent resolutionlabel = new GUIContent ("Resolution", "Resolution setting for the scan. " +
-			                             "A higher resolution creates more submeshes and uses more memory, but is more accurate.");
-			ZEDSpatialMapping.RESOLUTION newResolution = (ZEDSpatialMapping.RESOLUTION)EditorGUILayout.EnumPopup (resolutionlabel, manager.mappingResolutionPreset);
-			if (newResolution != manager.mappingResolutionPreset) {
-				mappingResolution.enumValueIndex = (int)newResolution;
-				serializedObject.ApplyModifiedProperties ();
-			}
+            GUILayout.Space(5);
 
-			GUIContent rangelabel = new GUIContent ("Range", "Maximum distance geometry can be from the camera to be scanned. " +
-			                        "Geometry scanned from farther away will be less accurate.");
-			ZEDSpatialMapping.RANGE newRange = (ZEDSpatialMapping.RANGE)EditorGUILayout.EnumPopup (rangelabel, manager.mappingRangePreset);
-			if (newRange != manager.mappingRangePreset) {
-				range.enumValueIndex = (int)newRange;
-				serializedObject.ApplyModifiedProperties ();
-			}
+            EditorGUILayout.EndHorizontal();
 
-			EditorGUILayout.BeginHorizontal ();
-			GUIContent filteringlabel = new GUIContent ("Mesh Filtering", "Whether mesh filtering is needed.");
-			filterParameters.enumValueIndex = (int)(sl.FILTER)EditorGUILayout.EnumPopup (filteringlabel, (sl.FILTER)filterParameters.enumValueIndex);
-			isFilteringEnable.boolValue = true;
+            GUIContent resolutionlabel = new GUIContent("Resolution", "Resolution setting for the scan. " +
+                                         "A higher resolution creates more submeshes and uses more memory, but is more accurate.");
+            ZEDSpatialMapping.RESOLUTION newResolution = (ZEDSpatialMapping.RESOLUTION)EditorGUILayout.EnumPopup(resolutionlabel, manager.mappingResolutionPreset);
+            if (newResolution != manager.mappingResolutionPreset)
+            {
+                mappingResolution.enumValueIndex = (int)newResolution;
+                serializedObject.ApplyModifiedProperties();
+            }
+
+            GUIContent rangelabel = new GUIContent("Range", "Maximum distance geometry can be from the camera to be scanned. " +
+                                    "Geometry scanned from farther away will be less accurate.");
+            ZEDSpatialMapping.RANGE newRange = (ZEDSpatialMapping.RANGE)EditorGUILayout.EnumPopup(rangelabel, manager.mappingRangePreset);
+            if (newRange != manager.mappingRangePreset)
+            {
+                range.enumValueIndex = (int)newRange;
+                serializedObject.ApplyModifiedProperties();
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            GUIContent filteringlabel = new GUIContent("Mesh Filtering", "Whether mesh filtering is needed.");
+            filterParameters.enumValueIndex = (int)(sl.FILTER)EditorGUILayout.EnumPopup(filteringlabel, (sl.FILTER)filterParameters.enumValueIndex);
+            isFilteringEnable.boolValue = true;
 
 
-			EditorGUILayout.EndHorizontal ();
+            EditorGUILayout.EndHorizontal();
 
-			GUI.enabled = !manager.IsMappingRunning; //Don't allow changing the texturing setting while the scan is running. 
+            GUI.enabled = !manager.IsMappingRunning; //Don't allow changing the texturing setting while the scan is running. 
 
-			GUIContent texturedlabel = new GUIContent ("Texturing", "Whether surface textures will be scanned and applied. " +
-			                           "Note that texturing will add further delay to the post-scan finalizing period.");
-			isTextured.boolValue = EditorGUILayout.Toggle (texturedlabel, isTextured.boolValue);
+            GUIContent texturedlabel = new GUIContent("Texturing", "Whether surface textures will be scanned and applied. " +
+                                       "Note that texturing will add further delay to the post-scan finalizing period.");
+            isTextured.boolValue = EditorGUILayout.Toggle(texturedlabel, isTextured.boolValue);
 
-			GUI.enabled = cameraIsReady; //Gray out below elements if the ZED hasn't been initialized as you can't yet start a scan. 
+            GUI.enabled = cameraIsReady; //Gray out below elements if the ZED hasn't been initialized as you can't yet start a scan. 
 
-			EditorGUILayout.BeginHorizontal ();
+            EditorGUILayout.BeginHorizontal();
             GUILayout.Space(EditorGUIUtility.labelWidth);
-            if (!manager.IsMappingRunning) {
-				GUIContent startmappinglabel = new GUIContent ("Start Spatial Mapping", "Begin the spatial mapping process.");
-				if (GUILayout.Button (startmappinglabel)) {
-					if (!manager.IsSpatialMappingDisplay) {
-						manager.SwitchDisplayMeshState (true);
-					}
-					manager.StartSpatialMapping ();
-				}
-			} else {
-				if (manager.IsMappingRunning && !manager.IsMappingUpdateThreadRunning || manager.IsMappingRunning && manager.IsMappingTexturingRunning) {
-					GUILayout.FlexibleSpace ();
-					GUIContent finishinglabel = new GUIContent ("Spatial mapping is finishing", "Please wait - the mesh is being processed.");
-					GUILayout.Label (finishinglabel);
-					Repaint ();
-					GUILayout.FlexibleSpace ();
-				} else {
-					GUIContent stopmappinglabel = new GUIContent ("Stop Spatial Mapping", "Ends spatial mapping and begins processing the final mesh.");
-					if (GUILayout.Button (stopmappinglabel)) {
-						manager.StopSpatialMapping ();
-					}
-				}
-			}
+            if (!manager.IsMappingRunning)
+            {
+                GUIContent startmappinglabel = new GUIContent("Start Spatial Mapping", "Begin the spatial mapping process.");
+                if (GUILayout.Button(startmappinglabel))
+                {
+                    if (!manager.IsSpatialMappingDisplay)
+                    {
+                        manager.SwitchDisplayMeshState(true);
+                    }
+                    manager.StartSpatialMapping();
+                }
+            }
+            else
+            {
+                if (manager.IsMappingRunning && !manager.IsMappingUpdateThreadRunning || manager.IsMappingRunning && manager.IsMappingTexturingRunning)
+                {
+                    GUILayout.FlexibleSpace();
+                    GUIContent finishinglabel = new GUIContent("Spatial mapping is finishing", "Please wait - the mesh is being processed.");
+                    GUILayout.Label(finishinglabel);
+                    Repaint();
+                    GUILayout.FlexibleSpace();
+                }
+                else
+                {
+                    GUIContent stopmappinglabel = new GUIContent("Stop Spatial Mapping", "Ends spatial mapping and begins processing the final mesh.");
+                    if (GUILayout.Button(stopmappinglabel))
+                    {
+                        manager.StopSpatialMapping();
+                    }
+                }
+            }
 
-			EditorGUILayout.EndHorizontal ();
+            EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
             GUI.enabled = cameraIsReady;
-			string displaytooltip = manager.IsSpatialMappingDisplay ? "Hide the mesh from view." : "Display the hidden mesh.";
+            string displaytooltip = manager.IsSpatialMappingDisplay ? "Hide the mesh from view." : "Display the hidden mesh.";
             GUILayout.Space(EditorGUIUtility.labelWidth);
-            GUIContent displaylabel = new GUIContent (displayText, displaytooltip);
-			if (GUILayout.Button (displayText)) {
-				manager.SwitchDisplayMeshState (!manager.IsSpatialMappingDisplay);
-			}
+            GUIContent displaylabel = new GUIContent(displayText, displaytooltip);
+            if (GUILayout.Button(displayText))
+            {
+                manager.SwitchDisplayMeshState(!manager.IsSpatialMappingDisplay);
+            }
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            GUIContent clearMesheslabel = new GUIContent ("Clear All Meshes", "Clear all meshes created with the ZED");
+            GUIContent clearMesheslabel = new GUIContent("Clear All Meshes", "Clear all meshes created with the ZED");
             GUILayout.Space(EditorGUIUtility.labelWidth);
-            if (GUILayout.Button (clearMesheslabel)) {
-				manager.ClearAllMeshes ();
-			}
+            if (GUILayout.Button(clearMesheslabel))
+            {
+                manager.ClearAllMeshes();
+            }
             EditorGUILayout.EndHorizontal();
             GUI.enabled = true;
 
-			GUILayout.Space(5);
-			EditorGUILayout.LabelField("Storage", EditorStyles.boldLabel);
- 
-			GUIContent savelabel = new GUIContent ("Save Mesh (when finished)", "Whether to save the mesh and .area file when finished scanning.");
-			saveWhenOver.boolValue = EditorGUILayout.Toggle (savelabel, saveWhenOver.boolValue);
+            GUILayout.Space(5);
+            EditorGUILayout.LabelField("Storage", EditorStyles.boldLabel);
+
+            GUIContent savelabel = new GUIContent("Save Mesh (when finished)", "Whether to save the mesh and .area file when finished scanning.");
+            saveWhenOver.boolValue = EditorGUILayout.Toggle(savelabel, saveWhenOver.boolValue);
 
 
-			EditorGUILayout.BeginHorizontal ();
+            EditorGUILayout.BeginHorizontal();
 
-			GUIContent pathlabel = new GUIContent ("Mesh Path", "Path where the mesh is saved/loaded from. Valid file types are .obj, .ply and .bin.");
-			meshPath.stringValue = EditorGUILayout.TextField (pathlabel, meshPath.stringValue);
+            GUIContent pathlabel = new GUIContent("Mesh Path", "Path where the mesh is saved/loaded from. Valid file types are .obj, .ply and .bin.");
+            meshPath.stringValue = EditorGUILayout.TextField(pathlabel, meshPath.stringValue);
 
-			GUIContent findfilelabel = new GUIContent ("...", "Browse for an existing .obj, .ply or .bin file.");
-			if (GUILayout.Button (findfilelabel, optionsButtonBrowse)) {
-				meshPath.stringValue = EditorUtility.OpenFilePanel ("Mesh file", "", "ply,obj,bin");
-				serializedObject.ApplyModifiedProperties ();
-			}
+            GUIContent findfilelabel = new GUIContent("...", "Browse for an existing .obj, .ply or .bin file.");
+            if (GUILayout.Button(findfilelabel, optionsButtonBrowse))
+            {
+                meshPath.stringValue = EditorUtility.OpenFilePanel("Mesh file", "", "ply,obj,bin");
+                serializedObject.ApplyModifiedProperties();
+            }
 
-			EditorGUILayout.EndHorizontal ();
-			EditorGUILayout.BeginHorizontal ();
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.BeginHorizontal();
 
-			GUILayout.FlexibleSpace ();
+            GUILayout.FlexibleSpace();
 
-			GUI.enabled = System.IO.File.Exists (meshPath.stringValue) && cameraIsReady;
-			GUIContent loadlabel = new GUIContent ("Load", "Load an existing mesh and .area file into the scene.");
-			if (GUILayout.Button (loadlabel)) {
-				manager.LoadMesh (meshPath.stringValue);
-			}
+            GUI.enabled = System.IO.File.Exists(meshPath.stringValue) && cameraIsReady;
+            GUIContent loadlabel = new GUIContent("Load", "Load an existing mesh and .area file into the scene.");
+            if (GUILayout.Button(loadlabel))
+            {
+                manager.LoadMesh(meshPath.stringValue);
+            }
 
-			EditorGUILayout.EndHorizontal ();
-			GUI.enabled = true;
-			EditorGUI.indentLevel--;
-	 
-		}
-		serializedObject.ApplyModifiedProperties ();
+            EditorGUILayout.EndHorizontal();
+            GUI.enabled = true;
+            EditorGUI.indentLevel--;
+
+        }
+        serializedObject.ApplyModifiedProperties();
 
         ///////////////////////////////////////////////////////////////
         ///     Recording layout     /////////////////////////////////
@@ -548,7 +564,7 @@ public class ZEDCameraEditor : Editor
         showRecording.boolValue = EditorGUILayout.Foldout(showRecording.boolValue, "Recording", boldfoldout);
         if (showRecording.boolValue)
         {
-            
+
             EditorGUI.indentLevel++;
             GUILayout.Space(5);
             bool cameraIsReady = false;
@@ -576,9 +592,9 @@ public class ZEDCameraEditor : Editor
                 }
                 else
                 {
-                   
+
                     if (manager.zedCamera.EnableRecording(svoOutputFileNameProperty.stringValue, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex) == sl.ERROR_CODE.SUCCESS)
-                       manager.needRecordFrame = true;
+                        manager.needRecordFrame = true;
                     else
                     {
                         Debug.LogError("Failed to start SVO Recording");
@@ -627,11 +643,31 @@ public class ZEDCameraEditor : Editor
         /////////////////////////////////////////////////////////////
         GUILayout.Space(10);
         showadvanced.boolValue = EditorGUILayout.Foldout(showadvanced.boolValue, "Advanced Settings", boldfoldout);
-        if(showadvanced.boolValue)
+        if (showadvanced.boolValue)
         {
             EditorGUI.indentLevel++;
 
             GUILayout.Space(5);
+
+            GUIContent sensingModeLabel = new GUIContent("Sensing Mode", "FILL approximates depth in areas where depth can't be measured. " +
+                "FILL is almost always better for augmented/mixed reality applications.");
+            sensingModeProperty.enumValueIndex = (int)(sl.SENSING_MODE)EditorGUILayout.EnumPopup(sensingModeLabel, (sl.SENSING_MODE)sensingModeProperty.enumValueIndex);
+
+            GUIContent maxDepthPropertyLabel = new GUIContent("Max Depth Range", "Maximum depth at which the camera will display the real world, in meters. " +
+                "Pixels further than this value will be invisible.");
+            maxDepthProperty.floatValue = EditorGUILayout.Slider(maxDepthPropertyLabel, maxDepthProperty.floatValue, 0f, 20f);
+
+            GUIContent confidenceThresholdPropertyLabel = new GUIContent("Confidence Threshold", "How tolerant the ZED SDK is to low confidence values. Lower values filter more pixels.");
+            if (Application.isPlaying)
+            {
+                manager.confidenceThreshold = EditorGUILayout.IntSlider(confidenceThresholdPropertyLabel, manager.confidenceThreshold, 0, 100);
+            }
+            else
+            {
+                confidenceThresholdProperty.intValue = EditorGUILayout.IntSlider(confidenceThresholdPropertyLabel, confidenceThresholdProperty.intValue, 0, 100);
+            }
+
+            GUILayout.Space(12);
 
             //Fade In At Start toggle. 
             GUIContent fadeinlabel = new GUIContent("Fade In at Start", "When enabled, makes the ZED image fade in from black when the application starts.");
@@ -643,37 +679,11 @@ public class ZEDCameraEditor : Editor
             greyskybox.boolValue = EditorGUILayout.Toggle(greyskyboxlabel, manager.greySkybox);
 
             //Don't Destroy On Load toggle. 
-            GUIContent dontdestroylabel = new GUIContent("Don't Destroy on Load", "When enabled, applies DontDestroyOnLoad() on the ZED rig in Awake(), " + 
+            GUIContent dontdestroylabel = new GUIContent("Don't Destroy on Load", "When enabled, applies DontDestroyOnLoad() on the ZED rig in Awake(), " +
                 "preserving it between scene transitions.");
             dontdestroyonload.boolValue = EditorGUILayout.Toggle(dontdestroylabel, manager.dontDestroyOnLoad);
 
-            //Show AR Rig toggle. 
-            GUIContent showarlabel = new GUIContent("Show Final AR Rig", "Whether to show the hidden camera rig used in stereo AR mode to " +
-                "prepare images for HMD output. You normally shouldn't tamper with this rig, but seeing it can be useful for " +
-                "understanding how the ZED output works.");
-            bool lastshowar = manager.showARRig;
-            showarrig.boolValue = EditorGUILayout.Toggle(showarlabel, manager.showARRig);
-
-            if (showarrig.boolValue != lastshowar)
-            {
-                LayerMask arlayers = (1 << manager.arLayer);
-
-                if (showarrig.boolValue == true)
-                {
-                    Tools.visibleLayers |= arlayers;
-                }
-                else
-                {
-                    Tools.visibleLayers &= ~(arlayers);
-                }
-
-                if (manager.zedRigDisplayer != null && Application.isPlaying)
-                {
-                    manager.zedRigDisplayer.hideFlags = showarrig.boolValue ? HideFlags.None : HideFlags.HideInHierarchy;
-                }
-            }
-
-            GUILayout.Space(5);
+            GUILayout.Space(12);
 
             //Style for the AR layer box. 
             GUIStyle layerboxstyle = new GUIStyle(EditorStyles.numberField);
@@ -736,54 +746,93 @@ public class ZEDCameraEditor : Editor
                 EditorGUI.LabelField(labelrect, warningext, warningmessagestyle);
             }
 
+            //Show AR Rig toggle. 
+            GUIContent showarlabel = new GUIContent("Show Final AR Rig", "Whether to show the hidden camera rig used in stereo AR mode to " +
+                "prepare images for HMD output. You normally shouldn't tamper with this rig, but seeing it can be useful for " +
+                "understanding how the ZED output works.");
+            bool lastshowar = manager.showARRig;
+            showarrig.boolValue = EditorGUILayout.Toggle(showarlabel, manager.showARRig);
+
+            if (showarrig.boolValue != lastshowar)
+            {
+                LayerMask arlayers = (1 << manager.arLayer);
+
+                if (showarrig.boolValue == true)
+                {
+                    Tools.visibleLayers |= arlayers;
+                }
+                else
+                {
+                    Tools.visibleLayers &= ~(arlayers);
+                }
+
+                if (manager.zedRigDisplayer != null && Application.isPlaying)
+                {
+                    manager.zedRigDisplayer.hideFlags = showarrig.boolValue ? HideFlags.None : HideFlags.HideInHierarchy;
+                }
+            }
+
+            GUILayout.Space(12);
+
+            //Whether to set the IMU prior in AR passthrough mode. 
+            GUIContent setimupriorlabel = new GUIContent("Set IMU Prior in AR", "In AR pass-through mode, whether to compare the " +
+                "ZED's IMU data against the reported position of the VR headset. This helps compensate for drift and should " +
+                "usually be left on. However, in some setups, like when using a custom mount, this can cause tracking errors.");
+            setIMUPrior.boolValue = EditorGUILayout.Toggle(setimupriorlabel, manager.setIMUPriorInAR);
+
             EditorGUI.indentLevel--;
         }
-        
-		serializedObject.ApplyModifiedProperties();
 
-	
-
-		///////////////////////////////////////////////////////////////
-		///  Camera control layout ///////////////////////////////////
-		/////////////////////////////////////////////////////////////
-		GUILayout.Space(10);
-		showcamcontrol.boolValue = EditorGUILayout.Foldout(showcamcontrol.boolValue, "Camera controls", boldfoldout);
-		if (showcamcontrol.boolValue) {
-			GUILayout.Space(5);
-			EditorGUI.indentLevel++;
-			if (manager.zedCamera == null)
-				GUI.enabled = false;
-			else
-				GUI.enabled = true;
+        serializedObject.ApplyModifiedProperties();
 
 
-			EditorGUI.BeginChangeCheck ();
-			brightness = EditorGUILayout.IntSlider ("Brightness", brightness, 0, 8);
-			if (EditorGUI.EndChangeCheck ()) {
-				if (manager.zedCamera.IsCameraReady)
-					manager.zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.BRIGHTNESS, brightness, false);
-			}
 
-			EditorGUI.BeginChangeCheck ();
-			contrast = EditorGUILayout.IntSlider ("Contrast", contrast, 0, 8);
-			if (EditorGUI.EndChangeCheck ()) {
-				if (manager.zedCamera.IsCameraReady)
-				manager.zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.CONTRAST, contrast, false);
-			}
+        ///////////////////////////////////////////////////////////////
+        ///  Camera control layout ///////////////////////////////////
+        /////////////////////////////////////////////////////////////
+        GUILayout.Space(10);
+        showcamcontrol.boolValue = EditorGUILayout.Foldout(showcamcontrol.boolValue, "Camera Controls", boldfoldout);
+        if (showcamcontrol.boolValue)
+        {
+            GUILayout.Space(5);
+            EditorGUI.indentLevel++;
+            if (manager.zedCamera == null)
+                GUI.enabled = false;
+            else
+                GUI.enabled = true;
 
-			EditorGUI.BeginChangeCheck ();
-			hue = EditorGUILayout.IntSlider ("Hue", hue, 0, 11);
-			if (EditorGUI.EndChangeCheck ()) {
-				if (manager.zedCamera.IsCameraReady)
-				manager.zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.HUE, hue, false);
-			}
 
-			EditorGUI.BeginChangeCheck ();
-			saturation = EditorGUILayout.IntSlider ("Saturation", saturation, 0, 8);
-			if (EditorGUI.EndChangeCheck ()) {
-				if (manager.zedCamera.IsCameraReady)
-				manager.zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.SATURATION, saturation, false);
-			}
+            EditorGUI.BeginChangeCheck();
+            brightness = EditorGUILayout.IntSlider("Brightness", brightness, 0, 8);
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (manager.zedCamera.IsCameraReady)
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, brightness, false);
+            }
+
+            EditorGUI.BeginChangeCheck();
+            contrast = EditorGUILayout.IntSlider("Contrast", contrast, 0, 8);
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (manager.zedCamera.IsCameraReady)
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, contrast, false);
+            }
+
+            EditorGUI.BeginChangeCheck();
+            hue = EditorGUILayout.IntSlider("Hue", hue, 0, 11);
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (manager.zedCamera.IsCameraReady)
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.HUE, hue, false);
+            }
+
+            EditorGUI.BeginChangeCheck();
+            saturation = EditorGUILayout.IntSlider("Saturation", saturation, 0, 8);
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (manager.zedCamera.IsCameraReady)
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, saturation, false);
+            }
 
             EditorGUI.BeginChangeCheck();
             ledStatus = EditorGUILayout.Toggle("LED Status", ledStatus, EditorStyles.toggle);
@@ -797,117 +846,121 @@ public class ZEDCameraEditor : Editor
             }
 
             EditorGUI.BeginChangeCheck();
-			aex_agc_control = EditorGUILayout.Toggle("AEC / AGC ", aex_agc_control, EditorStyles.toggle);
-			if (!aex_agc_control && setManualValue && EditorGUI.EndChangeCheck())
-			{
-				if (manager.zedCamera.IsCameraReady) {
-					manager.zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.GAIN, gain, false);
-					manager.zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.EXPOSURE, exposure, false);
-					setManualValue = false;
-				}
-			}
+            aex_agc_control = EditorGUILayout.Toggle("AEC / AGC ", aex_agc_control, EditorStyles.toggle);
+            if (!aex_agc_control && setManualValue && EditorGUI.EndChangeCheck())
+            {
+                if (manager.zedCamera.IsCameraReady)
+                {
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, gain, false);
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, exposure, false);
+                    setManualValue = false;
+                }
+            }
 
-			if (aex_agc_control && EditorGUI.EndChangeCheck())
-			{
-				if (manager.zedCamera.IsCameraReady) {
-					manager.zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.GAIN, gain, true);
-					manager.zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.EXPOSURE, exposure, true);
-					setManualValue = true;
-				}
-			}
-		
-			GUI.enabled = !aex_agc_control;
-			EditorGUI.BeginChangeCheck();
-			EditorGUI.indentLevel++;
-			gain = EditorGUILayout.IntSlider("Gain", gain, 0, 100);
+            if (aex_agc_control && EditorGUI.EndChangeCheck())
+            {
+                if (manager.zedCamera.IsCameraReady)
+                {
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, gain, true);
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, exposure, true);
+                    setManualValue = true;
+                }
+            }
 
-			if (EditorGUI.EndChangeCheck())
-			{
-				if (!aex_agc_control)
-				{
-					manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, gain, false);
-				}
-			}
-			EditorGUI.BeginChangeCheck();
-			exposure = EditorGUILayout.IntSlider("Exposure", exposure, 0, 100);
-			if (EditorGUI.EndChangeCheck ()) {
-				if (!aex_agc_control) {
-					manager.zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.EXPOSURE, exposure, false);
-				}
+            GUI.enabled = !aex_agc_control;
+            EditorGUI.BeginChangeCheck();
+            EditorGUI.indentLevel++;
+            gain = EditorGUILayout.IntSlider("Gain", gain, 0, 100);
 
-			}
-			if (manager.zedCamera == null)
-				GUI.enabled = false;
-			else
-				GUI.enabled = true;
-			
-			EditorGUI.indentLevel--;
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (!aex_agc_control)
+                {
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, gain, false);
+                }
+            }
+            EditorGUI.BeginChangeCheck();
+            exposure = EditorGUILayout.IntSlider("Exposure", exposure, 0, 100);
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (!aex_agc_control)
+                {
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, exposure, false);
+                }
 
-			EditorGUI.BeginChangeCheck();
-			awb_control = EditorGUILayout.Toggle(" AWB ", awb_control, EditorStyles.toggle);
-			if (!awb_control && setManualWhiteBalance && EditorGUI.EndChangeCheck())
-			{
-				if (manager.zedCamera.IsCameraReady)
-					manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, whitebalance / 100, false);
-				setManualWhiteBalance = false;
-			}
+            }
+            if (manager.zedCamera == null)
+                GUI.enabled = false;
+            else
+                GUI.enabled = true;
 
-			if (awb_control && EditorGUI.EndChangeCheck())
-			{
-				if (manager.zedCamera.IsCameraReady)
-					manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, whitebalance / 100, true);
-				setManualWhiteBalance = true;
-			}
+            EditorGUI.indentLevel--;
 
-			EditorGUI.indentLevel++;
-			EditorGUI.BeginChangeCheck();
-			GUI.enabled = !awb_control;
-			whitebalance = 100 * EditorGUILayout.IntSlider("White balance", whitebalance / 100, 26, 65);
-			if (!awb_control && EditorGUI.EndChangeCheck())
-			{
-				if (manager.zedCamera.IsCameraReady)
-					manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, whitebalance, false);
-			}
+            EditorGUI.BeginChangeCheck();
+            awb_control = EditorGUILayout.Toggle(" AWB ", awb_control, EditorStyles.toggle);
+            if (!awb_control && setManualWhiteBalance && EditorGUI.EndChangeCheck())
+            {
+                if (manager.zedCamera.IsCameraReady)
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, whitebalance / 100, false);
+                setManualWhiteBalance = false;
+            }
 
+            if (awb_control && EditorGUI.EndChangeCheck())
+            {
+                if (manager.zedCamera.IsCameraReady)
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, whitebalance / 100, true);
+                setManualWhiteBalance = true;
+            }
 
-
-			EditorGUI.indentLevel--;
-			EditorGUI.indentLevel--;
+            EditorGUI.indentLevel++;
+            EditorGUI.BeginChangeCheck();
+            GUI.enabled = !awb_control;
+            whitebalance = 100 * EditorGUILayout.IntSlider("White balance", whitebalance / 100, 26, 65);
+            if (!awb_control && EditorGUI.EndChangeCheck())
+            {
+                if (manager.zedCamera.IsCameraReady)
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, whitebalance, false);
+            }
 
 
-			GUILayout.Space(7);
-			if (manager.zedCamera == null)
-				GUI.enabled = false;
-			else
-				GUI.enabled = true;
+
+            EditorGUI.indentLevel--;
+            EditorGUI.indentLevel--;
+
+
+            GUILayout.Space(7);
+            if (manager.zedCamera == null)
+                GUI.enabled = false;
+            else
+                GUI.enabled = true;
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(EditorGUIUtility.labelWidth);
             GUIContent camcontrolbuttonreset = new GUIContent("Reset", "Reset camera controls to default");
-			if (GUILayout.Button(camcontrolbuttonreset))
-			{
-				manager.zedCamera.ResetCameraSettings();
-				manager.zedCamera.RetrieveCameraSettings ();
+            if (GUILayout.Button(camcontrolbuttonreset))
+            {
+                manager.zedCamera.ResetCameraSettings();
+                manager.zedCamera.RetrieveCameraSettings();
 
-				brightness = manager.zedCamera.GetCameraSettings ().Brightness;
-				contrast = manager.zedCamera.GetCameraSettings ().Contrast;
-				hue = manager.zedCamera.GetCameraSettings ().Hue;
-				saturation = manager.zedCamera.GetCameraSettings ().Saturation;
+                brightness = manager.zedCamera.GetCameraSettings().Brightness;
+                contrast = manager.zedCamera.GetCameraSettings().Contrast;
+                hue = manager.zedCamera.GetCameraSettings().Hue;
+                saturation = manager.zedCamera.GetCameraSettings().Saturation;
 
-				awb_control = true;
-				aex_agc_control = true;
-			}
+                awb_control = true;
+                aex_agc_control = true;
+            }
 
             EditorGUILayout.EndHorizontal();
             GUI.enabled = true;
-		}
-		serializedObject.ApplyModifiedProperties();
+        }
+        serializedObject.ApplyModifiedProperties();
 
 
 
-	    ///////////////////////////////////////////////////////////////
-		///  Status layout //////////////////////////////////////////
-		/////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////
+        ///  Status layout //////////////////////////////////////////
+        /////////////////////////////////////////////////////////////
 
         serializedObject.ApplyModifiedProperties();
 
@@ -919,16 +972,16 @@ public class ZEDCameraEditor : Editor
         GUILayout.Space(10);
         EditorGUILayout.LabelField("Status", EditorStyles.boldLabel);
         EditorGUI.BeginDisabledGroup(true);
-		EditorGUI.indentLevel++;
-		GUILayout.Space(5);
-		GUIContent cameraModellabel = new GUIContent("Camera Model:", "Model of the targeted camera.");
-		EditorGUILayout.TextField(cameraModellabel, manager.cameraModel);
+        EditorGUI.indentLevel++;
+        GUILayout.Space(5);
+        GUIContent cameraModellabel = new GUIContent("Camera Model:", "Model of the targeted camera.");
+        EditorGUILayout.TextField(cameraModellabel, manager.cameraModel);
 
-		GUIContent cameraSerialNumberlabel = new GUIContent("Camera S/N:", "Serial number of the targeted camera.");
-		EditorGUILayout.TextField(cameraSerialNumberlabel, manager.cameraSerialNumber);
+        GUIContent cameraSerialNumberlabel = new GUIContent("Camera S/N:", "Serial number of the targeted camera.");
+        EditorGUILayout.TextField(cameraSerialNumberlabel, manager.cameraSerialNumber);
 
-		GUIContent cameraFWlabel = new GUIContent("Camera Firmware:", "Firmware of the targeted camera.");
-		EditorGUILayout.TextField(cameraFWlabel, manager.cameraFirmware);
+        GUIContent cameraFWlabel = new GUIContent("Camera Firmware:", "Firmware of the targeted camera.");
+        EditorGUILayout.TextField(cameraFWlabel, manager.cameraFirmware);
 
         GUIContent sdkversionlabel = new GUIContent("SDK Version:", "Version of the installed ZED SDK.");
         EditorGUILayout.TextField(sdkversionlabel, manager.versionZED);
@@ -940,27 +993,28 @@ public class ZEDCameraEditor : Editor
         EditorGUILayout.TextField(camerafpslabel, manager.cameraFPS);
 
         GUIContent trackingstatelabel = new GUIContent("Tracking State:", "Whether the ZED's tracking is on, off, or searching (lost position, trying to recover).");
-        if (manager.IsCameraTracked || !manager.IsZEDReady) 
-			EditorGUILayout.TextField (trackingstatelabel, manager.trackingState, standardStyle);	
-		else 
-			EditorGUILayout.TextField (trackingstatelabel, manager.trackingState,errorStyle);
+        if (manager.IsCameraTracked || !manager.IsZEDReady)
+            EditorGUILayout.TextField(trackingstatelabel, manager.trackingState, standardStyle);
+        else
+            EditorGUILayout.TextField(trackingstatelabel, manager.trackingState, errorStyle);
 
         GUIContent hmdlabel = new GUIContent("HMD Device:", "The connected VR headset, if any.");
-		if (Application.isPlaying)
-			EditorGUILayout.TextField (hmdlabel, manager.HMDDevice);
-		else {
-			//Detect devices through USB.
-			if (sl.ZEDCamera.CheckUSBDeviceConnected(sl.USB_DEVICE.USB_DEVICE_OCULUS))
-				EditorGUILayout.TextField (hmdlabel, "Oculus USB Detected");
-			else if (sl.ZEDCamera.CheckUSBDeviceConnected(sl.USB_DEVICE.USB_DEVICE_HTC))
-				EditorGUILayout.TextField (hmdlabel, "HTC USB Detected");
-			else
-				EditorGUILayout.TextField (hmdlabel, "-");
-		}
-		EditorGUI.indentLevel--;
+        if (Application.isPlaying)
+            EditorGUILayout.TextField(hmdlabel, manager.HMDDevice);
+        else
+        {
+            //Detect devices through USB.
+            if (sl.ZEDCamera.CheckUSBDeviceConnected(sl.USB_DEVICE.USB_DEVICE_OCULUS))
+                EditorGUILayout.TextField(hmdlabel, "Oculus USB Detected");
+            else if (sl.ZEDCamera.CheckUSBDeviceConnected(sl.USB_DEVICE.USB_DEVICE_HTC))
+                EditorGUILayout.TextField(hmdlabel, "HTC USB Detected");
+            else
+                EditorGUILayout.TextField(hmdlabel, "-");
+        }
+        EditorGUI.indentLevel--;
         EditorGUI.EndDisabledGroup();
 
-		//TO REMOVE
+        //TO REMOVE
         /*GUILayout.Space(20);
         GUIContent camcontrolbuttonlabel = new GUIContent("Open Camera Control", "Opens a window for adjusting camera settings like brightness, gain/exposure, etc.");
         if (GUILayout.Button(camcontrolbuttonlabel))

@@ -86,7 +86,7 @@ public class BunnySpawner : MonoBehaviour
     /// <summary>
     /// Reference to the ZED's left camera gameobject.
     /// </summary>
-    private Camera leftcamera;
+    private Camera cam;
 
     /// <summary>
     /// The text componenet of the current UI gameObject for displaying the score (Distance) of how far the Bunny was sent.
@@ -107,9 +107,9 @@ public class BunnySpawner : MonoBehaviour
         }
 
         //Find the left camera object if we didn't assign it at start. 
-        if (!leftcamera)
+        if (!cam)
         {
-            leftcamera = zedManager.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
+            cam = zedManager.GetMainCamera();
         }
 
         //Check if there is a Object Tracker on this object for VR controls. 
@@ -156,7 +156,7 @@ public class BunnySpawner : MonoBehaviour
                 pointer.SetActive(true);
                 //Position the bead a the collision point, and make it face you. 
                 pointer.transform.position = pointerposition;
-                Quaternion rot = Quaternion.LookRotation(leftcamera.transform.position - pointer.transform.position);
+                Quaternion rot = Quaternion.LookRotation(cam.transform.position - pointer.transform.position);
                 pointer.transform.eulerAngles = new Vector3(0f, rot.eulerAngles.y, 0f);
             }
             else
@@ -178,7 +178,7 @@ public class BunnySpawner : MonoBehaviour
         //Instantiating the prefab.
         GameObject newBunny = Instantiate(bunnyPrefab, spawnPos, Quaternion.identity, null) as GameObject;
         //Make the UI to face the camera only on the Y axis.
-        Quaternion rot = Quaternion.LookRotation(leftcamera.transform.position - spawnPos);
+        Quaternion rot = Quaternion.LookRotation(cam.transform.position - spawnPos);
         newBunny.transform.eulerAngles = new Vector3(0f, rot.eulerAngles.y, 0f);
         //Set this script as the BunnySpawner of the instantiated Bunny.
         newBunny.GetComponent<Bunny>().SetMySpawner(this);
@@ -226,7 +226,7 @@ public class BunnySpawner : MonoBehaviour
         newUI.transform.position = spawnPos;
 
         //Make the UI to face the camera only on the Y axis.
-        Quaternion rot = Quaternion.LookRotation(leftcamera.transform.position - spawnPos);
+        Quaternion rot = Quaternion.LookRotation(cam.transform.position - spawnPos);
         newUI.transform.eulerAngles = new Vector3(0f, rot.eulerAngles.y, 0f);
 
         //Configure the flag UI to be spawned. 
@@ -237,7 +237,7 @@ public class BunnySpawner : MonoBehaviour
         distancetext.text = Vector3.Distance(currentBunny.GetComponent<Bunny>().InitialPosition, spawnPos).ToString("F2") + " Meters";
 
         //If the UI position is higher than ours, and for a minimum of 1.5 meters, then rotate it 180 on the X axis so it's turned upside down.
-        if (currentui.transform.position.y > leftcamera.transform.position.y && currentui.transform.position.y > 1.5f)
+        if (currentui.transform.position.y > cam.transform.position.y && currentui.transform.position.y > 1.5f)
         {
             currentui.transform.eulerAngles = new Vector3(180f, currentui.transform.rotation.eulerAngles.y, 0f);
             distancetext.transform.localEulerAngles = new Vector3(180f, 0f, 0f);
@@ -256,7 +256,7 @@ public class BunnySpawner : MonoBehaviour
         Vector3 realpoint;
         foreach (ZEDManager manager in ZEDManager.GetInstances()) //Check all cameras, in case it's hitting something the main ZEDManager can't see. 
         {
-            if (ZEDSupportFunctions.HitTestOnRay(zedManager.zedCamera, leftcamera, rayOrigin.position, rayOrigin.rotation, 5.0f, 0.05f, out realpoint))
+            if (ZEDSupportFunctions.HitTestOnRay(zedManager.zedCamera, cam, rayOrigin.position, rayOrigin.rotation, 5.0f, 0.05f, out realpoint))
             {
                 pointerbeadpoint = realpoint;
                 return true; //No need to check the other cameras. 

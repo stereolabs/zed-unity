@@ -7,6 +7,7 @@ Properties
 		[HideInInspector] _MainTex("Base (RGB) Trans (A)", 2D) = "" {}
 		_DepthXYZTex("Depth texture", 2D) = "" {}
 		_CameraTex("Texture from ZED", 2D) = "" {}
+		_MaxDepth("Max Depth Range", Range(1,20)) = 20
 	}
 	SubShader
 	{
@@ -80,6 +81,8 @@ Properties
 			uniform int ZEDGreenScreenActivated;
 			sampler2D ZEDMaskTexGreenScreen;
 			float _ZEDFactorAffectReal;
+			float _MaxDepth;
+
 			void frag(v2f i, 
 					  out half4 outColor : SV_Target0, 
 					  out half4 outSpecRoughness : SV_Target1, 
@@ -90,9 +93,18 @@ Properties
 				float2 uv = i.screenUV.xy / i.screenUV.w;
 #if defined(ZED_XYZ)
 				float4 dxyz = tex2D (_DepthXYZTex, uv).xyzw;
+
 				float d = computeDepthXYZ(dxyz.xyz);
 #else
 				float4 dxyz = tex2D(_DepthXYZTex, i.depthUV).xxxx;
+
+				//Filter out depth values beyond the max value. 
+				if (_MaxDepth < 20.0) //Avoid clipping out FAR values when not using feature. 
+				{
+					//if (dxyz.z > _MaxDepth) discard;
+					if (dxyz.z > _MaxDepth) discard;
+				}
+
 				float d = computeDepthXYZ(dxyz.x);
 #endif
 
@@ -106,11 +118,7 @@ Properties
 				outColor *= _ZEDFactorAffectReal;
 
 				#ifdef NO_DEPTH_OCC
-					#if SHADER_API_D3D11
-						outDepth = 0;
-					#elif SHADER_API_GLCORE
-						outDepth = 1000;//fake infinite depth
-					#endif
+					    outDepth = 0;
 				#else
 						outDepth = saturate(d);
 				#endif

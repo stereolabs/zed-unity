@@ -156,6 +156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 1750122611}
+  viewSide: 1
   viewMode: 0
   numberPointLights: 0
   numberSpotLights: 0
@@ -181,7 +182,7 @@ Camera:
   field of view: 56
   orthographic: 0
   orthographic size: 5
-  m_Depth: -1
+  m_Depth: -1.1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294964479
@@ -533,6 +534,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 374019520}
+  viewSide: 0
   viewMode: 0
   numberPointLights: 0
   numberSpotLights: 0
@@ -589,27 +591,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  index: -1
-  useLegacySteamVRInput: 0
   deviceToTrack: 0
   latencyCompensation: 78
+  correctControllerDrift: 1
   SNHolder: 
   zedManager: {fileID: 1344833222}
-  fireBinding:
-    actionPath: /actions/zed-default/in/Fire
-    needsReinit: 0
-  clickBinding:
-    actionPath: /actions/zed-default/in/Click
-    needsReinit: 0
-  backBinding:
-    actionPath: /actions/zed-default/in/Back
-    needsReinit: 0
-  grabBinding:
-    actionPath: /actions/zed-default/in/Grab
-    needsReinit: 0
-  navigateUIBinding:
-    actionPath: /actions/zed-default/in/NavigateUI
-    needsReinit: 0
   onFireDown:
     m_PersistentCalls:
       m_Calls: []
@@ -1113,6 +1099,7 @@ MonoBehaviour:
   depthOcclusion: 1
   postProcessing: 1
   m_cameraBrightness: 100
+  m_maxDepthRange: 20
   svoOutputFileName: Assets/Recording.svo
   svoOutputCompressionMode: 3
   needRecordFrame: 0
@@ -1125,6 +1112,7 @@ MonoBehaviour:
   fadeInOnStart: 1
   dontDestroyOnLoad: 0
   greySkybox: 1
+  m_confidenceThreshold: 100
   showarrig: 1
   cameraModel: '-'
   cameraSerialNumber: '-'
@@ -1134,6 +1122,7 @@ MonoBehaviour:
   cameraFPS: '-'
   HMDDevice: '-'
   trackingState: '-'
+  sensingMode: 1
   gravityRotation: {x: 0, y: 0, z: 0, w: 1}
   ZEDSyncPosition: {x: 0, y: 0, z: 0}
   HMDSyncPosition: {x: 0, y: 0, z: 0}
@@ -1318,27 +1307,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  index: -1
-  useLegacySteamVRInput: 0
   deviceToTrack: 1
   latencyCompensation: 78
+  correctControllerDrift: 1
   SNHolder: 
   zedManager: {fileID: 0}
-  fireBinding:
-    actionPath: /actions/zed-default/in/Fire
-    needsReinit: 0
-  clickBinding:
-    actionPath: /actions/zed-default/in/Click
-    needsReinit: 0
-  backBinding:
-    actionPath: /actions/zed-default/in/Back
-    needsReinit: 0
-  grabBinding:
-    actionPath: /actions/zed-default/in/Grab
-    needsReinit: 0
-  navigateUIBinding:
-    actionPath: /actions/zed-default/in/NavigateUI
-    needsReinit: 0
   onFireDown:
     m_PersistentCalls:
       m_Calls: []
@@ -1619,6 +1592,11 @@ Prefab:
     - target: {fileID: 4723432349376882, guid: 7a5f9c3559310d741bc7b70ccea08ada, type: 2}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114844496607303746, guid: 7a5f9c3559310d741bc7b70ccea08ada,
+        type: 2}
+      propertyPath: radiusCheckRate
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7a5f9c3559310d741bc7b70ccea08ada, type: 2}

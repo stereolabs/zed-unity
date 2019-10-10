@@ -1,38 +1,8 @@
 <!------------------------- Release notes ------------------------------------->
-### 2.8.1
-
-* **Improvements**:
-  * Updated ZEDControllerTracker:
-      - *Added input support for SteamVR plugin 2.0 and greater*
-      - *Added ZEDControllerTracker_DemoInputs, which inherits from ZEDControllerTracker, but with generic button/axis check functions*
-      - *These functions work whether using SteamVR or Oculus Unity plugins*
-      - *Several scripts in Example scenes are now simplified to call these functions instead of having plugin-specific code.*
-  * Removed limit on how long ZEDManager would attempt to connect to the ZED camera - previously 10 seconds
-  * ZEDTransformController, used to move object like the Planetarium and Movie Screen in example scenes, now takes into account the Reposition At Start feature added to ZEDManager in 2.8
-  * Shader properties that are retrieved or modified more than once per scene now have their property IDs cached, saving lookups
-  * ZEDManager can now be used outside of the included prefabs, and is more flexible when determining if it's in "stereo" mode (like the ZED_Rig_Stereo prefab) for loading AR pass-through features.
-  * ZEDManager's process for closing cameras when the scene closes is now more stable
-
-* **Bug Fixes**:
-  * Fixed ZEDControllerTracker's latency compensation feature moving the controller incorrectly when using ZED in third person
-  * Fixed non-rendering Camera objects not getting properly disposed at scene close, causing performance issues after running scene in editor repeatedly
-  * Camera Brightness adjustment now works in deferred rendering (Global Shader value)
-  * Fixed #ZED_OCULUS compiler directive not getting activated when newer Oculus package is imported
-  * Fixed newer Oculus package causing #ZED_STEAM_VR compiler directive getting activated when importing Oculus package. This would also happen when importing the OpenVR package in Unity 2019
-  * Fixed ZEDControllerTracker not updating Oculus Touch controller position if only one controller is connected
-  * Fixed ZEDSupportFunctions.GetForwardDistanceAtPixel not properly accounting for screen size
-  * Fixed "ZED Disconnected" error message not being locked to the headset when using ZED_Rig_Stereo
-  * Fixed Planetarium example scene being way too dark in deferred rendering
-  * Fixed plugin not recognizing Dell VISOR or Lenovo Explorer WMR headsets when using them in SteamVR, or any WMR controllers at all.
-  * Updated video stream link in Movie Screen example scene as the old video link was taken down (same video, new host)
-  * Fixed SVO Loop feature not working when real-time mode is enabled
-  * Fixed Multicam crash if both cameras share the same CAMERA_ID
-
-
 ### 2.8.0
 
-* **Features**:
-   * Added Multi ZED Rig support:
+   * **Features**:
+    * Added Multi ZED Rig support:
       - *Complete refactoring of the wrapper and plugin to change singleton implementation into multi instance support. The maximum number of instance is limited to 4 cameras.*
       - *Each ZEDManager now has a ZED_CAMERA_ID to define its own camera ID.*
       - *All static events in ZEDManager have been replaced by "local" events to make them specific to a rig/camera. Example: OnZEDReady*
@@ -41,18 +11,18 @@
       - *Spatial Mapping module and Camera settings module have been moved to ZEDManager to simplify their use in a multi or single ZED configuration.*
       - *Added MultiCam example to show how to use 2 ZEDs in a single application.*
       - *Overhauled many scripts to take advantage of multiple cameras when possible. For example, projectiles in the Drone Shooter sample can collide with the world seen by any camera.*
-   * Added Streaming module from ZED SDK 2.8:
+    * Added Streaming module from ZED SDK 2.8:
       - ***Input*** : *You can now receive a video stream from a ZED over the network, and process it locally. Do this by setting ZEDManager's Input Type to "Stream" in the Inspector, and specify the IP/Port configuration of the sender.*
       - ***Output*** : *To broadcast a stream, set the ZED's Input Type to USB or SVO, and open the "Streaming" section further down. Specify the codec/streaming configuration if necessayr and check "Enable Streaming Output".*
       - *You can adjust camera settings from a receiving PC, allowing you to control an entire scene from a single device.*
-   * Added initial camera position estimation option to ZEDManager:
+    * Added initial camera position estimation option to ZEDManager:
       - *If EnableTracking is activated, estimateInitialPosition will simply activate the TrackingParameters::set_floor_as_origin to estimate the floor position, and therefore the camera position, during tracking initialization. *
       - *If EnableTracking is not used, estimateInitialPosition will try to detect the floor planes multiple times and compute an average camera position from the floor position.*
-     - Pose smoothing added to spatial memory feature, so pose corrections no longer appear as "jumps."
-     - Added manually turning the ZED's LED light on and off, to be used for debugging. See ZEDCameraSettings.
-     - Added option in ZEDManager's Advanced Settings to grey out the skybox when the scene starts. This was done automatically before to avoid affecting AR lighting, but can be disabled for greenscreen use.
+    * Pose smoothing added to spatial memory feature, so pose corrections no longer appear as "jumps."
+    * Added manually turning the ZED's LED light on and off, to be used for debugging. See ZEDCameraSettings.
+    * Added option in ZEDManager's Advanced Settings to grey out the skybox when the scene starts. This was done automatically before to avoid affecting AR lighting, but can be disabled for greenscreen use.
 
-* **Improvements**:
+    * **Improvements**:
      * Removed ZED rigs' dependence on layers:
        - Previously, the "frame" quads in each ZED rig (including the hidden AR rig) were assigned their own layer, and all other cameras had this layer removed from their culling mask. This made it so no camera would see a frame meant for another eye, but left fewer layers available to the user and made the cameras' culling masks impossible to set from the Inspector.
        - Frames now use the HideFromWrongCamera script to prevent rendering to the wrong cameras without the use of layers. Cameras in ZED_Rig_Mono and ZED_Rig_Stereo can have their culling masks set freely.
@@ -63,17 +33,67 @@
      * Planes detected by the ZED no longer drawn with  a hidden camera, allowing them to be drawn at the same time as a spatial mapping wireframe.
      * ZEDPlaneDetectionManager can now have "Visible in Scene" disabled and "Visible in Scene" enabled at the same time.
 
-* **Bug Fixes**:
-    - Fixed bug that overwrites camera position if user set one before starting the scene (when tracking is not activated).
-    - Fixed latency compensation in ZEDControllerTracker causing the ZED to drift infinitely when a ZED rig was a child of it.
-    - Fixed normally-hidden AR rig not appearing in the Hierarchy on start if "Show Final AR Rig" was enabled before runtime.
-    - Fixed app taking a long time to close if closed while a ZED was still initializing.
-    - Fixed asteroids in Planetarium sample only being drawn to layer 8.
+   * **Bug Fixes**:
+    * Fixed bug that overwrites camera position if user set one before starting the scene (when tracking is not activated).
+    * Fixed latency compensation in ZEDControllerTracker causing the ZED to drift infinitely when a ZED rig was a child of it.
+    * Fixed normally-hidden AR rig not appearing in the Hierarchy on start if "Show Final AR Rig" was enabled before runtime.
+    * Fixed app taking a long time to close if closed while a ZED was still initializing.
+    * Fixed asteroids in Planetarium sample only being drawn to layer 8.
 
 
-* **Compatibility**:
-    - Compatible with ZED SDK 2.8, CUDA 9.0 and 10.0.
-    - Updated controller scripts to work with the new SteamVR Unity plugin v2.0, so long as its Action system has not been activated.
+   * **Compatibility**:
+    * Compatible with ZED SDK 2.8, CUDA 9.0 and 10.0.
+    * Updated controller scripts to work with the new SteamVR Unity plugin v2.0, so long as its Action system has not been activated.
+
+### 2.8.1
+
+  * **Improvements:**
+
+    * * Updated ZEDControllerTracker:
+      - Added input support for SteamVR plugin 2.0 and greater
+      - Added ZEDControllerTracker_DemoInputs, which inherits from ZEDControllerTracker, but with generic button/axis check functions
+      - These functions work whether using SteamVR or Oculus Unity plugins
+      -  Several scripts in Example scenes are now simplified to call these functions instead of having plugin-specific code.
+    * Removed limit on how long ZEDManager would attempt to connect to the ZED camera - previously 10 seconds
+    * ZEDTransformController, used to move object like the Planetarium and Movie Screen in example scenes, now takes into account the Reposition At Start feature added to ZEDManager in 2.8
+    * Shader properties that are retrieved or modified more than once per scene now have their property IDs cached, saving lookups
+    * ZEDManager can now be used outside of the included prefabs, and is more flexible when determining if it's in "stereo" mode (like the ZED_Rig_Stereo prefab) for loading AR pass-through features.
+    * ZEDManager's process for closing cameras when the scene closes is now more stable
+
+  * **Bug Fixes:**
+
+    * Fixed ZEDControllerTracker's latency compensation feature moving the controller incorrectly when using ZED in third person
+    * Fixed non-rendering Camera objects not getting properly disposed at scene close, causing performance issues after running scene in editor repeatedly
+    * Camera Brightness adjustment now works in deferred rendering (Global Shader value)
+    * Fixed #ZED_OCULUS compiler directive not getting activated when newer Oculus package is imported
+    * Fixed newer Oculus package causing #ZED_STEAM_VR compiler directive getting activated when importing Oculus package. This would also happen when importing the OpenVR package in Unity 2019
+    * Fixed ZEDControllerTracker not updating Oculus Touch controller position if only one controller is connected
+    * Fixed ZEDSupportFunctions.GetForwardDistanceAtPixel not properly accounting for screen size
+    * Fixed "ZED Disconnected" error message not being locked to the headset when using ZED_Rig_Stereo
+    * Fixed Planetarium example scene being way too dark in deferred rendering
+    * Fixed plugin not recognizing Dell VISOR or Lenovo Explorer WMR headsets when using them in SteamVR, or any WMR controllers at all.
+    * Updated video stream link in Movie Screen example scene as the old video link was taken down (same video, new host)
+    * Fixed SVO Loop feature not working when real-time mode is enabled
+    * Fixed Multicam crash if both cameras share the same CAMERA_ID
+
+### 2.8.2
+
+  * **Features:**
+    * Added OpenCV ArUco marker detection sample scene. If you've also imported the OpenCV for Unity package from the Asset Store, you can place objects in 3D where ArUco-stlye markers are detected. 
+    * Added brand new Mixed Reality calibration app as a sample scene. You can now calibrate the ZED with a tracked object for mixed reality VR capture, all from within the Unity editor. 
+    
+  * **Improvements:**
+    * Added Max Depth Range and Confidence Threshold options in ZEDManager's Advanced Settings
+    * Added option to disable IMU prior setting in ZEDManager's Advanced Settings
+    * Changed how meshes scanned with the Spatial Mapping feature were saved, to avoid them being flipped on the Z axis when re-imported
+    * Added option to set which side of the ZED (left or right) that ZEDRenderingPlane retrieves. This also solved an issue where the right camera in the ZED_Rig_Stereo prefab would display the left feed when not in AR pass-through mode
+
+  * **Bug Fixes:**
+    * Fixed a crash that would happen if two ZEDManagers were set to use the same Camera ID
+    * Fixed ZED_Rig_Stereo sometimes not outputting an image to the Game window in newer versions of Unity
+    * Fixed ZED_GreenScreen prefab setting that caused the output to be displayed in only half the screen
+    * Fixed depth values being incorrect for occlusion when using OpenGL instead of DirectX
+
 
 
 ### 2.7.0

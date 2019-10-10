@@ -176,8 +176,8 @@ public class PlanetariumMover : MonoBehaviour
         Quaternion gravity = Quaternion.identity;
 
         gravity = Quaternion.FromToRotation(manager.GetZedRootTansform().up, Vector3.up);
-        planetarium.transform.localPosition += manager.GetLeftCameraTransform().right * axisH * speedMove * Time.deltaTime;
-        planetarium.transform.localPosition += gravity * manager.GetLeftCameraTransform().forward * axisV * speedMove * Time.deltaTime;
+        planetarium.transform.localPosition += manager.GetMainCameraTransform().right * axisH * speedMove * Time.deltaTime;
+        planetarium.transform.localPosition += gravity * manager.GetMainCameraTransform().forward * axisV * speedMove * Time.deltaTime;
 
         /// Adjust Scale of Virtual objects,lights, sounds
         bool ScaleUpButton = Input.GetButton("Fire1") || Input.GetKey(KeyCode.JoystickButton5) || (Input.GetAxis("Fire1") >= 1);
@@ -201,12 +201,12 @@ public class PlanetariumMover : MonoBehaviour
         if (CheckAxes("DPad X") && hasJoystick)
         {
             float axisX = Input.GetAxis("DPad X"); //multiply by 10 since sensibility is at 0.1 by default
-            planetarium.transform.Rotate(gravity * manager.GetLeftCameraTransform().up * axisX * speedRotation, Space.World);
+            planetarium.transform.Rotate(gravity * manager.GetMainCameraTransform().up * axisX * speedRotation, Space.World);
         }
         else
         {
             float axisX = System.Convert.ToInt32(Input.GetKey(KeyCode.R));
-            planetarium.transform.Rotate(gravity * manager.GetLeftCameraTransform().up * axisX * speedRotation, Space.World);
+            planetarium.transform.Rotate(gravity * manager.GetMainCameraTransform().up * axisX * speedRotation, Space.World);
         }
 
 
@@ -214,12 +214,12 @@ public class PlanetariumMover : MonoBehaviour
         if (CheckAxes("DPad Y") && hasJoystick)
         {
             float axisY = Input.GetAxis("DPad Y");
-            planetarium.transform.localPosition += gravity * manager.GetLeftCameraTransform().up * axisY * speedMove * Time.deltaTime;
+            planetarium.transform.localPosition += gravity * manager.GetMainCameraTransform().up * axisY * speedMove * Time.deltaTime;
         }
         else
         {
             float axisY = System.Convert.ToInt32(Input.GetKey(KeyCode.PageUp)) - System.Convert.ToInt32(Input.GetKey(KeyCode.PageDown));
-            planetarium.transform.localPosition += gravity * manager.GetLeftCameraTransform().up * axisY * speedMove * Time.deltaTime;
+            planetarium.transform.localPosition += gravity * manager.GetMainCameraTransform().up * axisY * speedMove * Time.deltaTime;
         }
 
 

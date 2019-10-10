@@ -231,7 +231,7 @@ public class LaserGun : MonoBehaviour
         float realdistance = 20f; //Arbitrary distance to put the crosshair if it hits nothing at all. Chosen by ZED's max range. 
         bool foundrealdistance = false;
 
-        if (ZEDSupportFunctions.HitTestOnRay(zedManager.zedCamera, zedManager.GetLeftCamera(), laserPointerBeadHolder.transform.position,
+        if (ZEDSupportFunctions.HitTestOnRay(zedManager.zedCamera, zedManager.GetMainCamera(), laserPointerBeadHolder.transform.position,
             laserPointerBeadHolder.transform.rotation, 5f, 0.01f, out realpoint))
         {
             realdistance = Vector3.Distance(laserPointerBeadHolder.transform.position, realpoint);
@@ -256,7 +256,7 @@ public class LaserGun : MonoBehaviour
         {
             //The real world is closer. Give the position of the real world pixel and return true. 
             crosshairpoint = realpoint;
-            ZEDSupportFunctions.GetNormalAtWorldLocation(zedManager.zedCamera, realpoint, sl.REFERENCE_FRAME.WORLD, zedManager.GetLeftCamera(), out collisionnormal);
+            ZEDSupportFunctions.GetNormalAtWorldLocation(zedManager.zedCamera, realpoint, sl.REFERENCE_FRAME.WORLD, zedManager.GetMainCamera(), out collisionnormal);
             return true;
         }
         else

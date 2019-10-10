@@ -56,7 +56,7 @@ public class ZEDProjectile : MonoBehaviour
     /// <summary>
     /// The ZED camera reference, used for calling ZEDSupportFunctions to transform depth data from the ZED into world space. 
     /// </summary>
-	protected Camera leftcamera;
+	protected Camera cam;
 
     private void Awake()
     {
@@ -72,9 +72,9 @@ public class ZEDProjectile : MonoBehaviour
             }
         }
 
-        if (!leftcamera)
+        if (!cam)
         {
-            leftcamera = zedManager.GetLeftCamera();
+            cam = zedManager.GetMainCamera();
         }
     }
 
@@ -91,12 +91,12 @@ public class ZEDProjectile : MonoBehaviour
         Vector3 collisionnormal;
 
         //First, test the primary ZED. Collisions will look the most accurate if calculated from this one. 
-        bool primaryhit = ZEDSupportFunctions.HitTestOnRay(zedManager.zedCamera, leftcamera, newpos, transform.rotation, Vector3.Distance(transform.position, newpos), 
+        bool primaryhit = ZEDSupportFunctions.HitTestOnRay(zedManager.zedCamera, cam, newpos, transform.rotation, Vector3.Distance(transform.position, newpos), 
             distanceBetweenRayChecks, out collisionpoint, false, realWorldThickness);
         if (primaryhit)
         {
             //Call the function to resolve the impact. This allows us to easily override what happens on collisions with classes that inherit this one. 
-            ZEDSupportFunctions.GetNormalAtWorldLocation(zedManager.zedCamera, collisionpoint, sl.REFERENCE_FRAME.WORLD, leftcamera, out collisionnormal);
+            ZEDSupportFunctions.GetNormalAtWorldLocation(zedManager.zedCamera, collisionpoint, sl.REFERENCE_FRAME.WORLD, cam, out collisionnormal);
 
             OnHitRealWorld(collisionpoint, collisionnormal);
         }
@@ -107,10 +107,10 @@ public class ZEDProjectile : MonoBehaviour
             {
                 if (manager == zedManager) continue; //If it's the primary ZED, skip as we've already tested that one. 
 
-                if (ZEDSupportFunctions.HitTestOnRay(manager.zedCamera, manager.GetLeftCamera(), newpos, transform.rotation, Vector3.Distance(transform.position, newpos), distanceBetweenRayChecks, out collisionpoint, false, realWorldThickness))
+                if (ZEDSupportFunctions.HitTestOnRay(manager.zedCamera, manager.GetMainCamera(), newpos, transform.rotation, Vector3.Distance(transform.position, newpos), distanceBetweenRayChecks, out collisionpoint, false, realWorldThickness))
                 {
                     //Call the function to resolve the impact. This allows us to easily override what happens on collisions with classes that inherit this one. 
-                    ZEDSupportFunctions.GetNormalAtWorldLocation(manager.zedCamera, collisionpoint, sl.REFERENCE_FRAME.WORLD, manager.GetLeftCamera(), out collisionnormal);
+                    ZEDSupportFunctions.GetNormalAtWorldLocation(manager.zedCamera, collisionpoint, sl.REFERENCE_FRAME.WORLD, manager.GetMainCamera(), out collisionnormal);
 
                     OnHitRealWorld(collisionpoint, collisionnormal);
                     break; //No need to test the rest of the ZEDs. 

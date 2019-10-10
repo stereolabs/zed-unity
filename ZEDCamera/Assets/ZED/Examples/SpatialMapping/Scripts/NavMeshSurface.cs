@@ -8,7 +8,7 @@ using UnityEditor;
 #endif
 
 /// <summary>
-/// Takes a mesh supplied by ZEDSpatialMappingManager after a scan and converts it into a 
+/// Takes a mesh supplied by ZEDManager after a scan and converts it into a 
 /// NavMesh at runtime that can be used for AI pathfinding. 
 /// If this script is present, the process will happen automatically when a scan is completed. 
 /// See the ZED spatial mapping tutorial for more info: https://docs.stereolabs.com/mixed-reality/unity/spatial-mapping-unity/
@@ -111,7 +111,11 @@ public class NavMeshSurface: MonoBehaviour
     // Use this for initialization
     void Start()
     {
- 
+        if(!zedManagerSpatialMapping)
+        {
+            zedManagerSpatialMapping = FindObjectOfType<ZEDManager>();
+        }
+
 #if UNITY_5_6_OR_NEWER
         navMesh = new NavMeshData();
         NavMesh.AddNavMeshData(navMesh);

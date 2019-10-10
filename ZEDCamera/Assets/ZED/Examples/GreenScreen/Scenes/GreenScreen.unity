@@ -273,8 +273,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454b1f0b0de2bb644a283d964ccf7f06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  index: -1
-  useLegacySteamVRInput: 0
   deviceToTrack: 0
   latencyCompensation: 78
   correctControllerDrift: 0
@@ -319,23 +317,7 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114684879225796312, guid: 802145764afddb545a3f8d0b72a5f8a3,
-        type: 2}
-      propertyPath: streamingOutFoldoutOpen
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114744244247048828, guid: 802145764afddb545a3f8d0b72a5f8a3,
-        type: 2}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114192821986450582, guid: 802145764afddb545a3f8d0b72a5f8a3,
-        type: 2}
-      propertyPath: showInNonZEDCameras
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 114669934801942820, guid: 802145764afddb545a3f8d0b72a5f8a3, type: 2}
+    m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 802145764afddb545a3f8d0b72a5f8a3, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &919328712
@@ -462,8 +444,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454b1f0b0de2bb644a283d964ccf7f06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  index: -1
-  useLegacySteamVRInput: 0
   deviceToTrack: 1
   latencyCompensation: 78
   correctControllerDrift: 1
@@ -509,24 +489,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!1 &1967768321 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1886245529942436, guid: 802145764afddb545a3f8d0b72a5f8a3,
-    type: 2}
-  m_PrefabInternal: {fileID: 466232954}
---- !u!114 &1967768322
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1967768321}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6e37f9a7dba18f489fce17f647b73a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controllerTracker: {fileID: 0}
-  isReady: 0
 --- !u!4 &1967768324 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4829096614632822, guid: 802145764afddb545a3f8d0b72a5f8a3,

@@ -25,6 +25,28 @@ public class ZEDRenderingPlane : MonoBehaviour
         LAST
     };
 
+    /// <summary>
+    /// Which side of the camera (left/right) and whether or not this can be overridden by the camera's stereoTargetEye.
+    /// </summary>
+    public enum ZED_CAMERA_SIDE
+    {
+        /// <summary>
+        /// Feed from the ZED's left camera. Can be overridden by the camera's stereoTargetEye value.
+        /// </summary>
+        LEFT,
+        /// <summary>
+        /// Feed from the ZED's right camera. Can be overridden by the camera's stereoTargetEye value.
+        /// </summary>
+        RIGHT,
+        /// <summary>
+        /// Feed from the ZED's left camera. Won't be overridden. 
+        /// </summary>
+        LEFT_FORCE,
+        /// <summary>
+        /// Feed from the ZED's right camera. Won't be overridden. 
+        /// </summary>
+        RIGHT_FORCE
+    }
 
     /// <summary>
     /// The GameGbject that displays the final textures. 
@@ -33,6 +55,16 @@ public class ZEDRenderingPlane : MonoBehaviour
     [Tooltip("The GameGbject that displays the final textures. " + 
         "In the ZED_Rig_Mono and ZED_Rig_Stereo prefabs, this is the Frame object that's a child of each camera.")]
     public GameObject canvas;
+
+    /// <summary>
+    /// Which camera on the ZED the image/depth/etc. comes from. 
+    /// If set to LEFT or RIGHT, this may be overridden by the camera's stereoTargetEye.
+    /// If set to LEFT_FORCE or RIGHT_FORCE, it will not be changed. 
+    /// </summary>
+    [Tooltip("Which camera on the ZED the image/depth/etc. comes from.\r\n" +
+        "If set to LEFT or RIGHT, this may be overridden by the camera's stereoTargetEye.\r\n" +
+        "If set to LEFT_FORCE or RIGHT_FORCE, it will not be changed.")]
+    public ZED_CAMERA_SIDE viewSide = ZED_CAMERA_SIDE.LEFT;
 
     /// <summary>
     /// The main material, set to the one on the canvas's MeshRenderer. Used to set the color and depth.
@@ -312,7 +344,14 @@ public class ZEDRenderingPlane : MonoBehaviour
 	/// <summary>
 	/// Which side of the camera we render. Left = 0, Right ==1.
 	/// </summary>
-	private int side = 0;
+	private int side
+    {
+        get
+        {
+            if (viewSide == ZED_CAMERA_SIDE.LEFT || viewSide == ZED_CAMERA_SIDE.LEFT_FORCE) return 0;
+            else return 1;
+        }
+    }
 
     /// <summary>
     /// Default near plane value. Overrides camera's settings on start but will update if camera values change at runtime.
@@ -825,72 +864,65 @@ public class ZEDRenderingPlane : MonoBehaviour
         canvas.transform.localRotation = Quaternion.identity;
         canvas.transform.localPosition = new Vector3(0, 0, 0);
 
-        if (StereoTargetEyeMask.Left == cam.stereoTargetEye) //This camera is for the left HMD eye. 
+        if(zedManager.IsStereoRig == true && cam.stereoTargetEye != StereoTargetEyeMask.None)
         {
-			side = 0;
-			if (zedCamera != null && zedCamera.IsCameraReady)
+            if (zedCamera != null && zedCamera.IsCameraReady)
             {
                 renderTextureTarget = new RenderTexture(zedCamera.ImageWidth, zedCamera.ImageHeight, 24, RenderTextureFormat.ARGB32);
                 cam.targetTexture = renderTextureTarget;
             }
 
-			switch (view_mode) {
-			case sl.VIEW_MODE.VIEW_IMAGE: 
-				textureEye = zedCamera.CreateTextureImageType (sl.VIEW.LEFT);
-				break;
-			case sl.VIEW_MODE.VIEW_DEPTH: 
-				textureEye = zedCamera.CreateTextureImageType (sl.VIEW.DEPTH);
-				break;
-			case sl.VIEW_MODE.VIEW_NORMALS: 
-				textureEye = zedCamera.CreateTextureImageType (sl.VIEW.NORMALS);
-				break;
-			}
-           
-            normals = zedCamera.CreateTextureMeasureType(sl.MEASURE.NORMALS, resolution);
-            depth = zedCamera.CreateTextureMeasureType(sl.MEASURE.DEPTH, resolution);
-
-        }
-        else if (StereoTargetEyeMask.Right == cam.stereoTargetEye && zedManager.IsStereoRig == true) //This camera is for the right HMD eye. 
-        {
-			side = 1;
-			if (zedCamera != null && zedCamera.IsCameraReady)
+            //Set the camera to match the target stereo eye, unless force otherwise. 
+            switch(cam.stereoTargetEye)
             {
-                renderTextureTarget = new RenderTexture(zedCamera.ImageWidth, zedCamera.ImageHeight, 24, RenderTextureFormat.ARGB32);
-                cam.targetTexture = renderTextureTarget;
+                case StereoTargetEyeMask.Left:
+                    if (viewSide == ZED_CAMERA_SIDE.RIGHT) viewSide = ZED_CAMERA_SIDE.LEFT;
+                    break;
+                case StereoTargetEyeMask.Right:
+                    if (viewSide == ZED_CAMERA_SIDE.LEFT) viewSide = ZED_CAMERA_SIDE.RIGHT;
+                    break;
+                default: 
+                    break;
             }
-
-			switch (view_mode) {
-			case sl.VIEW_MODE.VIEW_IMAGE: 
-				textureEye = zedCamera.CreateTextureImageType (sl.VIEW.RIGHT);
-				break;
-			case sl.VIEW_MODE.VIEW_DEPTH: 
-				textureEye = zedCamera.CreateTextureImageType (sl.VIEW.DEPTH_RIGHT);
-				break;
-			case sl.VIEW_MODE.VIEW_NORMALS: 
-				textureEye = zedCamera.CreateTextureImageType (sl.VIEW.NORMALS_RIGHT);
-				break;
-			}
-            normals = zedCamera.CreateTextureMeasureType(sl.MEASURE.NORMALS_RIGHT, resolution);
-            depth = zedCamera.CreateTextureMeasureType(sl.MEASURE.DEPTH_RIGHT, resolution);
-
         }
-        else //This camera is not for an HMD. It's likely part of the ZED_Rig_Mono or ZED_GreenScreen prefab.
-        {
-			side = 0;
-			switch (view_mode) {
-			case sl.VIEW_MODE.VIEW_IMAGE: 
-				textureEye = zedCamera.CreateTextureImageType (sl.VIEW.LEFT);
-				break;
-			case sl.VIEW_MODE.VIEW_DEPTH: 
-				textureEye = zedCamera.CreateTextureImageType (sl.VIEW.DEPTH);
-				break;
-			case sl.VIEW_MODE.VIEW_NORMALS: 
-				textureEye = zedCamera.CreateTextureImageType (sl.VIEW.NORMALS);
-				break;
-			}
-            normals = zedCamera.CreateTextureMeasureType(sl.MEASURE.NORMALS, resolution);
-            depth = zedCamera.CreateTextureMeasureType(sl.MEASURE.DEPTH, resolution);
 
+        switch (viewSide) //Set up textures from the left camera or right camera, depending. 
+        {
+            case ZED_CAMERA_SIDE.LEFT:
+            case ZED_CAMERA_SIDE.LEFT_FORCE:
+            default:
+                switch (view_mode) //Which kind of texture we view. 
+                {
+                    case sl.VIEW_MODE.VIEW_IMAGE:
+                        textureEye = zedCamera.CreateTextureImageType(sl.VIEW.LEFT);
+                        break;
+                    case sl.VIEW_MODE.VIEW_DEPTH:
+                        textureEye = zedCamera.CreateTextureImageType(sl.VIEW.DEPTH);
+                        break;
+                    case sl.VIEW_MODE.VIEW_NORMALS:
+                        textureEye = zedCamera.CreateTextureImageType(sl.VIEW.NORMALS);
+                        break;
+                }
+                normals = zedCamera.CreateTextureMeasureType(sl.MEASURE.NORMALS, resolution);
+                depth = zedCamera.CreateTextureMeasureType(sl.MEASURE.DEPTH, resolution);
+                break;
+            case ZED_CAMERA_SIDE.RIGHT:
+            case ZED_CAMERA_SIDE.RIGHT_FORCE:
+                switch (view_mode)//Which kind of texture we view. 
+                {
+                    case sl.VIEW_MODE.VIEW_IMAGE:
+                        textureEye = zedCamera.CreateTextureImageType(sl.VIEW.RIGHT);
+                        break;
+                    case sl.VIEW_MODE.VIEW_DEPTH:
+                        textureEye = zedCamera.CreateTextureImageType(sl.VIEW.DEPTH_RIGHT);
+                        break;
+                    case sl.VIEW_MODE.VIEW_NORMALS:
+                        textureEye = zedCamera.CreateTextureImageType(sl.VIEW.NORMALS_RIGHT);
+                        break;
+                }
+                normals = zedCamera.CreateTextureMeasureType(sl.MEASURE.NORMALS_RIGHT, resolution);
+                depth = zedCamera.CreateTextureMeasureType(sl.MEASURE.DEPTH_RIGHT, resolution);
+                break;
         }
     }
 

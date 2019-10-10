@@ -103,7 +103,9 @@ public class BunnyPlacement : MonoBehaviour
     {
         if (tracker == null)
         {
-            if (Input.GetKey(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space))
+                button = state.Down;
+            else if (Input.GetKey(KeyCode.Space))
                 button = state.Press;
             else if (Input.GetKeyUp(KeyCode.Space))
                 button = state.Up;
@@ -158,10 +160,10 @@ public class BunnyPlacement : MonoBehaviour
                     //Start detecting planes through the ZED Plane Detection Manager.
                     foreach (ZEDManager manager in ZEDManager.GetInstances()) //Check all active ZED cameras for planes. 
                     {
-                        if (zedPlane.DetectPlaneAtHit(manager, manager.GetLeftCamera().WorldToScreenPoint(placeholder.position)))
+                        if (zedPlane.DetectPlaneAtHit(manager, manager.GetMainCamera().WorldToScreenPoint(placeholder.position)))
                         {
                             //Get the normal of the plane.
-                            ZEDPlaneGameObject currentPlane = zedPlane.hitPlaneList[zedPlane.hitPlaneList.Count - 1]; 
+                            ZEDPlaneGameObject currentPlane = zedPlane.hitPlaneList[zedPlane.hitPlaneList.Count - 1];
                             Vector3 planeNormal = currentPlane.worldNormal;
 
                             //Check if the plane has a normal close enough to Y (horizontal surface) to be stable for the Bunny to spawn into.

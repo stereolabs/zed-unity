@@ -274,7 +274,8 @@ Prefab:
       propertyPath: zedManager
       value: 
       objectReference: {fileID: 906526638}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 114743274994090928, guid: 201563e25e8761a40adb2b278a2fb4f7, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 201563e25e8761a40adb2b278a2fb4f7, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &406601174 stripped
@@ -282,17 +283,17 @@ Transform:
   m_PrefabParentObject: {fileID: 4601971728370016, guid: 201563e25e8761a40adb2b278a2fb4f7,
     type: 2}
   m_PrefabInternal: {fileID: 406601173}
---- !u!1 &584884056 stripped
+--- !u!1 &406601175 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1852221186953372, guid: 201563e25e8761a40adb2b278a2fb4f7,
     type: 2}
   m_PrefabInternal: {fileID: 406601173}
---- !u!114 &584884057
+--- !u!114 &406601176
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 584884056}
+  m_GameObject: {fileID: 406601175}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
@@ -302,7 +303,6 @@ MonoBehaviour:
   useLegacySteamVRInput: 0
   deviceToTrack: 0
   latencyCompensation: 78
-  correctControllerDrift: 1
   SNHolder: 
   zedManager: {fileID: 906526638}
   fireBinding:
@@ -486,7 +486,7 @@ Prefab:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 2}
       propertyPath: advancedPanelOpen
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 2}
@@ -532,6 +532,11 @@ Prefab:
         type: 2}
       propertyPath: m_cameraBrightness
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 2}
+      propertyPath: showarrig
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 2}

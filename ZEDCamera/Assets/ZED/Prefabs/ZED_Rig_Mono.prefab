@@ -227,6 +227,7 @@ MonoBehaviour:
   currentFrame: 0
   numberFrameMax: 0
   pauseSVOReading: 0
+  pauseLiveReading: 0
   NeedNewFrameGrab: 0
   streamInputIP: 127.0.0.1
   streamInputPort: 30000
@@ -236,7 +237,7 @@ MonoBehaviour:
   estimateInitialPosition: 0
   mappingResolutionPreset: 1
   mappingRangePreset: 1
-  isMappingFilteringEnable: 0
+  isMappingFilteringEnable: 1
   isMappingTextured: 0
   saveMeshWhenOver: 0
   meshPath: Assets/ZEDMesh.obj
@@ -244,6 +245,7 @@ MonoBehaviour:
   depthOcclusion: 1
   postProcessing: 1
   m_cameraBrightness: 100
+  m_maxDepthRange: 20
   svoOutputFileName: Assets/Recording.svo
   svoOutputCompressionMode: 3
   needRecordFrame: 0

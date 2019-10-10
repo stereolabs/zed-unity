@@ -286,7 +286,7 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
             return false; //Do nothing if the ZED isn't finished initializing. 
 
         sl.ZEDCamera zedcam = manager.zedCamera;
-        Camera leftcamera = manager.GetLeftCamera();
+        Camera cam = manager.GetMainCamera();
 
         ZEDPlaneGameObject.PlaneData plane = new ZEDPlaneGameObject.PlaneData();
         if (zedcam.findFloorPlane(ref plane, out estimatedPlayerHeight, Quaternion.identity, Vector3.zero) == sl.ERROR_CODE.SUCCESS) //We found a plane. 
@@ -297,7 +297,7 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
             {
                 Vector3[] worldPlaneVertices = new Vector3[numVertices];
                 int[] worldPlaneTriangles = new int[numTriangles];
-                TransformCameraToLocalMesh(leftcamera.transform, planeMeshVertices, planeMeshTriangles, worldPlaneVertices, worldPlaneTriangles, numVertices, numTriangles, plane.PlaneCenter);
+                TransformCameraToLocalMesh(cam.transform, planeMeshVertices, planeMeshTriangles, worldPlaneVertices, worldPlaneTriangles, numVertices, numTriangles, plane.PlaneCenter);
 
                 hasDetectedFloor = true;
 
@@ -314,8 +314,8 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
                 }
 
                 //Move the GameObject to the center of the plane. Note that the plane data's center is relative to the camera. 
-                floorPlaneGO.transform.position = leftcamera.transform.position; //Add the camera's world position 
-                floorPlaneGO.transform.position += leftcamera.transform.rotation * plane.PlaneCenter; //Add the center of the plane
+                floorPlaneGO.transform.position = cam.transform.position; //Add the camera's world position 
+                floorPlaneGO.transform.position += cam.transform.rotation * plane.PlaneCenter; //Add the center of the plane
 
                 if (!floorPlane) //Add a new ZEDPlaneGameObject to the floor plane if it doesn't already exist. 
                 {
@@ -325,8 +325,8 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 
                 if (!floorPlane.IsCreated) //Call ZEDPlaneGameObject.Create() on the floor ZEDPlaneGameObject if it hasn't yet been run. 
                 {
-                    if (overrideMaterial != null) floorPlane.Create(leftcamera, plane, worldPlaneVertices, worldPlaneTriangles, 0, overrideMaterial);
-                    else floorPlane.Create(leftcamera, plane, worldPlaneVertices, worldPlaneTriangles, 0);
+                    if (overrideMaterial != null) floorPlane.Create(cam, plane, worldPlaneVertices, worldPlaneTriangles, 0, overrideMaterial);
+                    else floorPlane.Create(cam, plane, worldPlaneVertices, worldPlaneTriangles, 0);
                     floorPlane.SetPhysics(addPhysicsOption);
                 }
                 else //Update the ZEDPlaneGameObject with the new plane's data. 
@@ -372,7 +372,7 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
             return false; //Do nothing if the ZED isn't finished initializing. 
 
         sl.ZEDCamera zedcam = manager.zedCamera;
-        Camera leftcamera = manager.GetLeftCamera();
+        Camera cam = manager.GetMainCamera();
 
         ZEDPlaneGameObject.PlaneData plane = new ZEDPlaneGameObject.PlaneData();
         if (zedcam.findPlaneAtHit(ref plane, screenPos) == sl.ERROR_CODE.SUCCESS) //We found a plane. 
@@ -386,16 +386,16 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
 
                 Vector3[] worldPlaneVertices = new Vector3[numVertices];
                 int[] worldPlaneTriangles = new int[numTriangles];
-                TransformCameraToLocalMesh(leftcamera.transform, planeMeshVertices, planeMeshTriangles, worldPlaneVertices, worldPlaneTriangles, numVertices, numTriangles, plane.PlaneCenter);
+                TransformCameraToLocalMesh(cam.transform, planeMeshVertices, planeMeshTriangles, worldPlaneVertices, worldPlaneTriangles, numVertices, numTriangles, plane.PlaneCenter);
 
                 //Move the GameObject to the center of the plane. Note that the plane data's center is relative to the camera. 
-                newhitGO.transform.position = leftcamera.transform.position; //Add the camera's world position 
-                newhitGO.transform.position += leftcamera.transform.rotation * plane.PlaneCenter; //Add the center of the plane
+                newhitGO.transform.position = cam.transform.position; //Add the camera's world position 
+                newhitGO.transform.position += cam.transform.rotation * plane.PlaneCenter; //Add the center of the plane
 
                 ZEDPlaneGameObject hitPlane = newhitGO.AddComponent<ZEDPlaneGameObject>();
 
-                if (overrideMaterial != null) hitPlane.Create(leftcamera, plane, worldPlaneVertices, worldPlaneTriangles, planeHitCount + 1, overrideMaterial);
-                else hitPlane.Create(leftcamera, plane, worldPlaneVertices, worldPlaneTriangles, planeHitCount + 1);
+                if (overrideMaterial != null) hitPlane.Create(cam, plane, worldPlaneVertices, worldPlaneTriangles, planeHitCount + 1, overrideMaterial);
+                else hitPlane.Create(cam, plane, worldPlaneVertices, worldPlaneTriangles, planeHitCount + 1);
 
                 hitPlane.SetPhysics(addPhysicsOption);
                 //hitPlane.SetVisible(isVisibleInSceneOption);
@@ -430,7 +430,7 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
                 ZEDManager highestmanager = managers[0];
                 foreach (ZEDManager manager in managers)
                 {
-                    float depth = manager.GetLeftCamera().depth;
+                    float depth = manager.GetMainCamera().depth;
                     if (depth >= highestdepth)
                     {
                         highestdepth = depth;

@@ -81,16 +81,16 @@ public class GUIMessage : MonoBehaviour
     /// </summary>
     private GameObject imageright;
 
-	/// <summary>
-	/// Opening status given during the ZED's last attempt to initialize.
+    /// <summary>
+    /// Opening status given during the ZED's last attempt to initialize.
     /// Used to check if an error has gone on for more than one frame before changing text. 
-	/// </summary>
-	private sl.ERROR_CODE oldInitStatus;
+    /// </summary>
+    private sl.ERROR_CODE oldInitStatus;
 
-	/// <summary>
-	/// The zed manager.
-	/// </summary>
-	private ZEDManager zedManager;
+    /// <summary>
+    /// The zed manager.
+    /// </summary>
+    private ZEDManager zedManager;
 
     /// <summary>
     /// Creates canvas(es) and canvas elements depending on whether the ZED rig is mono (ZED_Rig_Mono) 
@@ -98,15 +98,23 @@ public class GUIMessage : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-		zedManager = GetComponent<ZEDManager> ();
-		oldInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
-		if (!zedManager.IsStereoRig) //Without VR, we use a Screen Space - Overlay canvas. 
+        zedManager = GetComponent<ZEDManager>();
+        oldInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
+        if (!zedManager.IsStereoRig) //Without VR, we use a Screen Space - Overlay canvas. 
         {
             //Instantiate the mono warning prefab and set basic settings for it. 
             warningmono = Instantiate(Resources.Load("PrefabsUI/Warning") as GameObject, transform);
             warningmono.SetActive(true);
-			warningmono.GetComponent<Canvas> ().renderMode = RenderMode.ScreenSpaceCamera;
-			warningmono.GetComponent<Canvas> ().worldCamera = zedManager.GetLeftCameraTransform().GetComponent<Camera>();
+            warningmono.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceCamera;
+
+            //Set the target camera to whichever mono camera in the rig has the highest depth. 
+            Camera highestdepthzedcam = zedManager.GetLeftCamera();
+            if (zedManager.GetRightCamera() != null && (highestdepthzedcam == null || zedManager.GetRightCamera().depth > highestdepthzedcam.depth))
+            {
+                highestdepthzedcam = zedManager.GetRightCamera();
+            }
+
+            warningmono.GetComponent<Canvas>().worldCamera = highestdepthzedcam;
 
             textmono = warningmono.GetComponentInChildren<UnityEngine.UI.Text>();
             textmono.color = Color.white;
@@ -122,9 +130,9 @@ public class GUIMessage : MonoBehaviour
         else //In VR, we use two Screen Space - Camera canvases, one for each eye. 
         {
             //Instantiate the left warning prefab and set basic settings for it.
-			warningleft = Instantiate(Resources.Load("PrefabsUI/Warning_VR") as GameObject, zedManager.GetLeftCameraTransform());
+            warningleft = Instantiate(Resources.Load("PrefabsUI/Warning_VR") as GameObject, zedManager.GetLeftCameraTransform());
             warningleft.SetActive(true);
-			warningleft.GetComponent<Canvas>().worldCamera = zedManager.GetLeftCameraTransform().GetComponent<Camera>();
+            warningleft.GetComponent<Canvas>().worldCamera = zedManager.GetLeftCamera();
             warningleft.GetComponent<Canvas>().planeDistance = 1;
             textleft = warningleft.GetComponentInChildren<UnityEngine.UI.Text>();
             textleft.color = Color.white;
@@ -132,9 +140,9 @@ public class GUIMessage : MonoBehaviour
             imageleft.transform.parent.gameObject.SetActive(true);
 
             //Instantiate the right warning prefab and set basic settings for it.
-			warningright = Instantiate(Resources.Load("PrefabsUI/Warning_VR") as GameObject, zedManager.GetRightCameraTransform());
+            warningright = Instantiate(Resources.Load("PrefabsUI/Warning_VR") as GameObject, zedManager.GetRightCameraTransform());
             warningright.SetActive(true);
-			warningright.GetComponent<Canvas>().worldCamera = zedManager.GetRightCameraTransform().GetComponent<Camera>();
+            warningright.GetComponent<Canvas>().worldCamera = zedManager.GetRightCamera();
             warningright.GetComponent<Canvas>().planeDistance = 1;
             textright = warningright.GetComponentInChildren<UnityEngine.UI.Text>();
             textright.color = Color.white;
@@ -156,8 +164,8 @@ public class GUIMessage : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-		zedManager.OnZEDReady += Ready;
-		zedManager.OnZEDDisconnected += ZEDDisconnected;
+        zedManager.OnZEDReady += Ready;
+        zedManager.OnZEDDisconnected += ZEDDisconnected;
     }
 
     /// <summary>
@@ -165,8 +173,8 @@ public class GUIMessage : MonoBehaviour
     /// </summary>
     private void OnDisable()
     {
-		zedManager.OnZEDReady -= Ready;
-		zedManager.OnZEDDisconnected -= ZEDDisconnected;
+        zedManager.OnZEDReady -= Ready;
+        zedManager.OnZEDDisconnected -= ZEDDisconnected;
     }
 
     /// <summary>
@@ -183,7 +191,7 @@ public class GUIMessage : MonoBehaviour
             warningmono.transform.GetChild(0).gameObject.SetActive(true);
             textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.ZED_IS_DISCONNECETD);
             warningmono.layer = 30;
-            
+
             ready = false;
         }
 
@@ -212,44 +220,54 @@ public class GUIMessage : MonoBehaviour
     {
         if (!init) //This check will pass until 0.5 seconds after the ZED is done initializing. 
         {
-			sl.ERROR_CODE e = zedManager.LastInitStatus;
+            sl.ERROR_CODE e = zedManager.LastInitStatus;
 
             if (e == sl.ERROR_CODE.SUCCESS) //Last initialization attempt was successful. 
             {
-				if (!ready) {
-					
-					if (textmono)
-					{
-						textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_MODULE_LOADING);
-					}
-					else if (textleft)
-					{
-						textleft.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_MODULE_LOADING);
-						textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_MODULE_LOADING);
-					}
+                if (!ready)
+                {
+
+                    if (textmono)
+                    {
+                        textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_MODULE_LOADING);
+                    }
+                    else if (textleft)
+                    {
+                        textleft.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_MODULE_LOADING);
+                        textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_MODULE_LOADING);
+                    }
 
 
-				} else {
-					timer += Time.deltaTime; //Clear text after a short delay. 
-					if (timer > 0.2f) {
-						if (textmono) {
-							textmono.text = "";
-						} else if (textleft) {
-							textleft.text = "";
-							textright.text = "";
-						}
+                }
+                else
+                {
+                    timer += Time.deltaTime; //Clear text after a short delay. 
+                    if (timer > 0.2f)
+                    {
+                        if (textmono)
+                        {
+                            textmono.text = "";
+                        }
+                        else if (textleft)
+                        {
+                            textleft.text = "";
+                            textright.text = "";
+                        }
 
-					}
+                    }
 
-					if (imagemono) { //Disable mono rig canvas. 
-						imagemono.gameObject.SetActive (false);
-					} else if (imageleft) { //Disable stereo rig canvases. 
-						imageleft.gameObject.SetActive (false);
-						imageright.gameObject.SetActive (false);
-					}
-				}
+                    if (imagemono)
+                    { //Disable mono rig canvas. 
+                        imagemono.gameObject.SetActive(false);
+                    }
+                    else if (imageleft)
+                    { //Disable stereo rig canvases. 
+                        imageleft.gameObject.SetActive(false);
+                        imageright.gameObject.SetActive(false);
+                    }
+                }
             }
-			else if (e == sl.ERROR_CODE.ERROR_CODE_LAST) //"Loading..."
+            else if (e == sl.ERROR_CODE.ERROR_CODE_LAST) //"Loading..."
             {
                 //Initial error code set before an initialization attempt has returned successful or failed. 
                 //In short, it means it's still loading. 
@@ -264,7 +282,7 @@ public class GUIMessage : MonoBehaviour
                 }
 
             }
-			else if (e == sl.ERROR_CODE.CAMERA_NOT_DETECTED && oldInitStatus == sl.ERROR_CODE.CAMERA_NOT_DETECTED) //"Camera not detected"
+            else if (e == sl.ERROR_CODE.CAMERA_NOT_DETECTED && oldInitStatus == sl.ERROR_CODE.CAMERA_NOT_DETECTED) //"Camera not detected"
             {
                 if (textmono)
                 {
@@ -276,43 +294,43 @@ public class GUIMessage : MonoBehaviour
                     textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.UNABLE_TO_OPEN_CAMERA);
                 }
             }
-			else if (e == sl.ERROR_CODE.CAMERA_DETECTION_ISSUE && oldInitStatus == sl.ERROR_CODE.CAMERA_DETECTION_ISSUE) //"Unable to open camera"
+            else if (e == sl.ERROR_CODE.CAMERA_DETECTION_ISSUE && oldInitStatus == sl.ERROR_CODE.CAMERA_DETECTION_ISSUE) //"Unable to open camera"
             {
-				if (textmono)
-				{
-					textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.CAMERA_DETECTION_ISSUE);
-				}
-				else if (textleft)
-				{
-					textleft.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.CAMERA_DETECTION_ISSUE);
-					textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.CAMERA_DETECTION_ISSUE);
-				}
-			}
-			else if (e == sl.ERROR_CODE.SENSOR_NOT_DETECTED && oldInitStatus == sl.ERROR_CODE.SENSOR_NOT_DETECTED) //"Camera motion sensor not detected"
+                if (textmono)
+                {
+                    textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.CAMERA_DETECTION_ISSUE);
+                }
+                else if (textleft)
+                {
+                    textleft.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.CAMERA_DETECTION_ISSUE);
+                    textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.CAMERA_DETECTION_ISSUE);
+                }
+            }
+            else if (e == sl.ERROR_CODE.SENSOR_NOT_DETECTED && oldInitStatus == sl.ERROR_CODE.SENSOR_NOT_DETECTED) //"Camera motion sensor not detected"
             {
-				if (textmono)
-				{
-					textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SENSOR_NOT_DETECTED);
-				}
-				else if (textleft)
-				{
-					textleft.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SENSOR_NOT_DETECTED);
-					textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SENSOR_NOT_DETECTED);
-				}
-			}
-			else if (e == sl.ERROR_CODE.LOW_USB_BANDWIDTH && oldInitStatus == sl.ERROR_CODE.LOW_USB_BANDWIDTH)//"Low USB bandwidth"
+                if (textmono)
+                {
+                    textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SENSOR_NOT_DETECTED);
+                }
+                else if (textleft)
+                {
+                    textleft.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SENSOR_NOT_DETECTED);
+                    textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SENSOR_NOT_DETECTED);
+                }
+            }
+            else if (e == sl.ERROR_CODE.LOW_USB_BANDWIDTH && oldInitStatus == sl.ERROR_CODE.LOW_USB_BANDWIDTH)//"Low USB bandwidth"
             {
-				if (textmono)
-				{
-					textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.LOW_USB_BANDWIDTH);
-				}
-				else if (textleft)
-				{
-					textleft.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.LOW_USB_BANDWIDTH);
-					textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.LOW_USB_BANDWIDTH);
-				}
-			}
-            else if(e == sl.ERROR_CODE.INVALID_SVO_FILE && oldInitStatus == sl.ERROR_CODE.INVALID_SVO_FILE)
+                if (textmono)
+                {
+                    textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.LOW_USB_BANDWIDTH);
+                }
+                else if (textleft)
+                {
+                    textleft.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.LOW_USB_BANDWIDTH);
+                    textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.LOW_USB_BANDWIDTH);
+                }
+            }
+            else if (e == sl.ERROR_CODE.INVALID_SVO_FILE && oldInitStatus == sl.ERROR_CODE.INVALID_SVO_FILE)
             {
                 if (textmono)
                 {
@@ -324,7 +342,7 @@ public class GUIMessage : MonoBehaviour
                     textright.text = "Invalid SVO File/Path";
                 }
             }
-			else if (e==oldInitStatus)
+            else if (e == oldInitStatus)
             {
                 if (textmono)
                 {
@@ -336,7 +354,7 @@ public class GUIMessage : MonoBehaviour
                     textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.CAMERA_NOT_INITIALIZED);
                 }
             }
-			oldInitStatus = e;
+            oldInitStatus = e;
         }
 
         if (ready) //ZED has finished initializing. Set a timer, then disable texts after it expires. 
@@ -354,7 +372,7 @@ public class GUIMessage : MonoBehaviour
                     warningright.SetActive(false);
                 }
             }
-            
+
             init = true; //Prevents logic above the if (ready) check from running each frame. 
 
             if (imagemono)

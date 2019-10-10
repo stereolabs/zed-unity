@@ -82,7 +82,7 @@ public class DroneSpawner : MonoBehaviour
     /// <summary>
     /// Needed for various calls to ZEDSupportFunctions.cs, so it can transform ZED depth info into world space. 
     /// </summary>
-	private Camera leftcamera;
+	private Camera cam;
 
     /// <summary>
     /// Whether we already displayed the warning message before spawning the drones.
@@ -110,7 +110,7 @@ public class DroneSpawner : MonoBehaviour
 		//Set the countdown Timer;
 		respawncountdown = respawnTimer;
 		//Get the ZED camera
-		leftcamera = zedManager.GetLeftCameraTransform().GetComponent<Camera>();
+		cam = zedManager.GetMainCamera();
     }
 
     // Update is called once per frame
@@ -215,7 +215,7 @@ public class DroneSpawner : MonoBehaviour
 
         //Get the world position of that position in the real world
 		Vector3 randomWorldPoint;
-		bool foundWorldPoint = ZEDSupportFunctions.GetWorldPositionAtPixel(zedManager.zedCamera,randomScreenPoint, leftcamera, out randomWorldPoint);
+		bool foundWorldPoint = ZEDSupportFunctions.GetWorldPositionAtPixel(zedManager.zedCamera,randomScreenPoint, cam, out randomWorldPoint);
 
 		if (!foundWorldPoint) //We can't read depth from that point. 
         {
@@ -223,7 +223,7 @@ public class DroneSpawner : MonoBehaviour
             return false;
         }
 			
-		float firstDistance = Vector3.Distance (leftcamera.transform.position, randomWorldPoint);
+		float firstDistance = Vector3.Distance (cam.transform.position, randomWorldPoint);
 		float newClearRadius;
 
 		//Check that the distance isn't too far.
@@ -233,11 +233,11 @@ public class DroneSpawner : MonoBehaviour
 			newClearRadius = clearRadius;
 
         //If we spawn the drone at that world point, it'll spawn inside a wall. Bring it between you and that wall. 
-		Quaternion directionToCamera = Quaternion.LookRotation(leftcamera.transform.position - randomWorldPoint, Vector3.up);
+		Quaternion directionToCamera = Quaternion.LookRotation(cam.transform.position - randomWorldPoint, Vector3.up);
 		Vector3 closerWorldPoint = randomWorldPoint + directionToCamera * Vector3.forward * newClearRadius;
 
         //Check that distance isn't too close
-		float secondDistance = Vector3.Distance(leftcamera.transform.position, closerWorldPoint);
+		float secondDistance = Vector3.Distance(cam.transform.position, closerWorldPoint);
 		if (secondDistance < 1f)
         {
             newRandomPos = Vector3.zero;
@@ -245,7 +245,7 @@ public class DroneSpawner : MonoBehaviour
         }
 
 		//Also check nearby points in a sphere of radius=ClearRadius to make sure the whole drone has a clear space. 
-		if (ZEDSupportFunctions.HitTestOnSphere(zedManager.zedCamera, leftcamera, closerWorldPoint, 1f, radiusCheckRate, percentagethreshold))
+		if (ZEDSupportFunctions.HitTestOnSphere(zedManager.zedCamera, cam, closerWorldPoint, 1f, radiusCheckRate, percentagethreshold))
         {
             //Not clear. 
             newRandomPos = Vector3.zero;
@@ -280,7 +280,7 @@ public class DroneSpawner : MonoBehaviour
 
         //Set the drone's transform values
 		dronego.transform.position = newspawnposition; //Assign the random Pos generated in CheckRandomSpawnLocation();
-		dronego.transform.rotation = Quaternion.LookRotation(zedManager.GetLeftCameraTransform().position - spawnPosition, Vector3.up); //Make it look at the player.
+		dronego.transform.rotation = Quaternion.LookRotation(zedManager.GetMainCameraTransform().position - spawnPosition, Vector3.up); //Make it look at the player.
 
         return dronecomponent;
 

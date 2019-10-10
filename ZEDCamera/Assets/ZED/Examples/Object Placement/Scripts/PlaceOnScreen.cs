@@ -23,13 +23,13 @@ public class PlaceOnScreen : MonoBehaviour
     /// <summary>
     /// The left camera in the ZED rig. Passed to ZEDSupportFunctions for transforming between camera and world space. 
     /// </summary>
-    private Camera LeftCamera;
+    private Camera cam;
 
     // Use this for initialization
     void Awake() {
         //zedManager = gameObject.transform.parent.GetComponentInChildren<ZEDManager>();
         zedManager = ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_01);
-		LeftCamera = zedManager.GetLeftCameraTransform().gameObject.GetComponent<Camera>();
+		cam = zedManager.GetMainCamera();
 
         Cursor.visible = true; //Make sure cursor is visible so we can click on the world accurately. 
     }
@@ -49,8 +49,8 @@ public class PlaceOnScreen : MonoBehaviour
             //Get Normal and real world position defined by the pixel .
             Vector3 Normal;
             Vector3 WorldPos;
-			ZEDSupportFunctions.GetNormalAtPixel(zedManager.zedCamera,ScreenPosition,sl.REFERENCE_FRAME.WORLD,LeftCamera,out Normal);
-			ZEDSupportFunctions.GetWorldPositionAtPixel(zedManager.zedCamera,ScreenPosition, LeftCamera,out WorldPos);
+			ZEDSupportFunctions.GetNormalAtPixel(zedManager.zedCamera,ScreenPosition,sl.REFERENCE_FRAME.WORLD,cam,out Normal);
+			ZEDSupportFunctions.GetWorldPositionAtPixel(zedManager.zedCamera,ScreenPosition, cam,out WorldPos);
 
 			//To consider the location as a flat surface, we check that the normal is valid and is closely aligned with gravity.
             bool validFloor = Normal.x != float.NaN && Vector3.Dot(Normal, Vector3.up) > 0.85f;
