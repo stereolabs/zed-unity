@@ -102,7 +102,7 @@ Aim your controller at the floor and pull the trigger to place a bunny. Then, a 
 
 ### ArUco Marker Detection (Requires OpenCV for Unity package)
 
-[![](https://thumbs.gfycat.com/DefensiveBackAmericankestrel-size_restricted.gif =444x250)](https://gfycat.com/DefensiveBackAmericanKestrel)
+[![](https://thumbs.gfycat.com/DefensiveBackAmericankestrel-size_restricted.gif)](https://gfycat.com/DefensiveBackAmericanKestrel)
 
 Print out ArUco markers, put them in view of your ZED, and let the battle begin. Shows how to easily interface the ZED with OpenCV for marker detection using a variety of included scripts. Must have the [OpenCV for Unity](https://assetstore.unity.com/packages/tools/integration/opencv-for-unity-21088) package (trial or full version) imported to use. 
 
@@ -115,7 +115,7 @@ Aim your ZED at a greenscreen and hit Play to see your subject standing in a sma
 
 ### Mixed Reality Calibration
 
-[![](https://thumbs.gfycat.com/NegativeLazyHuman-size_restricted.gif =444x250)](https://gfycat.com/NegativeLazyHuman)
+[![](https://thumbs.gfycat.com/NegativeLazyHuman-size_restricted.gif)](https://gfycat.com/NegativeLazyHuman)
 
 Use our interactive, in-VR app to calibrate your ZED with a tracked object, like a controller or Vive Tracker, to make capturing mixed reality videos easier than ever. 
 
