@@ -100,11 +100,25 @@ Run the scene and hold down spacebar to see if you're looking at a valid surface
 
 Aim your controller at the floor and pull the trigger to place a bunny. Then, a baseball bat will appear in your hand. Smack the bunny and send it flying as far as it can go - you'll see the distance once it lands. Shows how plane detection can fit into a proper game, and how to use **ZEDSupportFunctions**'s HitTestOnRay to check for planes using world space. 
 
+### ArUco Marker Detection (Requires OpenCV for Unity package)
+
+[![](https://thumbs.gfycat.com/DefensiveBackAmericankestrel-size_restricted.gif =444x250)](https://gfycat.com/DefensiveBackAmericanKestrel)
+
+Print out ArUco markers, put them in view of your ZED, and let the battle begin. Shows how to easily interface the ZED with OpenCV for marker detection using a variety of included scripts. Must have the [OpenCV for Unity](https://assetstore.unity.com/packages/tools/integration/opencv-for-unity-21088) package (trial or full version) imported to use. 
+
 ### Greenscreen 
 
 [![](https://thumbs.gfycat.com/PalatableDesertedHorse-size_restricted.gif)](https://gfycat.com/PalatableDesertedHorse)
 
 Aim your ZED at a greenscreen and hit Play to see your subject standing in a small town in the desert. You'll see that the nearby crates still have all the proper occlusion, but the greenscreen background is replaced with the virtual background. Attach the ZED to a controller or Vive Tracker and specify it in **ZEDControllerTracker** to move the ZED around in your tracked VR space. 
+
+
+### Mixed Reality Calibration
+
+[![](https://thumbs.gfycat.com/NegativeLazyHuman-size_restricted.gif =444x250)](https://gfycat.com/NegativeLazyHuman)
+
+Use our interactive, in-VR app to calibrate your ZED with a tracked object, like a controller or Vive Tracker, to make capturing mixed reality videos easier than ever. 
+
 
 
 
@@ -369,6 +383,15 @@ A static class holding many static functions that simplify a number of interacti
  - `public static bool HitTestOnRay(Camera camera, Vector3 startpos, Quaternion rot, float maxdistance, float distbetweendots, out Vector3 collisionpoint)` emulates Unity's raycast feature by calling HitTestOnPoint() along a line at specified intervals. Useful for object placement and fast-moving projectiles.
  - `public static bool SaveImage(RenderTexture rt, string path)` saves the specified RenderTexture to a .png file. Speficy the RenderTexture in ZEDRenderingPlane or on the Frame objects to snap a picture of the real world. 
 
+**ZEDToOpenCVRetriever**
+
+![](./doc_images/zed-aruco-script.png)
+
+If using the [OpenCV for Unity](https://assetstore.unity.com/packages/tools/integration/opencv-for-unity-21088) package, putting this component in your scene greatly simplifies interfacing the ZED with OpenCV. 
+
+It will automatically create an OpenCV matrix for the ZED's rectified camera parameters, which is required for most spatial OpenCV functions. Then, you can subscribe to a variety of events, named `OnImageUpdated_<imagetype>`, where `<imagetype>` is an image format the ZED can provide, such as `LeftRGBA` or `LeftGrayscale`. Then, whenever a new ZED image arrives, this component will deploy any events with listeners with the ZED's left camera reference, the Camera matrix, and an OpenCV matrix of that image. 
+
+You can see examples of ZEDToOpenCVRetriever being used in the ArUco sample scenes, where **ZEDArUcoDetectionManager** subscribes to them in order to move GameObjects to visible ArUco markers. 
 
 ## Additional Resources: 
 
