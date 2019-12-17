@@ -8,12 +8,12 @@ using UnityEngine;
 /// </summary>
 public class ForceTrackingSpaceType : MonoBehaviour
 {
-    public UnityEngine.VR.TrackingSpaceType trackingType = UnityEngine.VR.TrackingSpaceType.RoomScale;
+    public UnityEngine.XR.TrackingSpaceType trackingType = UnityEngine.XR.TrackingSpaceType.RoomScale;
 
     // Use this for initialization
     void Start ()
     {
-        UnityEngine.VR.VRDevice.SetTrackingSpaceType(trackingType);
+        UnityEngine.XR.XRDevice.SetTrackingSpaceType(trackingType);
     }
 	
 }
