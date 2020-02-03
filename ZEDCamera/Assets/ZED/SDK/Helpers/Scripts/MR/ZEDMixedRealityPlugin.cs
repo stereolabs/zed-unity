@@ -304,12 +304,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 		if (hasVRDevice) {
 			if (VRDevice.model.ToLower().Contains ("vive")) //Vive or Vive Pro
 				dllz_latency_corrector_initialize (0);
-			else if (VRDevice.model.ToLower().Contains ("oculus") || //Oculus Rift
-                VRDevice.model.ToLower().Contains("windows") || //Most WMR headsets
-                VRDevice.model.ToLower().Contains("visor") || //Dell Visor
-                VRDevice.model.ToLower().Contains("explorer")) //Lenovo Explorer
-				dllz_latency_corrector_initialize (1);
-			else if (VRDevice.model.ToLower().Contains ("windows")) //Windows MR through SteamVR Only (Beta)
+			else
 				dllz_latency_corrector_initialize (1);
 			
 	
