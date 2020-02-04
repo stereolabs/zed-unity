@@ -599,6 +599,12 @@ public class ZEDManager : MonoBehaviour
     [HideInInspector]
     public bool adaptativeBitrate = false;
 
+    /// <summary>
+    /// Enable/Disable adaptative bitrate
+    /// </summary>
+    [HideInInspector]
+    public int chunkSize = 32768;
+
     /////////////////////////////////////////////////////////////////////////
     ///////////////////////// Advanced  control /////////////////////////////
     /////////////////////////////////////////////////////////////////////////
@@ -1810,7 +1816,7 @@ public class ZEDManager : MonoBehaviour
             {
                 lock (zedCamera.grabLock)
                 {
-                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate);
+                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize);
                     if (err == sl.ERROR_CODE.SUCCESS)
                     {
                         isStreamingEnable = true;
@@ -3085,7 +3091,7 @@ public class ZEDManager : MonoBehaviour
             {
                 lock (zedCamera.grabLock)
                 {
-                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate);
+                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize);
                     if (err == sl.ERROR_CODE.SUCCESS)
                     {
                         isStreamingEnable = true;

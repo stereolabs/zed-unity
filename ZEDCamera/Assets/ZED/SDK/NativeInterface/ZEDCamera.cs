@@ -591,7 +591,7 @@ namespace sl
          * Streaming Module functions (starting v2.8)
          */
         [DllImport(nameDll, EntryPoint = "dllz_enable_streaming")]
-        private static extern int dllz_enable_streaming(int cameraID, sl.STREAMING_CODEC codec, uint bitrate, ushort port, int gopSize, int adaptativeBitrate);
+        private static extern int dllz_enable_streaming(int cameraID, sl.STREAMING_CODEC codec, uint bitrate, ushort port, int gopSize, int adaptativeBitrate,int chunk_size);
 
         [DllImport(nameDll, EntryPoint = "dllz_is_streaming_enabled")]
         private static extern int dllz_is_streaming_enabled(int cameraID);
@@ -2382,10 +2382,10 @@ namespace sl
         /// Streaming parameters: See sl::StreamingParameters of ZED SDK. See ZED SDK API doc for more informations
         /// </params>
         /// <returns>An ERROR_CODE that defines if the streaming pipe was successfully created</returns>
-        public ERROR_CODE EnableStreaming(STREAMING_CODEC codec = STREAMING_CODEC.AVCHD_BASED, uint bitrate = 8000, ushort port = 30000, int gopSize = -1, bool adaptativeBitrate = false)
+        public ERROR_CODE EnableStreaming(STREAMING_CODEC codec = STREAMING_CODEC.AVCHD_BASED, uint bitrate = 8000, ushort port = 30000, int gopSize = -1, bool adaptativeBitrate = false,int chunk_size = 32768)
         {
             int doAdaptBitrate = adaptativeBitrate ? 1 : 0;
-            return (ERROR_CODE)dllz_enable_streaming(CameraID, codec, bitrate, port, gopSize, doAdaptBitrate);
+            return (ERROR_CODE)dllz_enable_streaming(CameraID, codec, bitrate, port, gopSize, doAdaptBitrate, chunk_size);
         }
 
         /// <summary>

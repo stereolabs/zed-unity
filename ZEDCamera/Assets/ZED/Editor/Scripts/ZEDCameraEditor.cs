@@ -67,6 +67,8 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty streamingOutBitrateProperty;
     private SerializedProperty streamingOutGopSizeProperty;
     private SerializedProperty streamingOutAdaptBitrateProperty;
+    private SerializedProperty streamingOutChunkSizeProperty;
+
 
     //Spatial mapping prop
     private string displayText = "Hide Mesh";
@@ -253,6 +255,7 @@ public class ZEDCameraEditor : Editor
         streamingOutBitrateProperty = serializedObject.FindProperty("bitrate");
         streamingOutGopSizeProperty = serializedObject.FindProperty("gopSize");
         streamingOutAdaptBitrateProperty = serializedObject.FindProperty("adaptativeBitrate");
+        streamingOutChunkSizeProperty = serializedObject.FindProperty("chunkSize");
 
 
         ///Advanced Settings Serialized Properties
@@ -835,6 +838,10 @@ public class ZEDCameraEditor : Editor
 
             GUIContent streamingOutAdaptBitratePropertyLabel = new GUIContent("Adaptative Bitrate", "Adaptative bitrate for the codec");
             streamingOutAdaptBitrateProperty.boolValue = EditorGUILayout.Toggle(streamingOutAdaptBitratePropertyLabel, streamingOutAdaptBitrateProperty.boolValue);
+
+            GUIContent streamingOutChunkSizePropertyLabel = new GUIContent("Payload", "Chunk size for packet streaming");
+            streamingOutChunkSizeProperty.intValue = EditorGUILayout.IntField(streamingOutChunkSizePropertyLabel, streamingOutChunkSizeProperty.intValue);
+
             EditorGUI.indentLevel--;
         }
 
