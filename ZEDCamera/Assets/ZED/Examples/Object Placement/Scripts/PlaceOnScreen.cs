@@ -44,7 +44,7 @@ public class PlaceOnScreen : MonoBehaviour
         if (Input.GetMouseButtonDown(0)) //Checks for left click.
         {			
 			/// Mouse Input gives the screen pixel position
-            Vector2 ScreenPosition = Input.mousePosition;
+            Vector3 ScreenPosition = Input.mousePosition;
 
             //Get Normal and real world position defined by the pixel .
             Vector3 Normal;

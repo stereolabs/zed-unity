@@ -5,6 +5,10 @@ using UnityEngine;
 using System.Threading;
 using System.Runtime.InteropServices;
 
+#if ZED_LWRP || ZED_HDRP
+using UnityEngine.Rendering;
+#endif
+
 /// <summary>
 /// Represents an individual plane that was detected by ZEDPlaneDetectionManager.
 /// When created, it converts plane data from the ZED SDK into a mesh with proper world position/rotation. 
@@ -120,6 +124,11 @@ public class ZEDPlaneGameObject : MonoBehaviour
     }
 
     /// <summary>
+    /// The MeshFilter used to display the plane. 
+    /// </summary>
+    MeshFilter mfilter;
+
+    /// <summary>
     /// The MeshRenderer attached to this object. 
     /// </summary>
     MeshRenderer rend;
@@ -140,9 +149,9 @@ public class ZEDPlaneGameObject : MonoBehaviour
     private void SetComponents(PlaneData plane, Vector3[] vertices, int[] triangles, Material rendermaterial)
     {
         //Create the MeshFilter to render the mesh
-        MeshFilter mf = gameObject.GetComponent<MeshFilter>();
-        if (mf == null)
-            mf = gameObject.AddComponent<MeshFilter>();
+        mfilter = gameObject.GetComponent<MeshFilter>();
+        if (mfilter == null)
+            mfilter = gameObject.AddComponent<MeshFilter>();
 
         //Eliminate superfluous vertices.
         int highestvertindex = 0;
@@ -163,12 +172,12 @@ public class ZEDPlaneGameObject : MonoBehaviour
         }
 
         //Apply the new data to the MeshFilter's mesh and update it. 
-        mf.mesh.Clear();
-        mf.mesh.vertices = vertices;
-        mf.mesh.triangles = triangles;
-        mf.mesh.uv = uvs;
-        mf.mesh.RecalculateNormals();
-        mf.mesh.RecalculateBounds();
+        mfilter.mesh.Clear();
+        mfilter.mesh.vertices = vertices;
+        mfilter.mesh.triangles = triangles;
+        mfilter.mesh.uv = uvs;
+        mfilter.mesh.RecalculateNormals();
+        mfilter.mesh.RecalculateBounds();
 
         //Get the MeshRenderer and set properties.
         rend = gameObject.GetComponent<MeshRenderer>();
@@ -189,9 +198,9 @@ public class ZEDPlaneGameObject : MonoBehaviour
             mc = gameObject.AddComponent<MeshCollider>();
 
         // Set the mesh for the collider.
-        mc.sharedMesh = mf.mesh;
+        mc.sharedMesh = mfilter.mesh;
 
-        lastRenderState = true; 
+        lastRenderState = true;
 
     }
 
@@ -203,9 +212,9 @@ public class ZEDPlaneGameObject : MonoBehaviour
     /// <param name="vertices">Vertices of the mesh.</param>
     /// <param name="triangles">Triangles of the mesh.</param>
     /// <param name="opt_count">If a hit plane, the total number of hit planes detected prior to and including this one.</param>
-    public void Create(Camera cam,PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count)
+    public void Create(Camera cam, PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count)
     {
-		Create(cam,plane, vertices, triangles, opt_count, GetDefaultMaterial(plane.Type));
+        Create(cam, plane, vertices, triangles, opt_count, GetDefaultMaterial(plane.Type));
     }
 
     /// <summary>
@@ -217,7 +226,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
     /// <param name="triangles">Triangles of the mesh.</param>
     /// <param name="opt_count">If a hit plane, the total number of hit planes detected prior to and including this one.</param>
     /// <param name="rendermaterial">Material to replace the default wireframe plane material.</param>
-	public void Create(Camera cam,PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count, Material rendermaterial)
+	public void Create(Camera cam, PlaneData plane, Vector3[] vertices, int[] triangles, int opt_count, Material rendermaterial)
     {
         //Copy the supplied PlaneData into this component's own PlaneData, for accessing later. 
         planeData.ErrorCode = plane.ErrorCode;
@@ -228,32 +237,36 @@ public class ZEDPlaneGameObject : MonoBehaviour
         planeData.PlaneTransformOrientation = plane.PlaneTransformOrientation;
         planeData.PlaneEquation = plane.PlaneEquation;
         planeData.Extents = plane.Extents;
-		planeData.BoundsSize = plane.BoundsSize;
-		planeData.Bounds = new Vector3[plane.BoundsSize];
-		System.Array.Copy (plane.Bounds, planeData.Bounds, plane.BoundsSize);
+        planeData.BoundsSize = plane.BoundsSize;
+        planeData.Bounds = new Vector3[plane.BoundsSize];
+        System.Array.Copy(plane.Bounds, planeData.Bounds, plane.BoundsSize);
 
         //Calculate the world space normal. 
-		Camera leftCamera = cam;
-		worldNormal = cam.transform.TransformDirection(planeData.PlaneNormal);
+        Camera leftCamera = cam;
+        worldNormal = cam.transform.TransformDirection(planeData.PlaneNormal);
 
         //Create the MeshCollider.
         gameObject.AddComponent<MeshCollider>().sharedMesh = null;
 
         if (plane.Type != PLANE_TYPE.FLOOR) //Give it a name. 
-			gameObject.name = "Hit Plane " + opt_count;      
+            gameObject.name = "Hit Plane " + opt_count;
         else
-			gameObject.name = "Floor Plane";
+            gameObject.name = "Floor Plane";
 
 
-		gameObject.layer = 12;//sl.ZEDCamera.TagOneObject;
+        gameObject.layer = 12;//sl.ZEDCamera.TagOneObject;
 
         SetComponents(plane, vertices, triangles, rendermaterial);
 
         isCreated = true;
 
         //Subscribe to events that let you govern visibility in the scene and game. 
+#if !ZED_LWRP && !ZED_HDRP
         Camera.onPreCull += PreCull;
         Camera.onPostRender += PostRender;
+#else
+        RenderPipelineManager.beginFrameRendering += SRPFrameBegin;
+#endif
     }
 
     /// <summary>
@@ -359,31 +372,34 @@ public class ZEDPlaneGameObject : MonoBehaviour
             return new Bounds(gameObject.transform.position, Vector3.zero);
     }
 
-	/// <summary>
-	/// Gets the minimum distance to plane boundaries of a given 3D point (in world space)
-	/// </summary>
-	/// <returns>The minimum distance to boundaries.</returns>
-	/// <param name="worldPosition">World position.</param>
-	public float getMinimumDistanceToBoundaries(Camera cam, Vector3 worldPosition,out Vector3 minimumBoundsPosition)
-	{
-		
-		Camera leftCamera = cam;
-		float minimal_distance = ZEDSupportFunctions.DistancePointLine (worldPosition, leftCamera.transform.TransformPoint(planeData.Bounds [0]), leftCamera.transform.TransformPoint(planeData.Bounds [1]));
+    /// <summary>
+    /// Gets the minimum distance to plane boundaries of a given 3D point (in world space)
+    /// </summary>
+    /// <returns>The minimum distance to boundaries.</returns>
+    /// <param name="worldPosition">World position.</param>
+    public float getMinimumDistanceToBoundaries(Camera cam, Vector3 worldPosition, out Vector3 minimumBoundsPosition)
+    {
 
-		Vector3 BestFoundPoint = new Vector3(0.0f,0.0f,0.0f);
-		if (planeData.BoundsSize > 2) {
-			for (int i = 1; i < planeData.BoundsSize - 1; i++) {
-				float currentDistance = ZEDSupportFunctions.DistancePointLine (worldPosition, leftCamera.transform.TransformPoint(planeData.Bounds [i]), leftCamera.transform.TransformPoint(planeData.Bounds [i + 1]));
-				if (currentDistance < minimal_distance) {
-					minimal_distance = currentDistance;
-					BestFoundPoint = ZEDSupportFunctions.ProjectPointLine(worldPosition,leftCamera.transform.TransformPoint(planeData.Bounds[i]),leftCamera.transform.TransformPoint(planeData.Bounds[i+1]));
-				}
-			}
-		}
+        Camera leftCamera = cam;
+        float minimal_distance = ZEDSupportFunctions.DistancePointLine(worldPosition, leftCamera.transform.TransformPoint(planeData.Bounds[0]), leftCamera.transform.TransformPoint(planeData.Bounds[1]));
 
-		minimumBoundsPosition = BestFoundPoint;
-		return minimal_distance;
-	}
+        Vector3 BestFoundPoint = new Vector3(0.0f, 0.0f, 0.0f);
+        if (planeData.BoundsSize > 2)
+        {
+            for (int i = 1; i < planeData.BoundsSize - 1; i++)
+            {
+                float currentDistance = ZEDSupportFunctions.DistancePointLine(worldPosition, leftCamera.transform.TransformPoint(planeData.Bounds[i]), leftCamera.transform.TransformPoint(planeData.Bounds[i + 1]));
+                if (currentDistance < minimal_distance)
+                {
+                    minimal_distance = currentDistance;
+                    BestFoundPoint = ZEDSupportFunctions.ProjectPointLine(worldPosition, leftCamera.transform.TransformPoint(planeData.Bounds[i]), leftCamera.transform.TransformPoint(planeData.Bounds[i + 1]));
+                }
+            }
+        }
+
+        minimumBoundsPosition = BestFoundPoint;
+        return minimal_distance;
+    }
 
 
     /// <summary>
@@ -411,10 +427,10 @@ public class ZEDPlaneGameObject : MonoBehaviour
                 //Floor planes are blue
                 defaultmaterial.SetColor("_WireColor", new Color(44.0f / 255.0f, 157.0f / 255.0f, 222.0f / 255.0f, 174.0f / 255.0f));
                 break;
-			case PLANE_TYPE.HIT_HORIZONTAL :
-			case PLANE_TYPE.HIT_VERTICAL :
-		    case PLANE_TYPE.HIT_UNKNOWN :
-			     // Hit planes are pink
+            case PLANE_TYPE.HIT_HORIZONTAL:
+            case PLANE_TYPE.HIT_VERTICAL:
+            case PLANE_TYPE.HIT_UNKNOWN:
+                // Hit planes are pink
                 defaultmaterial.SetColor("_WireColor", new Color(221.0f / 255.0f, 20.0f / 255.0f, 149.0f / 255.0f, 174.0f / 255.0f));
                 break;
 
@@ -427,6 +443,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
         return defaultmaterial;
     }
 
+#if! ZED_LWRP && !ZED_HDRP
     /// <summary>
     /// Disables the MeshRenderer object for rendering a single camera, depending on display settings in ZEDPlaneDetectionManager. 
     /// </summary>
@@ -456,10 +473,35 @@ public class ZEDPlaneGameObject : MonoBehaviour
     {
         rend.enabled = lastRenderState;
     }
+#else
+    private void SRPFrameBegin(ScriptableRenderContext context, Camera[] rendercams)
+    {
+        rend.enabled = false; //We'll only draw for certain cameras. 
+        foreach (Camera rendcam in rendercams)
+        {
+            if (rendcam.name.ToLower().Contains("scenecamera"))
+            {
+                if (ZEDPlaneDetectionManager.isSceneDisplay) DrawPlane(rendcam);
+            }
+            else if (ZEDPlaneDetectionManager.isGameDisplay) DrawPlane(rendcam);
+        }
+    }
+
+    private void DrawPlane(Camera drawcam)
+    {
+        Matrix4x4 canvastrs = Matrix4x4.TRS(transform.position, transform.rotation, transform.localScale);
+        Graphics.DrawMesh(mfilter.mesh, canvastrs, rend.material, 0, drawcam);
+    }
+#endif
+
 
     private void OnDestroy()
     {
+#if !ZED_LWRP && !ZED_HDRP
         Camera.onPreCull -= PreCull;
         Camera.onPostRender -= PostRender;
+#else
+        RenderPipelineManager.beginFrameRendering -= SRPFrameBegin;
+#endif
     }
 }

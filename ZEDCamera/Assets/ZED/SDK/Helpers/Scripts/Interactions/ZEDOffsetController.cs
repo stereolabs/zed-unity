@@ -65,7 +65,6 @@ public class ZEDOffsetController : MonoBehaviour
             if (TrackerComponentExist())
             {
                 //If using SteamVR, get the serial number of the tracked device, or write "NONE" to indicate we checked but couldn't find it. 
-                //This is used by ZEDControllerManager later to know specifically which device the loaded offset has been calibrated to, in the event of multiple controllers/trackers. 
                 string result = "indexController = ";
                 if (controllerTracker.index > 0)
                 {

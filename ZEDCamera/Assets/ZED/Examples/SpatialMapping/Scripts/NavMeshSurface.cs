@@ -226,7 +226,7 @@ public class NavMeshSurface: MonoBehaviour
         }
         r.sharedMaterial = materialTransparent;
         navMeshPosition = r.bounds.center;
-        navMeshObject.SetActive(true); //Hidden by default. 
+        navMeshObject.SetActive(false); //Hidden by default. 
 
         return true;
     }

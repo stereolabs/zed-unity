@@ -52,7 +52,7 @@ public class ZEDPointCloudManager : MonoBehaviour
     /// <summary>
     /// Material used to display the point cloud. Usually Mat_ZED_PointCloud.
     /// </summary>
-    private Material mat;
+    public Material mat;
 
     /// <summary>
     /// Cached property index of _Position shader property, so we only look it up once. Do not use. 
@@ -158,7 +158,10 @@ public class ZEDPointCloudManager : MonoBehaviour
                 numberPoints = zed.ImageWidth * zed.ImageHeight;
 
                 //Load and set the material properties.
-                mat = new Material(Resources.Load("Materials/PointCloud/Mat_ZED_PointCloud") as Material);
+                if (mat == null)
+                {
+                    mat = new Material(Resources.Load("Materials/PointCloud/Mat_ZED_PointCloud") as Material);
+                }
                 if (mat != null)
                 {
                     //mat.SetTexture("_XYZTex", XYZTexture);

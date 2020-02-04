@@ -27,6 +27,7 @@ public class PlayerDamageReceiver : MonoBehaviour
     /// </summary>
     private float coloralpha
     {
+#if !ZED_LWRP && !ZED_HDRP
         get
         {
             return meshrenderer.material.color.a;
@@ -35,6 +36,19 @@ public class PlayerDamageReceiver : MonoBehaviour
         {
             meshrenderer.material.color = new Color(meshrenderer.material.color.r, meshrenderer.material.color.g, meshrenderer.material.color.b, value);
         }
+#else
+        get
+        {
+            return meshrenderer.material.GetColor("_UnlitColor").a;
+        }
+        set
+        {
+            Color newcol = meshrenderer.material.GetColor("_UnlitColor");
+            newcol.a = value;
+            meshrenderer.material.SetColor("_UnlitColor", newcol);
+        }
+#endif
+
     }
 
     /// <summary>
@@ -65,6 +79,11 @@ public class PlayerDamageReceiver : MonoBehaviour
         //Tick down the color if it's above zero. 
         if(coloralpha > 0f)
         {
+            /*float newalpha = coloralpha - Time.deltaTime / secondsToDisplayEffect * maxcoloralpha;
+            if (newalpha < 0f) newalpha = 0f;
+            coloralpha = newalpha;*/
+
+
             coloralpha -= Time.deltaTime / secondsToDisplayEffect * maxcoloralpha;
         }
     }

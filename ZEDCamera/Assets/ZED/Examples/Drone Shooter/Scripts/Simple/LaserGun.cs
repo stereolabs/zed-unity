@@ -290,4 +290,28 @@ public class LaserGun : MonoBehaviour
             audiosource.Play();
         }
     }
+
+#if ZED_OCULUS
+    /// <summary>
+    /// Returns if this script is bound to an Oculus Touch controller that is currently not connected. 
+    /// For example, if it's a Right Controller but only the left is connected, it returns false. 
+    /// If not bound to a controller, returns true. 
+    /// </summary>
+    /// <returns></returns>
+    private bool IsConnectedController()
+    {
+        if (!objecttracker) return true; //Not attached to a tracker. Return true since it doesn't depend on a controller to be alive. 
+        if (objecttracker.deviceToTrack != ZEDControllerTracker.Devices.LeftController && objecttracker.deviceToTrack != ZEDControllerTracker.Devices.RightController)
+            return true; //Not bound to a left or right controller, so let it live. 
+
+
+        string connectedcontrollers = OVRInput.GetConnectedControllers().ToString().ToLower();
+        if (connectedcontrollers == "touch") return true; //Both controllers are connected, so 
+        if (objecttracker.deviceToTrack == ZEDControllerTracker.Devices.LeftController && connectedcontrollers == "ltouch") return true; //Left controller only.
+        if (objecttracker.deviceToTrack == ZEDControllerTracker.Devices.RightController && connectedcontrollers == "rtouch") return true; //Right controller only. 
+
+        return false;
+    }
+#endif
+
 }

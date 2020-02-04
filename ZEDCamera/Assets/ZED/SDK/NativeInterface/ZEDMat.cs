@@ -166,7 +166,7 @@ namespace sl
         };
 
         #region DLL Calls
-        const string nameDll = "sl_unitywrapper";
+        const string nameDll = sl.ZEDCommon.NameDLL;
 
         [DllImport(nameDll, EntryPoint = "dllz_mat_create_new")]
         private static extern IntPtr dllz_mat_create_new(sl.Resolution resolution, int type, int mem);
@@ -176,10 +176,8 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "dllz_mat_is_init")]
         private static extern bool dllz_mat_is_init(System.IntPtr ptr);
-
         [DllImport(nameDll, EntryPoint = "dllz_mat_free")]
         private static extern bool dllz_mat_free(System.IntPtr ptr, int type);
-
         [DllImport(nameDll, EntryPoint = "dllz_mat_get_infos")]
         private static extern bool dllz_mat_get_infos(System.IntPtr ptr, byte[] buffer);
 
@@ -316,7 +314,7 @@ namespace sl
         /// </summary>
         public ZEDMat()
         {
-            _matInternalPtr = dllz_mat_create_new_empty();
+            _matInternalPtr = IntPtr.Zero;
         }
 
         /// <summary>
@@ -340,7 +338,7 @@ namespace sl
         /// Depends on texture type: see sl.VIEW and sl.MEASURE in ZEDCommon.cs.</param>
         /// <param name="mem">Whether Mat should exist on CPU or GPU memory.
         /// Choose depending on where you'll need to access it from.</param>
-        public ZEDMat(sl.Resolution resolution, MAT_TYPE type, MEM mem = MEM.MEM_CPU)
+        public void Create(sl.Resolution resolution, MAT_TYPE type, MEM mem = MEM.MEM_CPU)
         {
             _matInternalPtr = dllz_mat_create_new(resolution, (int)(type), (int)(mem));
         }
@@ -354,7 +352,7 @@ namespace sl
         /// Depends on texture type: see sl.VIEW and sl.MEASURE in ZEDCommon.cs.</param>
         /// <param name="mem">Whether Mat should exist on CPU or GPU memory.
         /// Choose depending on where you'll need to access it from.</param>
-        public ZEDMat(uint width, uint height, MAT_TYPE type, MEM mem = MEM.MEM_CPU)
+        public void Create(uint width, uint height, MAT_TYPE type, MEM mem = MEM.MEM_CPU)
         {
             _matInternalPtr = dllz_mat_create_new(new sl.Resolution(width, height), (int)(type), (int)(mem));
         }
@@ -375,7 +373,7 @@ namespace sl
         public void Free(MEM mem = (MEM.MEM_GPU | MEM.MEM_CPU))
         {
             dllz_mat_free(_matInternalPtr, (int)mem);
-            _matInternalPtr = System.IntPtr.Zero;
+            _matInternalPtr = IntPtr.Zero;
         }
 
         /// <summary>

@@ -2,6 +2,10 @@
 using UnityEngine;
 using System.IO;
 
+#if ZED_LWRP || ZED_HDRP
+using UnityEngine.Rendering;
+#endif
+
 /// <summary>
 /// When attached to an object that also has a ZEDRenderingPlane, removes all real-world pixels
 /// of a specified color. Useful for third-person mixed reality setups. 
@@ -17,11 +21,15 @@ public class GreenScreenManager : MonoBehaviour
     /// </summary>
     private GameObject screen = null;
 
+    /// <summary>
+    /// The Camera that this script is attached to. Only needed in SRP for a callback, since OnPreRender won't work. 
+    /// </summary>
+    private Camera cam;
 
-	/// <summary>
-	/// The screen manager script. Automatically assigned in OnEnable(). 
-	/// </summary>
-	public ZEDManager cameraManager = null;
+    /// <summary>
+    /// The screen manager script. Automatically assigned in OnEnable(). 
+    /// </summary>
+    public ZEDManager cameraManager = null;
 
     /// <summary>
     /// The screen manager script. Automatically assigned in OnEnable(). 
@@ -149,6 +157,7 @@ public class GreenScreenManager : MonoBehaviour
     {
         get { return finalTexture; }
     }
+
     /// <summary>
     /// Available canals (views) for displaying the chroma key effect.
     /// </summary>
@@ -294,8 +303,8 @@ public class GreenScreenManager : MonoBehaviour
     {
         get
         {
-            if (_masktexid == null) _masktexid = Shader.PropertyToID("offset");
-            return (int)_masktexid;
+            if (_offsetid == null) _offsetid = Shader.PropertyToID("offset");
+            return (int)_offsetid;
         }
     }
 
@@ -311,13 +320,13 @@ public class GreenScreenManager : MonoBehaviour
 
         cameraManager.OnZEDReady += ZEDReady;
         Shader.SetGlobalInt("ZEDGreenScreenActivated", 1);
-		screenManager = GetComponent<ZEDRenderingPlane>();
+        screenManager = GetComponent<ZEDRenderingPlane>();
 
     }
 
     private void OnDisable()
     {
-        if(cameraManager)
+        if (cameraManager)
         {
             cameraManager.OnZEDReady -= ZEDReady;
         }
@@ -325,7 +334,7 @@ public class GreenScreenManager : MonoBehaviour
 
     private void Awake()
     {
-		//cameraManager = gameObject.GetComponent<ZEDManager> ();
+        //cameraManager = gameObject.GetComponent<ZEDManager> ();
         Shader.SetGlobalInt("_ZEDStencilComp", 0);
 
         if (screen == null)
@@ -335,8 +344,14 @@ public class GreenScreenManager : MonoBehaviour
         }
         if (enableGarbageMatte)
         {
-			garbageMatte = new GarbageMatte(cameraManager, finalMat, transform, garbageMatte);
+            garbageMatte = new GarbageMatte(cameraManager, finalMat, transform, garbageMatte);
         }
+
+#if ZED_LWRP || ZED_HDRP
+        cam = GetComponent<Camera>();
+        if (!cam) Debug.LogError("GreenScreenManager is not attached to a Camera.");
+        RenderPipelineManager.beginCameraRendering += OnSRPPreRender;
+#endif
 
 #if !UNITY_EDITOR
         Debug.Log("Load Chroma keys");
@@ -354,9 +369,9 @@ public class GreenScreenManager : MonoBehaviour
 
     private void Update()
     {
-        if(screenManager != null && !textureOverlayInit) //Need to tell the shader to apply the mask. 
+        if (screenManager != null && !textureOverlayInit) //Need to tell the shader to apply the mask. 
         {
-            if(screenManager.ManageKeywordForwardMat(true, "DEPTH_ALPHA"))
+            if (screenManager.ManageKeywordForwardMat(true, "DEPTH_ALPHA"))
             {
                 textureOverlayInit = true;
             }
@@ -376,8 +391,8 @@ public class GreenScreenManager : MonoBehaviour
             }
             else
             {
-				if (cameraManager!=null)
-				garbageMatte = new GarbageMatte(cameraManager, finalMat, transform, garbageMatte);
+                if (cameraManager != null)
+                    garbageMatte = new GarbageMatte(cameraManager, finalMat, transform, garbageMatte);
             }
         }
     }
@@ -389,13 +404,17 @@ public class GreenScreenManager : MonoBehaviour
     private void ZEDReady()
     {
         //Set up textures and materials used for the final output. 
-		if (cameraManager == null)
-			return;
-        
-		finalTexture = new RenderTexture(cameraManager.zedCamera.ImageWidth,cameraManager.zedCamera.ImageHeight, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
-        if(screenManager.forwardMat) screenManager.forwardMat.SetTexture("ZEDMaskTexGreenScreen", finalTexture);
-        if(screenManager.deferredMat) screenManager.deferredMat.SetTexture("ZEDMaskTexGreenScreen", finalTexture);
-        
+        if (cameraManager == null)
+            return;
+
+        //We set the material again in case it has changed. 
+        //screen = gameObject.transform.GetChild(0).gameObject;
+        finalMat = screenManager.matRGB;
+
+        finalTexture = new RenderTexture(cameraManager.zedCamera.ImageWidth, cameraManager.zedCamera.ImageHeight, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
+        if (screenManager.forwardMat) screenManager.forwardMat.SetTexture("ZEDMaskTexGreenScreen", finalTexture);
+        if (screenManager.deferredMat) screenManager.deferredMat.SetTexture("ZEDMaskTexGreenScreen", finalTexture);
+
         finalMat.SetTexture("_MaskTex", finalTexture);
         greenScreenMat = new Material(Resources.Load("Materials/Mat_ZED_Compute_GreenScreen") as Material);
         blurMaterial = new Material(Resources.Load("Materials/PostProcessing/Mat_ZED_Blur") as Material);
@@ -415,9 +434,9 @@ public class GreenScreenManager : MonoBehaviour
         UpdateCanal();
         if (System.IO.File.Exists("ZED_Settings.conf"))
         {
-			cameraManager.zedCamera.LoadCameraSettings("ZED_Settings.conf");
-			cameraManager.zedCamera.SetCameraSettings();
-	    }
+            cameraManager.zedCamera.LoadCameraSettings("ZED_Settings.conf");
+            cameraManager.zedCamera.SetCameraSettings();
+        }
     }
 
     /// <summary>
@@ -452,7 +471,7 @@ public class GreenScreenManager : MonoBehaviour
         if (finalMat != null)
         {
             if (value)
-            { 
+            {
                 finalMat.EnableKeyword(name);
             }
             else
@@ -469,7 +488,7 @@ public class GreenScreenManager : MonoBehaviour
     }
 #endif
 
-    private void OnApplicationQuit() 
+    private void OnApplicationQuit()
     {
         if (finalTexture != null && finalTexture.IsCreated()) finalTexture.Release();
     }
@@ -484,7 +503,7 @@ public class GreenScreenManager : MonoBehaviour
 
         if (cameraManager != null)
         {
-			cameraManager.resolution = sl.RESOLUTION.HD1080;
+            cameraManager.resolution = sl.RESOLUTION.HD1080;
             Debug.Log("Resolution set to HD1080 for better result");
         }
         SetDefaultValues();
@@ -544,7 +563,7 @@ public class GreenScreenManager : MonoBehaviour
             gsData = JsonUtility.FromJson<GreenScreenData>(dataAsJson);
             return true;
         }
-      
+
         return false;
     }
 
@@ -610,15 +629,29 @@ public class GreenScreenManager : MonoBehaviour
 
         if (forcegarbagemate && garbageMatte != null)
         {
-			if (!garbageMatte.IsInit && cameraManager!=null)
+            if (!garbageMatte.IsInit && cameraManager != null)
             {
-				garbageMatte = new GarbageMatte(cameraManager, finalMat, transform, garbageMatte);
+                garbageMatte = new GarbageMatte(cameraManager, finalMat, transform, garbageMatte);
             }
             enableGarbageMatte = true;
             garbageMatte.LoadData(gsData.garbageMatteData);
             garbageMatte.ApplyGarbageMatte();
         }
     }
+
+#if ZED_LWRP || ZED_HDRP
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cam"></param>
+    private void OnSRPPreRender(ScriptableRenderContext context, Camera renderingcam)
+    {
+        if (renderingcam == cam)
+        {
+            OnPreRender();
+        }
+    }
+#endif
 
     /// <summary>
     /// Where various image processing effects are applied, including the green screen effect itself. 

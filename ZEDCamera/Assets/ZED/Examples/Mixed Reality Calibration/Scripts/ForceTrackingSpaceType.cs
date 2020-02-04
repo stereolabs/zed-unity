@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 /// <summary>
 /// Forces Unity's XR tracking mode to be set to room scale. This happens automatically with SteamVR
@@ -8,12 +9,12 @@ using UnityEngine;
 /// </summary>
 public class ForceTrackingSpaceType : MonoBehaviour
 {
-    public UnityEngine.VR.TrackingSpaceType trackingType = UnityEngine.VR.TrackingSpaceType.RoomScale;
+    public TrackingSpaceType trackingType =  TrackingSpaceType.RoomScale;
 
     // Use this for initialization
     void Start ()
     {
-        UnityEngine.VR.VRDevice.SetTrackingSpaceType(trackingType);
+        XRDevice.SetTrackingSpaceType(trackingType);
     }
 	
 }
