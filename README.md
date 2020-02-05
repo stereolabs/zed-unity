@@ -36,14 +36,14 @@ Supported VR headsets:
 
 **Software:** 
  - Windows 7-10, Ubuntu 16, Ubuntu 18
- - NVIDIA CUDA† ([download](https://developer.nvidia.com/cuda-downloads)) 
+ - NVIDIA CUDAâ€  ([download](https://developer.nvidia.com/cuda-downloads)) 
  - Unity 2017.3 or above ([download](https://unity3d.com/get-unity/download/archive)) 
  - ZED SDK ([download](https://www.stereolabs.com/developers/release/latest/))
  - ZED Unity plugin ([download](https://github.com/stereolabs/zed-unity/releases))
 
 
-† *A Linux version of the plugin is available in the Linux_compatibility_beta branch for ZED SDK 2.8.
-Snce SDK 3.0, Windows and Linux version are in the same default branch.
+â€  *A Linux version of the plugin is available in the Linux_compatibility_beta branch for ZED SDK 2.8.
+Since SDK 3.0, Windows and Linux version are in the same default branch.
 See the tutorial (https://github.com/stereolabs/zed-unity/tree/master/ZEDCamera/Assets/ZED/Doc/Tutorials)*
 
 
