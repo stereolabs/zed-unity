@@ -23,6 +23,11 @@
   * **Compatibility**:
     * Compatible with ZED SDK 3.0, CUDA 9.0, 10.0 and 10.2 on Windows and Linux
 
+### 2.8.3
+  * **Bug Fixes:**
+    * Fix potential compile issue with Oculus SDK
+    * Fix MR headset latency correction when headset does not containes "windows" in their names
+    * Merge PR to fix CreateTrackedObjectPrefab (Thanks to @Abrahamh08)
 
 
 ### 2.8.2
