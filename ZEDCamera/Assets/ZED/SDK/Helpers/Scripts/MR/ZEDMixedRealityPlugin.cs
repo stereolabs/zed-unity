@@ -2,7 +2,7 @@
 
 using UnityEngine;
 using System.Runtime.InteropServices;
-using UnityEngine.VR;
+using UnityEngine.XR;
 using System.IO;
 
 /// <summary>
@@ -295,19 +295,34 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
 	UnityEngine.VR.VRNodeState nodeState = new UnityEngine.VR.VRNodeState();
 #endif
+
+    private bool hasXRDevice()
+    {
+        return XRDevice.isPresent;
+    }
+
+    private string getXRModelName()
+    {
+        return XRDevice.model;
+    }
+
     private void Awake()
 	{
         //Initialize the latency tracking only if a supported headset is detected. 
         //You can force it to work for unsupported headsets by implementing your own logic for calling 
         //dllz_latency_corrector_initialize. 
-        hasVRDevice = VRDevice.isPresent;
-		if (hasVRDevice) {
-			if (VRDevice.model.ToLower().Contains ("vive")) //Vive or Vive Pro
-				dllz_latency_corrector_initialize (0);
-			else
-				dllz_latency_corrector_initialize (1);
-			
-	
+        hasVRDevice = hasXRDevice();
+		if (hasVRDevice)
+        {
+            if (getXRModelName().ToLower().Contains("vive")) //Vive or Vive Pro
+            {
+                dllz_latency_corrector_initialize(0);
+            }
+            else //Oculus Rift CV1, Rift S, Windows Mixed Reality, Valve Index, etc. 
+            {
+                dllz_latency_corrector_initialize(1);
+            }
+				
 			dllz_drift_corrector_initialize ();
 		}
 		#if UNITY_2017_OR_NEWER
@@ -323,7 +338,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     /// </summary>
     void Start()
 	{
-		hasVRDevice = VRDevice.isPresent;
+		hasVRDevice = hasXRDevice();
 
 
 		//iterate until we found the ZED Manager parent...
@@ -409,14 +424,14 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
 		float perception_distance = 1.0f;
 		float zed2eye_distance = 0.1f; //Estimating 10cm between your eye and physical location of the ZED Mini. 
-		hasVRDevice = VRDevice.isPresent;
+		hasVRDevice = hasXRDevice();
 
 		if (hasVRDevice) {
 			sl.CalibrationParameters parameters = zedCamera.CalibrationParametersRectified;
 
 			scaleFromZED = ComputeSizePlaneWithGamma (new sl.Resolution ((uint)zedCamera.ImageWidth, (uint)zedCamera.ImageHeight),
 				perception_distance, zed2eye_distance, offset.z,
-				ComputeFocal (new sl.Resolution ((uint)UnityEngine.VR.VRSettings.eyeTextureWidth, (uint)UnityEngine.VR.VRSettings.eyeTextureHeight)),
+				ComputeFocal (new sl.Resolution ((uint)XRSettings.eyeTextureWidth, (uint)XRSettings.eyeTextureHeight)),
 				parameters.leftCam.fx);
             
 			scale (quadLeft.gameObject, scaleFromZED);
@@ -425,7 +440,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         ready = false;
 
         // If using Vive, change ZED's settings to compensate for different screen. 
-        if (VRDevice.model.ToLower().Contains ("vive")) {
+        if (getXRModelName().ToLower().Contains ("vive")) {
 			zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.CONTRAST, 3);
 			zedCamera.SetCameraSettings (sl.CAMERA_SETTINGS.SATURATION, 3);
 		}
@@ -472,8 +487,8 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 			return;
 		
 		KeyPose k = new KeyPose();
-		k.Orientation = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.Head);
-		k.Translation = UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.Head);
+		k.Orientation =  InputTracking.GetLocalRotation( XRNode.Head);
+		k.Translation = InputTracking.GetLocalPosition(XRNode.Head);
 		if (manager.zedCamera.IsCameraReady)
 		{
 			k.Timestamp = manager.zedCamera.GetCurrentTimeStamp();
@@ -540,8 +555,8 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 			return new Pose ();
 
 		Transform tmpHMD = transform;
-		tmpHMD.position = InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.Head);
-		tmpHMD.rotation = InputTracking.GetLocalRotation (UnityEngine.VR.VRNode.Head);
+		tmpHMD.position = InputTracking.GetLocalPosition(XRNode.Head);
+		tmpHMD.rotation = InputTracking.GetLocalRotation (XRNode.Head);
 
 		Quaternion r = Quaternion.identity;
 		Vector3 t = Vector3.zero;
@@ -588,9 +603,9 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     /// <param name="t">Final translation/position.</param>
 	public void AdjustTrackingAR(Vector3 position, Quaternion orientation, out Quaternion r, out Vector3 t, bool setimuprior)
 	{
-		hasVRDevice = VRDevice.isPresent;
+        hasVRDevice = hasXRDevice();
 	
-		Pose hmdTransform = new Pose(InputTracking.GetLocalPosition(VRNode.Head), InputTracking.GetLocalRotation(VRNode.Head)); //Current HMD position
+		Pose hmdTransform = new Pose(InputTracking.GetLocalPosition(XRNode.Head), InputTracking.GetLocalRotation(XRNode.Head)); //Current HMD position
 		trackingData.trackingState = (int)manager.ZEDTrackingState; //Whether the ZED's tracking is currently valid (not off or unable to localize).
 		trackingData.zedPathTransform = new Pose (position, orientation);
 
@@ -657,11 +672,11 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
             
 			if ((!manager.IsZEDReady && manager.IsStereoRig))
 			{
-				quadLeft.localRotation = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.Head);
-				quadLeft.localPosition = UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.Head) + quadLeft.localRotation * offset;
+				quadLeft.localRotation = InputTracking.GetLocalRotation(XRNode.Head);
+				quadLeft.localPosition = InputTracking.GetLocalPosition(XRNode.Head) + quadLeft.localRotation * offset;
 
-				quadRight.localRotation = UnityEngine.VR.InputTracking.GetLocalRotation(UnityEngine.VR.VRNode.Head);
-				quadRight.localPosition = UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.Head) + quadRight.localRotation * offset;
+				quadRight.localRotation = InputTracking.GetLocalRotation(XRNode.Head);
+				quadRight.localPosition = InputTracking.GetLocalPosition(XRNode.Head) + quadRight.localRotation * offset;
 
 			}
 		}

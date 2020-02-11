@@ -121,7 +121,7 @@ public class ZEDSVOManager : MonoBehaviour
     [Tooltip("Compression mode used when recording an SVO. " +
         "Uncompressed SVOs are extremely large (multiple gigabytes per minute).")]
     [SerializeField]
-	public sl.SVO_COMPRESSION_MODE compressionMode = sl.SVO_COMPRESSION_MODE.AVCHD_BASED;
+	public sl.SVO_COMPRESSION_MODE compressionMode = sl.SVO_COMPRESSION_MODE.H264_BASED;
 
     /// <summary>
     /// Flag set to true when we need to force ZEDManager to grab a new frame, even though

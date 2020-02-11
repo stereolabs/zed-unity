@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.VR;
+using UnityEngine.XR;
 using System.Collections.Generic;
 #if ZED_STEAM_VR
 using Valve.VR;
@@ -170,7 +170,7 @@ public class ZEDControllerTracker : MonoBehaviour
         poseData.Clear(); //Reset the dictionary.
         poseData.Add(1, new List<TimedPoseData>()); //Create the list within the dictionary with its key and value.
         //Looking for the loaded device
-        loadeddevice = UnityEngine.VR.VRSettings.loadedDeviceName;
+        loadeddevice = XRSettings.loadedDeviceName;
 
         if (!zedManager)
         {
@@ -207,7 +207,7 @@ public class ZEDControllerTracker : MonoBehaviour
                     RegisterPosition(1, OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch), OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch));
 
                 if (deviceToTrack == Devices.Hmd) //Track the Oculus Hmd.
-                    RegisterPosition(1, UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.CenterEye), UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.CenterEye));
+                    RegisterPosition(1, InputTracking.GetLocalPosition(XRNode.CenterEye), InputTracking.GetLocalRotation(XRNode.CenterEye));
 
                 //Use our saved positions to apply a delay before assigning it to this object's Transform.
                 if (poseData.Count > 0)
@@ -520,7 +520,7 @@ public class ZEDControllerTracker : MonoBehaviour
                             (zedManager != null && zedManager.IsStereoRig == true && !zedManager.transform.IsChildOf(transform)))
                         {
                             //Compensate for positional drift by measuring the distance between HMD and ZED rig root (the head's center). 
-                            Vector3 zedhmdposoffset = zedRigRoot.position - UnityEngine.VR.InputTracking.GetLocalPosition(UnityEngine.VR.VRNode.Head);
+                            Vector3 zedhmdposoffset = zedRigRoot.position - InputTracking.GetLocalPosition(XRNode.Head);
                             p.translation += zedhmdposoffset;
                         }
 
@@ -688,53 +688,7 @@ public class ZEDVRDependencies : Editor
         }
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, defines);
     }
-
-    /// <summary>
-    /// Inherits from UnityEditor.AssetPostProcessor to run ZED plugin-specific code whenever an asset is imported. 
-    /// This code checks for the Oculus and SteamVR Unity packages, to activate or deactivate project define tags accordingly. 
-    /// </summary>
-    public class AssetPostProcessZEDVR : AssetPostprocessor
-    {
-        static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
-        {
-            if (CheckPackageExists("OVRManager"))
-            {
-                defineName = "ZED_OCULUS";
-                packageName = "Oculus";
-                ActivateDefine();
-            }
-            else
-            {
-                defineName = "ZED_OCULUS";
-                DeactivateDefine("Oculus");
-            }
-
-            //if (CheckPackageExists("OpenVR"))
-            if (CheckPackageExists("SteamVR_Camera")) //"OpenVR" and "SteamVR" exist in script names in the Oculus plugin. 
-            {
-                defineName = "ZED_STEAM_VR";
-                packageName = "SteamVR";
-                ActivateDefine();
-            }
-            else
-            {
-                defineName = "ZED_STEAM_VR";
-                DeactivateDefine("SteamVR");
-            }
-
-            if (CheckPackageExists("SteamVR_Input_Sources"))
-            {
-                defineName = "ZED_SVR_2_0_INPUT";
-                //packageName = "SteamVR";
-                ActivateDefine();
-            }
-            else
-            {
-                defineName = "ZED_SVR_2_0_INPUT";
-                DeactivateDefine("SteamVR");
-            }
-        }
-    }
 }
+
 
 #endif

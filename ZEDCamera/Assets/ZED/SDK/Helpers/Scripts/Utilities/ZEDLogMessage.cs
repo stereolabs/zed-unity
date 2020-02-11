@@ -115,7 +115,7 @@ public class ZEDLogMessage
         /// <summary>
         /// The tracking system could not load the spatial memory area file.
         /// </summary>
-        TRACKING_BASE_AREA_NOT_FOUND,
+        TRACKING_BASE_AREA_NOT_FOUND
     }
 
 

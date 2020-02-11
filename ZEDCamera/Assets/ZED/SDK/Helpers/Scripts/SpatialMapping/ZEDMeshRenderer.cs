@@ -50,7 +50,8 @@ public class ZEDMeshRenderer : MonoBehaviour
 
 		Transform ObjParent = gameObject.transform;
 		int tries = 0;
-		while (zedManager == null && tries<5) {
+
+        while (zedManager == null && tries<5) {
 			if (ObjParent!=null) 
 				zedManager= ObjParent.GetComponent<ZEDManager> ();
 			if (zedManager == null && ObjParent!=null)
@@ -80,7 +81,7 @@ public class ZEDMeshRenderer : MonoBehaviour
 
 		//Set the camera's parameters. 
 		cam.enabled = false;
-		cam.cullingMask = (1 << zedManager.zedCamera.TagOneObject); //Layer set aside for planes and spatial mapping meshes. 
+		cam.cullingMask = (1 << zedManager.zedCamera.TagInvisibleToZED); //Layer set aside for planes and spatial mapping meshes. 
 		cam.targetTexture = meshTex;
 		cam.nearClipPlane = 0.1f;
 		cam.farClipPlane = 500.0f;
@@ -102,8 +103,17 @@ public class ZEDMeshRenderer : MonoBehaviour
 
 		//Set the ZEDRenderingPlane blend texture to the one the new camera renders to.
 		renderingPlane = GetComponent<ZEDRenderingPlane>();
-		renderingPlane.SetTextureOverlayMapping(meshTex); 
+		renderingPlane.SetTextureOverlayMapping(meshTex);
+        renderingPlane.SetMeshRenderAvailable(false);
 		hasStarted = true;
+    }
+    /// <summary>
+    /// Set the rendering available. Used when loading mesh
+    /// </summary>
+    /// <param name="drawMesh"></param>
+    public void UpdateRenderingPlane(bool drawMesh)
+    {
+        renderingPlane.SetMeshRenderAvailable(drawMesh);
     }
 
     /// <summary>
@@ -126,7 +136,9 @@ public class ZEDMeshRenderer : MonoBehaviour
 				cam.RenderWithShader (shaderWireframe, "RenderType");
 				GL.wireframe = false;
 				cam.enabled = false;
-			}
+                if (zedManager.SpatialMappingHasChunks)
+                    renderingPlane.SetMeshRenderAvailable(true);
+            }
 		}
     }
 

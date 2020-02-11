@@ -269,12 +269,12 @@ public class ChooseTrackedObjectMenu : MonoBehaviour
         //Make a left controller button. 
         ChooseTrackedObjectButton leftButton;
         CreateTrackedObjectPrefab(TOUCH_INDEX_LEFT, out leftButton);
-        allButtons.Add(leftButton);
+        if (leftButton != null) allButtons.Add(leftButton);
 
         //Make a right controller button. 
         ChooseTrackedObjectButton rightButton;
         CreateTrackedObjectPrefab(TOUCH_INDEX_RIGHT, out rightButton);
-        allButtons.Add(rightButton);
+        if (rightButton != null) allButtons.Add(rightButton);
 #endif
         ArrangeIntoGrid(allButtons, objectWidth, objectHeight, maxColumns);
     }

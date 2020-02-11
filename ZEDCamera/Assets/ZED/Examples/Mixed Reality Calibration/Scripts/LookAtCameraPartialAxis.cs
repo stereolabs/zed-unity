@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+#if ZED_LWRP || ZED_HDRP
+using UnityEngine.Experimental.Rendering;
+#endif 
+
 /// <summary>
 /// Makes the transform face any camera that renders, other than Unity Scene (editor) cameras. 
 /// Will only turn on axes that you specify. 
@@ -27,12 +31,22 @@ public class LookAtCameraPartialAxis : MonoBehaviour
 
     private void Start()
     {
+        //Camera.onPreRender += LookAtCamera;
+#if ZED_LWRP || ZED_HDRP
+        RenderPipeline.beginCameraRendering += LookAtCamera;
+#else
         Camera.onPreRender += LookAtCamera;
+#endif
     }
 
     private void OnDestroy()
     {
+        //Camera.onPreRender -= LookAtCamera;
+#if ZED_LWRP || ZED_HDRP
+        RenderPipeline.beginCameraRendering -= LookAtCamera;
+#else
         Camera.onPreRender -= LookAtCamera;
+#endif
     }
 
 
@@ -43,7 +57,7 @@ public class LookAtCameraPartialAxis : MonoBehaviour
     void LookAtCamera(Camera cam)
     {
         //Camera cam = Camera.current;
-        if (cam.name.Contains("Editor")) return;
+        if (cam.name.Contains("Scene") || cam.name.Contains("Editor")) return;
 
         Quaternion lookrot = Quaternion.LookRotation(transform.position - cam.transform.position, Vector3.up);
         Vector3 lookeuler = lookrot.eulerAngles;

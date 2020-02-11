@@ -1,6 +1,6 @@
-﻿# Stereolabs ZED - Unity plugin
+# Stereolabs ZED - Unity plugin
 
-This package brings the many mixed reality features of the [ZED](https://www.stereolabs.com/zed/) and [ZED Mini](https://www.stereolabs.com/zed-mini/) depth sensors into Unity. It comes with prefabs to make adding advanced features to your project as simple as drag-and-drop, helper scripts to simplify custom integration, and numerous examples to see the ZED/ZED Mini in action and learn how it works. 
+This package brings the many mixed reality features of the [ZED](https://www.stereolabs.com/zed/), [ZED Mini](https://www.stereolabs.com/zed-mini/) and [ZED 2](https://www.stereolabs.com/zed-2/) depth sensors into Unity. It comes with prefabs to make adding advanced features to your project as simple as drag-and-drop, helper scripts to simplify custom integration, and numerous examples to see the ZED/ZED Mini in action and learn how it works. 
 
 Features include: 
  - Pass-through augmented reality with an Oculus Rift, HTC Vive and other headsets
@@ -18,7 +18,7 @@ Features include:
 Make sure you have the following: 
 
 **Hardware:** 
- - ZED or ZED Mini depth camera *(ZED Mini preferred for AR pass-through)*
+ - ZED, ZED-M or ZED2 camera *(ZED Mini preferred for AR pass-through)*
  - NVIDIA GPU with CUDA capability 3.0 or higher (a GTX 1060 or higher is recommended for AR pass-through)
  - Dual core processor clocked at 2.3GHz or higher
  - 4GB RAM or more
@@ -35,15 +35,16 @@ Supported VR headsets:
 
 
 **Software:** 
- - Windows 7-10
+ - Windows 7-10, Ubuntu 16, Ubuntu 18
  - NVIDIA CUDA† ([download](https://developer.nvidia.com/cuda-downloads)) 
- - Unity 2017.1 or above ([download](https://unity3d.com/get-unity/download/archive)) 
+ - Unity 2017.3 or above ([download](https://unity3d.com/get-unity/download/archive)) 
  - ZED SDK ([download](https://www.stereolabs.com/developers/release/latest/))
  - ZED Unity plugin ([download](https://github.com/stereolabs/zed-unity/releases))
 
-† *ZED SDK v2.7 requires CUDA 10. Future SDK versions will require future versions of CUDA that may not be backwards-compatible.*
 
-† *A Linux version of the plugin is available in the Linux_compatibility_beta branch. See the tutorial (https://github.com/stereolabs/zed-unity/tree/master/ZEDCamera/Assets/ZED/Doc/Tutorials)*
+† *A Linux version of the plugin is available in the Linux_compatibility_beta branch for ZED SDK 2.8.
+Since SDK 3.0, Windows and Linux version are in the same default branch.
+See the tutorial (https://github.com/stereolabs/zed-unity/tree/master/ZEDCamera/Assets/ZED/Doc/Tutorials)*
 
 
 ### Step 2: Installation

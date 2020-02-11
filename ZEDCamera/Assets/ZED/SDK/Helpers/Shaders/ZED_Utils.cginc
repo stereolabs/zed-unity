@@ -16,7 +16,7 @@
 #endif
 
 
-#define MAX_ZED_DEPTH 20
+#define MAX_ZED_DEPTH 40
 #define MIN_ZED_DEPTH 0.1f
 
 #define ZED_CLAMP(name) name = clamp(name,MIN_ZED_DEPTH, MAX_ZED_DEPTH);
@@ -72,7 +72,7 @@ float computeDepthXYZ(float colorXYZ) {
 
 	if (!isinf(colorXYZ) && !isfinite(colorXYZ)) return FAR_DEPTH;
 	//if (colorXYZ != colorXYZ) return FAR_DEPTH; //Doesn't correctly check for a NaN, and neither does isnan().
-	colorXYZ = clamp(colorXYZ, 0.01, 20);
+	//colorXYZ = clamp(colorXYZ, 0.01, 20);
 
 #if SHADER_API_D3D11
 	colorXYZ = -colorXYZ;

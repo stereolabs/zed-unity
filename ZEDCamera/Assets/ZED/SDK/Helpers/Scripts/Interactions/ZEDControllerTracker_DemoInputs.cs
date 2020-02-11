@@ -18,33 +18,33 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 {
     //#if ZED_STEAM_VR
 #if ZED_SVR_2_0_INPUT
-
+    /// !! On v2.0, Steam VR action bindings must be done in the inspector ro once steam.initialize(true) has been called !! 
     /// <summary>
     /// SteamVR action to cause a Fire event when checked or subscribed to.
     /// </summary>
     [Header("SteamVR Plugin 2.0 Bindings")]
     [Tooltip("SteamVR action to cause a Fire event when checked or subscribed to.")]
-    public SteamVR_Action_Boolean fireBinding = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Fire");
+    public SteamVR_Action_Boolean fireBinding;// = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Fire");
     /// <summary>
     /// SteamVR action to cause a Click event when checked or subscribed to.
     /// </summary>
     [Tooltip("SteamVR action to cause a Click event when checked or subscribed to.")]
-    public SteamVR_Action_Boolean clickBinding = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Click");
+    public SteamVR_Action_Boolean clickBinding;// = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Click");
     /// <summary>
     /// SteamVR action to cause a Back event when checked or subscribed to.
     /// </summary>
     [Tooltip("SteamVR action to cause a Back event when checked or subscribed to.")]
-    public SteamVR_Action_Boolean backBinding = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Back");
+    public SteamVR_Action_Boolean backBinding;// = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Back");
     /// <summary>
     /// SteamVR action to cause a Grab event when checked or subscribed to.
     /// </summary>
     [Tooltip("SteamVR action to cause a Grab event when checked or subscribed to.")]
-    public SteamVR_Action_Boolean grabBinding = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Grab");
+    public SteamVR_Action_Boolean grabBinding;// = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Grab");
     /// <summary>
     /// SteamVR action to cause a Vector2 UI navigation event when checked or subscribed to.
     /// </summary>
     [Tooltip("SteamVR action to cause a UI navigation event when checked or subscribed to.")]
-    public SteamVR_Action_Vector2 navigateUIBinding = SteamVR_Input.GetAction<SteamVR_Action_Vector2>("NavigateUI");
+    public SteamVR_Action_Vector2 navigateUIBinding;// = SteamVR_Input.GetAction<SteamVR_Action_Vector2>("NavigateUI");
 
 
 #elif ZED_STEAM_VR
@@ -245,6 +245,9 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         if (!useLegacySteamVRInput)
         {
             if(!SteamVR.active) SteamVR.Initialize(true); //Force SteamVR to activate, so we can use the input system. 
+
+            //script binding example
+            //fireBinding = SteamVR_Input._default.inActions.GrabGrip; //...
         }
 #endif
     }

@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// This file holds classes built to be exchanged between the ZED wrapper DLL (sl_unitywrapper.dll)
 /// and C# scripts within Unity. Most have parity with a structure within the ZED C++ SDK.
-/// Find more info at https://www.stereolabs.com/developers/documentation/API/latest/. 
+/// Find more info at https://www.stereolabs.com/developers/documentation/API/latest/.
 /// </summary>
 
 namespace sl
@@ -39,12 +39,13 @@ namespace sl
     public enum Constant
 	{
 		MAX_CAMERA_PLUGIN = 4,
-		PLANE_DISTANCE = 10
-	};
+		PLANE_DISTANCE = 10,
+        MAX_OBJECTS = 200
+    };
 
     /// <summary>
     /// Holds a 3x3 matrix that can be marshaled between the ZED
-    /// Unity wrapper and C# scripts. 
+    /// Unity wrapper and C# scripts.
     /// </summary>
 	public struct Matrix3x3
 	{
@@ -54,12 +55,12 @@ namespace sl
 
     /// <summary>
     /// Holds a camera resolution as two pointers (for height and width) for easy
-    /// passing back and forth to the ZED Unity wrapper. 
+    /// passing back and forth to the ZED Unity wrapper.
     /// </summary>
     public struct Resolution
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
@@ -75,8 +76,8 @@ namespace sl
 
 
 	/// <summary>
-	/// Pose structure with data on timing and validity in addition to 
-    /// position and rotation. 
+	/// Pose structure with data on timing and validity in addition to
+    /// position and rotation.
 	/// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct Pose
@@ -87,49 +88,160 @@ namespace sl
         public Vector3 translation;
         public int pose_confidence;
 	};
-	 
+
 	/// <summary>
 	/// Full IMU data structure.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public struct IMUData
+	public struct ImuData
 	{
         /// <summary>
-        /// Gyroscope raw data in degrees/second.
+        /// Indicates if imu data is available
         /// </summary>
-		public Vector3 angularVelocity; 
+        public bool available;
         /// <summary>
-        /// Accelerometer raw data in m/s².
+        /// IMU Data timestamp in ns
         /// </summary>
-		public Vector3 linearAcceleration; 
+        public ulong timestamp;
+        /// <summary>
+        /// Gyroscope calibrated data in degrees/second.
+        /// </summary>
+		public Vector3 angularVelocity;
+        /// <summary>
+        /// Accelerometer calibrated data in m/s².
+        /// </summary>
+		public Vector3 linearAcceleration;
+        /// <summary>
+        /// Gyroscope raw/uncalibrated data in degrees/second.
+        /// </summary>
+        public Vector3 angularVelocityUncalibrated;
+        /// <summary>
+        /// Accelerometer raw/uncalibrated data in m/s².
+        /// </summary>
+		public Vector3 linearAccelerationUncalibrated;
         /// <summary>
         /// Orientation from gyro/accelerator fusion.
         /// </summary>
-		public Quaternion fusedOrientation; 
+		public Quaternion fusedOrientation;
         /// <summary>
         /// Covariance matrix of the quaternion.
         /// </summary>
-		public Matrix3x3 orientationCovariance; 
+		public Matrix3x3 orientationCovariance;
         /// <summary>
         /// Gyroscope raw data covariance matrix.
         /// </summary>
-		public Matrix3x3 angularVelocityCovariance; 
+		public Matrix3x3 angularVelocityCovariance;
         /// <summary>
         /// Accelerometer raw data covariance matrix.
         /// </summary>
-		public Matrix3x3 linearAccelerationCovariance; 
-        /// <summary>
-        /// RFU.
-        /// </summary>
-		public int imu_image_sync_val; 
+		public Matrix3x3 linearAccelerationCovariance;
 	};
 
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct BarometerData
+    {
+        /// <summary>
+        /// Indicates if mag data is available
+        /// </summary>
+        public bool available;
+        /// <summary>
+        /// mag Data timestamp in ns
+        /// </summary>
+        public ulong timestamp;
+        /// <summary>
+        /// Barometer ambient air pressure in hPa
+        /// </summary>
+        public float pressure;
+        /// <summary>
+        /// Relative altitude from first camera position
+        /// </summary>
+        public float relativeAltitude;
+    };
 
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MagnetometerData
+    {
+        /// <summary>
+        /// Indicates if mag data is available
+        /// </summary>
+        public bool available;
+        /// <summary>
+        /// mag Data timestamp in ns
+        /// </summary>
+        public ulong timestamp;
+        /// <summary>
+        /// Magnetic field calibrated values in uT
+        /// </summary>     
+        /// </summary>
+        public Vector3 magneticField;
+        /// <summary>
+        /// Magnetic field raw values in uT
+        /// </summary>        
+        public Vector3 magneticFieldUncalibrated;
+     };
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TemperatureSensorData
+    {
+        /// <summary>
+        /// Temperature from IMU device ( -100 if not available)
+        /// </summary>
+        public float imu_temp;
+        /// <summary>
+        /// Temperature from Barometer device ( -100 if not available)
+        /// </summary>
+        public float barometer_temp;
+        /// <summary>
+        /// Temperature from Onboard left analog temperature sensor ( -100 if not available)
+        /// </summary>
+        public float onboard_left_temp;
+        /// <summary>
+        /// Temperature from Onboard right analog temperature sensor ( -100 if not available)
+        /// </summary>
+        public float onboard_right_temp;
+    };
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SensorsData
+    {
+        /// <summary>
+        /// Contains Imu Data
+        /// </summary>
+        public ImuData imu;
+        /// <summary>
+        /// Contains Barometer Data
+        /// </summary>
+        public BarometerData barometer;
+        /// <summary>
+        /// Contains Mag Data
+        /// </summary>
+        public MagnetometerData magnetometer;
+        /// <summary>
+        /// Contains Temperature Data
+        /// </summary>
+        public TemperatureSensorData temperatureSensor;
+        /// <summary>
+        /// Indicated if camera is :
+        /// -> Static : 0
+        /// -> Moving : 1
+        /// -> Falling : 2
+        /// </summary>
+        public int camera_moving_state;
+        /// <summary>
+        /// Indicates if the current sensors data is sync to the current image (>=1). Otherwise, value will be 0.
+        /// </summary>
+        public int image_sync_val;
+    };
+
+    /*******************************************************************************************************************************
+     *******************************************************************************************************************************/
 
     /// <summary>
     /// Calibration information for an individual sensor on the ZED (left or right). </summary>
-    /// <remarks>For more information, see: 
+    /// <remarks>For more information, see:
     /// https://www.stereolabs.com/developers/documentation/API/v2.5.1/structsl_1_1CameraParameters.html </remarks>
     [StructLayout(LayoutKind.Sequential)]
     public struct CameraParameters
@@ -152,7 +264,7 @@ namespace sl
         public float cy;
 
         /// <summary>
-        /// Distortion coefficients. 
+        /// Distortion coefficients.
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U8, SizeConst = 5)]
         public double[] disto;
@@ -178,7 +290,7 @@ namespace sl
 
     /// <summary>
     /// Holds calibration information about the current ZED's hardware, including per-sensor
-    /// calibration and offsets between the two sensors. 
+    /// calibration and offsets between the two sensors.
     /// </summary> <remarks>For more info, see:
     /// https://www.stereolabs.com/developers/documentation/API/v2.5.1/structsl_1_1CalibrationParameters.html </remarks>
     [StructLayout(LayoutKind.Sequential)]
@@ -203,9 +315,9 @@ namespace sl
     };
 
     /// <summary>
-    /// Container for information about the current SVO recording process.  
+    /// Container for information about the current SVO recording process.
     /// </summary><remarks>
-    /// Mirrors sl.RecordingState in the ZED C++ SDK. For more info, visit: 
+    /// Mirrors sl.RecordingState in the ZED C++ SDK. For more info, visit:
     /// https://www.stereolabs.com/developers/documentation/API/v2.5.1/structsl_1_1RecordingState.html
     /// </remarks>
     [StructLayout(LayoutKind.Sequential)]
@@ -228,16 +340,16 @@ namespace sl
         /// </summary>
         public double average_compression_time;
         /// <summary>
-        /// Compression ratio (% of raw size) since recording was started. 
+        /// Compression ratio (% of raw size) since recording was started.
         /// </summary>
         public double average_compression_ratio;
     }
 
     /// <summary>
-    /// Status of the ZED's self-calibration. Since v0.9.3, self-calibration is done in the background and 
+    /// Status of the ZED's self-calibration. Since v0.9.3, self-calibration is done in the background and
     /// starts in the sl.ZEDCamera.Init or Reset functions.
     /// </summary><remarks>
-    /// Mirrors SELF_CALIBRATION_STATE in the ZED C++ SDK. For more info, see: 
+    /// Mirrors SELF_CALIBRATION_STATE in the ZED C++ SDK. For more info, see:
     /// https://www.stereolabs.com/developers/documentation/API/v2.5.1/group__Video__group.html#gacce19db438a07075b7e5e22ee5845c95
     /// </remarks>
     public enum ZED_SELF_CALIBRATION_STATE
@@ -255,16 +367,16 @@ namespace sl
         /// </summary>
         SELF_CALIBRATION_FAILED,
         /// <summary>
-        /// Self Calibration has finished running and successfully produces coherent values. 
+        /// Self Calibration has finished running and successfully produces coherent values.
         /// </summary>
         SELF_CALIBRATION_SUCCESS
     };
 
     /// <summary>
-    /// Lists available depth computation modes. Each mode offers better accuracy than the 
-    /// mode before it, but at a performance cost. 
+    /// Lists available depth computation modes. Each mode offers better accuracy than the
+    /// mode before it, but at a performance cost.
     /// </summary><remarks>
-    /// Mirrors DEPTH_MODE in the ZED C++ SDK. For more info, see: 
+    /// Mirrors DEPTH_MODE in the ZED C++ SDK. For more info, see:
     /// https://www.stereolabs.com/developers/documentation/API/v2.5.1/group__Depth__group.html#ga8d542017c9b012a19a15d46be9b7fa43
     /// </remarks>
     public enum DEPTH_MODE
@@ -280,10 +392,6 @@ namespace sl
 		/// <summary>
 		/// Balanced quality mode. Depth map is robust in most environment and requires medium compute power.
 		/// </summary>
-		MEDIUM,
-		/// <summary>
-		/// Favors accuracy over performance. Requires more compute power.
-		/// </summary>
 		QUALITY,
 		/// <summary>
 		/// Native depth. Very accurate, but at a large performance cost.
@@ -292,8 +400,8 @@ namespace sl
     };
 
     /// <summary>
-    /// Types of Image view modes, for creating human-viewable textures. 
-    /// Used only in ZEDRenderingPlane as a simplified version of sl.VIEW, which has more detailed options. 
+    /// Types of Image view modes, for creating human-viewable textures.
+    /// Used only in ZEDRenderingPlane as a simplified version of sl.VIEW, which has more detailed options.
     /// </summary>
 	public enum VIEW_MODE
 	{
@@ -315,17 +423,17 @@ namespace sl
     /// <summary>
     /// List of error codes in the ZED SDK.
     /// </summary><remarks>
-    /// Mirrors ERROR_CODE in the ZED C++ SDK. For more info, read: 
+    /// Mirrors ERROR_CODE in the ZED C++ SDK. For more info, read:
     /// https://www.stereolabs.com/developers/documentation/API/v2.5.1/group__Camera__group.html#ga4db9ee29f2ff83c71567c12f6bfbf28c
     /// </remarks>
     public enum ERROR_CODE
     {
 		/// <summary>
-		/// Operation was successful. 
+		/// Operation was successful.
 		/// </summary>
 		SUCCESS,
 		/// <summary>
-		/// Standard, generic code for unsuccessful behavior when no other code is more appropriate. 
+		/// Standard, generic code for unsuccessful behavior when no other code is more appropriate.
 		/// </summary>
 		FAILURE,
 		/// <summary>
@@ -356,11 +464,11 @@ namespace sl
 		/// <summary>
 		/// ZED calibration file is not found on the host machine. Use ZED Explorer or ZED Calibration to get one.
 		/// </summary>
-		CALIBRATION_FILE_NOT_AVAILABLE, 
+		CALIBRATION_FILE_NOT_AVAILABLE,
 		/// <summary>
 		/// ZED calibration file is not valid. Try downloading the factory one or recalibrating using the ZED Calibration tool.
 		/// </summary>
-		INVALID_CALIBRATION_FILE, 
+		INVALID_CALIBRATION_FILE,
 		/// <summary>
 		/// The provided SVO file is not valid.
 		/// </summary>
@@ -376,7 +484,7 @@ namespace sl
 		/// <summary>
 		/// The requested coordinate system is not available.
 		/// </summary>
-		INVALID_COORDINATE_SYSTEM, 
+		INVALID_COORDINATE_SYSTEM,
 		/// <summary>
 		/// The firmware of the ZED is out of date. Update to the latest version.
 		/// </summary>
@@ -396,19 +504,19 @@ namespace sl
 		/// <summary>
 		/// In grab() only, ZED SDK is not initialized. Probably a missing call to sl::Camera::open.
 		/// </summary>
-		CAMERA_NOT_INITIALIZED, 
+		CAMERA_NOT_INITIALIZED,
 		/// <summary>
 		/// Your NVIDIA driver is too old and not compatible with your current CUDA version.
 		/// </summary>
-		NVIDIA_DRIVER_OUT_OF_DATE, 
+		NVIDIA_DRIVER_OUT_OF_DATE,
 		/// <summary>
 		/// The function call is not valid in the current context. Could be a missing a call to sl::Camera::open.
 		/// </summary>
-		INVALID_FUNCTION_CALL, 
+		INVALID_FUNCTION_CALL,
 		/// <summary>
 		///  The SDK wasn't able to load its dependencies, the installer should be launched.
 		/// </summary>
-		CORRUPTED_SDK_INSTALLATION, 
+		CORRUPTED_SDK_INSTALLATION,
 		/// <summary>
 		/// The installed SDK is not the SDK used to compile the program.
 		/// </summary>
@@ -416,9 +524,9 @@ namespace sl
 		/// <summary>
 		/// The given area file does not exist. Check the file path.
 		/// </summary>
-		INVALID_AREA_FILE, 
+		INVALID_AREA_FILE,
 		/// <summary>
-		/// The area file does not contain enough data to be used ,or the sl::DEPTH_MODE used during the creation of the 
+		/// The area file does not contain enough data to be used ,or the sl::DEPTH_MODE used during the creation of the
         /// area file is different from the one currently set.
 		/// </summary>
 		INCOMPATIBLE_AREA_FILE,
@@ -427,24 +535,24 @@ namespace sl
 		/// </summary>
 		CAMERA_FAILED_TO_SETUP,
 		/// <summary>
-		/// Your ZED cannot be opened. Try replugging it to another USB port or flipping the USB-C connector (if using ZED Mini). 
+		/// Your ZED cannot be opened. Try replugging it to another USB port or flipping the USB-C connector (if using ZED Mini).
 		/// </summary>
 		CAMERA_DETECTION_ISSUE,
 		/// <summary>
 		/// The Camera is already in use by another process.
 		/// </summary>
-		CAMERA_ALREADY_IN_USE, 
+		CAMERA_ALREADY_IN_USE,
 		/// <summary>
 		/// No GPU found or CUDA is unable to list it. Can be a driver/reboot issue.
 		/// </summary>
 		NO_GPU_DETECTED,
 		/// <summary>
-		/// Plane not found. Either no plane is detected in the scene, at the location or corresponding to the floor, 
+		/// Plane not found. Either no plane is detected in the scene, at the location or corresponding to the floor,
         /// or the floor plane doesn't match the prior given.
 		/// </summary>
-		PLANE_NOT_FOUND, 
+		PLANE_NOT_FOUND,
 		/// <summary>
-		/// Missing or corrupted AI module ressources. 
+		/// Missing or corrupted AI module ressources.
 		/// Please reinstall the ZED SDK with the AI (object detection) module to fix this issue
 		/// </summary>
 		AI_MODULE_NOT_AVAILABLE,
@@ -452,15 +560,23 @@ namespace sl
 		/// The cuDNN library cannot be loaded, or is not compatible with this version of the ZED SDK
 		/// </summary>
 		INCOMPATIBLE_CUDNN_VERSION,
-		/// <summary>
-		/// End of error code. Used before init has been called. 
-		/// </summary>
-		ERROR_CODE_LAST
+        /// <summary>
+        /// internal sdk timestamp is not valid
+        /// </summary>
+        AI_INVALID_TIMESTAMP,
+        /// <summary>
+        /// an error occur while tracking objects
+        /// </summary>
+        AI_UNKNOWN_ERROR, 
+        /// <summary>
+        /// End of ERROR_CODE
+        /// </summary>
+        ERROR_CODE_LAST
     };
 
 
     /// <summary>
-    /// Represents the available resolution options. 
+    /// Represents the available resolution options.
     /// </summary>
     public enum RESOLUTION
     {
@@ -484,37 +600,41 @@ namespace sl
 
 
 	/// <summary>
-	/// Types of compatible ZED cameras. 
+	/// Types of compatible ZED cameras.
 	/// </summary>
 	public enum MODEL
 	{
         /// <summary>
-        /// Original ZED camera. 
+        /// ZED(1)
         /// </summary>
-		ZED, 
+		ZED,
         /// <summary>
-        /// ZED Mini. 
+        /// ZED Mini.
         /// </summary>
-		ZED_M 
-	};
+		ZED_M,
+        /// <summary>
+        /// ZED2.
+        /// </summary>
+        ZED2
+    };
 
     /// <summary>
     /// Lists available sensing modes - whether to produce the original depth map (STANDARD) or one with
-    /// smoothing and other effects added to fill gaps and roughness (FILL). 
+    /// smoothing and other effects added to fill gaps and roughness (FILL).
     /// </summary>
     public enum SENSING_MODE
     {
         /// <summary>
         /// This mode outputs the standard ZED depth map that preserves edges and depth accuracy.
         /// However, there will be missing data where a depth measurement couldn't be taken, such as from
-        /// a surface being occluded from one sensor but not the other. 
+        /// a surface being occluded from one sensor but not the other.
         /// Better for: Obstacle detection, autonomous navigation, people detection, 3D reconstruction.
         /// </summary>
         STANDARD,
         /// <summary>
         /// This mode outputs a smooth and fully dense depth map. It doesn't have gaps in the data
         /// like STANDARD where depth can't be calculated directly, but the values it fills them with
-        /// is less accurate than a real measurement. 
+        /// is less accurate than a real measurement.
         /// Better for: AR/VR, mixed-reality capture, image post-processing.
         /// </summary>
         FILL
@@ -523,7 +643,7 @@ namespace sl
     /// <summary>
     /// Lists available view types retrieved from the camera, used for creating human-viewable (Image-type) textures.
     /// </summary><remarks>
-    /// Based on the VIEW enum in the ZED C++ SDK. For more info, see: 
+    /// Based on the VIEW enum in the ZED C++ SDK. For more info, see:
     /// https://www.stereolabs.com/developers/documentation/API/v2.5.1/group__Video__group.html#ga77fc7bfc159040a1e2ffb074a8ad248c
     /// </remarks>
     public enum VIEW
@@ -566,31 +686,31 @@ namespace sl
         SIDE_BY_SIDE,
         /// <summary>
         /// Normalized depth image. As a ZEDMat, MAT_TYPE is set to sl::MAT_TYPE_8U_C4.
-        /// <para>Use an Image texture for viewing only. For measurements, use a Measure type instead 
+        /// <para>Use an Image texture for viewing only. For measurements, use a Measure type instead
         /// (ZEDCamera.RetrieveMeasure()) to preserve accuracy. </para>
         /// </summary>
         DEPTH,
         /// <summary>
         /// Normalized confidence image. As a ZEDMat, MAT_TYPE is set to MAT_8U_C4.
-        /// <para>Use an Image texture for viewing only. For measurements, use a Measure type instead 
+        /// <para>Use an Image texture for viewing only. For measurements, use a Measure type instead
         /// (ZEDCamera.RetrieveMeasure()) to preserve accuracy. </para>
         /// </summary>
         CONFIDENCE,
         /// <summary>
         /// Color rendering of the normals. As a ZEDMat, MAT_TYPE is set to MAT_8U_C4.
-        /// <para>Use an Image texture for viewing only. For measurements, use a Measure type instead 
+        /// <para>Use an Image texture for viewing only. For measurements, use a Measure type instead
         /// (ZEDCamera.RetrieveMeasure()) to preserve accuracy. </para>
         /// </summary>
         NORMALS,
         /// <summary>
         /// Color rendering of the right depth mapped on right sensor. As a ZEDMat, MAT_TYPE is set to MAT_8U_C4.
-        /// <para>Use an Image texture for viewing only. For measurements, use a Measure type instead 
+        /// <para>Use an Image texture for viewing only. For measurements, use a Measure type instead
         /// (ZEDCamera.RetrieveMeasure()) to preserve accuracy. </para>
         /// </summary>
         DEPTH_RIGHT,
         /// <summary>
         /// Color rendering of the normals mapped on right sensor. As a ZEDMat, MAT_TYPE is set to MAT_8U_C4.
-        /// <para>Use an Image texture for viewing only. For measurements, use a Measure type instead 
+        /// <para>Use an Image texture for viewing only. For measurements, use a Measure type instead
         /// (ZEDCamera.RetrieveMeasure()) to preserve accuracy. </para>
         /// </summary>
         NORMALS_RIGHT
@@ -614,23 +734,31 @@ namespace sl
         /// </summary>
         HUE,
         /// <summary>
-        /// Saturation control. Value should be between 0 and 8
+        /// Saturation control. Value should be between 0 and 8.
         /// </summary>
         SATURATION,
         /// <summary>
-        /// Gain control. Value should be between 0 and 100 for manual control. 
+        /// Sharpness control. Value should be between 0 and 8.
+        /// </summary>
+        SHARPNESS,
+        /// <summary>
+        /// Gain control. Value should be between 0 and 100 for manual control.
         /// If ZED_EXPOSURE is set to -1 (automatic mode), then gain will be automatic as well.
         /// </summary>
         GAIN,
         /// <summary>
-        /// Exposure control. Value can be between 0 and 100. 
+        /// Exposure control. Value can be between 0 and 100.
         /// Setting to -1 enables auto exposure and auto gain.
-        /// Setting to 0 disables auto exposure but doesn't change the last applied automatic values. 
+        /// Setting to 0 disables auto exposure but doesn't change the last applied automatic values.
         /// Setting to 1-100 disables auto mode and sets exposure to the chosen value.
         /// </summary>
         EXPOSURE,
         /// <summary>
-        /// Color temperature control. Value should be between 2800 and 6500 with a step of 100. 
+        /// Auto-exposure and auto gain. Setting this to true switches on both. Assigning a specifc value to GAIN or EXPOSURE will set this to 0. 
+        /// </summary>
+        AEC_AGC,
+        /// <summary>
+        /// Color temperature control. Value should be between 2800 and 6500 with a step of 100.
         /// </summary>
         WHITEBALANCE,
 		/// <summary>
@@ -645,8 +773,8 @@ namespace sl
 
     /// <summary>
     /// Lists available measure types retrieved from the camera, used for creating precise measurement maps
-    /// (Measure-type textures). 
-    /// Based on the MEASURE enum in the ZED C++ SDK. For more info, see: 
+    /// (Measure-type textures).
+    /// Based on the MEASURE enum in the ZED C++ SDK. For more info, see:
     /// https://www.stereolabs.com/developers/documentation/API/v2.5.1/group__Depth__group.html#ga798a8eed10c573d759ef7e5a5bcd545d
     /// </summary>
     public enum MEASURE
@@ -664,7 +792,7 @@ namespace sl
         /// </summary>
         CONFIDENCE,
         /// <summary>
-        /// 3D coordinates of the image points. Used for point clouds in ZEDPointCloudManager. 
+        /// 3D coordinates of the image points. Used for point clouds in ZEDPointCloudManager.
         /// As a ZEDMat, MAT_TYPE is set to MAT_32F_C4. The 4th channel may contain the colors.
         /// </summary>
         XYZ,
@@ -689,7 +817,7 @@ namespace sl
         /// </summary>
         XYZABGR,
         /// <summary>
-        /// 3D coordinates and color of the image. As a ZEDMat, MAT_TYPE is set to MAT_32F_C4. 
+        /// 3D coordinates and color of the image. As a ZEDMat, MAT_TYPE is set to MAT_32F_C4.
         /// The 4th channel encode 4 UCHARs for color in A-B-G-R order.
         /// </summary>
         NORMALS,
@@ -706,12 +834,12 @@ namespace sl
         /// </summary>
         XYZ_RIGHT,
         /// <summary>
-        /// Colored point cloud for right sensor. As a ZEDMat, MAT_TYPE is set to MAT_32F_C4. 
+        /// Colored point cloud for right sensor. As a ZEDMat, MAT_TYPE is set to MAT_32F_C4.
         /// Channel 4 contains colors in R-G-B-A order.
         /// </summary>
         XYZRGBA_RIGHT,
         /// <summary>
-        /// Colored point cloud for right sensor. As a ZEDMat, MAT_TYPE is set to MAT_32F_C4. 
+        /// Colored point cloud for right sensor. As a ZEDMat, MAT_TYPE is set to MAT_32F_C4.
         /// Channel 4 contains colors in B-G-R-A order.
         /// </summary>
         XYZBGRA_RIGHT,
@@ -721,12 +849,12 @@ namespace sl
         /// </summary>
         XYZARGB_RIGHT,
         /// <summary>
-        /// Colored point cloud for right sensor. As a ZEDMat, MAT_TYPE is set to MAT_32F_C4. 
+        /// Colored point cloud for right sensor. As a ZEDMat, MAT_TYPE is set to MAT_32F_C4.
         /// Channel 4 contains colors in A-B-G-R order.
         /// </summary>
         XYZABGR_RIGHT,
         /// <summary>
-        ///  Normals vector for right view. As a ZEDMat, MAT_TYPE is set to MAT_32F_C4. 
+        ///  Normals vector for right view. As a ZEDMat, MAT_TYPE is set to MAT_32F_C4.
         ///  Channel 4 is empty (set to 0).
         /// </summary>
         NORMALS_RIGHT
@@ -735,17 +863,17 @@ namespace sl
 
 
 	/// <summary>
-	/// Categories indicating when a timestamp is captured. 
+	/// Categories indicating when a timestamp is captured.
 	/// </summary>
 	public enum TIME_REFERENCE
 	{
 		/// <summary>
 		/// Timestamp from when the image was received over USB from the camera, defined
-        /// by when the entire image was available in memory. 
+        /// by when the entire image was available in memory.
 		/// </summary>
 		IMAGE,
 		/// <summary>
-		/// Timestamp from when the relevant function was called. 
+		/// Timestamp from when the relevant function was called.
 		/// </summary>
 		CURRENT
 	};
@@ -756,11 +884,11 @@ namespace sl
     public enum REFERENCE_FRAME
     {
         /// <summary>
-        /// Matrix contains the total displacement from the world origin/the first tracked point. 
+        /// Matrix contains the total displacement from the world origin/the first tracked point.
         /// </summary>
         WORLD,
         /// <summary>
-        /// Matrix contains the displacement from the previous camera position to the current one. 
+        /// Matrix contains the displacement from the previous camera position to the current one.
         /// </summary>
         CAMERA
     };
@@ -779,7 +907,7 @@ namespace sl
         /// </summary>
         TRACKING_OK,
         /// <summary>
-        /// Tracking is not enabled. 
+        /// Tracking is not enabled.
         /// </summary>
         TRACKING_OFF
     }
@@ -790,25 +918,17 @@ namespace sl
     public enum SVO_COMPRESSION_MODE
     {
         /// <summary>
-        /// RAW images; no compression. This option can lead to extremely large file sizes. 
-        /// </summary>
-        RAW_BASED,
-        /// <summary>
         /// Lossless compression based on png/zstd. Average size = 42% of RAW.
         /// </summary>
         LOSSLESS_BASED,
-        /// <summary>
-        /// Lossy compression based on jpeg. Average size = 22% of RAW.
-        /// </summary>
-        LOSSY_BASED,
 		/// <summary>
 		/// AVCHD Based compression (H264). Available since ZED SDK 2.7
 		/// </summary>
-		AVCHD_BASED,
+		H264_BASED,
 		/// <summary>
 		/// HEVC Based compression (H265). Available since ZED SDK 2.7
 		/// </summary>
-		HEVC_BASED,
+		H265_BASED,
     }
 
 
@@ -828,7 +948,7 @@ namespace sl
     }
 
     /// <summary>
-    /// Mesh formats that can be saved/loaded with spatial mapping. 
+    /// Mesh formats that can be saved/loaded with spatial mapping.
     /// </summary>
     public enum MESH_FILE_FORMAT
     {
@@ -847,7 +967,7 @@ namespace sl
     }
 
     /// <summary>
-    /// Presets for filtering meshes scannedw ith spatial mapping. Higher values reduce total face count by more. 
+    /// Presets for filtering meshes scannedw ith spatial mapping. Higher values reduce total face count by more.
     /// </summary>
     public enum FILTER
     {
@@ -887,8 +1007,8 @@ namespace sl
         /// </summary>
         SPATIAL_MAPPING_STATE_NOT_ENABLED,
         /// <summary>
-        /// Effective FPS is too low to give proper results for spatial mapping. 
-        /// Consider using performance-friendly parameters (DEPTH_MODE_PERFORMANCE, VGA or HD720 camera resolution, 
+        /// Effective FPS is too low to give proper results for spatial mapping.
+        /// Consider using performance-friendly parameters (DEPTH_MODE_PERFORMANCE, VGA or HD720 camera resolution,
         /// and LOW spatial mapping resolution).
         /// </summary>
         SPATIAL_MAPPING_STATE_FPS_TOO_LOW
@@ -922,7 +1042,7 @@ namespace sl
     }
 
     /// <summary>
-    /// Struct containing all parameters passed to the SDK when initializing the ZED. 
+    /// Struct containing all parameters passed to the SDK when initializing the ZED.
     /// These parameters will be fixed for the whole execution life time of the camera.
     /// </summary><remarks>For more details, see the InitParameters class in the SDK API documentation:
     /// https://www.stereolabs.com/developers/documentation/API/v2.5.1/structsl_1_1InitParameters.html </remarks>
@@ -931,17 +1051,17 @@ namespace sl
     {
         public sl.INPUT_TYPE inputType;
         /// <summary>
-        /// Resolution the ZED will be set to.  
+        /// Resolution the ZED will be set to.
         /// </summary>
         public sl.RESOLUTION resolution;
         /// <summary>
-        /// Requested FPS for this resolution. Setting it to 0 will choose the default FPS for this resolution. 
+        /// Requested FPS for this resolution. Setting it to 0 will choose the default FPS for this resolution.
         /// </summary>
         public int cameraFPS;
         /// <summary>
-        /// ID for identifying which of multiple connected ZEDs to use. 
+        /// ID for identifying which of multiple connected ZEDs to use.
         /// </summary>
-        public int cameraID;
+        public int cameraDeviceID;
         /// <summary>
         /// Path to a recorded SVO file to play, including filename.
         /// </summary>
@@ -951,22 +1071,28 @@ namespace sl
         /// </summary>
         public bool svoRealTimeMode;
         /// <summary>
-        ///  Define a unit for all metric values (depth, point clouds, tracking, meshes, etc.) Meters are recommended for Unity. 
+        ///  Define a unit for all metric values (depth, point clouds, tracking, meshes, etc.) Meters are recommended for Unity.
         /// </summary>
         public UNIT coordinateUnit;
         /// <summary>
-        /// This defines the order and the direction of the axis of the coordinate system. 
-        /// LEFT_HANDED_Y_UP is recommended to match Unity's coordinates. 
+        /// This defines the order and the direction of the axis of the coordinate system.
+        /// LEFT_HANDED_Y_UP is recommended to match Unity's coordinates.
         /// </summary>
         public COORDINATE_SYSTEM coordinateSystem;
         /// <summary>
-        /// Quality level of depth calculations. Higher settings improve accuracy but cost performance. 
+        /// Quality level of depth calculations. Higher settings improve accuracy but cost performance.
         /// </summary>
         public sl.DEPTH_MODE depthMode;
         /// <summary>
-        /// Minimum distance from the camera from which depth will be computed, in the defined coordinateUnit. 
+        /// Minimum distance from the camera from which depth will be computed, in the defined coordinateUnit.
         /// </summary>
         public float depthMinimumDistance;
+        /// <summary>
+        ///   When estimating the depth, the SDK uses this upper limit to turn higher values into \ref TOO_FAR ones.
+        ///   The current maximum distance that can be computed in the defined \ref UNIT.
+        ///   Changing this value has no impact on performance and doesn't affect the positional tracking nor the spatial mapping. (Only the depth, point cloud, normals)
+        /// </summary>
+        public float depthMaximumDistance;
         /// <summary>
         ///  Defines if images are horizontally flipped.
         /// </summary>
@@ -981,15 +1107,11 @@ namespace sl
         /// </summary>
         public bool cameraDisableSelfCalib;
         /// <summary>
-        /// Set the number of buffers for the internal buffer process. LINUX ONLY - NOT CURRENTLY USED IN UNITY PLUGIN. 
-        /// </summary>
-        public int cameraBufferCountLinux;
-        /// <summary>
-        /// True for the SDK to provide text feedback. 
+        /// True for the SDK to provide text feedback.
         /// </summary>
         public bool sdkVerbose;
         /// <summary>
-        /// ID of the graphics card on which the ZED's computations will be performed. 
+        /// ID of the graphics card on which the ZED's computations will be performed.
         /// </summary>
         public int sdkGPUId;
         /// <summary>
@@ -997,7 +1119,7 @@ namespace sl
         /// </summary>
         public string sdkVerboseLogFile = "";
         /// <summary>
-        /// True to stabilize the depth map. Recommended. 
+        /// True to stabilize the depth map. Recommended.
         /// </summary>
         public bool depthStabilization;
 		/// <summary>
@@ -1005,9 +1127,9 @@ namespace sl
 		/// </summary>
 		public string optionalSettingsPath = "";
 		/// <summary>
-		/// True to stabilize the depth map. Recommended. 
+		/// True to stabilize the depth map. Recommended.
 		/// </summary>
-		public bool cameraDisableIMU;
+		public bool sensorsRequired;
         /// <summary>
         /// Path to a recorded SVO file to play, including filename.
         /// </summary>
@@ -1016,46 +1138,51 @@ namespace sl
         /// Path to a recorded SVO file to play, including filename.
         /// </summary>
         public ushort portStream = 30000;
+        /// <summary>
+        /// Whether to enable improved color/gamma curves added in ZED SDK 3.0. 
+        /// </summary>
+        public bool enableImageEnhancement = true;
 
         /// <summary>
-        /// Constructor. Sets default initialization parameters recommended for Unity. 
+        /// Constructor. Sets default initialization parameters recommended for Unity.
         /// </summary>
         public InitParameters()
         {
             this.inputType = sl.INPUT_TYPE.INPUT_TYPE_USB;
             this.resolution = RESOLUTION.HD720;
             this.cameraFPS = 60;
-            this.cameraID = 0;
+            this.cameraDeviceID = 0;
             this.pathSVO = "";
             this.svoRealTimeMode = false;
             this.coordinateUnit = UNIT.METER;
             this.coordinateSystem = COORDINATE_SYSTEM.IMAGE;
             this.depthMode = DEPTH_MODE.PERFORMANCE;
             this.depthMinimumDistance = -1;
+            this.depthMaximumDistance = -1;
             this.cameraImageFlip = false;
             this.cameraDisableSelfCalib = false;
-            this.cameraBufferCountLinux = 4;
             this.sdkVerbose = false;
             this.sdkGPUId = -1;
             this.sdkVerboseLogFile = "";
             this.enableRightSideMeasure = false;
             this.depthStabilization = true;
 			this.optionalSettingsPath = "";
-			this.cameraDisableIMU = false;
+			this.sensorsRequired = false;
             this.ipStream = "";
             this.portStream = 30000;
+            this.enableImageEnhancement = true;
         }
 
     }
     /// <summary>
-    /// List of available coordinate systems. Left-Handed, Y Up is recommended to stay consistent with Unity. 
-    /// consistent with Unity. 
+    /// List of available coordinate systems. Left-Handed, Y Up is recommended to stay consistent with Unity.
+    /// consistent with Unity.
     /// </summary>
     public enum COORDINATE_SYSTEM
     {
         /// <summary>
-        /// Standard coordinates system used in computer vision. 
-        /// Used in OpenCV. See: http://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html 
+        /// Standard coordinates system used in computer vision.
+        /// Used in OpenCV. See: http://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html
         /// </summary>
         IMAGE,
         /// <summary>
@@ -1077,9 +1204,9 @@ namespace sl
     }
 
     /// <summary>
-    ///  Possible states of the ZED's spatial memory area export, for saving 3D features used 
+    ///  Possible states of the ZED's spatial memory area export, for saving 3D features used
     ///  by the tracking system to relocalize the camera. This is used when saving a mesh generated
-    ///  by spatial mapping when Save Mesh is enabled - a .area file is saved as well. 
+    ///  by spatial mapping when Save Mesh is enabled - a .area file is saved as well.
     /// </summary>
     public enum AREA_EXPORT_STATE
     {
@@ -1111,32 +1238,28 @@ namespace sl
 
 
     /// <summary>
-    /// Runtime parameters used by the ZEDCamera.Grab() function, and its Camera::grab() counterpart in the SDK. 
+    /// Runtime parameters used by the ZEDCamera.Grab() function, and its Camera::grab() counterpart in the SDK.
     /// </summary>
-    [StructLayout(LayoutKind.Explicit)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct RuntimeParameters {
         /// <summary>
         /// Defines the algorithm used for depth map computation, more info : \ref SENSING_MODE definition.
         /// </summary>
-        [FieldOffset(12)] //In 2.2, the runtime parameters need 3 int of offset.
         public sl.SENSING_MODE sensingMode;
         /// <summary>
         /// Provides 3D measures (point cloud and normals) in the desired reference frame (default is REFERENCE_FRAME_CAMERA).
         /// </summary>
-        [FieldOffset(16)]
-		public sl.REFERENCE_FRAME measure3DReferenceFrame;
+        public sl.REFERENCE_FRAME measure3DReferenceFrame;
         /// <summary>
         /// Defines whether the depth map should be computed.
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
-        [FieldOffset(20)]
         public bool enableDepth;
         /// <summary>
-        ///  Defines whether the point cloud should be computed (including XYZRGBA).
+        ///  Defines the confidence threshld for the depth
         /// </summary>
-        [MarshalAs(UnmanagedType.U1)]
-        [FieldOffset(21)]
-        public bool enablePointCloud;
+        public int confidenceThreshold;
+
     }
 
 	/// <summary>
@@ -1165,21 +1288,156 @@ namespace sl
 	public enum USB_DEVICE
     {
         /// <summary>
-        /// Oculus device, eg. Oculus Rift VR Headset. 
+        /// Oculus device, eg. Oculus Rift VR Headset.
         /// </summary>
 		USB_DEVICE_OCULUS,
         /// <summary>
-        /// HTC device, eg. HTC Vive. 
+        /// HTC device, eg. HTC Vive.
         /// </summary>
 		USB_DEVICE_HTC,
         /// <summary>
-        /// Stereolabs device, eg. ZED/ZED Mini. 
+        /// Stereolabs device, eg. ZED/ZED Mini.
         /// </summary>
 		USB_DEVICE_STEREOLABS
 	};
 
 
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////  Object Detection /////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    [StructLayout(LayoutKind.Sequential)]
+    public struct dll_ObjectDetectionParameters
+    {
+        /// <summary>
+        /// Defines if the object detection is synchronized to the image or runs in a separate thread.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool imageSync;
+        /// <summary>
+        /// Defines if the object detection will track objects across multiple images, instead of an image-by-image basis.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableObjectTracking;
+        /// <summary>
+        /// Defines if the SDK will calculate 2D masks for each object. Requires more performance, so don't enable if you don't need these masks. 
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enable2DMask;
+    };
 
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct dll_ObjectDetectionRuntimeParameters
+    {
+        /// <summary>
+        /// The detection confidence threshold between 1 and 99. 
+        /// A confidence of 1 means a low threshold, more uncertain objects and 99 very few but very precise objects.
+        /// Ex: If set to 80, then the SDK must be at least 80% sure that a given object exists before reporting it in the list of detected objects. 
+        /// If the scene contains a lot of objects, increasing the confidence can slightly speed up the process, since every object instance is tracked.
+        /// </summary>
+        public float detectionConfidenceThreshold;
+        /// <summary>
+        ///  
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst =2)]
+        public int[] objectClassFilter;
+    };
+
+    /// <summary>
+    /// Object data structure directly from the SDK. Represents a single object detection. 
+    /// See DetectedObject for an abstracted version with helper functions that make this data easier to use in Unity. 
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ObjectDataSDK
+    {
+        //public int valid; //is Data Valid
+        public int id; //person ID
+        public sl.OBJECT_CLASS obj_type;
+        public sl.OBJECT_TRACK_STATE obj_track_state;
+        public float confidence;
+
+        public System.IntPtr mask;
+
+        /// <summary>
+        /// Image data.
+        /// Note that Y in these values is relative from the top of the image, whereas the opposite is true 
+        /// in most related Unity functions. If using this raw value, subtract Y from the 
+        /// image height to get the height relative to the bottom. 
+        /// </summary>
+        ///  0 ------- 1
+        ///  |   obj   |
+        ///  3-------- 2
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public Vector2[] imageBoundingBox;
+
+
+        /// <summary>
+        /// 3D space data (Camera Frame since this is what we used in Unity)
+        /// </summary>
+        public Vector3 rootWorldPosition; //object root position
+        public Vector3 rootWorldVelocity; //object root velocity
+
+
+        /// <summary>
+        /// The 3D space bounding box. given as array of vertices
+        /// </summary>
+        ///   1 ---------2  
+        ///  /|         /|
+        /// 0 |--------3 |
+        /// | |        | |
+        /// | 5--------|-6
+        /// |/         |/
+        /// 4 ---------7
+        /// 
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public Vector3[] worldBoundingBox;
+    };
+
+
+
+    /// <summary>
+    /// Object Scene data directly from the ZED SDK. Represents all detections given during a single image frame. 
+    /// See DetectionFrame for an abstracted version with helper functions that make this data easier to use in Unity. 
+    /// Contains the number of object in the scene and the objectData structure for each object.
+    /// Since the data is transmitted from C++ to C#, the size of the structure must be constant. Therefore, there is a limitation of 200 (MAX_OBJECT constant) objects in the image.
+    /// <c> This number cannot be changed.<c>
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ObjectsFrameSDK
+    {
+        /// <summary>
+        /// How many objects were detected this frame. Use this to iterate through the top of objectData; objects with indexes greater than numObject are empty. 
+        /// </summary>
+        public int numObject;
+        /// <summary>
+        /// Timestamp of the image where these objects were detected.
+        /// </summary>
+        public ulong timestamp;
+        /// <summary>
+        /// Array of objects 
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)(Constant.MAX_OBJECTS))]
+        public ObjectDataSDK[] objectData;
+    };
+
+    /// <summary>
+    /// Types of detected objects.
+    /// </summary>
+    public enum OBJECT_CLASS
+    {
+         PERSON = 0,
+         VEHICLE = 1,
+         LAST = 2
+    };
+
+    /// <summary>
+    /// Tracking state of an individual object. 
+    /// </summary>
+    public enum OBJECT_TRACK_STATE
+    {
+        OFF,
+        OK,
+        SEARCHING
+    };
 }// end namespace sl

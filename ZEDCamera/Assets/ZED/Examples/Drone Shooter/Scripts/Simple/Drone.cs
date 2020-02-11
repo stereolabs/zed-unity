@@ -160,6 +160,43 @@ public class Drone : MonoBehaviour, ILaserable
     /// </summary>
 	private DroneSpawner spawner; 
 
+    private float damageFlashAmount
+    {
+#if !ZED_LWRP && !ZED_HDRP
+        get
+        {
+            return meshrenderer.material.GetFloat("_Blend");
+        }
+        set
+        {
+            meshrenderer.material.SetFloat("_Blend", value);
+        }
+#elif ZED_HDRP
+        get
+        {
+            return meshrenderer.material.GetColor("_UnlitColor").a;
+        }
+        set
+        {
+            Color newcol = meshrenderer.material.GetColor("_UnlitColor");
+            newcol.a = value;
+            meshrenderer.material.SetColor("_UnlitColor", newcol);
+        }
+#elif ZED_LWRP
+        get
+        {
+            return meshrenderer.material.GetColor("_BaseColor").a;
+        }
+        set
+        {
+            Color newcol = meshrenderer.material.GetColor("_BaseColor");
+            newcol.a = value;
+            meshrenderer.material.SetColor("_BaseColor", newcol);
+        }
+#endif
+}
+
+
     // Use this for initialization
     void Start ()
     {
@@ -210,15 +247,15 @@ public class Drone : MonoBehaviour, ILaserable
 	void Update ()
     {
         //If we've flashed the damage material, lower the blend amount. 
-        if (meshrenderer.material.GetFloat("_Blend") > 0)
+        if (damageFlashAmount > 0)
         {
-            float tmp = meshrenderer.material.GetFloat("_Blend");
+            float tmp = damageFlashAmount;
             tmp -= Time.deltaTime / 1.5f;
 
             if (tmp < 0)
                 tmp = 0;
 
-            meshrenderer.material.SetFloat("_Blend", tmp);
+            damageFlashAmount = tmp;
         }
 
 		//Enabling damage FX based on HitPoints left.
@@ -349,7 +386,8 @@ public class Drone : MonoBehaviour, ILaserable
         Hitpoints -= damage;
 
         //Blend the materials to make it take damage
-        meshrenderer.material.SetFloat("_Blend", 1);
+        //meshrenderer.material.SetFloat("_Blend", 1);
+        damageFlashAmount = 1f;
 
         //Destroy if it's health is below zero
         if (Hitpoints <= 0)

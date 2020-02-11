@@ -29,7 +29,7 @@ public class ZEDSupportFunctions
 	}
 
     /// <summary>
-    /// Gets the normal vector (the direction a surface is pointing) at a given screen-space pixel (i,j).  
+    /// Gets the normal vector (the direction a surface is pointing) at a given screen-space pixel (i,j,0).  
     /// The normal can be given relative to the camera or the world. Returns false if outside camera's view frustum. 
     /// </summary>
     /// <param name="pixel">Pixel coordinates.</param>
@@ -37,7 +37,7 @@ public class ZEDSupportFunctions
     /// <param name="cam">Unity Camera used for world-camera space conversion.</param>
     /// <out>Normal to be filled.</out>
     /// <returns>True if successful, false otherwise.</returns>
-	public static bool GetNormalAtPixel(sl.ZEDCamera zedCam,Vector2 pixel, sl.REFERENCE_FRAME reference_frame, Camera cam, out Vector3 normal)
+	public static bool GetNormalAtPixel(sl.ZEDCamera zedCam,Vector3 pixel, sl.REFERENCE_FRAME reference_frame, Camera cam, out Vector3 normal)
     {
 		normal = Vector3.zero;
 
@@ -45,7 +45,7 @@ public class ZEDSupportFunctions
 			return false;
 		
         Vector4 n;
-		bool r = zedCam.GetNormalValue(new Vector3(pixel.x,pixel.y, 0), out n);
+		bool r = zedCam.GetNormalValue(pixel, out n);
 
 		switch (reference_frame) {
 		case sl.REFERENCE_FRAME.CAMERA: //Relative to the provided camera. 
@@ -110,14 +110,14 @@ public class ZEDSupportFunctions
     /// <param name="pixel">Pixel coordinates in screen space.</param>
     /// <param name="depth">Forward distance/depth to given pixel.</param>
     /// <returns></returns>
-	public static bool GetForwardDistanceAtPixel(sl.ZEDCamera zedCam,Vector2 pixel, out float depth)
+	public static bool GetForwardDistanceAtPixel(sl.ZEDCamera zedCam,Vector3 pixel, out float depth)
     {
 		depth = 0.0f;
 
 		if (zedCam == null)
 			return false;
 		
-		float d = zedCam.GetDepthValue(new Vector3(pixel.x, pixel.y, 0));
+		float d = zedCam.GetDepthValue(pixel);
         depth = d;
 
         if (d == -1) return false;
@@ -142,12 +142,9 @@ public class ZEDSupportFunctions
 		if (zedCam == null)
 			return false;
 		
-		Vector3 pixelPosition = cam.WorldToScreenPoint (position);
-
-		float d = zedCam.GetDepthValue(new Vector3(pixelPosition.x, pixelPosition.y, 0));
-		depth = d;
-
-		if (d == -1) return false;
+		Vector3 pixelPosition = cam.WorldToScreenPoint(position);
+        depth = zedCam.GetDepthValue(pixelPosition);
+		if (depth == -1) return false;
 		return true;
 	}
 
@@ -159,20 +156,18 @@ public class ZEDSupportFunctions
     /// Euclidean distance is distinct from forward distance/depth in that it takes into account the point's X and Y position 
     /// relative to the camera. It's the actual distance between the camera and the point in world space. 
     /// </remarks>
-    /// <param name="pixel">Pixel coordinates in screen space.</param>
+    /// <param name="pixel">Pixel coordinates in screen space. Only x,y used</param>
     /// <param name="distance">Euclidean distance to given pixel.</param>
     /// <returns></returns>
-	public static bool GetEuclideanDistanceAtPixel(sl.ZEDCamera zedCam,Vector2 pixel, out float distance)
+	public static bool GetEuclideanDistanceAtPixel(sl.ZEDCamera zedCam,Vector3 pixel, out float distance)
 	{
 		distance = 0.0f;
 
 		if (zedCam == null)
 			return false;
-		
-		float d = zedCam.GetDistanceValue(new Vector3(pixel.x, pixel.y, 0));
-		distance = d;
 
-		if (d == -1) return false;
+        distance = zedCam.GetDistanceValue(pixel);
+		if (distance == -1) return false;
 		return true;
 	}
 
@@ -196,10 +191,8 @@ public class ZEDSupportFunctions
 		
 		Vector3 pixelPosition = cam.WorldToScreenPoint (position);
 
-		float d = zedCam.GetDistanceValue(new Vector3(pixelPosition.x, pixelPosition.y, 0));
-		distance = d;
-
-		if (d == -1) return false;
+        distance = zedCam.GetDistanceValue(new Vector3(pixelPosition.x, pixelPosition.y, 0));
+		if (distance == -1) return false;
 		return true;
 	}
     /// <summary>
@@ -209,7 +202,7 @@ public class ZEDSupportFunctions
     /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
     /// <param name="worldPos">Filled with the world position of the specified pixel.</param>
     /// <returns>True if it found a value, false otherwise (such as if it's outside the camera's view frustum)</returns>
-	public static bool GetWorldPositionAtPixel(sl.ZEDCamera zedCam,Vector2 pixel, Camera cam, out Vector3 worldPos)
+	public static bool GetWorldPositionAtPixel(sl.ZEDCamera zedCam,Vector3 pixel, Camera cam, out Vector3 worldPos)
     {
 		worldPos = Vector3.zero;
 
@@ -255,7 +248,7 @@ public class ZEDSupportFunctions
     /// <param name="pixel">Screen space coordinates of the real-world pixel.</param>
     /// <param name="cam">Unity Camera used for world-camera space conversion (usually left camera)</param>
     /// <returns>True if visible, false if obscurred.</returns>
-	public static bool IsPixelVisible(sl.ZEDCamera zedCam, Vector2 pixel, Camera cam)
+	public static bool IsPixelVisible(sl.ZEDCamera zedCam, Vector3 pixel, Camera cam)
 	{
 		if (zedCam == null)
 			return false;
@@ -313,7 +306,7 @@ public class ZEDSupportFunctions
 
 		//Compare distance in virtual camera to corresponding point in distance map.
 		float realdistance;
-		GetEuclideanDistanceAtPixel(zedCam, new Vector2(screenpoint.x, screenpoint.y), out realdistance);
+		GetEuclideanDistanceAtPixel(zedCam, screenpoint , out realdistance);
 
 		//If we pass bad parameters, or we don't have an accurate reading on the depth, we can't test.
 		if(realdistance <= 0f)

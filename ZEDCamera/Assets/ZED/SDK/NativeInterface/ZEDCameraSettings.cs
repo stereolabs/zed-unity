@@ -13,12 +13,12 @@ using System.Runtime.InteropServices;
 public class ZEDCameraSettings
 {
     #region DLL Calls
-    const string nameDll = "sl_unitywrapper";
-    [DllImport(nameDll, EntryPoint = "dllz_set_camera_settings")]
-    private static extern void dllz_set_camera_settings(int id, int mode, int value, int usedefault);
+    const string nameDll = sl.ZEDCommon.NameDLL;
+    [DllImport(nameDll, EntryPoint = "dllz_set_video_settings")]
+    private static extern void dllz_set_video_settings(int id, int mode, int value, int usedefault);
 
-    [DllImport(nameDll, EntryPoint = "dllz_get_camera_settings")]
-    private static extern int dllz_get_camera_settings(int id, int mode);
+    [DllImport(nameDll, EntryPoint = "dllz_get_video_settings")]
+    private static extern int dllz_get_video_settings(int id, int mode);
 
     #endregion
 
@@ -249,16 +249,16 @@ public class ZEDCameraSettings
     {
         if (zedCamera != null)
         {
-            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, settings_.Brightness, false);
-            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, settings_.Contrast, false);
-            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.HUE, settings_.Hue, false);
-            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, settings_.Saturation, false);
-            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, settings_.Gain, false);
-            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, settings_.Exposure, false);
-            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, settings_.LEDStatus, false);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, settings_.Brightness);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, settings_.Contrast);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.HUE, settings_.Hue);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, settings_.Saturation);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, settings_.Gain);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, settings_.Exposure);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, settings_.LEDStatus);
             if (settings_.WhiteBalance != -1)
             {
-                zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, settings_.WhiteBalance, false);
+                zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, settings_.WhiteBalance);
             }
         } 
     }
@@ -272,14 +272,14 @@ public class ZEDCameraSettings
 	{
 		if (zedCamera != null)
 		{
-			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, 0, true);
-			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, 0 , true);
-			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.HUE, 0 , true);
-			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, 0 , true);
-			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, 0, true);
-			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, 0, true);
-			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, 0, true);
-            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, 1, true);
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, 4);
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, 4);
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.HUE, 0);
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, 3);
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, 2600);
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, 0);
+			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, 0);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, 1);
         } 
 	}
     /// <summary>
@@ -378,7 +378,7 @@ public class ZEDCameraSettings
     public void SetCameraSettings(int cid, sl.CAMERA_SETTINGS settings, int value, bool usedefault = false)
     {
         settings_.settings[(int)settings] = !usedefault && value != -1 ? value : -1;
-		dllz_set_camera_settings(cid, (int)settings, value, System.Convert.ToInt32(usedefault));
+		dllz_set_video_settings(cid, (int)settings, value, System.Convert.ToInt32(usedefault));
     }
 
     /// <summary>
@@ -388,8 +388,9 @@ public class ZEDCameraSettings
     /// <returns>Current value.</returns>
     public int GetCameraSettings(int cid, sl.CAMERA_SETTINGS settings)
     {
-		settings_.settings[(int)settings] = dllz_get_camera_settings(cid, (int)settings);
-        return settings_.settings[(int)settings];
+        return dllz_get_video_settings(cid, (int)settings);
+		//settings_.settings[(int)settings] = dllz_get_camera_settings(cid, (int)settings);
+        //return settings_.settings[(int)settings];
     }
 
     /// <summary>

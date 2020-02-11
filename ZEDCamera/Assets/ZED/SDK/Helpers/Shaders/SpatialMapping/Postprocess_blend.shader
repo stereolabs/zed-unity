@@ -60,9 +60,13 @@ Shader "Custom/Spatial Mapping/Postprocess Blend"
 					}
 					float4 m =  clamp(tex2D(_MainTex, i.uv)*meshColor, float4(_WireColor.rgb - 0.05f,meshColor.a), float4(_WireColor.rgb + 0.05f, meshColor.a));
 #if !AWAY
-					m = tex2D(_MainTex, i.uv)*(1 - meshColor.a) + (meshColor.a)* float4(_WireColor.rgb - 0.05f, meshColor.a);
+					m = tex2D(_MainTex, i.uv) *(1 - meshColor.a) + (meshColor.a)* float4(_WireColor.rgb - 0.05f, meshColor.a);
 #endif
 					return m;
+				}
+				else
+				{
+					return tex2D(_MainTex, i.uv);
 				}
 
 
