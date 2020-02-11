@@ -1,6 +1,6 @@
 # Stereolabs ZED - Unity plugin
 
-This package brings the many mixed reality features of the [ZED](https://www.stereolabs.com/zed/) and [ZED Mini](https://www.stereolabs.com/zed-mini/) depth sensors into Unity. It comes with prefabs to make adding advanced features to your project as simple as drag-and-drop, helper scripts to simplify custom integration, and numerous examples to see the ZED/ZED Mini in action and learn how it works. 
+This package brings the many mixed reality features of the [ZED](https://www.stereolabs.com/zed/), [ZED Mini](https://www.stereolabs.com/zed-mini/) and [ZED 2](https://www.stereolabs.com/zed-2/) depth sensors into Unity. It comes with prefabs to make adding advanced features to your project as simple as drag-and-drop, helper scripts to simplify custom integration, and numerous examples to see the ZED/ZED Mini in action and learn how it works. 
 
 Features include: 
  - Pass-through augmented reality with an Oculus Rift, HTC Vive and other headsets
@@ -18,7 +18,7 @@ Features include:
 Make sure you have the following: 
 
 **Hardware:** 
- - ZED, ZED-M and ZED2 camera *(ZED Mini preferred for AR pass-through)*
+ - ZED, ZED-M or ZED2 camera *(ZED Mini preferred for AR pass-through)*
  - NVIDIA GPU with CUDA capability 3.0 or higher (a GTX 1060 or higher is recommended for AR pass-through)
  - Dual core processor clocked at 2.3GHz or higher
  - 4GB RAM or more
