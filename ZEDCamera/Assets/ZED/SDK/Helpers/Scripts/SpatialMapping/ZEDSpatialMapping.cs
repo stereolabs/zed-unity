@@ -1,10 +1,11 @@
-﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 using System.Text;
 using System;
+using System.Globalization;
 
 /// <summary>
 /// Processes the mesh taken from the ZED's Spatial Mapping feature so it can be used within Unity.
@@ -1044,7 +1045,10 @@ public class ZEDSpatialMapping
     /// <param name="meshFilePath">Where the mesh, material, and texture files will be saved.</param>
     private void SaveMeshNow(string meshFilePath = "Assets/ZEDMesh.obj")
     {
-        
+        // Make sure we are in invariant culture to get . notation for decimals.
+        CultureInfo oldCulture = Thread.CurrentThread.CurrentCulture; // Save the old culture to set it back once we are done
+        Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+
         //Make sure the destination file ends in .obj - only .obj file format is supported. 
         string extension = meshFilePath.Substring(meshFilePath.Length - 4);
         if (extension.ToLower() != ".obj")
@@ -1193,6 +1197,7 @@ public class ZEDSpatialMapping
         //Save the .area file for spatial memory. 
         string areaName = meshFilePath.Substring(0, meshFilePath.LastIndexOf(".")) + ".area";
         zedCamera.SaveCurrentArea(areaName);
+        Thread.CurrentThread.CurrentCulture = oldCulture;
     }
 
     /// <summary>
@@ -1589,6 +1594,7 @@ public class ZEDSpatialMapping
         public bool LoadMesh(string meshFilePath)
         {
             bool r = zedCamera.LoadMesh(meshFilePath, numVerticesInSubmesh, numTrianglesInSubmesh, ref numUpdatedSubmesh, UpdatedIndices, ref numVertices, ref numTriangles, MAX_SUBMESH, texturesSize);
+            if (!r) Debug.LogWarning($"ZED, Failed to load mesh: {meshFilePath}");
             vertices = new Vector3[numVertices];
             uvs = new Vector2[numVertices];
             triangles = new int[3 * numTriangles];
