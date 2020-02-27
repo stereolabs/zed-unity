@@ -1,5 +1,18 @@
 <!------------------------- Release notes ------------------------------------->
 
+### 3.1.0
+ * **Features:**
+   * Added support for AEC_ACG_ROI video settings (See ZED SDK release notes for more information)
+   * Added support for GAMMA video settings (See ZED SDK release notes for more information)
+   * Added support for compression level in Mat write() function since it has been added in ZED SDK 3.1
+   * Added Texture confidence threshold support in RuntimeParameters/ZED Manager UI since it was added since ZED SDK 3.0
+   * General update to ZED SDK 3.1
+
+
+ * **Compatibility**:
+    * Compatible with ZED SDK 3.0, CUDA 9.0, 10.0 and 10.2 on Windows and Linux
+
+
 
 ### 3.0.0
 

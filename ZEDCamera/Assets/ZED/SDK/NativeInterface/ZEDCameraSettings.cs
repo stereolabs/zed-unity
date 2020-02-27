@@ -40,16 +40,20 @@ public class ZEDCameraSettings
         /// <param name="contrast">Camera's contrast setting.</param>
         /// <param name="hue">Camera's hue setting.</param>
         /// <param name="saturation">Camera's saturation setting.</param>
+        /// <param name="sharpness">Camera's sharpness setting.</param>
+        /// <param name="gamma">Camera's gamma setting.</param>
         /// <param name="whiteBalance">Camera's white balance setting. -1 means automatic.</param>
         /// <param name="gain">Camera's gain setting. -1 means automatic.</param>
         /// <param name="exposure">Camera's exposure setting. -1 means automatic.</param>
-        public CameraSettings(int brightness = 4, int contrast = 4, int hue = 0, int saturation = 4, int whiteBalance = -1, int gain = -1, int exposure = -1,int ledStatus = 1)
+        public CameraSettings(int brightness = 4, int contrast = 4, int hue = 0, int saturation = 4, int sharpness = 3, int gamma = 5,int whiteBalance = -1, int gain = -1, int exposure = -1,int ledStatus = 1)
         {
             settings = new int[System.Enum.GetNames(typeof(sl.CAMERA_SETTINGS)).Length];
             settings[(int)sl.CAMERA_SETTINGS.BRIGHTNESS] = brightness;
             settings[(int)sl.CAMERA_SETTINGS.CONTRAST] = contrast;
             settings[(int)sl.CAMERA_SETTINGS.SATURATION] = saturation;
             settings[(int)sl.CAMERA_SETTINGS.HUE] = hue;
+            settings[(int)sl.CAMERA_SETTINGS.SHARPNESS] = sharpness;
+            settings[(int)sl.CAMERA_SETTINGS.GAMMA] = gamma;
             settings[(int)sl.CAMERA_SETTINGS.WHITEBALANCE] = whiteBalance;
             settings[(int)sl.CAMERA_SETTINGS.GAIN] = gain;
             settings[(int)sl.CAMERA_SETTINGS.EXPOSURE] = exposure;
@@ -67,6 +71,8 @@ public class ZEDCameraSettings
             settings[(int)sl.CAMERA_SETTINGS.CONTRAST] = other.settings[(int)sl.CAMERA_SETTINGS.CONTRAST];
             settings[(int)sl.CAMERA_SETTINGS.SATURATION] = other.settings[(int)sl.CAMERA_SETTINGS.SATURATION];
             settings[(int)sl.CAMERA_SETTINGS.HUE] = other.settings[(int)sl.CAMERA_SETTINGS.HUE];
+            settings[(int)sl.CAMERA_SETTINGS.SHARPNESS] = other.settings[(int)sl.CAMERA_SETTINGS.SHARPNESS];
+            settings[(int)sl.CAMERA_SETTINGS.GAMMA] = other.settings[(int)sl.CAMERA_SETTINGS.GAMMA];
             settings[(int)sl.CAMERA_SETTINGS.WHITEBALANCE] = other.settings[(int)sl.CAMERA_SETTINGS.WHITEBALANCE];
             settings[(int)sl.CAMERA_SETTINGS.GAIN] = other.settings[(int)sl.CAMERA_SETTINGS.GAIN];
             settings[(int)sl.CAMERA_SETTINGS.EXPOSURE] = other.settings[(int)sl.CAMERA_SETTINGS.EXPOSURE];
@@ -143,6 +149,40 @@ public class ZEDCameraSettings
             set
             {
                 settings[(int)sl.CAMERA_SETTINGS.CONTRAST] = value;
+            }
+        }
+
+
+        /// <summary>
+        /// ZED camera's contrast setting. 
+        /// </summary>
+        public int Sharpness
+        {
+            get
+            {
+                return settings[(int)sl.CAMERA_SETTINGS.SHARPNESS];
+            }
+
+            set
+            {
+                settings[(int)sl.CAMERA_SETTINGS.SHARPNESS] = value;
+            }
+        }
+
+
+        /// <summary>
+        /// ZED camera's contrast setting. 
+        /// </summary>
+        public int Gamma
+        {
+            get
+            {
+                return settings[(int)sl.CAMERA_SETTINGS.GAMMA];
+            }
+
+            set
+            {
+                settings[(int)sl.CAMERA_SETTINGS.GAMMA] = value;
             }
         }
 
@@ -253,6 +293,8 @@ public class ZEDCameraSettings
             zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, settings_.Contrast);
             zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.HUE, settings_.Hue);
             zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, settings_.Saturation);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SHARPNESS, settings_.Sharpness);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAMMA, settings_.Gamma);
             zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, settings_.Gain);
             zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, settings_.Exposure);
             zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, settings_.LEDStatus);
@@ -276,7 +318,9 @@ public class ZEDCameraSettings
 			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, 4);
 			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.HUE, 0);
 			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, 3);
-			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, 2600);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SHARPNESS, 3);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAMMA, 5);
+            zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, 2600);
 			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, 0);
 			zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, 0);
             zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, 1);
@@ -326,6 +370,14 @@ public class ZEDCameraSettings
                 {
                     settings_.Saturation = int.Parse(field);
                 }
+                else if (key == "sharpness")
+                {
+                    settings_.Sharpness = int.Parse(field);
+                }
+                else if (key == "gamma")
+                {
+                    settings_.Gamma = int.Parse(field);
+                }
                 else if (key == "whiteBalance")
                 {
                     settings_.WhiteBalance = int.Parse(field);
@@ -362,6 +414,8 @@ public class ZEDCameraSettings
             settings_.Contrast = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST);
             settings_.Hue = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.HUE);
             settings_.Saturation = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SATURATION);
+            settings_.Sharpness = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SHARPNESS);
+            settings_.Gamma = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAMMA);
             settings_.Gain = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAIN);
             settings_.Exposure = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE);
             settings_.WhiteBalance = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE);
@@ -405,6 +459,8 @@ public class ZEDCameraSettings
             file.WriteLine("contrast=" + settings_.Contrast.ToString());
             file.WriteLine("hue=" + settings_.Hue.ToString());
             file.WriteLine("saturation=" + settings_.Saturation.ToString());
+            file.WriteLine("sharpness=" + settings_.Sharpness.ToString());
+            file.WriteLine("gamma=" + settings_.Gamma.ToString());
             file.WriteLine("whiteBalance=" + settings_.WhiteBalance.ToString());
             file.WriteLine("gain=" + settings_.Gain.ToString());
             file.WriteLine("exposure=" + settings_.Exposure.ToString());
