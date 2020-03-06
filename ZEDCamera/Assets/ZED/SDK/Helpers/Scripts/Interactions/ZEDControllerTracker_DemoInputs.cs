@@ -379,7 +379,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     {
         if (deviceToTrack == Devices.LeftController) return SteamVR_Input_Sources.LeftHand;
         else if (deviceToTrack == Devices.RightController) return SteamVR_Input_Sources.RightHand;
-        else return SteamVR_Input_Sources.Camera;
+        else return SteamVR_Input_Sources.Any;
     }
 #elif ZED_STEAM_VR
         public bool CheckSteamVRButtonState_Legacy(EVRButtonId button, ControllerButtonState state)

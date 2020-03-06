@@ -70,7 +70,7 @@ public class ZEDMeshRenderer : MonoBehaviour
 		go.transform.localRotation = Quaternion.identity;
 		go.transform.localScale = Vector3.one;
 		cam = go.AddComponent<Camera>();
-		go.hideFlags = HideFlags.HideInHierarchy;//This hides the new camera from scene view. Comment this out to see it in the hierarchy. 
+		//go.hideFlags = HideFlags.HideInHierarchy;//This hides the new camera from scene view. Comment this out to see it in the hierarchy. 
 
 		//Set the target texture to a new RenderTexture that will be passed to ZEDRenderingPlane for blending. 
 		if (zedManager.zedCamera.IsCameraReady)
@@ -127,19 +127,58 @@ public class ZEDMeshRenderer : MonoBehaviour
     /// <summary>
     /// Renders the plane each frame, before cameras normally update, so the RenderTexture is ready to be blended. 
     /// </summary>
-    void Update()
+    void OnPreRender()
     {
-		if (zedManager!=null) {
-			if (zedManager.IsSpatialMappingDisplay && hasStarted) {
-				cam.enabled = true;
-				GL.wireframe = true;
-				cam.RenderWithShader (shaderWireframe, "RenderType");
-				GL.wireframe = false;
-				cam.enabled = false;
-                if (zedManager.SpatialMappingHasChunks)
-                    renderingPlane.SetMeshRenderAvailable(true);
+        if (zedManager.IsStereoRig)
+        {
+            if (zedManager != null)
+            {
+                if (zedManager.IsSpatialMappingDisplay && hasStarted)
+                {
+                    cam.enabled = true;
+                    if (!isTextured)
+                    {
+                        GL.wireframe = true;
+                        cam.RenderWithShader(shaderWireframe, "RenderType");
+                        GL.wireframe = false;
+                    }
+                    else
+                    {
+                        cam.Render();
+                    }
+                    cam.enabled = false;
+                    if (zedManager.SpatialMappingHasChunks)
+                        renderingPlane.SetMeshRenderAvailable(true);
+                }
             }
-		}
+        }
+
+    }
+    private void Update()
+    {
+        if (!zedManager.IsStereoRig)
+        {
+            if (zedManager != null)
+            {
+                if (zedManager.IsSpatialMappingDisplay && hasStarted)
+                {
+                    cam.enabled = true;
+                    if (!isTextured)
+                    {
+                        GL.wireframe = true;
+                        cam.RenderWithShader(shaderWireframe, "RenderType");
+                        GL.wireframe = false;
+                    }
+                    else
+                    {
+                        cam.Render();
+                    }
+                    cam.enabled = false;
+                    if (zedManager.SpatialMappingHasChunks)
+                        renderingPlane.SetMeshRenderAvailable(true);
+                }
+            }
+        }
     }
 
     /// <summary>

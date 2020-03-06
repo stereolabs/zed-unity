@@ -125,7 +125,7 @@ public class ZEDCameraEditor : Editor
     SerializedProperty enableSelfCalibrationProperty;
 
     // Rendering Prop
-    private SerializedProperty arlayer;
+    private int arlayer;
     private SerializedProperty showarrig;
     private SerializedProperty fadeinonstart;
     private SerializedProperty dontdestroyonload;
@@ -258,7 +258,7 @@ public class ZEDCameraEditor : Editor
 
 
         ///Advanced Settings Serialized Properties
-        arlayer = serializedObject.FindProperty("arlayer");
+        arlayer = ZEDLayersManager.arlayer;
         showarrig = serializedObject.FindProperty("showarrig");
         fadeinonstart = serializedObject.FindProperty("fadeInOnStart");
         greyskybox = serializedObject.FindProperty("greySkybox");
@@ -926,7 +926,7 @@ public class ZEDCameraEditor : Editor
 
             GUIContent arlayerlabel = new GUIContent("AR Layer", "Layer that a final, normally-hidden AR rig sees. Used to confine it from the rest of the scene.\r\n " +
                 "You can assign this to any empty layer, and multiple ZEDs can share the same layer.");
-            arlayer.intValue = EditorGUILayout.IntField(arlayerlabel, manager.arLayer, arlayer.intValue < 32 ? layerboxstyle : layerboxstyleerror);
+            arlayer = EditorGUILayout.IntField(arlayerlabel, ZEDLayersManager.arlayer, arlayer < 32 ? layerboxstyle : layerboxstyleerror);
 
             //Show an error message if the set layer is invalid.
             GUIStyle errormessagestyle = new GUIStyle(EditorStyles.label);
@@ -935,7 +935,7 @@ public class ZEDCameraEditor : Editor
             errormessagestyle.fontSize = 10;
 
             //Show small error message if user set layer to below zero. 
-            if (arlayer.intValue < 0)
+            if (arlayer < 0)
             {
                 string errortext = "Unity layers must be above zero to be visible.";
                 Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(errortext, ""), errormessagestyle);
@@ -943,7 +943,7 @@ public class ZEDCameraEditor : Editor
             }
 
             //Show small error message if user set layer higher than 31, which is invalid because Unity layers only go up to 31. 
-            if (arlayer.intValue > 31)
+            if (arlayer > 31)
             {
                 string errortext = "Unity doesn't support layers above 31.";
                 Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(errortext, ""), errormessagestyle);
@@ -957,7 +957,7 @@ public class ZEDCameraEditor : Editor
             warningmessagestyle.fontSize = 10;
 
             //Show small warning message if user set layer to 31, which is technically valid but Unity reserves it for other uses. 
-            if (arlayer.intValue == 31)
+            if (arlayer == 31)
             {
                 string warningext = "Warning: Unity reserves layer 31 for previews in the editor. Assigning to layer 31 can cause conflicts.";
                 Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(warningext, ""), warningmessagestyle);
@@ -965,13 +965,15 @@ public class ZEDCameraEditor : Editor
             }
 
             //Show small warning message if user set layer to 0
-            if (arlayer.intValue == 0)
+            if (arlayer == 0)
             {
                 string warningext = "Warning: Setting the AR rig to see the Default layer means other objects will be drawn in the background, " +
                     "and in unexpected positions as the AR rig position is not synced with the ZED_Rig_Stereo object.";
                 Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(warningext, ""), warningmessagestyle);
                 EditorGUI.LabelField(labelrect, warningext, warningmessagestyle);
             }
+            ZEDLayersManager.ClearLayer(ZEDLayersManager.ID_arlayer);
+            ZEDLayersManager.CreateLayer(ZEDLayersManager.ID_arlayer, arlayer);
 
             //Show AR Rig toggle. 
             GUIContent showarlabel = new GUIContent("Show Final AR Rig", "Whether to show the hidden camera rig used in stereo AR mode to " +

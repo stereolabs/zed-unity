@@ -254,15 +254,14 @@ namespace sl
         /// <summary>
         /// Layer that the ZED can't see, but overlay cameras created by ZEDMeshRenderer and ZEDPlaneRenderer can.
         /// </summary>
-        int tagInvisibleToZED = 16;
+        //int tagInvisibleToZED = 16;
         /// <summary>
         /// Layer that the ZED can't see, but overlay cameras created by ZEDMeshRenderer and ZEDPlaneRenderer can.
         /// </summary>
         public int TagInvisibleToZED
         {
-            get { return tagInvisibleToZED; }
+            get { return ZEDLayersManager.tagInvisibleToZED; }
         }
-
         public const int brightnessDefault = 4;
         public const int contrastDefault = 4;
         public const int hueDefault = 0;

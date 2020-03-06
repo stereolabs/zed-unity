@@ -1333,12 +1333,12 @@ public class ZEDManager : MonoBehaviour
     {
         get
         {
-            return arlayer;
+            return ZEDLayersManager.arlayer;
         }
     }
     [SerializeField]
     [HideInInspector]
-    private int arlayer = 30;
+   //private int arlayer = 30;
 
     /////////////////////////////////////
     //////  ZED specific events    //////
