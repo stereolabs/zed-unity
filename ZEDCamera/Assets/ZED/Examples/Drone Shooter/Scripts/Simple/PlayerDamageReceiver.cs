@@ -27,7 +27,7 @@ public class PlayerDamageReceiver : MonoBehaviour
     /// </summary>
     private float coloralpha
     {
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
         get
         {
             return meshrenderer.material.color.a;
@@ -36,7 +36,7 @@ public class PlayerDamageReceiver : MonoBehaviour
         {
             meshrenderer.material.color = new Color(meshrenderer.material.color.r, meshrenderer.material.color.g, meshrenderer.material.color.b, value);
         }
-#else
+#elif ZED_HDRP
         get
         {
             return meshrenderer.material.GetColor("_UnlitColor").a;
@@ -47,8 +47,18 @@ public class PlayerDamageReceiver : MonoBehaviour
             newcol.a = value;
             meshrenderer.material.SetColor("_UnlitColor", newcol);
         }
+#elif ZED_LWRP || ZED_URP
+        get
+        {
+            return meshrenderer.material.GetColor("_BaseColor").a;
+        }
+        set
+        {
+            Color newcol = meshrenderer.material.GetColor("_BaseColor");
+            newcol.a = value;
+            meshrenderer.material.SetColor("_BaseColor", newcol);
+        }
 #endif
-
     }
 
     /// <summary>

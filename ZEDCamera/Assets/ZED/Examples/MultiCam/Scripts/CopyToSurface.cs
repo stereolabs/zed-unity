@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
 using UnityEngine.Rendering;
 #endif
 
@@ -32,9 +32,9 @@ public class CopyToSurface : MonoBehaviour
     /// </summary>
     [Tooltip("If worldRenderer is set, this is the name of the texture property that will be set with the camera image.\r\n\n" +
         "'_MainTex' works for most Standard render pipeline materials, '_BaseMap' works for most lit LWRP materials and '_BaseColorMap' for lit HDRP materials.")]
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
     public string rendererTextureProperty = "_MainTex";
-#elif ZED_LWRP
+#elif ZED_LWRP || ZED_URP
     public string rendererTextureProperty = "_BaseMap";
 #elif ZED_HDRP
     public string rendererTextureProperty = "_BaseColorMap";
@@ -47,7 +47,7 @@ public class CopyToSurface : MonoBehaviour
     {
         cam = GetComponent<Camera>();
 
-#if !ZED_LWRP
+#if !ZED_LWRP && !ZED_URP
         copyTexture = new RenderTexture(cam.pixelWidth, cam.pixelHeight, 0);
 #else
         copyTexture = new RenderTexture(cam.pixelWidth, cam.pixelHeight, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.B10G11R11_UFloatPack32);
@@ -57,14 +57,14 @@ public class CopyToSurface : MonoBehaviour
         if (canvasRawImage) canvasRawImage.texture = copyTexture;
         if (worldRenderer) worldRenderer.material.SetTexture(rendererTextureProperty, copyTexture);
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
 
         RenderPipelineManager.beginFrameRendering += SRPStartDraw;
         RenderPipelineManager.endFrameRendering += SRPEndDraw;
 #endif
     }
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
         Graphics.Blit(source, copyTexture);
@@ -79,8 +79,17 @@ public class CopyToSurface : MonoBehaviour
 
     private void SRPEndDraw(ScriptableRenderContext context, Camera[] rendcam)
     {
-        cam.targetTexture = null;
-        Graphics.Blit(copyTexture, (RenderTexture)null);
+        if (canvasRawImage) canvasRawImage.texture = copyTexture;
+        if (worldRenderer) worldRenderer.material.SetTexture(rendererTextureProperty, copyTexture);
+        foreach (Camera camera in rendcam)
+        {
+            if (camera == cam)
+            {
+                cam.targetTexture = null;
+                Graphics.Blit(copyTexture, (RenderTexture)null);
+            }
+            else cam.targetTexture = null;
+        }
     }
 #endif
 
@@ -88,7 +97,7 @@ public class CopyToSurface : MonoBehaviour
     {
         if (copyTexture) copyTexture.Release();
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
 
         RenderPipelineManager.beginFrameRendering -= SRPStartDraw;
         RenderPipelineManager.endFrameRendering -= SRPEndDraw;

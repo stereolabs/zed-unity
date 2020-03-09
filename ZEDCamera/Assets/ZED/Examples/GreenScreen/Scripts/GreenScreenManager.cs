@@ -2,7 +2,7 @@
 using UnityEngine;
 using System.IO;
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
 using UnityEngine.Rendering;
 #endif
 
@@ -11,7 +11,7 @@ using UnityEngine.Rendering;
 /// of a specified color. Useful for third-person mixed reality setups. 
 /// Also requires the Frame object of the ZEDRenderingPlane component to have its MeshRenderer material set to Mat_ZED_GreenScreen.
 /// The simplest way to use the plugin's GreenScreen feature is to use the ZED_GreenScreen prefab in the GreenScreen sample folder. 
-/// For detailed information on using the ZED for greenscreen effects, see https://docs.stereolabs.com/mixed-reality/unity/green-screen-vr/.
+/// For detailed information on using the ZED for greenscreen effects, see https://www.stereolabs.com/docs/unity/green-screen-vr/.
 /// </summary>
 //[RequireComponent(typeof(ZEDManager))]
 public class GreenScreenManager : MonoBehaviour
@@ -347,7 +347,7 @@ public class GreenScreenManager : MonoBehaviour
             garbageMatte = new GarbageMatte(cameraManager, finalMat, transform, garbageMatte);
         }
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
         cam = GetComponent<Camera>();
         if (!cam) Debug.LogError("GreenScreenManager is not attached to a Camera.");
         RenderPipelineManager.beginCameraRendering += OnSRPPreRender;
@@ -639,7 +639,7 @@ public class GreenScreenManager : MonoBehaviour
         }
     }
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
     /// <summary>
     /// 
     /// </summary>

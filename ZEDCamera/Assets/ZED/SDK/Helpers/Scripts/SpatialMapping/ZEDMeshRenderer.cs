@@ -82,7 +82,7 @@ public class ZEDMeshRenderer : MonoBehaviour
 		//Set the camera's parameters. 
 		cam.enabled = false;
 		cam.cullingMask = (1 << zedManager.zedCamera.TagInvisibleToZED); //Layer set aside for planes and spatial mapping meshes. 
-		cam.targetTexture = meshTex;
+        cam.targetTexture = meshTex;
 		cam.nearClipPlane = 0.1f;
 		cam.farClipPlane = 500.0f;
 		cam.fieldOfView = zedManager.zedCamera.GetFOV() * Mathf.Rad2Deg;
@@ -93,8 +93,8 @@ public class ZEDMeshRenderer : MonoBehaviour
 		cam.depth = 0;
 		cam.depthTextureMode = DepthTextureMode.None;
 
-		#if UNITY_5_6_OR_NEWER
-		cam.allowMSAA = false;
+#if UNITY_5_6_OR_NEWER
+        cam.allowMSAA = false;
 		cam.allowHDR = false;
 		#endif
 		cam.useOcclusionCulling = false;
@@ -105,7 +105,7 @@ public class ZEDMeshRenderer : MonoBehaviour
 		renderingPlane = GetComponent<ZEDRenderingPlane>();
 		renderingPlane.SetTextureOverlayMapping(meshTex);
         renderingPlane.SetMeshRenderAvailable(false);
-		hasStarted = true;
+        hasStarted = true;
     }
     /// <summary>
     /// Set the rendering available. Used when loading mesh
@@ -124,6 +124,7 @@ public class ZEDMeshRenderer : MonoBehaviour
 		hasStarted = false;
     }
 
+#if !ZED_LWRP && !ZED_URP && !ZED_HDRP
     /// <summary>
     /// Renders the plane each frame, before cameras normally update, so the RenderTexture is ready to be blended. 
     /// </summary>
@@ -180,6 +181,7 @@ public class ZEDMeshRenderer : MonoBehaviour
             }
         }
     }
+#endif
 
     /// <summary>
     /// Releases the target RenderTexture when the application quits. 

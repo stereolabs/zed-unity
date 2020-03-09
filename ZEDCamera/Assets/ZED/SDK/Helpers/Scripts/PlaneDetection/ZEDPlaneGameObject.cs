@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Threading;
 using System.Runtime.InteropServices;
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
 using UnityEngine.Rendering;
 #endif
 
@@ -186,7 +186,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
         rend.material = rendermaterial;
 
         //Turn off light and shadow effects, as the planes are meant to highlight a real-world object, not be a distinct object. 
-        rend.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        rend.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
         rend.receiveShadows = false;
         rend.enabled = true;
         rend.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
@@ -254,14 +254,14 @@ public class ZEDPlaneGameObject : MonoBehaviour
             gameObject.name = "Floor Plane";
 
 
-        gameObject.layer = 12;//sl.ZEDCamera.TagOneObject;
+        gameObject.layer = ZEDLayers.tagInvisibleToZED;//sl.ZEDCamera.TagOneObject;
 
         SetComponents(plane, vertices, triangles, rendermaterial);
 
         isCreated = true;
 
         //Subscribe to events that let you govern visibility in the scene and game. 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
         Camera.onPreCull += PreCull;
         Camera.onPostRender += PostRender;
 #else
@@ -443,7 +443,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
         return defaultmaterial;
     }
 
-#if! ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
     /// <summary>
     /// Disables the MeshRenderer object for rendering a single camera, depending on display settings in ZEDPlaneDetectionManager. 
     /// </summary>
@@ -490,14 +490,14 @@ public class ZEDPlaneGameObject : MonoBehaviour
     private void DrawPlane(Camera drawcam)
     {
         Matrix4x4 canvastrs = Matrix4x4.TRS(transform.position, transform.rotation, transform.localScale);
-        Graphics.DrawMesh(mfilter.mesh, canvastrs, rend.material, 0, drawcam);
+        Graphics.DrawMesh(mfilter.mesh, canvastrs, rend.material, 0, drawcam, 0, null, false, false);
     }
 #endif
 
 
     private void OnDestroy()
     {
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
         Camera.onPreCull -= PreCull;
         Camera.onPostRender -= PostRender;
 #else

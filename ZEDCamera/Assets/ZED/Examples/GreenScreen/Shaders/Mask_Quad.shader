@@ -7,11 +7,10 @@ Shader "Custom/Green Screen/Mask Quad"
 		SubShader
 	{
 		Tags{ "RenderType" = "Transparent"
-		"Queue" = "Transparent-2"
+		"Queue" = "Transparent"}
 
-	}
 		Cull Off
-		Lighting On
+		//Lighting On
 		ZWrite Off
 		ZTest Always
 		Blend SrcAlpha OneMinusSrcAlpha

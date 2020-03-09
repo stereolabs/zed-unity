@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
 using UnityEngine.Experimental.Rendering;
 #endif
 
@@ -14,7 +14,7 @@ public class LookAtCamera : MonoBehaviour
 {
 
 
-#if !ZED_LWRP && !ZED_HDRP //OnWillRenderObject doesn't work in SRP, so use a callback from RenderPipeline to trigger the facing instead. 
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP //OnWillRenderObject doesn't work in SRP, so use a callback from RenderPipeline to trigger the facing instead. 
     void OnWillRenderObject()
     {
         FaceCamera(Camera.current);
