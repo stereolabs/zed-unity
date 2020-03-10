@@ -1,6 +1,6 @@
-﻿
+﻿#if UNITY_EDITOR
 using UnityEditor;
-using UnityEngine;
+#endif
 
 /// <summary>
 /// This class creates automaticaly layers on load
