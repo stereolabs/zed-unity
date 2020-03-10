@@ -259,7 +259,7 @@ public class ZEDCameraEditor : Editor
 
 
         ///Advanced Settings Serialized Properties
-        arlayer = ZEDLayersManager.arlayer;
+        arlayer = ZEDLayers.arlayer;
         showarrig = serializedObject.FindProperty("showarrig");
         fadeinonstart = serializedObject.FindProperty("fadeInOnStart");
         greyskybox = serializedObject.FindProperty("greySkybox");
@@ -916,7 +916,7 @@ public class ZEDCameraEditor : Editor
 
             GUIContent arlayerlabel = new GUIContent("AR Layer", "Layer that a final, normally-hidden AR rig sees. Used to confine it from the rest of the scene.\r\n " +
                 "You can assign this to any empty layer, and multiple ZEDs can share the same layer.");
-            arlayer = EditorGUILayout.IntField(arlayerlabel, ZEDLayersManager.arlayer, arlayer < 32 ? layerboxstyle : layerboxstyleerror);
+            arlayer = EditorGUILayout.IntField(arlayerlabel, ZEDLayers.arlayer, arlayer < 32 ? layerboxstyle : layerboxstyleerror);
 
             //Show an error message if the set layer is invalid.
             GUIStyle errormessagestyle = new GUIStyle(EditorStyles.label);
@@ -962,8 +962,8 @@ public class ZEDCameraEditor : Editor
                 Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(warningext, ""), warningmessagestyle);
                 EditorGUI.LabelField(labelrect, warningext, warningmessagestyle);
             }
-            ZEDLayersManager.ClearLayer(ZEDLayersManager.ID_arlayer);
-            ZEDLayersManager.CreateLayer(ZEDLayersManager.ID_arlayer, arlayer);
+            ZEDLayersManager.ClearLayer(ZEDLayers.ID_arlayer);
+            ZEDLayersManager.CreateLayer(ZEDLayers.ID_arlayer, arlayer);
 
             //Show AR Rig toggle. 
             GUIContent showarlabel = new GUIContent("Show Final AR Rig", "Whether to show the hidden camera rig used in stereo AR mode to " +

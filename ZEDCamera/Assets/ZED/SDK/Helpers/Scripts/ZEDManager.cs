@@ -1302,7 +1302,7 @@ public class ZEDManager : MonoBehaviour
     {
         get
         {
-            return ZEDLayersManager.arlayer;
+            return ZEDLayers.arlayer;
         }
     }
     [SerializeField]
