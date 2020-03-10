@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 
-using UnityEngine.Rendering.Universal;
 /// <summary>
 /// The central script of the ZED Unity plugin, and the primary way a developer can interact with the camera.
 /// It sets up and closes connection to the ZED, adjusts parameters based on user settings, enables/disables/handles
