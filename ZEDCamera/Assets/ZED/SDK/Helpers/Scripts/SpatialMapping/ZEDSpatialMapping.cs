@@ -1,4 +1,4 @@
-//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -710,6 +710,9 @@ public class ZEDSpatialMapping
     {
 
         GameObject[] gos = GameObject.FindObjectsOfType<GameObject>() as GameObject[];
+
+        Chunks.Clear();
+        ChunkList.Clear();
 
         spatialMappingHelper.Clear();
         for (int i = 0; i < gos.Length; i++)
@@ -1496,6 +1499,7 @@ public class ZEDSpatialMapping
         /// </summary>
         public void Clear()
         {
+   
             chunks.Clear();
 
             vertices = new Vector3[0];

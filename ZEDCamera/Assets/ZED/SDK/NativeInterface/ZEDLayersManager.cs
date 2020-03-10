@@ -1,24 +1,31 @@
-﻿#if UNITY_EDITOR
+﻿
 using UnityEditor;
-
+using UnityEngine;
 
 /// <summary>
 /// This class creates automaticaly layers on load
 /// </summary>
 
-[InitializeOnLoad]
-public static class ZEDLayersManager
+public struct ZEDLayers
 {
+
     public static int tagInvisibleToZED = 16;
     public static string ID_tagInvisibleToZED = "tagInvisibleToZED";
     public static int arlayer = 30;
     public static string ID_arlayer = "arlayer";
+}
+
+#if UNITY_EDITOR
+[InitializeOnLoad]
+public static class ZEDLayersManager
+{
+
 
 
     static ZEDLayersManager()
     {
-        CreateLayer(ID_tagInvisibleToZED, tagInvisibleToZED);
-        CreateLayer(ID_arlayer, arlayer);
+        CreateLayer(ZEDLayers.ID_tagInvisibleToZED, ZEDLayers.tagInvisibleToZED);
+        CreateLayer(ZEDLayers.ID_arlayer, ZEDLayers.arlayer);
     }
 
     public static void CreateLayer(string layerName, int layerIndex)

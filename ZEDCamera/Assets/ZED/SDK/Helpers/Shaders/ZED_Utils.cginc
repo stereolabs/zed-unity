@@ -48,6 +48,7 @@ float computeDepthXYZ(float3 colorXYZ) {
 
 	float4 v = float4(colorXYZ, 1);
 	//Project to unity's coordinate
+
 	float4 depthXYZVector = mul(UNITY_MATRIX_P, v);
 
 	if (depthXYZVector.w != depthXYZVector.w) return FAR_DEPTH;

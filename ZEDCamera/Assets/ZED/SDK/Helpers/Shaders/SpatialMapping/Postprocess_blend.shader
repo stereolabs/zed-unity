@@ -47,10 +47,9 @@ Shader "Custom/Spatial Mapping/Postprocess Blend"
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				return o;
 			}
-			
+
 			fixed4 frag(v2f i) : SV_Target
 			{
-
 				float4 meshColor = tex2D(_ZEDMeshTex, i.uv);
 
 				if (_IsTextured == 0) {
@@ -58,13 +57,12 @@ Shader "Custom/Spatial Mapping/Postprocess Blend"
 					if (length(meshColor) < 0.1) {
 						return tex2D(_MainTex, i.uv);
 					}
-					/*float4 m =  clamp(tex2D(_MainTex, i.uv)*meshColor, float4(_WireColor.rgb - 0.05f,meshColor.a), float4(_WireColor.rgb + 0.05f, meshColor.a));
+					float4 m =  clamp(tex2D(_MainTex, i.uv)*meshColor, float4(_WireColor.rgb - 0.05f,meshColor.a), float4(_WireColor.rgb + 0.05f, meshColor.a));
 #if !AWAY
+
 					m = tex2D(_MainTex, i.uv) *(1 - meshColor.a) + (meshColor.a)* float4(_WireColor.rgb - 0.05f, meshColor.a);
 #endif
-					return m;*/
-
-					return meshColor;
+					return m;
 				}
 				else
 				{
@@ -77,7 +75,7 @@ Shader "Custom/Spatial Mapping/Postprocess Blend"
 				return meshColor;
 			}
 			return  tex2D(_MainTex, i.uv);
-			
+
 			}
 
 			ENDCG

@@ -86,8 +86,7 @@ public class LaserGun : MonoBehaviour
 #if ZED_STEAM_VR
             if (objecttracker.index >= 0)
                 yield break;
-#endif
-#if ZED_OCULUS
+#elif ZED_OCULUS
             if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
                 yield break;
 #endif
@@ -117,8 +116,7 @@ public class LaserGun : MonoBehaviour
                         yield break;
                     }
                 }
-#endif
-#if ZED_OCULUS
+#elif ZED_OCULUS
                 if (OVRManager.isHmdPresent)
                 {
                     if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
@@ -201,9 +199,7 @@ public class LaserGun : MonoBehaviour
 
 
 
-#endif
-
-#if ZED_STEAM_VR
+#elif ZED_STEAM_VR
         //Looks for any input from this controller through SteamVR
         if (objecttracker != null)
         {

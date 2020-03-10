@@ -12,7 +12,7 @@ using UnityEditor.PackageManager.Requests;
 
 /// <summary>
 /// Manages the various compiler defines that the ZED Unity plugin uses to enable and disable features that are dependent on specific packages. 
-/// This includes the SteamVR and Oculus plugins (for controller interaction), OpenCV for Unity (for ArUco detection) and the Lightweight and High Definition Render Pipelines. 
+/// This includes the SteamVR and Oculus plugins (for controller interaction), OpenCV for Unity (for ArUco detection) and the Lightweight/Universal and High Definition Render Pipelines. 
 /// </summary>
 [InitializeOnLoad]
 public class ZEDDefineHandler : AssetPostprocessor
@@ -94,6 +94,7 @@ public class ZEDDefineHandler : AssetPostprocessor
         {
             bool foundlwrppackage = false;
             bool foundhdrppackage = false;
+            bool foundurppackage = false;
 
             foreach (UnityEditor.PackageManager.PackageInfo package in request.Result)
             {
@@ -101,6 +102,12 @@ public class ZEDDefineHandler : AssetPostprocessor
                 {
                     //Debug.Log("Lightweight Render Pipeline package detected.");
                     foundlwrppackage = true;
+                    break;
+                }
+                else if (package.name.Contains("render-pipelines.universal"))
+                {
+                    //Debug.Log("High Definition Render Pipeline package detected.");
+                    foundurppackage = true;
                     break;
                 }
                 else if (package.name.Contains("render-pipelines.high-definition"))
@@ -116,6 +123,9 @@ public class ZEDDefineHandler : AssetPostprocessor
 
             if (foundhdrppackage) ActivateDefine("HDRP", "ZED_HDRP");
             else DeactivateDefine("HDRP", "ZED_HDR{");
+
+            if (foundurppackage) ActivateDefine("URP", "ZED_URP");
+            else DeactivateDefine("URP", "ZED_URP{");
 
             //Debug.Log("Scanned packages in " + requesttime.ToString("F2") + " seconds.");
             EditorApplication.update -= CheckForLWRPPackageRequestFinished;

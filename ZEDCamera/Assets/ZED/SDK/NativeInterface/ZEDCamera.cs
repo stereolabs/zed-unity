@@ -260,8 +260,9 @@ namespace sl
         /// </summary>
         public int TagInvisibleToZED
         {
-            get { return ZEDLayersManager.tagInvisibleToZED; }
+            get { return ZEDLayers.tagInvisibleToZED; }
         }
+
         public const int brightnessDefault = 4;
         public const int contrastDefault = 4;
         public const int hueDefault = 0;
