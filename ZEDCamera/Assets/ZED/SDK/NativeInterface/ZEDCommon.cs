@@ -89,10 +89,23 @@ namespace sl
         public int pose_confidence;
 	};
 
-	/// <summary>
-	/// Full IMU data structure.
-	/// </summary>
-	[StructLayout(LayoutKind.Sequential)]
+    /// <summary>
+    /// Rect structure to define a rectangle or a ROI in pixels
+    /// Use to set ROI target for AEC/AGC
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct iRect
+    {
+        public int x;
+        public int y;
+        public int width;
+        public int height;
+    };
+
+    /// <summary>
+    /// Full IMU data structure.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
 	public struct ImuData
 	{
         /// <summary>
@@ -742,6 +755,10 @@ namespace sl
         /// </summary>
         SHARPNESS,
         /// <summary>
+        /// Gamma control. Value should be between 1 and 9
+        /// </summary>
+        GAMMA,
+        /// <summary>
         /// Gain control. Value should be between 0 and 100 for manual control.
         /// If ZED_EXPOSURE is set to -1 (automatic mode), then gain will be automatic as well.
         /// </summary>
@@ -757,6 +774,11 @@ namespace sl
         /// Auto-exposure and auto gain. Setting this to true switches on both. Assigning a specifc value to GAIN or EXPOSURE will set this to 0. 
         /// </summary>
         AEC_AGC,
+        /// <summary>
+        /// ROI for auto exposure/gain. ROI defines the target where the AEC/AGC will be calculated
+        /// Use overloaded function for this enum
+        /// </summary>
+        AEC_AGC_ROI,
         /// <summary>
         /// Color temperature control. Value should be between 2800 and 6500 with a step of 100.
         /// </summary>
@@ -1256,9 +1278,13 @@ namespace sl
         [MarshalAs(UnmanagedType.U1)]
         public bool enableDepth;
         /// <summary>
-        ///  Defines the confidence threshld for the depth
+        ///  Defines the confidence threshold for the depth. Based on stereo matching score.
         /// </summary>
         public int confidenceThreshold;
+        /// <summary>
+        /// Defines texture confidence threshold for the depth. Based on textureness confidence. 
+        /// </summary>
+        public int textureConfidenceThreshold;
 
     }
 
