@@ -655,6 +655,31 @@ public class ZEDManager : MonoBehaviour
         }
     }
 
+    [SerializeField]
+    [HideInInspector]
+    private int m_textureConfidenceThreshold = 100;
+    /// <summary>
+    /// How tolerant the ZED SDK is to low confidence values. Lower values filter more pixels.
+    /// </summary>
+    public int textureConfidenceThreshold
+    {
+        get
+        {
+            return m_textureConfidenceThreshold;
+        }
+        set
+        {
+            if (value == m_textureConfidenceThreshold) return;
+
+            m_textureConfidenceThreshold = Mathf.RoundToInt(Mathf.Clamp(value, 0, 100));
+            if (Application.isPlaying && zedReady)
+            {
+                runtimeParameters.textureConfidenceThreshold = m_textureConfidenceThreshold;
+            }
+
+        }
+    }
+
     /// <summary>
     /// Options for enabling the depth measurement map for the right camera. Costs performance if on, even if not used. 
     /// </summary>
@@ -846,6 +871,12 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [SerializeField]
     private int videoSharpness = 3;
+    /// <summary>
+    /// Sharpness setting for the ZED camera itself.
+    /// Serialized value is applied to the camera on start when videoSettingsInitMode is set to Custom. 
+    /// </summary>
+    [SerializeField]
+    private int videoGamma = 5;
     /// <summary>
     /// Whether the LED on the ZED camera is on. 
     /// Serialized value is applied to the camera on start when videoSettingsInitMode is set to Custom. 
@@ -1972,6 +2003,7 @@ public class ZEDManager : MonoBehaviour
         runtimeParameters.sensingMode = sensingMode;
         runtimeParameters.enableDepth = true;
         runtimeParameters.confidenceThreshold = confidenceThreshold;
+        runtimeParameters.textureConfidenceThreshold = textureConfidenceThreshold;
         //Don't change this reference frame. If we need normals in the world frame, better to do the conversion ourselves.
         runtimeParameters.measure3DReferenceFrame = sl.REFERENCE_FRAME.CAMERA;
 
@@ -2118,8 +2150,6 @@ public class ZEDManager : MonoBehaviour
         zedRigRoot.localPosition = OriginPosition;
         zedRigRoot.localRotation = OriginRotation;
 
-        //Set confidence threshold if needed.
-        if (m_confidenceThreshold != 100) runtimeParameters.confidenceThreshold = m_confidenceThreshold;
 
 #if UNITY_EDITOR
         EditorApplication.playmodeStateChanged = HandleOnPlayModeChanged;
@@ -2921,7 +2951,7 @@ public class ZEDManager : MonoBehaviour
         videoHue = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.HUE);
         videoSaturation = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SATURATION);
         videoSharpness = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SHARPNESS);
-
+        videoGamma = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAMMA);
         videoAutoGainExposure = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC) == 1 ? true : false;
         if (!videoAutoGainExposure)
         {
@@ -2945,6 +2975,7 @@ public class ZEDManager : MonoBehaviour
         zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.HUE, videoHue);
         zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, videoSaturation);
         zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SHARPNESS, videoSharpness);
+        zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAMMA, videoGamma);
 
         zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC, videoAutoGainExposure ? 1 : 0);
         if (!videoAutoGainExposure)

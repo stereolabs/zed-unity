@@ -1594,7 +1594,7 @@ public class ZEDSpatialMapping
         public bool LoadMesh(string meshFilePath)
         {
             bool r = zedCamera.LoadMesh(meshFilePath, numVerticesInSubmesh, numTrianglesInSubmesh, ref numUpdatedSubmesh, UpdatedIndices, ref numVertices, ref numTriangles, MAX_SUBMESH, texturesSize);
-            if (!r) Debug.LogWarning("ZED, Failed to load mesh:" + meshFilePath);
+            if (!r) Debug.LogWarning("[ZED] Failed to load mesh: "+ meshFilePath);
             vertices = new Vector3[numVertices];
             uvs = new Vector2[numVertices];
             triangles = new int[3 * numTriangles];
