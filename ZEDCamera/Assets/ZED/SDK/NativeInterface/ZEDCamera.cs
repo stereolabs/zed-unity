@@ -2308,19 +2308,16 @@ namespace sl
             sl.CalibrationParameters calib = GetCalibrationParameters(false);
             sl.Resolution imageResolution = new sl.Resolution((uint)this.ImageWidth, (uint)this.ImageHeight);
 
-
             Vector4 calibLeft = new Vector4(calib.leftCam.fx, calib.leftCam.fy, calib.leftCam.cx, calib.leftCam.cy);
             Vector4 calibRight = new Vector4(calib.rightCam.fx, calib.rightCam.fy, calib.rightCam.cx, calib.rightCam.cy);
 
             p = dllz_compute_optical_center_offsets(ref calibLeft, ref calibRight, imageResolution, planeDistance);
-
             if (p == IntPtr.Zero)
             {
                 return new Vector4();
             }
             Vector4 parameters = (Vector4)Marshal.PtrToStructure(p, typeof(Vector4));
             return parameters;
-
         }
 
         ////////////////////////

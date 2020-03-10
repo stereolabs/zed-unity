@@ -310,14 +310,6 @@ namespace sl
     public struct CalibrationParameters
     {
         /// <summary>
-        /// Rotation (using Rodrigues' transformation) between the two sensors. Defined as 'tilt', 'convergence' and 'roll'.
-        /// </summary>
-        public Vector3 Rot;
-        /// <summary>
-        /// Translation between the two sensors. T[0] is the distance between the two cameras in meters.
-        /// </summary>
-        public Vector3 Trans;
-        /// <summary>
         /// Parameters of the left sensor.
         /// </summary>
         public CameraParameters leftCam;
@@ -325,6 +317,14 @@ namespace sl
         /// Parameters of the right sensor.
         /// </summary>
         public CameraParameters rightCam;
+        /// <summary>
+        /// Rotation (using Rodrigues' transformation) between the two sensors. Defined as 'tilt', 'convergence' and 'roll'.
+        /// </summary>
+        public Quaternion Rot;
+        /// <summary>
+        /// Translation between the two sensors. T[0] is the distance between the two cameras in meters.
+        /// </summary>
+        public Vector3 Trans;
     };
 
     /// <summary>
