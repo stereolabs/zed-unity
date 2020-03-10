@@ -239,7 +239,12 @@ public class ZEDPointCloudManager : MonoBehaviour
             //mat.SetMatrix("_Position", transform.localToWorldMatrix);
             mat.SetMatrix(positionID, transform.localToWorldMatrix);
             mat.SetPass(0);
+
+            #if UNITY_2019_1_OR_NEWER
             Graphics.DrawProceduralNow(MeshTopology.Points, 1, numberPoints);
+            #else
+            Graphics.DrawProcedural(MeshTopology.Points, 1, numberPoints);
+            #endif
         }
     }
 

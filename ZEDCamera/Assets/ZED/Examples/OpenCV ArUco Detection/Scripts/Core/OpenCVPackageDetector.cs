@@ -21,11 +21,7 @@ public class OpenCVPackageDetector : AssetPostprocessor
     {
         string opencvfilename = "opencvforunity.dll";
         opencvfilename = "opencvforunity";
-
-#if UNITY_EDITOR_LINUX
-        opencvpackagename = libopencvforunity;
-#endif
-
+ 
         //if(EditorPrefs.GetBool("ZEDOpenCV") == false && CheckPackageExists(opencvfilename))
         if(CheckPackageExists(opencvfilename))
         {
