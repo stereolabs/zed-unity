@@ -1,5 +1,15 @@
 <!------------------------- Release notes ------------------------------------->
 
+### 3.0.1
+  * **Bug Fixes:**
+    * Fixes an issue when saving meshes where default culture is set to use comma notation for decimals (Thanks to @kaszim)
+    * Fixes Black screen with Unity 2019.3 in Forward. Removed RenderPipeline tag not supported anymore.
+    * Fixes texture in spatial mapping not drawn in live.
+    * Added ZEDLayersManager.cs  . This script creates on load all the layers needed by the plugin.
+    * Fixes for 2018 unity version (drawProceduralNow was not existing in previous version). 
+    * Moved MR Calibration app to Tools folder. 
+
+
 
 ### 3.0.0
 
