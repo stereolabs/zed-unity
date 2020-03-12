@@ -60,6 +60,9 @@ MonoBehaviour:
   NeedNewFrameGrab: 0
   streamInputIP: 127.0.0.1
   streamInputPort: 30000
+  srpShaderType: 0
+  selfIllumination: 0.5
+  applyZEDNormals: 0
   enableTracking: 1
   enableSpatialMemory: 1
   pathSpatialMemory: 
@@ -84,7 +87,7 @@ MonoBehaviour:
   enableImageEnhancement: 1
   m_maxDepthRange: 40
   svoOutputFileName: Assets/Recording.svo
-  svoOutputCompressionMode: 1
+  svoOutputCompressionMode: 3
   needRecordFrame: 0
   enableStreaming: 0
   streamingCodec: 0
@@ -132,7 +135,7 @@ MonoBehaviour:
   advancedPanelOpen: 0
   spatialMappingFoldoutOpen: 0
   objectDetectionFoldoutOpen: 0
-  recordingFoldoutOpen: 1
+  recordingFoldoutOpen: 0
   streamingOutFoldoutOpen: 0
   camControlFoldoutOpen: 0
   arlayer: 30
@@ -207,7 +210,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 851b6eeee88b1e04c8a22454a27421a1, type: 2}
+  - {fileID: 2100000, guid: 14aa15e22283b7b449fdd159d8d9e899, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -215,6 +218,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -285,9 +289,10 @@ Camera:
   m_ClearFlags: 3
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_GateFitMode: 2
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2

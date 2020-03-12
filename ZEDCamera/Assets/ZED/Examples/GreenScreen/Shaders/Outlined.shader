@@ -43,11 +43,10 @@ Shader "Custom/Green Screen/ Outlined" {
 
 		SubShader{
 		Tags{ "Queue" = "Transparent+2" }
-
+		Tags{ "LightMode" = "Forward" }
 		// note that a vertex shader is specified here but its using the one above
 		Pass{
 		Name "OUTLINE"
-		Tags{ "LightMode" = "Always" }
 		Cull Off
 		ZWrite Off
 		//ZTest Always

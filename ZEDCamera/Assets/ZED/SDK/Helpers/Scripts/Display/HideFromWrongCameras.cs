@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-#if ZED_LWRP || ZED_HDRP
-//using UnityEngine.Experimental.Rendering;
+#if ZED_LWRP || ZED_HDRP || ZED_URP
 using UnityEngine.Rendering;
 #endif
 
@@ -54,7 +53,7 @@ public class HideFromWrongCameras : MonoBehaviour
     {
         rend = GetComponent<Renderer>();
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
 
         Camera.onPreRender += PreRender;
         Camera.onPostRender += PostRender;
@@ -86,7 +85,7 @@ public class HideFromWrongCameras : MonoBehaviour
         renderableCamera = cam;
     }
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
     private void SRPStartFrame(ScriptableRenderContext context, Camera[] cams)
     {
         rend.enabled = false;
@@ -107,7 +106,7 @@ public class HideFromWrongCameras : MonoBehaviour
     private void DrawCanvas(Camera drawcam)
     {
         Matrix4x4 canvastrs = Matrix4x4.TRS(transform.position, transform.rotation, transform.localScale);
-        Graphics.DrawMesh(mfilter.mesh, canvastrs, rend.material, gameObject.layer, drawcam);
+        Graphics.DrawMesh(mfilter.mesh, canvastrs, rend.material, gameObject.layer, drawcam, 0 , null, false, false);
     }
 #else
 
@@ -165,7 +164,7 @@ public class HideFromWrongCameras : MonoBehaviour
 
     private void OnDestroy()
     {
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
         Camera.onPreRender -= PreRender;
         Camera.onPostRender -= PostRender;
 #else

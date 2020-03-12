@@ -136,10 +136,12 @@ public class AsteroidsManager : MonoBehaviour
         Camera leftcamera = manager.GetLeftCamera();
         Camera rightcamera = manager.GetRightCamera();
 
+        Mesh meshAsteroid1 = asteroidsType1.GetComponent<MeshFilter>().sharedMesh;
+        Material matAsteroid1 = asteroidsType1.GetComponent<MeshRenderer>().sharedMaterial;
         //Update positions and draw asteroids of type 1
         UpdatePosition(listPositionsOrigin, listPositions);
-        Graphics.DrawMeshInstanced(asteroidsType1.GetComponent<MeshFilter>().sharedMesh,
-                                    0, asteroidsType1.GetComponent<MeshRenderer>().sharedMaterial,
+        Graphics.DrawMeshInstanced(meshAsteroid1,
+                                    0, matAsteroid1,
                                     listPositions,
                                     listPositions.Length,
                                     null,
@@ -147,19 +149,7 @@ public class AsteroidsManager : MonoBehaviour
                                     false,
                                     gameObject.layer,
                                     leftcamera);
-        if (manager.IsStereoRig)
-        {
-            Graphics.DrawMeshInstanced(asteroidsType1.GetComponent<MeshFilter>().sharedMesh,
-                                        0,
-                                        asteroidsType1.GetComponent<MeshRenderer>().sharedMaterial,
-                                        listPositions,
-                                        listPositions.Length,
-                                        null,
-                                        UnityEngine.Rendering.ShadowCastingMode.Off,
-                                        false,
-                                        gameObject.layer,
-                                        rightcamera);
-        }
+
         //Update positions and draw asteroids of type 2
         UpdatePosition(listPositionsOrigin2, listPositions2);
         Graphics.DrawMeshInstanced(asteroidsType2.GetComponent<MeshFilter>().sharedMesh,
@@ -172,19 +162,34 @@ public class AsteroidsManager : MonoBehaviour
                                     false,
                                     gameObject.layer,
                                     leftcamera);
+
         if (manager.IsStereoRig)
         {
-            Graphics.DrawMeshInstanced(asteroidsType2.GetComponent<MeshFilter>().sharedMesh,
-                                    0,
-                                    asteroidsType2.GetComponent<MeshRenderer>().sharedMaterial,
-                                    listPositions2,
-                                    listPositions2.Length,
-                                    null,
-                                    UnityEngine.Rendering.ShadowCastingMode.Off,
-                                    false,
-                                    gameObject.layer,
-                                    rightcamera);
+
+            Mesh meshAsteroid2 = asteroidsType2.GetComponent<MeshFilter>().sharedMesh;
+            Material matAsteroid2 = asteroidsType2.GetComponent<MeshRenderer>().sharedMaterial;
+
+            Graphics.DrawMeshInstanced(meshAsteroid2,
+                                        0,
+                                        matAsteroid2,
+                                        listPositions,
+                                        listPositions.Length,
+                                        null,
+                                        UnityEngine.Rendering.ShadowCastingMode.Off,
+                                        false,
+                                        gameObject.layer,
+                                        rightcamera);
+
+            Graphics.DrawMeshInstanced(meshAsteroid2,
+                        0,
+                        matAsteroid2,
+                        listPositions2,
+                        listPositions2.Length,
+                        null,
+                        UnityEngine.Rendering.ShadowCastingMode.Off,
+                        false,
+                        gameObject.layer,
+                        rightcamera);
         }
     }
-
 }

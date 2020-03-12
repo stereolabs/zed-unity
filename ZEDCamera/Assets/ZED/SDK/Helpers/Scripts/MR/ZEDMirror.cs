@@ -3,7 +3,7 @@
 using UnityEngine;
 using UnityEngine.XR;
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
 using UnityEngine.Rendering;
 #endif
 
@@ -32,7 +32,7 @@ public class ZEDMirror : MonoBehaviour
     {
         XRSettings.showDeviceView = false; //Turn off default behavior.
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
         RenderPipelineManager.endFrameRendering += OnFrameEnd;
 #endif
 
@@ -46,7 +46,7 @@ public class ZEDMirror : MonoBehaviour
         }
     }
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
         if (textureOverlayLeft != null)
@@ -61,17 +61,23 @@ public class ZEDMirror : MonoBehaviour
 /// Blits the intermediary targetTexture to the final outputTexture for rendering. Used in SRP because there is no OnRenderImage automatic function. 
 /// </summary>
 private void OnFrameEnd(ScriptableRenderContext context, Camera[] cams)
-{
-    if (textureOverlayLeft != null)
     {
-        Graphics.Blit(textureOverlayLeft.target, (RenderTexture)null);
+        if (textureOverlayLeft != null)
+    {
+            foreach (Camera cam in cams)
+            {
+                if (cam == GetComponent<Camera>())
+                {
+                    Graphics.Blit(textureOverlayLeft.target, (RenderTexture)null);
+                }
+            }
     }
 }
 #endif
 
     private void OnDestroy()
     {
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
         RenderPipelineManager.endFrameRendering -= OnFrameEnd;
 #endif
     }

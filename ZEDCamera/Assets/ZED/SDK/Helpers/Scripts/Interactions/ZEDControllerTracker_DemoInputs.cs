@@ -157,6 +157,11 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     public bool CheckFireButton(ControllerButtonState state)
     {
 #if ZED_SVR_2_0_INPUT
+        if (fireBinding == null)
+        {
+            Debug.LogWarning("Fire button/action is not binded.");
+            return false;
+        }
         return CheckSteamVRBoolActionState(fireBinding, state);
 #elif ZED_STEAM_VR
         return CheckSteamVRButtonState_Legacy(fireBinding_Legacy, state);
@@ -175,6 +180,11 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     public bool CheckClickButton(ControllerButtonState state)
     {
 #if ZED_SVR_2_0_INPUT
+        if (clickBinding == null)
+        {
+            Debug.LogWarning("Click button/action is not binded.");
+            return false;
+        }
         return CheckSteamVRBoolActionState(clickBinding, state);
 #elif ZED_STEAM_VR
         return CheckSteamVRButtonState_Legacy(clickBinding_Legacy, state);
@@ -193,6 +203,11 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     public bool CheckBackButton(ControllerButtonState state)
     {
 #if ZED_SVR_2_0_INPUT
+        if (backBinding == null)
+        {
+            Debug.LogWarning("Back button/action is not binded.");
+            return false;
+        }
         return CheckSteamVRBoolActionState(backBinding, state);
 #elif ZED_STEAM_VR
         return CheckSteamVRButtonState_Legacy(backBinding_Legacy, state);
@@ -210,6 +225,11 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     public bool CheckGrabButton(ControllerButtonState state)
     {
 #if ZED_SVR_2_0_INPUT
+        if (grabBinding == null)
+        {
+            Debug.LogWarning("Grab button/action is not binded.");
+            return false;
+        }
         return CheckSteamVRBoolActionState(grabBinding, state);
 #elif ZED_STEAM_VR
         return CheckSteamVRButtonState_Legacy(grabBinding_Legacy, state);
@@ -226,6 +246,11 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     public Vector2 CheckNavigateUIAxis()
     {
 #if ZED_SVR_2_0_INPUT
+        if (navigateUIBinding == null)
+        {
+            Debug.LogWarning("NavigateUI button/action is not binded.");
+            return Vector2.zero;
+        }
         return CheckSteamVR2DAxis(navigateUIBinding);
 #elif ZED_STEAM_VR
         return CheckSteamVRAxis_Legacy(navigateUIBinding_Legacy);
@@ -378,8 +403,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     public SteamVR_Input_Sources GetSteamVRInputSource()
     {
         if (deviceToTrack == Devices.LeftController) return SteamVR_Input_Sources.LeftHand;
-        else if (deviceToTrack == Devices.RightController) return SteamVR_Input_Sources.RightHand;
-        else return SteamVR_Input_Sources.Any;
+        else return SteamVR_Input_Sources.RightHand;
     }
 #elif ZED_STEAM_VR
         public bool CheckSteamVRButtonState_Legacy(EVRButtonId button, ControllerButtonState state)

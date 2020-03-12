@@ -11,7 +11,7 @@ Shader "Custom/Green Screen/Mask Quad"
 
 	}
 		Cull Off
-		Lighting On
+		//Lighting On
 		ZWrite Off
 		ZTest Always
 		Blend SrcAlpha OneMinusSrcAlpha

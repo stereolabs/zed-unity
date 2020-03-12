@@ -16,7 +16,7 @@ using UnityEngine;
 ///</para></summary>
 public class ZEDToOpenCVRetriever : MonoBehaviour
 {
-#region Singleton Implementation
+    #region Singleton Implementation
 
     private static ZEDToOpenCVRetriever _instance;
     /// <summary>
@@ -34,7 +34,7 @@ public class ZEDToOpenCVRetriever : MonoBehaviour
         return _instance;
     }
 
-#endregion
+    #endregion
 
     /// <summary>
     /// ZEDManager in the scene used to grab the image. 
@@ -202,10 +202,13 @@ public class ZEDToOpenCVRetriever : MonoBehaviour
     {
         if(zedmat == null)
         {
-            zedmat = new ZEDMat();
-            zedmat.Create(new sl.Resolution((uint)zedCam.ImageWidth, (uint)zedCam.ImageHeight), mattype);
+            zedmat = new ZEDMat((uint)zedCam.ImageWidth, (uint)zedCam.ImageHeight, mattype);
         }
 
+        /*if (cvMat == null)
+        {
+            cvMat = SLMat2CVMat(zedmat, mattype);
+        }*/
 
         ERROR_CODE err = zedManager.zedCamera.RetrieveImage(zedmat, view, ZEDMat.MEM.MEM_CPU, zedmat.GetResolution());
         

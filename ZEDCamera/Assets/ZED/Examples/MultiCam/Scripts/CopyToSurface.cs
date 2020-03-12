@@ -47,11 +47,7 @@ public class CopyToSurface : MonoBehaviour
     {
         cam = GetComponent<Camera>();
 
-#if !ZED_LWRP
         copyTexture = new RenderTexture(cam.pixelWidth, cam.pixelHeight, 0);
-#else
-        copyTexture = new RenderTexture(cam.pixelWidth, cam.pixelHeight, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.B10G11R11_UFloatPack32);
-#endif
         copyTexture.Create();
 
         if (canvasRawImage) canvasRawImage.texture = copyTexture;

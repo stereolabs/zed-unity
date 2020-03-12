@@ -171,30 +171,21 @@ public class Drone : MonoBehaviour, ILaserable
         {
             meshrenderer.material.SetFloat("_Blend", value);
         }
-#elif ZED_HDRP
+#else
+        //In SRP, we just make it more red by turning down the g and b channels. 
         get
         {
-            return meshrenderer.material.GetColor("_UnlitColor").a;
+            return 1f - meshrenderer.material.GetColor("_BaseColor").g;
         }
         set
         {
-            Color newcol = meshrenderer.material.GetColor("_UnlitColor");
-            newcol.a = value;
-            meshrenderer.material.SetColor("_UnlitColor", newcol);
-        }
-#elif ZED_LWRP
-        get
-        {
-            return meshrenderer.material.GetColor("_BaseColor").a;
-        }
-        set
-        {
-            Color newcol = meshrenderer.material.GetColor("_BaseColor");
-            newcol.a = value;
-            meshrenderer.material.SetColor("_BaseColor", newcol);
+            Color tmp = meshrenderer.material.GetColor("_BaseColor");
+            tmp.g = 1 - value;
+            tmp.b = 1 - value;
+            meshrenderer.material.SetColor("_BaseColor", tmp);
         }
 #endif
-}
+    }
 
 
     // Use this for initialization

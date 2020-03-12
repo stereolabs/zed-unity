@@ -58,17 +58,11 @@ Shader "Custom/Spatial Mapping/Postprocess Blend"
 					if (length(meshColor) < 0.1) {
 						return tex2D(_MainTex, i.uv);
 					}
-					/*float4 m =  clamp(tex2D(_MainTex, i.uv)*meshColor, float4(_WireColor.rgb - 0.05f,meshColor.a), float4(_WireColor.rgb + 0.05f, meshColor.a));
+					float4 m =  clamp(tex2D(_MainTex, i.uv)*meshColor, float4(_WireColor.rgb - 0.05f,meshColor.a), float4(_WireColor.rgb + 0.05f, meshColor.a));
 #if !AWAY
-					m = tex2D(_MainTex, i.uv) *(1 - meshColor.a) + (meshColor.a)* float4(_WireColor.rgb - 0.05f, meshColor.a);
+					m = tex2D(_MainTex, i.uv)*(1 - meshColor.a) + (meshColor.a)* float4(_WireColor.rgb - 0.05f, meshColor.a);
 #endif
-					return m;*/
-
-					return meshColor;
-				}
-				else
-				{
-					return tex2D(_MainTex, i.uv);
+					return m;
 				}
 
 
@@ -77,7 +71,7 @@ Shader "Custom/Spatial Mapping/Postprocess Blend"
 				return meshColor;
 			}
 			return  tex2D(_MainTex, i.uv);
-			
+
 			}
 
 			ENDCG

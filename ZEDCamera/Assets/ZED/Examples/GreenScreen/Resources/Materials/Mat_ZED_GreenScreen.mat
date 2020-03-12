@@ -4,8 +4,9 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: Mat_ZED_GreenScreen
   m_Shader: {fileID: 4800000, guid: 38b90ef24bbdba54dacb9bea0fd86a6e, type: 3}
   m_ShaderKeywords: KEY_COLORS _EMISSION
@@ -100,6 +101,7 @@ Material:
     - _thresh4: 0.1
     - _thresh5: 0.1
     - _thresh6: 0.1
+    - directionalLightEffect: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

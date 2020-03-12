@@ -3,9 +3,7 @@
 #if !defined(ZED_UTILS)
 #define ZED_UTILS
 
-
 #define MAX_DEPTH 0.9999f
-
 
 #if UNITY_REVERSED_Z
 #define NEAR_DEPTH MAX_DEPTH
@@ -28,7 +26,7 @@
 #endif
 
 #define ZED_PI 3.14159265359
-//Compute the depth of ZED to the Unity scale
+//Compute the depth of ZED to the Unity scale 
 float computeDepthXYZ(float3 colorXYZ) {
 	float d = FAR_DEPTH;
 	//Unity BUG, (isinf(colorXYZ.z) && colorXYZ.z > 0 and isinf(colorXYZ.z) && colorXYZ.z < 0 pass together, and it's not a nan

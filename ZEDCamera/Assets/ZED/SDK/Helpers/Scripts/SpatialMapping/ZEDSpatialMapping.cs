@@ -1,4 +1,4 @@
-//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -710,6 +710,9 @@ public class ZEDSpatialMapping
     {
 
         GameObject[] gos = GameObject.FindObjectsOfType<GameObject>() as GameObject[];
+
+        Chunks.Clear();
+        ChunkList.Clear();
 
         spatialMappingHelper.Clear();
         for (int i = 0; i < gos.Length; i++)
@@ -1496,6 +1499,7 @@ public class ZEDSpatialMapping
         /// </summary>
         public void Clear()
         {
+   
             chunks.Clear();
 
             vertices = new Vector3[0];
@@ -1594,7 +1598,7 @@ public class ZEDSpatialMapping
         public bool LoadMesh(string meshFilePath)
         {
             bool r = zedCamera.LoadMesh(meshFilePath, numVerticesInSubmesh, numTrianglesInSubmesh, ref numUpdatedSubmesh, UpdatedIndices, ref numVertices, ref numTriangles, MAX_SUBMESH, texturesSize);
-            if (!r) Debug.LogWarning("ZED, Failed to load mesh:" + meshFilePath);
+            if (!r) Debug.LogWarning($"ZED, Failed to load mesh: {meshFilePath}");
             vertices = new Vector3[numVertices];
             uvs = new Vector2[numVertices];
             triangles = new int[3 * numTriangles];

@@ -12,7 +12,7 @@ Shader "Custom/Green Screen/Green Screen" {
 	Tags{
 		"RenderType" = "Transparent"
 		"Queue" = "Transparent-1"
-		"LightMode" = "Always"
+		//"LightMode" = "Always"
 	}
 
 	Pass
@@ -39,6 +39,7 @@ Shader "Custom/Green Screen/Green Screen" {
 #define ZED_SPOT_LIGHT_DECLARATION
 #define ZED_POINT_LIGHT_DECLARATION
 #include "../../../SDK/Helpers/Shaders/Lighting/ZED_Lighting.cginc"
+
 		struct appdata
 	{
 		float4 vertex : POSITION;
@@ -151,7 +152,6 @@ Shader "Custom/Green Screen/Green Screen" {
 		o.color.rgb = c.rgb;
 		
 #else
-
 		o.depth = MAX_DEPTH;
 		o.color.a = 1;
 #endif
@@ -177,7 +177,6 @@ Shader "Custom/Green Screen/Green Screen" {
 		
 		o.color.a = 1;
 #endif
-
 		return o;
 	}
 	ENDCG

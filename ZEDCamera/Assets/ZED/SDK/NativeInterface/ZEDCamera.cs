@@ -262,6 +262,7 @@ namespace sl
         {
             get { return ZEDLayers.tagInvisibleToZED; }
         }
+
         public const int brightnessDefault = 4;
         public const int contrastDefault = 4;
         public const int hueDefault = 0;

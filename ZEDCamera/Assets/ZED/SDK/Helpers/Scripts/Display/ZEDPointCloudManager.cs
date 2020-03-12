@@ -1,6 +1,7 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using UnityEngine;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// Displays the point cloud of the real world in front of the camera.
@@ -142,8 +143,22 @@ public class ZEDPointCloudManager : MonoBehaviour
 
 		if (zedManager != null)
 			zed = zedManager.zedCamera;
+
     }
 
+    private void OnEnable()
+    {
+#if ZED_LWRP || ZED_HDRP
+        RenderPipelineManager.beginCameraRendering += SRPEndCamera;
+#endif
+    }
+
+    private void OnDisable()
+    {
+#if ZED_LWRP || ZED_HDRP
+        RenderPipelineManager.beginCameraRendering -= SRPEndCamera;
+#endif
+    }
     // Update is called once per frame
     void Update()
     {
@@ -205,8 +220,6 @@ public class ZEDPointCloudManager : MonoBehaviour
             mat.SetTexture(xyzTexID, XYZTexture);
             //mat.SetTexture("_ColorTex", colorTexture);
             mat.SetTexture(colorTexID, colorTexture);
-
-
         }
         previousUpdate = update;
         }
@@ -228,6 +241,7 @@ public class ZEDPointCloudManager : MonoBehaviour
         }
     }
 
+#if !ZED_LWRP && !ZED_HDRP
     void OnRenderObject()
     {
         if (mat != null)
@@ -239,13 +253,24 @@ public class ZEDPointCloudManager : MonoBehaviour
             //mat.SetMatrix("_Position", transform.localToWorldMatrix);
             mat.SetMatrix(positionID, transform.localToWorldMatrix);
             mat.SetPass(0);
-
-            #if UNITY_2019_1_OR_NEWER
             Graphics.DrawProceduralNow(MeshTopology.Points, 1, numberPoints);
-            #else
-            Graphics.DrawProcedural(MeshTopology.Points, 1, numberPoints);
-            #endif
         }
     }
+#else
+    private void SRPEndCamera(ScriptableRenderContext context, Camera rendcam)
+    {
+        if (mat != null)
+        {
+            if (hiddenObjectFromCamera == Camera.current) return;
+
+            if (!display) return; //Don't draw anything if the user doesn't want to. 
+
+            //mat.SetMatrix("_Position", transform.localToWorldMatrix);
+            mat.SetMatrix(positionID, transform.localToWorldMatrix);
+            mat.SetPass(0);
+            Graphics.DrawProceduralNow(MeshTopology.Points, 1, numberPoints);
+        }
+    }
+#endif
 
 }

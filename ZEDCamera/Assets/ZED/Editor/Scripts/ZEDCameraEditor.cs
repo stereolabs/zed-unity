@@ -40,8 +40,6 @@ public class ZEDCameraEditor : Editor
 #if ZED_HDRP
     //SRP Lighting Prop
     private SerializedProperty srpShaderTypeProperty;
-    private SerializedProperty selfIlluminationProperty;
-    private SerializedProperty applyZEDNormalsProperty;
 #endif
 
     //Tracking Prop
@@ -209,8 +207,6 @@ public class ZEDCameraEditor : Editor
 #if ZED_HDRP
         //SRP Lighting Serialized Property
         srpShaderTypeProperty = serializedObject.FindProperty("srpShaderType");
-        selfIlluminationProperty = serializedObject.FindProperty("selfIllumination");
-        applyZEDNormalsProperty = serializedObject.FindProperty("applyZEDNormals");
 #endif
 
         //Tracking Serialized Properties
@@ -425,7 +421,6 @@ public class ZEDCameraEditor : Editor
                 serializedObject.ApplyModifiedProperties();
                 break;
         }
-
         EditorGUI.indentLevel--;
 
 #if ZED_HDRP
@@ -448,7 +443,8 @@ public class ZEDCameraEditor : Editor
         if (srpShaderTypeProperty.enumValueIndex == 2 || srpShaderTypeProperty.enumValueIndex == 3)
         {
             GUIStyle greenscreennotestyle = new GUIStyle();
-            greenscreennotestyle.normal.textColor = new Color(.7f, .7f, .7f);
+
+            greenscreennotestyle.normal.textColor = new Color(0.3f, 0.3f, 0.3f);
             greenscreennotestyle.wordWrap = true;
             greenscreennotestyle.fontSize = 10;
             greenscreennotestyle.fixedWidth = 0;
@@ -467,26 +463,13 @@ public class ZEDCameraEditor : Editor
             EditorGUI.indentLevel--;
         }
 
-        if (srpShaderTypeProperty.enumValueIndex == 0 || srpShaderTypeProperty.enumValueIndex == 2)
-        {
-            GUIContent selfIlluminationLabel = new GUIContent("Self-Illumination", "How much the ZED image should light itself via emission. " +
-                "Setting to zero is most realistic, but requires you to emulate the real-world lighting conditions within Unity. Higher settings cause the image " +
-                "to be uniformly lit, but light and shadow effects are less visible.");
-            selfIlluminationProperty.floatValue = EditorGUILayout.Slider(selfIlluminationLabel, selfIlluminationProperty.floatValue, 0, 1);
-
-            GUIContent applyZEDNormalsLabel = new GUIContent("ZED Normals", "Apply normals map from the ZED SDK. Causes lighting to be calculated based "
-                + "on the real-world angle of the geometry, instead of treating the ZED image like a plane. However, the normals map is imperfect and can lead to noise.");
-            applyZEDNormalsProperty.boolValue = EditorGUILayout.Toggle(applyZEDNormalsLabel, applyZEDNormalsProperty.boolValue);
-
-        }
-
         EditorGUI.indentLevel--;
-#endif 
+#endif
 
-        ///////////////////////////////////////////////////////////////
-        ///  Motion Tracking layout  /////////////////////////////////
-        /////////////////////////////////////////////////////////////
-        GUILayout.Space(10);
+            ///////////////////////////////////////////////////////////////
+            ///  Motion Tracking layout  /////////////////////////////////
+            /////////////////////////////////////////////////////////////
+            GUILayout.Space(10);
         EditorGUILayout.LabelField("Motion Tracking", EditorStyles.boldLabel);
         GUILayout.Space(5);
         EditorGUI.indentLevel++;
@@ -917,7 +900,6 @@ public class ZEDCameraEditor : Editor
             GUIContent arlayerlabel = new GUIContent("AR Layer", "Layer that a final, normally-hidden AR rig sees. Used to confine it from the rest of the scene.\r\n " +
                 "You can assign this to any empty layer, and multiple ZEDs can share the same layer.");
             arlayer = EditorGUILayout.IntField(arlayerlabel, ZEDLayers.arlayer, arlayer < 32 ? layerboxstyle : layerboxstyleerror);
-
             //Show an error message if the set layer is invalid.
             GUIStyle errormessagestyle = new GUIStyle(EditorStyles.label);
             errormessagestyle.normal.textColor = layerboxstyleerror.normal.textColor;
@@ -939,7 +921,6 @@ public class ZEDCameraEditor : Editor
                 Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(errortext, ""), errormessagestyle);
                 EditorGUI.LabelField(labelrect, errortext, errormessagestyle);
             }
-
             //Show warnings if the layer is valid but not recommended. 
             GUIStyle warningmessagestyle = new GUIStyle(EditorStyles.label);
             warningmessagestyle.normal.textColor = layerboxstylewarning.normal.textColor;
