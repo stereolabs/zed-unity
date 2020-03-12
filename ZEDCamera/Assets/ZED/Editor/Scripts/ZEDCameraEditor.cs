@@ -119,6 +119,7 @@ public class ZEDCameraEditor : Editor
     SerializedProperty rightDepthProperty;
     SerializedProperty maxDepthProperty;
     SerializedProperty confidenceThresholdProperty;
+    SerializedProperty textureConfidenceThresholdProperty;
     SerializedProperty enableSelfCalibrationProperty;
 
     // Rendering Prop
@@ -144,15 +145,13 @@ public class ZEDCameraEditor : Editor
     SerializedProperty contrastProperty;
     SerializedProperty hueProperty;
     SerializedProperty saturationProperty;
-
     SerializedProperty autoGainExposureProperty;
     SerializedProperty exposureProperty;
     SerializedProperty gainProperty;
-
     SerializedProperty autoWhiteBalanceProperty;
     SerializedProperty whitebalanceProperty;
-
     SerializedProperty sharpnessProperty;
+    SerializedProperty gammaProperty;
     SerializedProperty ledStatus;
 
     private bool hasLoadedSettings = false;
@@ -265,6 +264,7 @@ public class ZEDCameraEditor : Editor
         rightDepthProperty = serializedObject.FindProperty("enableRightDepthMeasure");
         maxDepthProperty = serializedObject.FindProperty("m_maxDepthRange");
         confidenceThresholdProperty = serializedObject.FindProperty("m_confidenceThreshold");
+        textureConfidenceThresholdProperty = serializedObject.FindProperty("m_textureConfidenceThreshold");
         enableSelfCalibrationProperty = serializedObject.FindProperty("enableSelfCalibration");
         allowPassThroughProperty = serializedObject.FindProperty("allowARPassThrough");
         setIMUPrior = serializedObject.FindProperty("setIMUPriorInAR");
@@ -277,15 +277,13 @@ public class ZEDCameraEditor : Editor
         contrastProperty = serializedObject.FindProperty("videoContrast"); ;
         hueProperty = serializedObject.FindProperty("videoHue"); ;
         saturationProperty = serializedObject.FindProperty("videoSaturation"); ;
-
         autoGainExposureProperty = serializedObject.FindProperty("videoAutoGainExposure"); ;
         gainProperty = serializedObject.FindProperty("videoGain"); ;
         exposureProperty = serializedObject.FindProperty("videoExposure"); ;
-
         autoWhiteBalanceProperty = serializedObject.FindProperty("videoAutoWhiteBalance"); ;
         whitebalanceProperty = serializedObject.FindProperty("videoWhiteBalance"); ;
-
-        sharpnessProperty = serializedObject.FindProperty("videoSharpness"); ;
+        sharpnessProperty = serializedObject.FindProperty("videoSharpness");
+        gammaProperty = serializedObject.FindProperty("videoGamma");
         ledStatus = serializedObject.FindProperty("videoLEDStatus"); ;
     }
 
@@ -850,7 +848,7 @@ public class ZEDCameraEditor : Editor
 
 
 
-            GUIContent confidenceThresholdPropertyLabel = new GUIContent("Confidence Threshold", "How tolerant the ZED SDK is to low confidence values. Lower values filter more pixels.");
+            GUIContent confidenceThresholdPropertyLabel = new GUIContent("Confidence Threshold", "How tolerant the ZED SDK is to low confidence values. Lower values filter more pixels based on stereo matching score.");
             if (Application.isPlaying)
             {
                 manager.confidenceThreshold = EditorGUILayout.IntSlider(confidenceThresholdPropertyLabel, manager.confidenceThreshold, 0, 100);
@@ -859,6 +857,18 @@ public class ZEDCameraEditor : Editor
             {
                 confidenceThresholdProperty.intValue = EditorGUILayout.IntSlider(confidenceThresholdPropertyLabel, confidenceThresholdProperty.intValue, 0, 100);
             }
+
+            GUIContent textureConfidenceThresholdPropertyLabel = new GUIContent("Texture Confidence Threshold", "How tolerant the ZED SDK is to homogenous block. Lower values filter more pixels based on textureness.");
+            if (Application.isPlaying)
+            {
+                manager.textureConfidenceThreshold = EditorGUILayout.IntSlider(textureConfidenceThresholdPropertyLabel, manager.textureConfidenceThreshold, 0, 100);
+            }
+            else
+            {
+                textureConfidenceThresholdProperty.intValue = EditorGUILayout.IntSlider(textureConfidenceThresholdPropertyLabel, textureConfidenceThresholdProperty.intValue, 0, 100);
+            }
+
+
 
             GUILayout.Space(12);
 
@@ -1085,6 +1095,15 @@ public class ZEDCameraEditor : Editor
             }
 
             EditorGUI.BeginChangeCheck();
+            gammaProperty.intValue = EditorGUILayout.IntSlider("Gamma", gammaProperty.intValue, 1, 9);
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (manager.zedCamera != null && manager.zedCamera.IsCameraReady)
+                    manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAMMA, gammaProperty.intValue);
+            }
+
+
+            EditorGUI.BeginChangeCheck();
             ledStatus.boolValue = EditorGUILayout.Toggle("LED Status", ledStatus.boolValue, EditorStyles.toggle);
             if (EditorGUI.EndChangeCheck())
             {
@@ -1212,6 +1231,7 @@ public class ZEDCameraEditor : Editor
                     autoWhiteBalanceProperty.boolValue = true;
 
                     sharpnessProperty.intValue = sl.ZEDCamera.sharpnessDefault;
+                    gammaProperty.intValue = sl.ZEDCamera.gammaDefault;
                     ledStatus.boolValue = true;
                 }
             }
@@ -1315,6 +1335,7 @@ public class ZEDCameraEditor : Editor
         hueProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.HUE);
         saturationProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SATURATION);
         sharpnessProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SHARPNESS);
+        gammaProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAMMA);
         gainProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAIN);
         exposureProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE);
         whitebalanceProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE);

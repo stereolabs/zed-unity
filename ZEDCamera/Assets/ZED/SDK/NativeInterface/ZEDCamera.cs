@@ -268,6 +268,7 @@ namespace sl
         public const int hueDefault = 0;
         public const int saturationDefault = 4;
         public const int sharpnessDefault = 3;
+        public const int gammaDefault = 5;
         public const int whitebalanceDefault = 2600;
 
 
@@ -275,7 +276,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(3, 0, 0);
+        public static readonly System.Version PluginVersion = new System.Version(3, 1, 0);
 
 
         /******** DLL members ***********/
@@ -382,6 +383,13 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "dllz_get_video_settings")]
         private static extern int dllz_get_video_settings(int id, int mode);
+
+        [DllImport(nameDll, EntryPoint = "dllz_set_roi_for_aec_agc")]
+        private static extern int dllz_set_roi_for_aec_agc(int id, int side, iRect roi,bool reset);
+
+        [DllImport(nameDll, EntryPoint = "dllz_get_roi_for_aec_agc")]
+        private static extern int dllz_get_roi_for_aec_agc(int id, int side, ref iRect roi);
+
 
         [DllImport(nameDll, EntryPoint = "dllz_get_input_type")]
         private static extern int dllz_get_input_type(int cameraID);
@@ -1813,22 +1821,58 @@ namespace sl
             //return cameraSettingsManager.GetCameraSettings(CameraID, settings);
         }
 
+        /// <summary>
+        /// Overloaded function for CAMERA_SETTINGS.AEC_AGC_ROI (requires iRect as input)
+        /// </summary>
+        /// <param name="settings"> Must be set to CAMERA_SETTINGS.AEC_AGC_ROI. Otherwise will return -1.</param>
+        /// <param name="side"> defines left=0 or right=1 or both=2 sensor target</param>
+        /// <param name="roi">the roi defined as a sl.Rect</param>
+        /// <param name="reset">Defines if the target must be reset to full sensor</param>
+        /// <returns></returns>
+        public int SetCameraSettings(CAMERA_SETTINGS settings, int side, iRect roi,bool reset)
+        {
+            AssertCameraIsReady();
+            if (settings == CAMERA_SETTINGS.AEC_AGC_ROI)
+                return dllz_set_roi_for_aec_agc(CameraID, side, roi, reset);
+            else
+                return -1;
+        }
+
+        /// <summary>
+        /// Overloaded function for CAMERA_SETTINGS.AEC_AGC_ROI (requires iRect as input)
+        /// </summary>
+        /// <param name="settings"> Must be set to CAMERA_SETTINGS.AEC_AGC_ROI. Otherwise will return -1.</param>
+        /// <param name="side"> defines left=0 or right=1 or both=2 sensor target.</param>
+        /// <param name="roi"> Roi that will be filled.</param>
+        /// <returns></returns>
+        public int GetCameraSettings(CAMERA_SETTINGS settings, int side,ref iRect roi)
+        {
+            AssertCameraIsReady();
+            if (settings == CAMERA_SETTINGS.AEC_AGC_ROI)
+                return dllz_get_roi_for_aec_agc(CameraID, side, ref roi);
+            else
+                return -1;
+        }
+
+        /// <summary>
+        /// Reset camera settings to default
+        /// </summary>
         public void ResetCameraSettings()
         {
             AssertCameraIsReady();
             //cameraSettingsManager.ResetCameraSettings(this);
 
             SetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, sl.ZEDCamera.brightnessDefault);
-            //Debug.Log(manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS));
             SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, sl.ZEDCamera.contrastDefault);
             SetCameraSettings(sl.CAMERA_SETTINGS.HUE, sl.ZEDCamera.hueDefault);
             SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, sl.ZEDCamera.saturationDefault);
             SetCameraSettings(sl.CAMERA_SETTINGS.SHARPNESS, sl.ZEDCamera.sharpnessDefault);
+            SetCameraSettings(sl.CAMERA_SETTINGS.GAMMA, sl.ZEDCamera.gammaDefault);
             SetCameraSettings(sl.CAMERA_SETTINGS.AUTO_WHITEBALANCE, 1);
             SetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC, 1);
-            //SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, 0, true);
-            //SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, 0, true);
             SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, 1);
+
+            SetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC_ROI,2, new sl.iRect(), true);
         }
 
         /// <summary>
@@ -2265,19 +2309,16 @@ namespace sl
             sl.CalibrationParameters calib = GetCalibrationParameters(false);
             sl.Resolution imageResolution = new sl.Resolution((uint)this.ImageWidth, (uint)this.ImageHeight);
 
-
             Vector4 calibLeft = new Vector4(calib.leftCam.fx, calib.leftCam.fy, calib.leftCam.cx, calib.leftCam.cy);
             Vector4 calibRight = new Vector4(calib.rightCam.fx, calib.rightCam.fy, calib.rightCam.cx, calib.rightCam.cy);
 
             p = dllz_compute_optical_center_offsets(ref calibLeft, ref calibRight, imageResolution, planeDistance);
-
             if (p == IntPtr.Zero)
             {
                 return new Vector4();
             }
             Vector4 parameters = (Vector4)Marshal.PtrToStructure(p, typeof(Vector4));
             return parameters;
-
         }
 
         ////////////////////////

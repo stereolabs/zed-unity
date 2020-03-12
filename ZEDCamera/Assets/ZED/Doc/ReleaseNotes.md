@@ -1,4 +1,107 @@
 <!------------------------- Release notes ------------------------------------->
+
+### 3.1.0
+ * **Features:**
+   * Added support for AEC_ACG_ROI video settings (See ZED SDK release notes for more information)
+   * Added support for GAMMA video settings (See ZED SDK release notes for more information)
+   * Added support for compression level in Mat write() function since it has been added in ZED SDK 3.1
+   * Added Texture confidence threshold support in RuntimeParameters/ZED Manager UI since it was added since ZED SDK 3.0
+   * General update to ZED SDK 3.1
+
+
+ * **Compatibility**:
+    * Compatible with ZED SDK 3.0, CUDA 9.0, 10.0 and 10.2 on Windows and Linux
+
+
+### 3.0.1
+  * **Bug Fixes:**
+    * Fixes an issue when saving meshes where default culture is set to use comma notation for decimals (Thanks to @kaszim)
+    * Fixes Black screen with Unity 2019.3 in Forward. Removed RenderPipeline tag not supported anymore.
+    * Fixes texture in spatial mapping not drawn in live.
+    * Added ZEDLayersManager.cs  . This script creates on load all the layers needed by the plugin.
+    * Fixes for 2018 unity version (drawProceduralNow was not existing in previous version).
+    * Moved MR Calibration app to Tools folder.
+
+
+### 3.0.0
+  * **Features:**
+    * Added object detection module from ZED SDK 3.0.
+    * Updated with API rework from SDK 3.0.
+    * Added utils function in ZEDCamera.cs to save image, depth and point cloud: *(Those functions are wrapped from ZED SDK C++ functions)*
+         * `ZEDCamera.SaveCurrentImageInFile()`   
+         * `ZEDCamera.SaveCurrentDepthInFile()`
+         * `ZEDCamera.SaveCurrentPointCloudInFile()`      
+    * Update Layer system for rendering and AR planes to a single layer used (layer 30).
+    * Merge Windows and Linux compatibility branches into a single one.
+
+
+  * **Bug Fixes:**
+    * Fixed display issue with spatial mapping (display/hide mesh was not working).
+    * Fixed camera position when SVO is looping back and initial position is estimated. It was previously reset to identity, now it uses the detected position.
+    * Fixed Mesh flip when saved into .obj file.
+
+
+  * **Compatibility**:
+    * Compatible with ZED SDK 3.0, CUDA 9.0, 10.0 and 10.2 on Windows and Linux
+
+### 2.8.3
+  * **Bug Fixes:**
+    * Fix potential compile issue with Oculus SDK
+    * Fix MR headset latency correction when headset does not containes "windows" in their names
+    * Merge PR to fix CreateTrackedObjectPrefab (Thanks to @Abrahamh08)
+
+
+### 2.8.2
+
+  * **Features:**
+    * Added OpenCV ArUco marker detection sample scene. If you've also imported the OpenCV for Unity package from the Asset Store, you can place objects in 3D where ArUco-stlye markers are detected.
+    * Added brand new Mixed Reality calibration app as a sample scene. You can now calibrate the ZED with a tracked object for mixed reality VR capture, all from within the Unity editor.
+
+  * **Improvements:**
+    * Added Max Depth Range and Confidence Threshold options in ZEDManager's Advanced Settings
+    * Added option to disable IMU prior setting in ZEDManager's Advanced Settings
+    * Changed how meshes scanned with the Spatial Mapping feature were saved, to avoid them being flipped on the Z axis when re-imported
+    * Added option to set which side of the ZED (left or right) that ZEDRenderingPlane retrieves. This also solved an issue where the right camera in the ZED_Rig_Stereo prefab would display the left feed when not in AR pass-through mode
+
+  * **Bug Fixes:**
+    * Fixed a crash that would happen if two ZEDManagers were set to use the same Camera ID
+    * Fixed ZED_Rig_Stereo sometimes not outputting an image to the Game window in newer versions of Unity
+    * Fixed ZED_GreenScreen prefab setting that caused the output to be displayed in only half the screen
+    * Fixed depth values being incorrect for occlusion when using OpenGL instead of DirectX
+
+
+### 2.8.1
+
+  * **Improvements:**
+
+    * * Updated ZEDControllerTracker:
+      - Added input support for SteamVR plugin 2.0 and greater
+      - Added ZEDControllerTracker_DemoInputs, which inherits from ZEDControllerTracker, but with generic button/axis check functions
+      - These functions work whether using SteamVR or Oculus Unity plugins
+      -  Several scripts in Example scenes are now simplified to call these functions instead of having plugin-specific code.
+    * Removed limit on how long ZEDManager would attempt to connect to the ZED camera - previously 10 seconds
+    * ZEDTransformController, used to move object like the Planetarium and Movie Screen in example scenes, now takes into account the Reposition At Start feature added to ZEDManager in 2.8
+    * Shader properties that are retrieved or modified more than once per scene now have their property IDs cached, saving lookups
+    * ZEDManager can now be used outside of the included prefabs, and is more flexible when determining if it's in "stereo" mode (like the ZED_Rig_Stereo prefab) for loading AR pass-through features.
+    * ZEDManager's process for closing cameras when the scene closes is now more stable
+
+  * **Bug Fixes:**
+
+    * Fixed ZEDControllerTracker's latency compensation feature moving the controller incorrectly when using ZED in third person
+    * Fixed non-rendering Camera objects not getting properly disposed at scene close, causing performance issues after running scene in editor repeatedly
+    * Camera Brightness adjustment now works in deferred rendering (Global Shader value)
+    * Fixed #ZED_OCULUS compiler directive not getting activated when newer Oculus package is imported
+    * Fixed newer Oculus package causing #ZED_STEAM_VR compiler directive getting activated when importing Oculus package. This would also happen when importing the OpenVR package in Unity 2019
+    * Fixed ZEDControllerTracker not updating Oculus Touch controller position if only one controller is connected
+    * Fixed ZEDSupportFunctions.GetForwardDistanceAtPixel not properly accounting for screen size
+    * Fixed "ZED Disconnected" error message not being locked to the headset when using ZED_Rig_Stereo
+    * Fixed Planetarium example scene being way too dark in deferred rendering
+    * Fixed plugin not recognizing Dell VISOR or Lenovo Explorer WMR headsets when using them in SteamVR, or any WMR controllers at all.
+    * Updated video stream link in Movie Screen example scene as the old video link was taken down (same video, new host)
+    * Fixed SVO Loop feature not working when real-time mode is enabled
+    * Fixed Multicam crash if both cameras share the same CAMERA_ID
+
+
 ### 2.8.0
 
    * **Features**:
@@ -79,9 +182,9 @@
 ### 2.8.2
 
   * **Features:**
-    * Added OpenCV ArUco marker detection sample scene. If you've also imported the OpenCV for Unity package from the Asset Store, you can place objects in 3D where ArUco-stlye markers are detected. 
-    * Added brand new Mixed Reality calibration app as a sample scene. You can now calibrate the ZED with a tracked object for mixed reality VR capture, all from within the Unity editor. 
-    
+    * Added OpenCV ArUco marker detection sample scene. If you've also imported the OpenCV for Unity package from the Asset Store, you can place objects in 3D where ArUco-stlye markers are detected.
+    * Added brand new Mixed Reality calibration app as a sample scene. You can now calibrate the ZED with a tracked object for mixed reality VR capture, all from within the Unity editor.
+
   * **Improvements:**
     * Added Max Depth Range and Confidence Threshold options in ZEDManager's Advanced Settings
     * Added option to disable IMU prior setting in ZEDManager's Advanced Settings

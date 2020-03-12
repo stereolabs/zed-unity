@@ -248,7 +248,7 @@ namespace sl
         private static extern int dllz_mat_read(System.IntPtr ptr, string filePath);
 
         [DllImport(nameDll, EntryPoint = "dllz_mat_write")]
-        private static extern int dllz_mat_write(System.IntPtr ptr, string filePath);
+        private static extern int dllz_mat_write(System.IntPtr ptr, string filePath,int compression_level);
 
         [DllImport(nameDll, EntryPoint = "dllz_mat_copy_to")]
         private static extern int dllz_mat_copy_to(System.IntPtr ptr, System.IntPtr dest, int cpyType);
@@ -430,10 +430,11 @@ namespace sl
         /// Writes the Mat into a file as an image. Only works if Mat has access to MEM_CPU.
         /// </summary>
         /// <param name="filePath">File path, including file name and extension.</param>
+        /// <param name="compression_level"> Compression level used. Highest value means highest compression (smaller size). Range : [0 - 100].</param>
         /// <returns>Error code indicating if the write was successful, or why it wasn't.</returns>
-        public sl.ERROR_CODE Write(string filePath)
+        public sl.ERROR_CODE Write(string filePath,int compressionLevel = -1)
         {
-            return (sl.ERROR_CODE)dllz_mat_write(_matInternalPtr, filePath);
+            return (sl.ERROR_CODE)dllz_mat_write(_matInternalPtr, filePath, compressionLevel);
         }
 
         /// <summary>
