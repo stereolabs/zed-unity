@@ -52,13 +52,42 @@ See the tutorial (https://github.com/stereolabs/zed-unity/tree/master/ZEDCamera/
  - Install the required version of **NVIDIA CUDA** and restart your computer. If you have existing versions of CUDA installed that aren't compatible with the current ZED SDK, uninstall them first.
  - Install the **ZED SDK** and restart your computer. 
 
-### Step 3: Import the Plugin
 
- - Open Unity and create a new project. 
- - Go to **Assets** -> **Import Package** -> **Custom Package**. Navigate to where you downloaded the **ZED Unity Plugin** and import it. 
- - Leave all files checked and click **Import**. (You can save space by unchecking the Examples folder on import, but we recommend the examples for first-time users.)
- - If you're prompted to upgrade your scripts, click **"I made a backup, go ahead!"** (We won't tell)
- - If you're prompted to change some settings, click **"Accept All"**.
+### Step 3: Using the Universal Render Pipeline
+
+To use the URP, you must either create a new Project that use URP, or upgrade an existing one.
+
+#### Create a new URP Project
+
+We recommend using [Unity Hub](https://docs.unity3d.com/Manual/GettingStartedUnityHub.html) to manage your projects and your versions of Unity.
+
+ - Open Unity Hub and Click the **New** Button.
+ - In the Template section, select the **Universal Project Template**.
+ - Click **Create**. Unity automatically installs the URP package and sets up your project to use URP.
+
+#### Upgrade to URP
+
+ - Go to **Window** -> **Package Manager**. Find and install **Universal RP**.
+ 
+Now you need to configure the URP. To do this, you have to create a Scriptable Render Pipeline Asset.
+ - Right-click in the project window and select **Create** -> **Rendering** -> **Universal Render Pipeline** -> **Pipeline Asset**. 
+You can also go to **Assets** -> **Create** -> **Rendering** -> **Universal Render Pipeline** -> **Pipeline Asset**.
+
+Add this Render Pipeline Asset to your Graphics settings.
+ - Go to **Edit** -> **Project Settings** -> **Graphics**. In the **Scriptable Render Pipeline Settings**, add the Universal Render Pipeline Asset you just created.
+ 
+The last thing you need to do is upgrading your materials/shaders to URP.
+  - Go to **Edit** -> **Render Pipeline** -> **Universal Render Pipeline** and select either **Upgrade Project Materials To URP Materials** or **Upgrade Selected Materials to URP Materials**.
+These changes cannot be undone. Backup your Project before you upgrade it.
+
+For more details on how to set up URP, see the [Universal Render Pipeline Documentation](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@7.2/manual/index.html).
+
+ ### Step 4: Import the Plugin
+
+  - Go to **Assets** -> **Import Package** -> **Custom Package**. Navigate to where you downloaded the **ZED Unity Plugin** and import it.
+  - Leave all files checked and click **Import**. (You can save space by unchecking the Examples folder on import, but we recommend the examples for first-time users.)
+  - If you're prompted to upgrade your scripts, click **"I made a backup, go ahead!"** (We won't tell)
+  - If you're prompted to change some settings, click **"Accept All"**.
 
 ## Example Scenes
 
