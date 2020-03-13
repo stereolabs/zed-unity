@@ -61,10 +61,8 @@ To use the HDRP, you must either create a new Project that use HDRP, or upgrade 
 We recommend using [Unity Hub](https://docs.unity3d.com/Manual/GettingStartedUnityHub.html) to manage your projects and your versions of Unity.
 
  - Open Unity Hub and Click the **New Button**.
- - In the Template section, click on **High Definition RP**.
- - Click **Create**.
-
-It will automatically install the HDRP package and set up your project to use HDRP.
+ - In the Template section, select **High Definition RP**.
+ - Click **Create**. Unity automatically installs the HDRP package and sets up your project to use HDRP.
 
 #### Upgrade to HDRP
 
