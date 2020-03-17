@@ -139,7 +139,7 @@ Shader "ZED/ZED Forward Lighting URP"
 
 					float3 camrelpose = float3(xpos, ypos, -zed_z);// +_WorldSpaceCameraPos;
 
-					float3 worldPos = mul(UNITY_MATRIX_V, float4(camrelpose.xyz, 0)).xyz + _WorldSpaceCameraPos;
+					float3 worldPos = mul(UNITY_MATRIX_I_V, float4(camrelpose.xyz, 0)).xyz + _WorldSpaceCameraPos;
 
 					//c.rgb = saturate(computeLighting(color.rgb, worldnormals, worldPos, 1));
 					c.rgb = computeLightingLWRP(color.rgb, worldnormals.xyz, worldPos, 1, _ZEDFactorAffectReal).rgb;

@@ -97,56 +97,54 @@ Shader "ZED/ZED Forward Lighting LWRP"
 			output.positionCS = vertexInput.positionCS;
 
 			}
-		void frag(Varyings input, out half4 outColor: SV_Target, out float outDepth : SV_Depth)
+		void frag(Varyings input, out float4 outColor: SV_Target, out float outDepth : SV_Depth)
 		{
 			//ZED Depth
 #ifdef NO_DEPTH_OCC
-					outDepth = 0;
+			outDepth = 0;
 #else
-					float zed_z = tex2D(_DepthXYZTex, input.uv.zw).x;
+			float zed_z = tex2D(_DepthXYZTex, input.uv.zw).x;
 
-					//Filter out depth values beyond the max value. 
-					if (_MaxDepth < 20.0) //Avoid clipping out FAR values when not using feature. 
-					{
-						if (zed_z > _MaxDepth) discard;
-					}
+			//Filter out depth values beyond the max value. 
+			if (_MaxDepth < 20.0) //Avoid clipping out FAR values when not using feature. 
+			{
+				if (zed_z > _MaxDepth) discard;
+			}
 
-					outDepth = computeDepthXYZ(zed_z);
+			outDepth = computeDepthXYZ(zed_z);
 
-					//ZED Color - for now ignoring everything above. 
-					half4 c;
-					float4 color = tex2D(_MainTex, input.uv.xy).bgra;
-					float3 normals = tex2D(_NormalsTex, input.uv.zw).rgb;
+			//ZED Color - for now ignoring everything above. 
+			half4 c;
+			float4 color = tex2D(_MainTex, input.uv.xy).bgra;
+			float4 normals = float4(tex2D(_NormalsTex, input.uv.zw).bgr, 0);
 
-					//Apply directional light
-					color *= _ZEDFactorAffectReal;
+			//Apply directional light
+			color *= _ZEDFactorAffectReal;
 
-					c = color;
+			c = color;
 
-					//Compute world normals.
-					normals = float3(normals.x, 0 - normals.y, normals.z);
-					float3 worldnormals = mul((float3x3)unity_ObjectToWorld, normals); //TODO: This erroneously applies object scale to the normals. The canvas object is scaled to fill the frame. Fix. 
+			//Compute world normals.
+			//normals = float4(normals.x, 0 - normals.y, normals.z, 0);
+			float4 worldnormals = mul(unity_ObjectToWorld, normals); //TODO: This erroneously applies object scale to the normals. The canvas object is scaled to fill the frame. Fix. 
 
-					//Compute world position of the pixel. 
-					float xfovpartial = (input.uv.x - 0.5) * _ZEDHFoVRad;
-					float yfovpartial = (1 - input.uv.y - 0.5) * _ZEDVFoVRad;
+			//Compute world position of the pixel. 
+			float xfovpartial = (input.uv.x - _cx) * _ZEDHFoVRad;
+			float yfovpartial = (1 - input.uv.y - _cy) * _ZEDVFoVRad;
 
-					float xpos = tan(xfovpartial) * zed_z;
-					float ypos = tan(yfovpartial) * zed_z;
+			float xpos = tan(xfovpartial) * zed_z;
+			float ypos = tan(yfovpartial) * zed_z;
 
-					float3 camrelpose = float3(xpos, ypos, -zed_z);// +_WorldSpaceCameraPos;
+			float3 camrelpose = float3(xpos, ypos, -zed_z);// +_WorldSpaceCameraPos;
 
-					float3 worldPos = mul(UNITY_MATRIX_V, float4(camrelpose.xyz, 0)).xyz + _WorldSpaceCameraPos;
+			float3 worldPos = mul(UNITY_MATRIX_I_V, float4(camrelpose.xyz, 0)).xyz + _WorldSpaceCameraPos;
 
-					//c.rgb = saturate(computeLighting(color.rgb, worldnormals, worldPos, 1));
-					c.rgb = computeLightingLWRP(color.rgb, worldnormals, worldPos, 1, _ZEDFactorAffectReal).rgb;
-					c.a = 0;
-					outColor = c;
+			//c.rgb = saturate(computeLighting(color.rgb, worldnormals, worldPos, 1));
+			c.rgb = computeLightingLWRP(color.rgb, worldnormals.xyz, worldPos, 1, _ZEDFactorAffectReal).rgb;
+			c.a = 0;
 
-
-
-	#endif
-				}
+			outColor.rgb = c;
+#endif
+		}
 #endif
 				ENDHLSL
 			}
