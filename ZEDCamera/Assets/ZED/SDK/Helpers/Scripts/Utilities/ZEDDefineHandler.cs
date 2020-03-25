@@ -121,10 +121,10 @@ public class ZEDDefineHandler : AssetPostprocessor
             else DeactivateDefine("LWRP", "ZED_LWRP");
 
             if (foundhdrppackage) ActivateDefine("HDRP", "ZED_HDRP");
-            else DeactivateDefine("HDRP", "ZED_HDR{");
+            else DeactivateDefine("HDRP", "ZED_HDRP");
 
             if (foundurppackage) ActivateDefine("URP", "ZED_URP");
-            else DeactivateDefine("URP", "ZED_URP{");
+            else DeactivateDefine("URP", "ZED_URP");
 
             //Debug.Log("Scanned packages in " + requesttime.ToString("F2") + " seconds.");
             EditorApplication.update -= CheckForLWRPPackageRequestFinished;
