@@ -138,12 +138,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 534676341}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14dfac2afd2f392dd958479085484586, type: 3}
+  m_Script: {fileID: 11500000, guid: 7e5c001b0927f03fa8b1964357d1adfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   zedManager: {fileID: 733793258}
   startObjectDetectionAutomatically: 1
-  Avatar: {fileID: 100128, guid: 01e3a731e5e2e2f9282261b14b3ed222, type: 3}
+  Avatar: {fileID: 100128, guid: 21b474d1d6e993536a734e2969e4582d, type: 3}
   smoothFactor: 0.5
 --- !u!4 &534676343
 Transform:
