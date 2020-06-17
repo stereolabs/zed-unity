@@ -106,6 +106,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty OD_ImageSyncMode;
     private SerializedProperty OD_ObjectTracking;
     private SerializedProperty OD_2DMask;
+    private SerializedProperty OD_DetectionModel;
     //Object Detection Runtime Prop
     private SerializedProperty OD_DetectionConfidence;
     private SerializedProperty OD_PersonFilter;
@@ -238,6 +239,7 @@ public class ZEDCameraEditor : Editor
         OD_ImageSyncMode = serializedObject.FindProperty("objectDetectionImageSyncMode");
         OD_ObjectTracking = serializedObject.FindProperty("objectDetectionTracking");
         OD_2DMask = serializedObject.FindProperty("objectDetection2DMask");
+        OD_DetectionModel = serializedObject.FindProperty("objectDetectionModel"); 
 
 
         OD_DetectionConfidence = serializedObject.FindProperty("objectDetectionConfidenceThreshold");
@@ -713,6 +715,11 @@ public class ZEDCameraEditor : Editor
             GUIContent Object2DMaskLabel = new GUIContent("Enable 2D Mask", "Whether to calculate 2D masks for each object, showing exactly which pixels within the 2D bounding box are the object.\r\n\n" +
                 "Must be on when Object Detection starts. Requires more performance, so do not enable unless needed.");
             OD_2DMask.boolValue = EditorGUILayout.Toggle(Object2DMaskLabel, OD_2DMask.boolValue);
+
+            GUIContent ObjectDetectionModelLabel = new GUIContent("Object Detection Model", "Select the available object detection model. HUMAN_XXX for skeleton tracking");
+            OD_DetectionModel.enumValueIndex = (int)(sl.DETECTION_MODEL)EditorGUILayout.EnumPopup(ObjectDetectionModelLabel, (sl.DETECTION_MODEL)OD_DetectionModel.enumValueIndex);
+     
+
 
             GUI.enabled = true;
 

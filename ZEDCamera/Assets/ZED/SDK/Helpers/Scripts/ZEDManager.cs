@@ -59,7 +59,7 @@ public class ZEDManager : MonoBehaviour
     /// at C:/ProgramData/stereolabs/SL_Unity_wrapper.txt. This helps find issues that may occur within
     /// the protected .dll, but can decrease performance. 
     /// </summary>
-    private bool wrapperVerbose = false;
+    private bool wrapperVerbose = true;
 
     /// <summary>
     /// Current instance of the ZED Camera, which handles calls to the Unity wrapper .dll. 
@@ -371,6 +371,12 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public bool objectDetection2DMask = false;
+
+    /// <summary>
+    /// Choose what detection model to use in the Object detection module
+    /// </summary>
+    [HideInInspector]
+    public sl.DETECTION_MODEL objectDetectionModel = sl.DETECTION_MODEL.MULTI_CLASS_BOX;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
@@ -2608,6 +2614,7 @@ public class ZEDManager : MonoBehaviour
             od_param.imageSync = objectDetectionImageSyncMode;
             od_param.enableObjectTracking = objectDetectionTracking;
             od_param.enable2DMask = objectDetection2DMask;
+            od_param.detectionModel = objectDetectionModel;
 
             od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
             od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
