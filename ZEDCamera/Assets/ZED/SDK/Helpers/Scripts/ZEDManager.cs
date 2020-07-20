@@ -264,7 +264,6 @@ public class ZEDManager : MonoBehaviour
     /////////////////////////////////////////////////////////////////////////
     ///////////////////////// Spatial Mapping ///////////////////////////////
     /////////////////////////////////////////////////////////////////////////
-
     /// <summary>
     /// Resolution setting for the scan. A higher resolution creates more submeshes and uses more memory, but is more accurate.
     /// </summary>
@@ -803,6 +802,7 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// If true, and you are using a ZED2 or ZED Mini, IMU fusion uses data from the camera's IMU to improve tracking results. 
     /// </summary>
+    [HideInInspector]
     public bool enableIMUFusion = true;
 
     /// <summary>
@@ -2490,8 +2490,7 @@ public class ZEDManager : MonoBehaviour
     {
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
-
-        spatialMapping.StartStatialMapping(mappingResolutionPreset, mappingRangePreset, isMappingTextured);
+        spatialMapping.StartStatialMapping(sl.SPATIAL_MAP_TYPE.MESH, mappingResolutionPreset, mappingRangePreset, isMappingTextured);
     }
 
     /// <summary>

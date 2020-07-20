@@ -566,6 +566,7 @@ public class ZEDCameraEditor : Editor
 
             EditorGUILayout.EndHorizontal();
 
+            
             GUIContent resolutionlabel = new GUIContent("Resolution", "Resolution setting for the scan. " +
                                          "A higher resolution creates more submeshes and uses more memory, but is more accurate.");
             ZEDSpatialMapping.RESOLUTION newResolution = (ZEDSpatialMapping.RESOLUTION)EditorGUILayout.EnumPopup(resolutionlabel, manager.mappingResolutionPreset);
@@ -1062,7 +1063,6 @@ public class ZEDCameraEditor : Editor
 
 
             EditorGUI.EndDisabledGroup();
-
             EditorGUI.indentLevel--;
         }
 
