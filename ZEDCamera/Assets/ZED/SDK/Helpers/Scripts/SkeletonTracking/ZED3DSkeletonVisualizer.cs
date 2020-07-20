@@ -25,6 +25,9 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         "If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DSkeletonVisualizer commponents in the scene. ")]
     public ZEDManager zedManager;
 
+    public Camera viewCamera;
+
+
 	/// <summary>
 	/// Activate skeleton tracking when play mode is on and ZED ready
 	/// </summary>
@@ -47,8 +50,11 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
     public float smoothFactor = 0.5f;
 
 
+    public int indexFakeTest = 9;
 	public Dictionary<int,SkeletonHandler> avatarControlList;
-	 
+
+    private Vector3 initialPosition;
+    private Quaternion initialRotation;
 	/// <summary>
 	/// Start this instance.
 	/// </summary>
@@ -65,6 +71,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         zedManager.OnObjectDetection += updateSkeletonData;
         zedManager.OnZEDReady += OnZEDReady;
 		}
+
     }
 
 
@@ -98,12 +105,12 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         if (avatarControlList.ContainsKey(0))
         {
             SkeletonHandler handler = avatarControlList[0];
-            handler.setFakeTest();
+            handler.setFakeTest(indexFakeTest);
         }
         else
         {
             SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
-            handler.Create(Avatar);
+            handler.Create(Avatar, Vector3.zero);
             avatarControlList.Add(0, handler);        
         }
 
@@ -135,7 +142,9 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 			else
 			{
 				SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
-				handler.Create(Avatar);
+                Vector3 spawnPosition = zedManager.GetZedRootTansform().TransformPoint(dobj.rawObjectData.rootWorldPosition);
+                spawnPosition.y = 0;
+                handler.Create(Avatar, spawnPosition);
 				avatarControlList.Add(person_id,handler);
 				UpdateAvatarControl(handler,dobj.rawObjectData);
 			}
@@ -158,7 +167,17 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 			skelet.Value.Move ();
 		}
 
-	}
+        //UpdateViewCameraPosition();
+        
+#if FAKEMODE
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            indexFakeTest++;
+            if (indexFakeTest == 10) indexFakeTest = 1;
+            Debug.Log(indexFakeTest);
+        }
+#endif
+    }
  
  
 	/// <summary>
@@ -170,14 +189,18 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 	{
 
 		Vector3 bodyCenter = data.rootWorldPosition;
+
+        if (bodyCenter == Vector3.zero)  return; // Object not detected
+
 		Vector3[] world_joints_pos = new Vector3[19];
 		for (int i=0;i<18;i++)
 		{
 			world_joints_pos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
 		}
 
-		//Create Joint with middle position : 
-		world_joints_pos[18] = (world_joints_pos[8] + world_joints_pos[11])/2; 
+        //Create Joint with middle position : 
+        world_joints_pos[0] = (world_joints_pos[16] + world_joints_pos[17]) / 2;
+        world_joints_pos[18] = (world_joints_pos[8] + world_joints_pos[11])/2; 
 
 		/*
 		for (int i=0;i<19;i++)
@@ -185,10 +208,19 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 		*/
 
 
-		Vector3 worldbodyRootPosition = zedManager.GetZedRootTansform().TransformPoint(bodyCenter)- new Vector3(0.0f,1.0f,0.0f);
+		Vector3 worldbodyRootPosition = zedManager.GetZedRootTansform().TransformPoint(bodyCenter);
+        worldbodyRootPosition.y = 0;
 		handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition);
-		handler.SetSmoothFactor (smoothFactor);
-		//handler.setFakeTest();
-	}
+       
+
+        handler.SetSmoothFactor (smoothFactor);
+       
+       // handler.setFakeTest((indexFakeTest));
+    }
+
+    void UpdateViewCameraPosition()
+    {
+        viewCamera.transform.position = zedManager.transform.localPosition;
+    }
 }
  

@@ -33,6 +33,7 @@ public class RigBone {
       return;
     }
     isValid = true;
+
     savedValue = animator.GetBoneTransform(bone).localRotation;
   }
   public void set(float a, float x, float y, float z) {

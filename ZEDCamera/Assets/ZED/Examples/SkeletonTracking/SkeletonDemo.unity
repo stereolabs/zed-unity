@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028334, g: 0.2257134, b: 0.30692226, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -138,13 +138,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 534676341}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14dfac2afd2f392dd958479085484586, type: 3}
+  m_Script: {fileID: 11500000, guid: ad2e79f67d90e0e4a8be7b327a26b6c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   zedManager: {fileID: 733793258}
+  viewCamera: {fileID: 1833948987}
   startObjectDetectionAutomatically: 1
-  Avatar: {fileID: 100128, guid: 01e3a731e5e2e2f9282261b14b3ed222, type: 3}
+  Avatar: {fileID: 100128, guid: 67534265227a2ed4b9304aceb7d751ba, type: 3}
   smoothFactor: 0.5
+  indexFakeTest: 0
 --- !u!4 &534676343
 Transform:
   m_ObjectHideFlags: 0
@@ -157,7 +159,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &619688139
 GameObject:
@@ -171,6 +173,7 @@ GameObject:
   - component: {fileID: 619688142}
   - component: {fileID: 619688141}
   - component: {fileID: 619688140}
+  - component: {fileID: 619688145}
   m_Layer: 5
   m_Name: Zed Canvas
   m_TagString: Untagged
@@ -257,6 +260,14 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!222 &619688145
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619688139}
+  m_CullTransparentMesh: 0
 --- !u!114 &733793258 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
@@ -358,7 +369,8 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
-  m_Children: []
+  m_Children:
+  - {fileID: 1185256979}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -373,6 +385,76 @@ Camera:
     type: 3}
   m_PrefabInstance: {fileID: 1831175232}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1185256978
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1185256979}
+  - component: {fileID: 1185256981}
+  - component: {fileID: 1185256980}
+  m_Layer: 5
+  m_Name: ZEDview
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1185256979
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185256978}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 23.7}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 931509362}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -239.9, y: 153.1}
+  m_SizeDelta: {x: 447.9, y: 261.6}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1185256980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185256978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -98529514, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 8400000, guid: 06b2424255e4f8142b8902a8c57c81ab, type: 2}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+--- !u!222 &1185256981
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1185256978}
+  m_CullTransparentMesh: 0
 --- !u!1 &1400216991
 GameObject:
   m_ObjectHideFlags: 0
@@ -385,7 +467,7 @@ GameObject:
   - component: {fileID: 1400216994}
   - component: {fileID: 1400216993}
   - component: {fileID: 1400216992}
-  m_Layer: 22
+  m_Layer: 5
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -575,7 +657,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4329734432191940, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4329734432191940, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -589,6 +671,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 20287226139793380, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: m_TargetTexture
+      value: 
+      objectReference: {fileID: 8400000, guid: 06b2424255e4f8142b8902a8c57c81ab, type: 2}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: objectDetectionFoldoutOpen
@@ -597,7 +684,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: objectDetectionModel
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -607,7 +694,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: estimateInitialPosition
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -617,6 +704,56 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: objectClassVehicleFilter
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: inputType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: svoInputFileName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: svoLoopBack
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: depthMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: resolution
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: enableTracking
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: advancedPanelOpen
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: enableSelfCalibration
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: camControlFoldoutOpen
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: svoRealTimeMode
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -632,6 +769,7 @@ GameObject:
   - component: {fileID: 1833948988}
   - component: {fileID: 1833948987}
   - component: {fileID: 1833948986}
+  - component: {fileID: 1833948984}
   m_Layer: 0
   m_Name: Virtual View Camera
   m_TagString: Untagged
@@ -639,6 +777,31 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1833948984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833948983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44fc58bd8b3692c45b932a75a1b9f461, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  forwardKey: 122
+  reverseKey: 115
+  strafeLeftKey: 113
+  strafeRightKey: 100
+  upKey: 97
+  downkey: 101
+  enableMouseLookKey: 325
+  sprintKey: 304
+  slowKey: 308
+  normalSpeedMPS: 1.5
+  sprintspeedMPS: 4
+  slowSpeedMPS: 0.4
+  accelTimeSeconds: 0.3
 --- !u!124 &1833948986
 Behaviour:
   m_ObjectHideFlags: 0
@@ -677,7 +840,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 5242912
+    m_Bits: 65568
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

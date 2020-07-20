@@ -93,8 +93,10 @@ public class SkeletonHandler : ScriptableObject {
 
 	private List<GameObject> sphere = new List<GameObject>();// = GameObject.CreatePrimitive (PrimitiveType.Sphere);
 
+    Quaternion oldwaistrot = Quaternion.identity;
+    Quaternion oldshoulderrot = Quaternion.identity;
 
-	private Vector3 targetBodyPosition = new Vector3(0.0f,0.0f,0.0f);
+    private Vector3 targetBodyPosition = new Vector3(0.0f,0.0f,0.0f);
 	public Quaternion targetBodyOrientation = Quaternion.identity;
 	private int count = 0;
 
@@ -112,15 +114,16 @@ public class SkeletonHandler : ScriptableObject {
 	/// Create the avatar control
 	/// </summary>
 	/// <param name="h">The height.</param>
-	public void Create(GameObject h) 
+	public void Create(GameObject h, Vector3 spawnPosition) 
 	{
-	    humanoid = (GameObject)Instantiate( h, new Vector3(0, 0, 0), Quaternion.identity);
-	    var uilayer = LayerMask.NameToLayer("UI");
-	    humanoid.layer = uilayer;
+
+        humanoid = (GameObject)Instantiate( h, spawnPosition, Quaternion.identity);
+	    var invisiblelayer = LayerMask.NameToLayer("tagInvisibleToZED");
+	    humanoid.layer = invisiblelayer;
 
 	    foreach (Transform child in humanoid.transform)
 	    {
-				child.gameObject.layer =  uilayer;
+				child.gameObject.layer = invisiblelayer;
 	    }
 
 	    rigBone = new Dictionary<HumanBodyBones, RigBone>();
@@ -128,6 +131,7 @@ public class SkeletonHandler : ScriptableObject {
 	    foreach (HumanBodyBones bone in humanBone) {
 	      rigBone[bone] = new RigBone(humanoid,bone);
 		  rigBoneTarget [bone] = Quaternion.identity;
+ 
 	    }
 
 
@@ -135,7 +139,8 @@ public class SkeletonHandler : ScriptableObject {
 	 
 		for (int i = 0; i < targetBone.Length; i++) {
 			trackingSegment [targetBone [i]] = Vector3.zero;
-		}
+        }
+
 	}
 
 
@@ -165,21 +170,25 @@ public class SkeletonHandler : ScriptableObject {
 
 			joint [JointType_HipRight] = new Vector3 (-0.5f, 1.0f, 0.0f); 
 			joint [JointType_KneeRight] = new Vector3 (-0.5f, 0.5f, 0.0f); 
-			joint [JointType_AnkleRight] = new Vector3 (-0.5f, 0.0f, 0.0f); 
+			joint [JointType_AnkleRight] = new Vector3 (-0.5f, 0.0f, 0.0f);
 
-			joint [JointType_ElbowLeft] = new Vector3 (1.0f, 1.50f, 0.0f); 
+            joint[JointType_ShoulderLeft] = new Vector3(0.5f, 1.70f, 0.0f);
+            joint [JointType_ElbowLeft] = new Vector3 (1.0f, 1.50f, 0.0f); 
 			joint [JointType_WristLeft] = new Vector3 (1.5f, 1.30f, 0.0f); 
 
 			joint [JointType_HipLeft] = new Vector3 (0.5f, 1.0f, 0.0f); 
 			joint [JointType_KneeLeft] = new Vector3 (0.6f, 1.0f, -1.0f); 
-			joint [JointType_AnkleLeft] = new Vector3 (0.5f, 0.0f, -1.0f); 
- 
-		} 
+			joint [JointType_AnkleLeft] = new Vector3 (0.5f, 0.0f, -1.0f);
+
+            joint[JointType_HearLeft] = new Vector3(0.5f, 2.0f, 0f);
+            joint[JointType_HearRight] = new Vector3(-0.5f, 2.0f, 0f);
+        } 
 		else if (type == 1) // right knee up back to camera + "plane" down left to up right
 		{
 			joint [JointType_Head] = new Vector3 (0.0f, 2.0f, 0.0f); 
 			joint [JointType_Neck] = new Vector3 (0.0f, 1.75f, 0.0f); 
 			joint [JointType_SpineBase] = new Vector3 (0.0f, 1.0f, 0.0f); 
+
 			joint [JointType_ShoulderRight] = new Vector3 (0.5f, 1.70f, 0.0f); 
 			joint [JointType_ElbowRight] = new Vector3 (1.0f, 1.90f, 0.0f); 
 			joint [JointType_WristRight] = new Vector3 (1.5f, 2.10f, 0.0f); 
@@ -367,15 +376,40 @@ public class SkeletonHandler : ScriptableObject {
 			joint [JointType_AnkleLeft] = new Vector3 (0.75f, 0.25f, 0.50f); 
 		 
 		}
+        else if (type == 9) // 
+        {
+            joint[JointType_Head] = new Vector3(0.00f, 2.0f, 0f);
+            joint[JointType_Neck] = new Vector3(0.0f, 1.5f, 0.0f);
+            joint[JointType_SpineBase] = new Vector3(0.0f, 0.0f, 0.0f); 
 
-	}
+            joint[JointType_ShoulderRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_ElbowRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_WristRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HipRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_KneeRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_AnkleRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+
+            joint[JointType_ShoulderLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_ElbowLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_WristLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HipLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_KneeLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_AnkleLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HearLeft] = new Vector3(0.0f, 2.0f, 1f);
+            joint[JointType_HearRight] = new Vector3(0.0f, 2.0f, -1f);
+        }
+
+    }
 
 	/// <summary>
 	/// Sets the fake position test.
 	/// </summary>
-	public void setFakeTest()
+	public void setFakeTest(int index)
 	{
-		setIdealPosition (1);
+		setIdealPosition (index);
 		setHumanPoseControl(new Vector4(0.0f,0.0f,0.0f,0.0f));
 	}
 
@@ -385,37 +419,67 @@ public class SkeletonHandler : ScriptableObject {
 	/// <param name="position_center">Position center.</param>
 	private void setHumanPoseControl(Vector4 position_center)
 	{
-		Vector3 waist = joint[JointType_HipRight] - joint[JointType_HipLeft];
-		waist = new Vector3(waist.x, 0, waist.z);
-		Quaternion waistrot = Quaternion.FromToRotation(Vector3.right,waist);
-		Quaternion inv_waistrot = Quaternion.Inverse (waistrot);
+        Vector3 waist;
+        Quaternion waistrot = oldwaistrot;
+        Quaternion inv_waistrot =  Quaternion.Inverse(waistrot);
 
+        if (!ZEDSupportFunctions.IsVector3NaN(joint[JointType_HipRight]) && !ZEDSupportFunctions.IsVector3NaN(joint[JointType_HipLeft]))
+        {
+            waist = joint[JointType_HipRight] - joint[JointType_HipLeft];
+            waist = new Vector3(waist.x, 0, waist.z);
+            waistrot = Quaternion.FromToRotation(Vector3.right, waist);
+            inv_waistrot = Quaternion.Inverse(waistrot);
 
-		Vector3 shoulder = joint[JointType_ShoulderRight] - joint[JointType_ShoulderLeft];
-		shoulder = new Vector3(shoulder.x, 0, shoulder.z);
-		Quaternion shoulderrot = Quaternion.FromToRotation(Vector3.right,shoulder);
-		Quaternion inv_shoulderrot = Quaternion.Inverse (shoulderrot);
+        }
 
+        Vector3 shoulder;
+        Quaternion shoulderrot = oldshoulderrot;
+        Quaternion inv_shoulderrot =  Quaternion.Inverse(waistrot);
 
-		for (int i=0; i<targetBone.Length; i++) {
+        if (!ZEDSupportFunctions.IsVector3NaN(joint[JointType_ShoulderRight]) && !ZEDSupportFunctions.IsVector3NaN(joint[JointType_ShoulderLeft]))
+        {
+
+            shoulder = joint[JointType_ShoulderRight] - joint[JointType_ShoulderLeft];
+            shoulder = new Vector3(shoulder.x, 0, shoulder.z);
+            shoulderrot = Quaternion.FromToRotation(Vector3.right, shoulder);
+            inv_shoulderrot = Quaternion.Inverse(shoulderrot);
+        }
+
+        Vector3 head;
+        Quaternion headrot;
+
+        head = joint[JointType_HearRight] - joint[JointType_HearLeft];
+        headrot = Quaternion.FromToRotation(Vector3.right, head);
+
+        if (Quaternion.Angle(waistrot, shoulderrot) > 45 || Quaternion.Angle(waistrot, shoulderrot) < -45)
+        {
+            shoulderrot = oldshoulderrot;
+        }
+
+        for (int i=0; i<targetBone.Length; i++) {
 			int s = jointSegment[2*i], e = jointSegment[2*i+1];
 			if (!ZEDSupportFunctions.IsVector3NaN (joint [e]) && !ZEDSupportFunctions.IsVector3NaN (joint [s])) {
 				trackingSegment [targetBone [i]] = (joint [e] - joint [s]).normalized;
 			}
 		}
 
-
-		foreach (HumanBodyBones bone in targetBone) {
+        Vector3 eyesVector = joint[JointType_EyesRight] - joint[JointType_EyesLeft];
+        Vector3 headVector = joint[JointType_Head] - joint[JointType_Neck];
+        Vector3 headOrientation = Vector3.Cross(eyesVector, headVector);
+        
+        foreach (HumanBodyBones bone in targetBone) {
 			rigBoneTarget [bone] = waistrot * Quaternion.identity;	
 		}
 
 		rigBoneTarget[HumanBodyBones.Spine] = Quaternion.FromToRotation (waistrot * Vector3.up, trackingSegment [HumanBodyBones.Spine]) * waistrot ;
-		rigBoneTarget[HumanBodyBones.Neck] = Quaternion.FromToRotation (waistrot * Vector3.up, trackingSegment [HumanBodyBones.Neck]) * waistrot ;
+        //rigBoneTarget[HumanBodyBones.Neck] = Quaternion.FromToRotation(shoulderrot * Vector3.up, trackingSegment[HumanBodyBones.Neck]) * shoulderrot;
+        rigBoneTarget[HumanBodyBones.Neck] = Quaternion.LookRotation(headOrientation);
 
-		rigBoneTarget [HumanBodyBones.LeftUpperArm] = Quaternion.FromToRotation (waistrot * Vector3.left, trackingSegment [HumanBodyBones.LeftUpperArm]) * waistrot ;
-		rigBoneTarget [HumanBodyBones.LeftLowerArm] = Quaternion.FromToRotation (waistrot * Vector3.left, trackingSegment [HumanBodyBones.LeftLowerArm]) * waistrot ;
-		rigBoneTarget [HumanBodyBones.RightUpperArm] = Quaternion.FromToRotation (waistrot * Vector3.right, trackingSegment [HumanBodyBones.RightUpperArm]) * waistrot ;
-		rigBoneTarget [HumanBodyBones.RightLowerArm] = Quaternion.FromToRotation (waistrot * Vector3.right, trackingSegment [HumanBodyBones.RightLowerArm]) * waistrot ;
+
+        rigBoneTarget [HumanBodyBones.LeftUpperArm] = Quaternion.FromToRotation (shoulderrot * Vector3.left, trackingSegment [HumanBodyBones.LeftUpperArm]) * shoulderrot;
+		rigBoneTarget [HumanBodyBones.LeftLowerArm] = Quaternion.FromToRotation (shoulderrot * Vector3.left, trackingSegment [HumanBodyBones.LeftLowerArm]) * shoulderrot;
+		rigBoneTarget [HumanBodyBones.RightUpperArm] = Quaternion.FromToRotation (shoulderrot * Vector3.right, trackingSegment [HumanBodyBones.RightUpperArm]) * shoulderrot;
+		rigBoneTarget [HumanBodyBones.RightLowerArm] = Quaternion.FromToRotation (shoulderrot * Vector3.right, trackingSegment [HumanBodyBones.RightLowerArm]) * shoulderrot;
 
 
 		rigBoneTarget [HumanBodyBones.LeftUpperLeg] = Quaternion.FromToRotation (waistrot * Vector3.down, trackingSegment [HumanBodyBones.LeftUpperLeg]) * waistrot ;
@@ -425,12 +489,13 @@ public class SkeletonHandler : ScriptableObject {
 
 
 		rigBone [HumanBodyBones.UpperChest].offset (inv_waistrot * shoulderrot);
+        targetBodyOrientation = waistrot;
 
+        targetBodyPosition = new Vector3(position_center.x,position_center.y,position_center.z);
 
-		targetBodyOrientation = waistrot;
-		targetBodyPosition= new Vector3(position_center.x,position_center.y,position_center.z);
-		count++;
-	}
+        oldshoulderrot = shoulderrot;
+        oldwaistrot = waistrot;
+    }
 
 
 	/// <summary>
@@ -446,7 +511,6 @@ public class SkeletonHandler : ScriptableObject {
 		}
 		 
 		setHumanPoseControl (position_center);
-
 	}
 
 
@@ -463,7 +527,9 @@ public class SkeletonHandler : ScriptableObject {
 		}
 
 		for (int i=0; i<jointCount; i++) {
-			joint [i] = new Vector3(jt[i].x,jt[i].y,jt[i].z); 
+            if (ZEDSupportFunctions.IsVector3NaN(joint[i])) continue;
+
+            joint [i] = new Vector3(jt[i].x,jt[i].y,jt[i].z); 
 
 			sphere[i].transform.localScale = new Vector3 (0.1f, 0.1f, 0.1f);
 			sphere[i].transform.position = joint [i];
@@ -487,11 +553,7 @@ public class SkeletonHandler : ScriptableObject {
 			else
 				rigBone [bone].transform.rotation = rigBoneTarget [bone];
 		}
-
 	}
-
-
-
 
 	/// <summary>
 	/// Update Engine function (move this avatar)
