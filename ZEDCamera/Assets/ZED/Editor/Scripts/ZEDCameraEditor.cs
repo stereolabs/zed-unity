@@ -129,6 +129,8 @@ public class ZEDCameraEditor : Editor
     SerializedProperty confidenceThresholdProperty;
     SerializedProperty textureConfidenceThresholdProperty;
     SerializedProperty enableSelfCalibrationProperty;
+    SerializedProperty enableIMUFusionProperty;
+
 
     // Rendering Prop
     private int arlayer;
@@ -283,6 +285,7 @@ public class ZEDCameraEditor : Editor
         confidenceThresholdProperty = serializedObject.FindProperty("m_confidenceThreshold");
         textureConfidenceThresholdProperty = serializedObject.FindProperty("m_textureConfidenceThreshold");
         enableSelfCalibrationProperty = serializedObject.FindProperty("enableSelfCalibration");
+        enableIMUFusionProperty = serializedObject.FindProperty("enableIMUFusion");
         allowPassThroughProperty = serializedObject.FindProperty("allowARPassThrough");
         setIMUPrior = serializedObject.FindProperty("setIMUPriorInAR");
         enableImageEnhancementProperty = serializedObject.FindProperty("enableImageEnhancement");
@@ -1053,6 +1056,11 @@ public class ZEDCameraEditor : Editor
             GUIContent enableselfcaliblabel = new GUIContent("Self-Calibration", "If true, the ZED SDK will subtly adjust the ZED's calibration " +
                 "during runtime to account for heat and other factors. Reasons to disable this are rare. ");
             enableSelfCalibrationProperty.boolValue = EditorGUILayout.Toggle(enableselfcaliblabel, enableSelfCalibrationProperty.boolValue);
+
+            GUIContent enalbeIMUFusionLabel = new GUIContent("Visual-Inertial Tracking", "If true, and you are using a ZED2 or ZED Mini, IMU fusion uses data from the camera's IMU to improve tracking results. ");
+            enableIMUFusionProperty.boolValue = EditorGUILayout.Toggle(enalbeIMUFusionLabel, enableIMUFusionProperty.boolValue);
+
+
             EditorGUI.EndDisabledGroup();
 
             EditorGUI.indentLevel--;

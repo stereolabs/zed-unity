@@ -14,7 +14,7 @@ namespace sl
 
 	public class ZEDCommon
 	{
-		public const string NameDLL = "sl_unitywrapperd";
+		public const string NameDLL = "sl_unitywrapper";
 	}
 
 	public enum ZED_CAMERA_ID
