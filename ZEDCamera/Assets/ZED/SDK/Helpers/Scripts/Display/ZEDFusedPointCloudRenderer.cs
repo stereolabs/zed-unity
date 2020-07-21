@@ -180,6 +180,13 @@ namespace sl
                 {
                     vertPoints = new Vector4[nbPoints];
                     zed.RetrieveFusedPointCloud(vertPoints);
+                    
+                    if (_pointBuffer != null)
+                    {
+                        _pointBuffer.Release();
+                        _pointBuffer = null;
+                    }
+
                     _pointBuffer = new ComputeBuffer(nbPoints, elementSize);
                     _pointBuffer.SetData(vertPoints);
                 }
@@ -196,7 +203,7 @@ namespace sl
 #if UNITY_2019_1_OR_NEWER
                     Graphics.DrawProceduralNow(MeshTopology.Points, _pointBuffer.count, 1);
 #else
-                Graphics.DrawProcedural(MeshTopology.Points, pointBuffer.count, 1);
+                Graphics.DrawProcedural(MeshTopology.Points, _pointBuffer.count, 1);
 #endif
                 }
                 //Draw with Disk shader
@@ -209,7 +216,7 @@ namespace sl
 #if UNITY_2019_1_OR_NEWER
                     Graphics.DrawProceduralNow(MeshTopology.Points, _pointBuffer.count, 1);
 #else
-                Graphics.DrawProcedural(MeshTopology.Points, pointBuffer.count, 1);
+                    Graphics.DrawProcedural(MeshTopology.Points, _pointBuffer.count, 1);
 #endif
                 }
             }
