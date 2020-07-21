@@ -43,7 +43,7 @@ public class DrawOutputToPlane : MonoBehaviour
 
         cam.targetTexture = targetTexture;
 
-        if (outputRenderer) outputRenderer.material.SetTexture("_UnlitColorMap", outputTexture); //TODO: Cache shader ID. 
+        if (outputRenderer) outputRenderer.material.SetTexture("_MainTex", outputTexture); //TODO: Cache shader ID. 
                                                                                                  // (targetRenderer) targetRenderer.material.mainTexture = targetTexture;
 
 #if ZED_LWRP || ZED_HDRP
