@@ -63,6 +63,18 @@ public class DetectedObject
     }
 
     /// <summary>
+    /// Current action state. "IDLE" means the object is not moving. "MOVING" means the object is moving.
+    /// </summary>
+    public OBJECT_ACTION_STATE actionState
+    {
+        get
+        {
+            return objectData.actionState;
+        }
+    }
+
+
+    /// <summary>
     /// How confident the ZED SDK is that this object is in fact a valid detection. From 1 to 100. 
     /// Higher is better, eg. if objectClass is PERSON and confidence is 99, there's a 99% chance it's indeed a person. 
     /// <para>You can set the minimum confidence threshold in ZEDManager's Inspector.</para>

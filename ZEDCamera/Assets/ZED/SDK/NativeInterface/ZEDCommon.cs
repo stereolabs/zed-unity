@@ -1385,6 +1385,7 @@ namespace sl
         public int id; //person ID
         public sl.OBJECT_CLASS objectClass;
         public sl.OBJECT_TRACK_STATE objectTrackingState;
+        public sl.OBJECT_ACTION_STATE actionState;
         public float confidence;
 
         public System.IntPtr mask;
@@ -1506,6 +1507,12 @@ namespace sl
         TERMINATE/**< This is the last searching state of the track, the track will be deleted in the next retreiveObject */
     };
 
+    public enum OBJECT_ACTION_STATE
+    { 
+        IDLE = 0, /**< The object is staying static. */
+        MOVING = 1, /**< The object is moving. */
+        LAST = 2
+    };
 
     /// <summary>
     /// List available models for detection

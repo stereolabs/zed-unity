@@ -71,7 +71,6 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         zedManager.OnObjectDetection += updateSkeletonData;
         zedManager.OnZEDReady += OnZEDReady;
 		}
-
     }
 
 
@@ -167,7 +166,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 			skelet.Value.Move ();
 		}
 
-        //UpdateViewCameraPosition();
+        UpdateViewCameraPosition();
         
 #if FAKEMODE
         if (Input.GetKeyDown(KeyCode.Space))
@@ -200,18 +199,18 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 
         //Create Joint with middle position : 
         world_joints_pos[0] = (world_joints_pos[16] + world_joints_pos[17]) / 2;
-        world_joints_pos[18] = (world_joints_pos[8] + world_joints_pos[11])/2; 
+        world_joints_pos[18] = (world_joints_pos[8] + world_joints_pos[11])/2;
 
-		/*
+        /*
 		for (int i=0;i<19;i++)
-		Debug.Log(" jt "+i+" : "+world_joints_pos[i]);
-		*/
-
+		Debug.Log(" jt "+i+" : "+world_joints_pos[i]);*/
+		
 
 		Vector3 worldbodyRootPosition = zedManager.GetZedRootTansform().TransformPoint(bodyCenter);
-        worldbodyRootPosition.y = 0;
-		handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition);
-       
+        worldbodyRootPosition.y = world_joints_pos[18].y;
+        //worldbodyRootPosition.y = 0;
+        handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition);
+        //handler.setJointSpherePoint(world_joints_pos);
 
         handler.SetSmoothFactor (smoothFactor);
        
