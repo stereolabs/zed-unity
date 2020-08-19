@@ -414,14 +414,14 @@ public class SkeletonHandler : ScriptableObject {
 	public void setFakeTest(int index)
 	{
 		setIdealPosition (index);
-		setHumanPoseControl(new Vector4(0.0f,0.0f,0.0f,0.0f));
+		setHumanPoseControl(new Vector4(0.0f,0.0f,0.0f,0.0f), Quaternion.identity);
 	}
 
 	/// <summary>
 	/// Function that handles the humanoid position, rotation and bones movement
 	/// </summary>
 	/// <param name="position_center">Position center.</param>
-	private void setHumanPoseControl(Vector4 position_center)
+	private void setHumanPoseControl(Vector4 position_center, Quaternion head_orientation)
 	{
         Vector3 waist;
         Quaternion waistrot = oldwaistrot;
@@ -482,6 +482,8 @@ public class SkeletonHandler : ScriptableObject {
         }
         else rigBoneTarget[HumanBodyBones.Neck] = Quaternion.FromToRotation(shoulderrot * Vector3.up, trackingSegment[HumanBodyBones.Neck]) * shoulderrot;
 
+        rigBoneTarget[HumanBodyBones.Neck] = head_orientation;
+       
         rigBoneTarget [HumanBodyBones.LeftUpperArm] = Quaternion.FromToRotation (shoulderrot * Vector3.left, trackingSegment [HumanBodyBones.LeftUpperArm]) * shoulderrot;
 		rigBoneTarget [HumanBodyBones.LeftLowerArm] = Quaternion.FromToRotation (shoulderrot * Vector3.left, trackingSegment [HumanBodyBones.LeftLowerArm]) * shoulderrot;
 		rigBoneTarget [HumanBodyBones.RightUpperArm] = Quaternion.FromToRotation (shoulderrot * Vector3.right, trackingSegment [HumanBodyBones.RightUpperArm]) * shoulderrot;
@@ -506,14 +508,14 @@ public class SkeletonHandler : ScriptableObject {
 	/// </summary>
 	/// <param name="jt">Jt.</param>
 	/// <param name="position_center">Position center.</param>
-	public void setControlWithJointPosition(Vector3[] jt, Vector3 position_center) 
+	public void setControlWithJointPosition(Vector3[] jt, Vector3 position_center, Quaternion headOrientation) 
 	{
 
 		for (int i=0; i<jointCount; i++) {
 			joint [i] = new Vector3(jt[i].x,jt[i].y,jt[i].z); 
 		}
-		 
-		setHumanPoseControl (position_center);
+
+		setHumanPoseControl (position_center, headOrientation);
 	}
 
 	/// <summary>

@@ -105,6 +105,7 @@ public class ZEDCameraEditor : Editor
     //Object Detection Prop 
     private SerializedProperty OD_ImageSyncMode;
     private SerializedProperty OD_ObjectTracking;
+    private SerializedProperty OD_BodyFitting;
     private SerializedProperty OD_2DMask;
     private SerializedProperty OD_DetectionModel;
     //Object Detection Runtime Prop
@@ -238,6 +239,7 @@ public class ZEDCameraEditor : Editor
         ///Object Detection Serialized Properties
         OD_ImageSyncMode = serializedObject.FindProperty("objectDetectionImageSyncMode");
         OD_ObjectTracking = serializedObject.FindProperty("objectDetectionTracking");
+        OD_BodyFitting = serializedObject.FindProperty("bodyFitting");
         OD_2DMask = serializedObject.FindProperty("objectDetection2DMask");
         OD_DetectionModel = serializedObject.FindProperty("objectDetectionModel"); 
 
@@ -711,6 +713,10 @@ public class ZEDCameraEditor : Editor
             GUIContent ObjectTrackingLabel = new GUIContent("Object Tracking", "Whether to track objects across multiple frames using the ZED's position relative to the floor.\r\n\n" +
                 "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
             OD_ObjectTracking.boolValue = EditorGUILayout.Toggle(ObjectTrackingLabel, OD_ObjectTracking.boolValue);
+
+            GUIContent BodyFittingLabel = new GUIContent("Body Fitting", "Defines if the body fitting will be applied.\r\n\n" +
+            "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
+            OD_BodyFitting.boolValue = EditorGUILayout.Toggle(BodyFittingLabel, OD_BodyFitting.boolValue);
 
             GUIContent Object2DMaskLabel = new GUIContent("Enable 2D Mask", "Whether to calculate 2D masks for each object, showing exactly which pixels within the 2D bounding box are the object.\r\n\n" +
                 "Must be on when Object Detection starts. Requires more performance, so do not enable unless needed.");

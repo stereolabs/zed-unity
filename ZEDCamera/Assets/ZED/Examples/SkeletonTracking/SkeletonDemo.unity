@@ -144,8 +144,8 @@ MonoBehaviour:
   zedManager: {fileID: 733793258}
   viewCamera: {fileID: 1833948987}
   startObjectDetectionAutomatically: 1
-  Avatar: {fileID: 100128, guid: 67534265227a2ed4b9304aceb7d751ba, type: 3}
-  smoothFactor: 0.5
+  Avatar: {fileID: 5313161901996908151, guid: 4069a2e0e94ebb84ab0c428ea6a7c36c, type: 3}
+  smoothFactor: 0.1
   indexFakeTest: 0
 --- !u!4 &534676343
 Transform:
@@ -347,7 +347,7 @@ Canvas:
   m_GameObject: {fileID: 931509358}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 1833948987}
   m_PlaneDistance: 1
   m_PixelPerfect: 0
@@ -411,7 +411,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1185256978}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 23.7}
+  m_LocalPosition: {x: 0, y: 0, z: 23.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 931509362}
@@ -419,8 +419,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -239.9, y: 153.1}
-  m_SizeDelta: {x: 447.9, y: 261.6}
+  m_AnchoredPosition: {x: -255.29999, y: 155.9}
+  m_SizeDelta: {x: 400, y: 255}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1185256980
 MonoBehaviour:
@@ -467,7 +467,7 @@ GameObject:
   - component: {fileID: 1400216994}
   - component: {fileID: 1400216993}
   - component: {fileID: 1400216992}
-  m_Layer: 5
+  m_Layer: 16
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -629,15 +629,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4329734432191940, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -1.72804e-10
       objectReference: {fileID: 0}
     - target: {fileID: 4329734432191940, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 4329734432191940, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.000000014901161
       objectReference: {fileID: 0}
     - target: {fileID: 4329734432191940, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: m_LocalRotation.x
@@ -714,7 +714,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: svoInputFileName
-      value: 
+      value: C:/UnityProjects/zed-unity-internal/ZEDCamera/Assets/skeleton.svo
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -755,6 +755,16 @@ PrefabInstance:
         type: 3}
       propertyPath: svoRealTimeMode
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: objectDetectionImageSyncMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: objectDetectionConfidenceThreshold
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
@@ -834,13 +844,13 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 40.70816
+  field of view: 59.2989
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 65568
+    m_Bits: 65569
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -859,8 +869,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1833948983}
-  m_LocalRotation: {x: 0.07799749, y: 0, z: 0.0008279212, w: 0.99695325}
-  m_LocalPosition: {x: -1.72804e-10, y: 1.4900198, z: 0.000000014901161}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.72804e-10, y: 1.2, z: 0.000000014901161}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

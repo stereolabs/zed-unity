@@ -204,12 +204,18 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         /*
 		for (int i=0;i<19;i++)
 		Debug.Log(" jt "+i+" : "+world_joints_pos[i]);*/
-		
+        
+        Vector3 worldbodyRootPosition = zedManager.GetZedRootTansform().TransformPoint(bodyCenter);
+        if (float.IsNaN(world_joints_pos[18].y)) worldbodyRootPosition.y = 0.9f;
+        else worldbodyRootPosition.y = world_joints_pos[18].y;
 
-		Vector3 worldbodyRootPosition = zedManager.GetZedRootTansform().TransformPoint(bodyCenter);
-        worldbodyRootPosition.y = world_joints_pos[18].y;
+        //worldbodyRootPosition.y = world_joints_pos[18].y;
         //worldbodyRootPosition.y = 0;
-        handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition);
+
+        Quaternion headOrientation = zedManager.GetZedRootTansform().rotation * new Quaternion(data.head_orientation.y, data.head_orientation.z, data.head_orientation.w, data.head_orientation.x);
+        handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition, headOrientation) ;
+        //Debug.Log(headOrientation.eulerAngles);
+        //Debug.Log(data.head_orientation.x + " / " + data.head_orientation.y + " / " + data.head_orientation.z + " / " + data.head_orientation.w) ;
         //handler.setJointSpherePoint(world_joints_pos);
 
         handler.SetSmoothFactor (smoothFactor);

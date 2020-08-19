@@ -1350,7 +1350,12 @@ namespace sl
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool enable2DMask;
-         /// <summary>
+        /// <summary>
+        /// Defines if the body fitting will be applied
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableBodyFitting;
+        /// <summary>
         /// Defines the AI model used for detection 
         /// </summary>
         public sl.DETECTION_MODEL detectionModel;
@@ -1444,7 +1449,19 @@ namespace sl
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
         public float[] position_covariance;// covariance matrix of the 3d position, represented by its upper triangular matrix value
 
+        /// <summary>
+        /// a quaternion that represents the orientation of the head
+        /// note Not available with DETECTION_MODEL::MULTI_CLASS_BOX, the value
+        /// is set to NaN if enable_body_fitting = false
+        /// </summary>
+        public Vector4 head_orientation;
 
+        /// <summary>
+        /// a quaternion that represents the orientation of the neck
+		/// note: Not available with DETECTION_MODEL::MULTI_CLASS_BOX, the value
+		/// is set to NaN if enable_body_fitting = false
+        public Vector4 neck_orientation;
+        /// </summary>
     };
 
 
@@ -1491,9 +1508,35 @@ namespace sl
     /// </summary>
     public enum OBJECT_CLASS
     {
-         PERSON = 0,
-         VEHICLE = 1,
-         LAST = 2
+        PERSON = 0, // For people detection 
+        VEHICLE = 1, // Legacy : For vehicles detection. It can be cars, trucks, buses, motorcycles etc
+        // VEHICLES
+        BICYCLE = 2,
+        CAR = 3,
+        MOTORBIKE = 4,
+        BUS = 5,
+        TRUCK = 6,
+        BOAT = 7,
+        TRAIN = 8,
+        // BAGS
+        BACKPACK = 9,
+        HANDBAG = 10,
+        SUITCASE = 11,
+        // ANIMALS
+        BIRD = 12,
+        CAT = 13,
+        DOG = 14,
+        HORSE = 15,
+        SHEEP = 16,
+        COW = 17,
+        // ELECTRONICS
+        CELL_PHONE = 18,
+        // FRUITS/VEGETABLES
+        BANANA = 19,
+        APPLE = 20,
+        ORANGE = 21,
+        CARROT = 22,
+        LAST = 23
     };
 
     /// <summary>

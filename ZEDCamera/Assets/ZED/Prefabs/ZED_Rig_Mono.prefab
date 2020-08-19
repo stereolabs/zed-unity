@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraID: 0
   depthMode: 1
-  inputType: 0
+  inputType: 1
   resolution: 2
   FPS: 60
   svoInputFileName: 
@@ -75,6 +75,7 @@ MonoBehaviour:
   objectDetectionImageSyncMode: 0
   objectDetectionTracking: 1
   objectDetection2DMask: 0
+  objectDetectionModel: 0
   objectDetectionConfidenceThreshold: 50
   objectClassPersonFilter: 1
   objectClassVehicleFilter: 1
@@ -92,10 +93,12 @@ MonoBehaviour:
   bitrate: 8000
   gopSize: -1
   adaptativeBitrate: 0
+  chunkSize: 32768
   fadeInOnStart: 1
   dontDestroyOnLoad: 0
   greySkybox: 1
   m_confidenceThreshold: 100
+  m_textureConfidenceThreshold: 100
   enableRightDepthMeasure: 0
   showarrig: 0
   enableIMUFusion: 1
@@ -111,6 +114,7 @@ MonoBehaviour:
   videoAutoWhiteBalance: 1
   videoWhiteBalance: 3200
   videoSharpness: 3
+  videoGamma: 5
   videoLEDStatus: 1
   cameraModel: '-'
   cameraSerialNumber: '-'
@@ -135,7 +139,6 @@ MonoBehaviour:
   recordingFoldoutOpen: 1
   streamingOutFoldoutOpen: 0
   camControlFoldoutOpen: 0
-  arlayer: 30
   zedRigDisplayer: {fileID: 0}
 --- !u!114 &114452247113840790
 MonoBehaviour:

@@ -4,6 +4,7 @@ using System.Threading;
 using UnityEngine.XR;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -377,6 +378,12 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public sl.DETECTION_MODEL objectDetectionModel = sl.DETECTION_MODEL.MULTI_CLASS_BOX;
+
+    /// <summary>
+    /// Defines if the body fitting will be applied
+    /// </summary>
+    [HideInInspector]
+    public bool bodyFitting = true;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
@@ -1632,6 +1639,14 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     void Awake()
     {
+        /*string path = Application.dataPath + "/SVOPath.txt";
+        //Read the text from directly from the test.txt file
+        StreamReader reader = new StreamReader(path);
+
+        svoInputFileName = reader.ReadLine();
+        if (svoInputFileName == "") inputType = sl.INPUT_TYPE.INPUT_TYPE_USB;
+        else inputType = sl.INPUT_TYPE.INPUT_TYPE_SVO;
+        */
 
         // If never initialized, init the array of instances linked to each ZEDManager that could be created.
         if (ZEDManagerInstance == null)
@@ -1695,6 +1710,7 @@ public class ZEDManager : MonoBehaviour
         {
             initParameters.ipStream = streamInputIP;
             initParameters.portStream = (ushort)streamInputPort;
+
         }
 
         versionZED = "[SDK]: " + sl.ZEDCamera.GetSDKVersion().ToString() + " [Plugin]: " + sl.ZEDCamera.PluginVersion.ToString();
@@ -1760,14 +1776,13 @@ public class ZEDManager : MonoBehaviour
 
     }
 
-
     void Start()
     {
         //adjust layers for multiple camera
         //setLayersForMultiCamera ();
     }
 
-#region INITIALIZATION
+    #region INITIALIZATION
     //const int MAX_OPENING_TRIES = 10;
     private uint numberTriesOpening = 0;/// Counter of tries to open the ZED
                                         /// <summary>
@@ -2079,7 +2094,7 @@ public class ZEDManager : MonoBehaviour
                     if (isTrackingEnable)
                     {
                         zedtrackingState = zedCamera.GetPosition(ref zedOrientation, ref zedPosition, sl.TRACKING_FRAME.LEFT_EYE);
-                        
+                        //zedtrackingState = sl.TRACKING_STATE.TRACKING_OK;
                         if(inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO && svoLoopBack == true && initialPoseCached == false)
                         {
                             initialPosition = zedPosition;
@@ -2155,7 +2170,6 @@ public class ZEDManager : MonoBehaviour
         //Set the original transform for the Rig
         zedRigRoot.localPosition = OriginPosition;
         zedRigRoot.localRotation = OriginRotation;
-
 
 #if UNITY_EDITOR
         EditorApplication.playmodeStateChanged = HandleOnPlayModeChanged;
@@ -2615,7 +2629,7 @@ public class ZEDManager : MonoBehaviour
             od_param.enableObjectTracking = objectDetectionTracking;
             od_param.enable2DMask = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
-
+            od_param.enableBodyFitting = bodyFitting;
             od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
             od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
@@ -2691,13 +2705,13 @@ public class ZEDManager : MonoBehaviour
                     //DetectionFrame oframe = new DetectionFrame(objectsFrame, this);
                     detectionFrame = new DetectionFrame(objectsFrameSDK, this);
                     OnObjectDetection(detectionFrame);
-
                     if (oldoframe != null) oldoframe.CleanUpAllObjects();
                 }
 
                 //Now that all events have been sent out, it's safe to let the image acquisition thread detect more objects. 
                 requestobjectsframe = true;
                 newobjectsframeready = false;
+                lastObjectFrameTimeStamp = objectsFrameSDK.timestamp;
             }
         }
     }
