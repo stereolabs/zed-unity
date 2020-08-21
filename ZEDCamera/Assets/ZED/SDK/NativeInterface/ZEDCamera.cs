@@ -333,11 +333,10 @@ namespace sl
         * Recording functions.
         */
         [DllImport(nameDll, EntryPoint = "dllz_enable_recording")]
-        private static extern int dllz_enable_recording(int cameraID, byte[] video_filename, int compresssionMode);
+        private static extern int dllz_enable_recording(int cameraID, byte[] video_filename, int compresssionMode,int bitrate,int target_fps,bool transcode);
 
         [DllImport(nameDll, EntryPoint = "dllz_disable_recording")]
         private static extern bool dllz_disable_recording(int cameraID);
-
 
         /*
         * Texturing functions.
@@ -536,7 +535,7 @@ namespace sl
         * Spatial Mapping functions.
         */
         [DllImport(nameDll, EntryPoint = "dllz_enable_spatial_mapping")]
-        private static extern int dllz_enable_spatial_mapping(int cameraID, float resolution_meter, float max_range_meter, int saveTexture);
+        private static extern int dllz_enable_spatial_mapping(int cameraID, float resolution_meter, float max_range_meter, int saveTexture,int max_memory_usage);
 
         [DllImport(nameDll, EntryPoint = "dllz_disable_spatial_mapping")]
         private static extern void dllz_disable_spatial_mapping(int cameraID);
@@ -597,7 +596,7 @@ namespace sl
          * Streaming Module functions (starting v2.8)
          */
         [DllImport(nameDll, EntryPoint = "dllz_enable_streaming")]
-        private static extern int dllz_enable_streaming(int cameraID, sl.STREAMING_CODEC codec, uint bitrate, ushort port, int gopSize, int adaptativeBitrate,int chunk_size);
+        private static extern int dllz_enable_streaming(int cameraID, sl.STREAMING_CODEC codec, uint bitrate, ushort port, int gopSize, int adaptativeBitrate,int chunk_size,int target_fps);
 
         [DllImport(nameDll, EntryPoint = "dllz_is_streaming_enabled")]
         private static extern int dllz_is_streaming_enabled(int cameraID);
@@ -1092,9 +1091,9 @@ namespace sl
         /// <param name="videoFileName">Filename. Whether it ends with .svo or .avi defines its file type.</param>
         /// <param name="compressionMode">How much compression to use</param>
         /// <returns>An ERROR_CODE that defines if the file was successfully created and can be filled with images.</returns>
-        public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.H264_BASED)
+        public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.H264_BASED, int bitrate = 0, int target_fps = 0,bool transcode = false)
         {
-            return (ERROR_CODE)dllz_enable_recording(CameraID, StringUtf8ToByte(videoFileName), (int)compressionMode);
+            return (ERROR_CODE)dllz_enable_recording(CameraID, StringUtf8ToByte(videoFileName), (int)compressionMode,bitrate,target_fps,transcode);
         }
 
 
@@ -2079,7 +2078,7 @@ namespace sl
             sl.ERROR_CODE spatialMappingStatus = ERROR_CODE.FAILURE;
             lock (grabLock)
             {
-                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture));
+                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture),4096);
             }
             return spatialMappingStatus;
         }
@@ -2421,10 +2420,10 @@ namespace sl
         /// Streaming parameters: See sl::StreamingParameters of ZED SDK. See ZED SDK API doc for more informations
         /// </params>
         /// <returns>An ERROR_CODE that defines if the streaming pipe was successfully created</returns>
-        public ERROR_CODE EnableStreaming(STREAMING_CODEC codec = STREAMING_CODEC.AVCHD_BASED, uint bitrate = 8000, ushort port = 30000, int gopSize = -1, bool adaptativeBitrate = false,int chunk_size = 32768)
+        public ERROR_CODE EnableStreaming(STREAMING_CODEC codec = STREAMING_CODEC.AVCHD_BASED, uint bitrate = 8000, ushort port = 30000, int gopSize = -1, bool adaptativeBitrate = false,int chunk_size = 8096,int target_fps = 0)
         {
             int doAdaptBitrate = adaptativeBitrate ? 1 : 0;
-            return (ERROR_CODE)dllz_enable_streaming(CameraID, codec, bitrate, port, gopSize, doAdaptBitrate, chunk_size);
+            return (ERROR_CODE)dllz_enable_streaming(CameraID, codec, bitrate, port, gopSize, doAdaptBitrate, chunk_size,target_fps);
         }
 
         /// <summary>

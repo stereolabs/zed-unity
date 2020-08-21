@@ -59,6 +59,10 @@ public class ZEDCameraEditor : Editor
     //Recording Prop
     private SerializedProperty svoOutputFileNameProperty;
     private SerializedProperty svoOutputCompressionModeProperty;
+    private SerializedProperty svoOutputBitrateProperty;
+    private SerializedProperty svoOutputTargetFPSProperty;
+    private SerializedProperty svoOutputTranscodeProperty;
+    
 
     //Streaming Prop
     private SerializedProperty streamingOutProperty;
@@ -68,6 +72,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty streamingOutGopSizeProperty;
     private SerializedProperty streamingOutAdaptBitrateProperty;
     private SerializedProperty streamingOutChunkSizeProperty;
+    private SerializedProperty streamingOutTargetFPSProperty;
 
 
     //Spatial mapping prop
@@ -251,6 +256,10 @@ public class ZEDCameraEditor : Editor
         //Recording Serialized Properties
         svoOutputFileNameProperty = serializedObject.FindProperty("svoOutputFileName");
         svoOutputCompressionModeProperty = serializedObject.FindProperty("svoOutputCompressionMode");
+        svoOutputBitrateProperty = serializedObject.FindProperty("svoOutputBitrate");
+        svoOutputTargetFPSProperty = serializedObject.FindProperty("svoOutputTargetFPS");
+        svoOutputTranscodeProperty = serializedObject.FindProperty("svoOutputTranscodeStreaming");
+        
 
         streamingOutProperty = serializedObject.FindProperty("enableStreaming");
         streamingOutCodecProperty = serializedObject.FindProperty("streamingCodec");
@@ -259,6 +268,8 @@ public class ZEDCameraEditor : Editor
         streamingOutGopSizeProperty = serializedObject.FindProperty("gopSize");
         streamingOutAdaptBitrateProperty = serializedObject.FindProperty("adaptativeBitrate");
         streamingOutChunkSizeProperty = serializedObject.FindProperty("chunkSize");
+        streamingOutTargetFPSProperty = serializedObject.FindProperty("streamingTargetFramerate");
+        
 
 
         ///Advanced Settings Serialized Properties
@@ -792,6 +803,15 @@ public class ZEDCameraEditor : Editor
             GUIContent svoCompressionModeLabel = new GUIContent("SVO Compression", "SVO Compression mode for the recorded SVO file");
             svoOutputCompressionModeProperty.enumValueIndex = (int)(sl.SVO_COMPRESSION_MODE)EditorGUILayout.EnumPopup(svoCompressionModeLabel, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex, GUILayout.ExpandWidth(true));
 
+            GUIContent svoOutBitrateLabel = new GUIContent("Bitrate", "Bitrate for H264/5 recording");
+            svoOutputBitrateProperty.intValue = EditorGUILayout.IntField(svoOutBitrateLabel, svoOutputBitrateProperty.intValue);
+
+            GUIContent svoOutTargetFPSLabel = new GUIContent("Target FPS", "Target FPS for SVO recording");
+            svoOutputTargetFPSProperty.intValue = EditorGUILayout.IntField(svoOutTargetFPSLabel, svoOutputTargetFPSProperty.intValue);
+
+            GUIContent svoOutputTranscodeLabel = new GUIContent("Transcode", "If streaming input, set to false to avoid transcoding (decoding+ re-encoding for SVO). Recommended to leave at false.");
+            svoOutputTranscodeProperty.boolValue = EditorGUILayout.Toggle(svoOutputTranscodeLabel, svoOutputTranscodeProperty.boolValue);
+
             EditorGUILayout.BeginHorizontal();
             GUI.enabled = cameraIsReady;
             string recordLabel = manager.needRecordFrame ? "Stop Recording" : "Start Recording";
@@ -808,7 +828,7 @@ public class ZEDCameraEditor : Editor
                 else
                 {
 
-                    if (manager.zedCamera.EnableRecording(svoOutputFileNameProperty.stringValue, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex) == sl.ERROR_CODE.SUCCESS)
+                    if (manager.zedCamera.EnableRecording(svoOutputFileNameProperty.stringValue, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex,(int)svoOutputBitrateProperty.intValue,(int)svoOutputTargetFPSProperty.intValue,svoOutputTranscodeProperty.boolValue) == sl.ERROR_CODE.SUCCESS)
                         manager.needRecordFrame = true;
                     else
                     {
@@ -852,6 +872,9 @@ public class ZEDCameraEditor : Editor
 
             GUIContent streamingOutChunkSizePropertyLabel = new GUIContent("Payload", "Chunk size for packet streaming");
             streamingOutChunkSizeProperty.intValue = EditorGUILayout.IntField(streamingOutChunkSizePropertyLabel, streamingOutChunkSizeProperty.intValue);
+
+            GUIContent streamingOutTargetFPSPropertyLabel = new GUIContent("Target FPS", "Target FPS for streaming output");
+            streamingOutTargetFPSProperty.intValue = EditorGUILayout.IntField(streamingOutTargetFPSPropertyLabel, streamingOutTargetFPSProperty.intValue);
 
             EditorGUI.indentLevel--;
         }

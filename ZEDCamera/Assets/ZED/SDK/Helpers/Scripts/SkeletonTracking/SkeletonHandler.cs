@@ -76,7 +76,7 @@ public class SkeletonHandler : ScriptableObject {
 
 	private static HumanBodyBones[] targetBone = new HumanBodyBones[] {
 	HumanBodyBones.Spine,
-	HumanBodyBones.Neck,
+    HumanBodyBones.Neck,
 	HumanBodyBones.LeftUpperArm,
 	HumanBodyBones.LeftLowerArm,
 	HumanBodyBones.LeftUpperLeg,
@@ -382,6 +382,7 @@ public class SkeletonHandler : ScriptableObject {
 		}
         else if (type == 9) // 
         {
+
             joint[JointType_Head] = new Vector3(0.00f, 2.0f, 0f);
             joint[JointType_Neck] = new Vector3(0.0f, 1.5f, 0.0f);
             joint[JointType_SpineBase] = new Vector3(0.0f, 0.0f, 0.0f); 
@@ -404,7 +405,154 @@ public class SkeletonHandler : ScriptableObject {
 
             joint[JointType_HearLeft] = new Vector3(0.0f, 2.0f, 1f);
             joint[JointType_HearRight] = new Vector3(0.0f, 2.0f, -1f);
+
+            joint[JointType_EyesLeft] = new Vector3(0.0f, 2.0f, 0.5f);
+            joint[JointType_EyesRight] = new Vector3(0.0f, 2.0f, -0.5f);
         }
+        else if (type == 10) // 
+        { 
+            joint[JointType_Head] = new Vector3(0.00f, 2.0f, 0f);
+            joint[JointType_Neck] = new Vector3(0.0f, 1.5f, 0.0f);
+            joint[JointType_SpineBase] = new Vector3(0.0f, 0.0f, 0.0f);
+
+            joint[JointType_ShoulderRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_ElbowRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_WristRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HipRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_KneeRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_AnkleRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+
+            joint[JointType_ShoulderLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_ElbowLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_WristLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HipLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_KneeLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_AnkleLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HearLeft] = new Vector3(0.0f, 2.0f, -1f);
+            joint[JointType_HearRight] = new Vector3(0.0f, 2.0f, 1f);
+
+            joint[JointType_EyesLeft] = new Vector3(0.0f, 2.0f, -0.5f);
+            joint[JointType_EyesRight] = new Vector3(0.0f, 2.0f, 0.5f);
+        }
+        else if (type == 11) // 
+        {
+         
+            joint[JointType_Head] = new Vector3(0.5f, 2.0f, 0f);
+            joint[JointType_Neck] = new Vector3(0.0f, 1.5f, 0.0f);
+            joint[JointType_SpineBase] = new Vector3(0.0f, 0.0f, 0.0f);
+
+            joint[JointType_ShoulderRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_ElbowRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_WristRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HipRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_KneeRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_AnkleRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+
+            joint[JointType_ShoulderLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_ElbowLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_WristLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HipLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_KneeLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_AnkleLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HearLeft] = new Vector3(0.75f, 1.75f, 0.0f);
+            joint[JointType_HearRight] = new Vector3(0.15f, 2.25f, 0.0f);
+
+            joint[JointType_EyesLeft] = new Vector3(0.65f, 1.85f, 0.0f);
+            joint[JointType_EyesRight] = new Vector3(0.25f, 2.15f, 0.0f);
+        }
+        else if (type == 12) // 
+        {
+
+            joint[JointType_Head] = new Vector3(-0.5f, 2.0f, 0f);
+            joint[JointType_Neck] = new Vector3(0.0f, 1.5f, 0.0f);
+            joint[JointType_SpineBase] = new Vector3(0.0f, 0.0f, 0.0f);
+
+            joint[JointType_ShoulderRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_ElbowRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_WristRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HipRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_KneeRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_AnkleRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+
+            joint[JointType_ShoulderLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_ElbowLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_WristLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HipLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_KneeLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_AnkleLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HearLeft] = new Vector3(-0.15f,2.25f, 0.0f);
+            joint[JointType_HearRight] = new Vector3(-0.75f,1.75f, 0.0f);
+
+            joint[JointType_EyesLeft] = new Vector3(-0.25f,2.15f, 0.0f);
+            joint[JointType_EyesRight] = new Vector3(-0.65f, 1.85f, 0.0f);
+        }
+        else if (type == 13) // 
+        {
+
+            joint[JointType_Head] = new Vector3(0.0f, 2.0f, -0.5f);
+            joint[JointType_Neck] = new Vector3(0.0f, 1.5f, 0.0f);
+            joint[JointType_SpineBase] = new Vector3(0.0f, 0.0f, 0.0f);
+
+            joint[JointType_ShoulderRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_ElbowRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_WristRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HipRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_KneeRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+            joint[JointType_AnkleRight] = new Vector3(-0.5f, 0.0f, 0.0f);
+
+            joint[JointType_ShoulderLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_ElbowLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_WristLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HipLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_KneeLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+            joint[JointType_AnkleLeft] = new Vector3(0.5f, 0.0f, 0.0f);
+
+            joint[JointType_HearLeft] = new Vector3(-0.25f, 2.35f, -0.55f);
+            joint[JointType_HearRight] = new Vector3(-0.65f, 1.65f, -0.45f);
+
+            joint[JointType_EyesLeft] = new Vector3(-0.30f, 2.25f, -0.55f);
+            joint[JointType_EyesRight] = new Vector3(-0.60f, 1.80f, -0.45f);
+        }
+        else if (type == 14) // 
+        {
+            joint[JointType_Head] = new Vector3(0.00f, 2.0f, 0f);
+            joint[JointType_Neck] = new Vector3(0.0f, 1.5f, 0.0f);
+            joint[JointType_SpineBase] = new Vector3(0.0f, 0.0f, 0.0f);
+
+            joint[JointType_ShoulderRight] = new Vector3(-0.05f, 0.0f, 0.4f);
+            joint[JointType_ElbowRight] = new Vector3(-0.05f, 0.0f, 0.4f);
+            joint[JointType_WristRight] = new Vector3(-0.05f, 0.0f, 0.4f);
+
+            joint[JointType_HipRight] = new Vector3(-0.05f, 0.0f, 0.4f);
+            joint[JointType_KneeRight] = new Vector3(-0.05f, 0.0f, 0.4f);
+            joint[JointType_AnkleRight] = new Vector3(-0.05f, 0.0f, 0.40f);
+
+            joint[JointType_ShoulderLeft] = new Vector3(0.05f, 0.0f, -0.40f);
+            joint[JointType_ElbowLeft] = new Vector3(0.05f, 0.0f, -0.40f);
+            joint[JointType_WristLeft] = new Vector3(0.05f, 0.0f,- 0.40f);
+
+            joint[JointType_HipLeft] = new Vector3(0.05f, 0.0f, -0.40f);
+            joint[JointType_KneeLeft] = new Vector3(0.05f, 0.0f, -0.40f);
+            joint[JointType_AnkleLeft] = new Vector3(0.05f, 0.0f, -0.40f);
+
+            joint[JointType_HearLeft] = new Vector3(0.30f, 2.0f, 0.0f);
+            joint[JointType_HearRight] = new Vector3(-0.30f, 2.0f, 0.0f);
+
+            joint[JointType_EyesLeft] = new Vector3(0.25f, 2.0f, 0.0f);
+            joint[JointType_EyesRight] = new Vector3(-0.25f, 2.0f, 0.0f);
+        }
+
 
     }
 
@@ -414,14 +562,14 @@ public class SkeletonHandler : ScriptableObject {
 	public void setFakeTest(int index)
 	{
 		setIdealPosition (index);
-		setHumanPoseControl(new Vector4(0.0f,0.0f,0.0f,0.0f), Quaternion.identity);
+		setHumanPoseControl(new Vector4(0.0f,0.0f,0.0f,0.0f), Quaternion.identity, Quaternion.identity);
 	}
 
 	/// <summary>
 	/// Function that handles the humanoid position, rotation and bones movement
 	/// </summary>
 	/// <param name="position_center">Position center.</param>
-	private void setHumanPoseControl(Vector4 position_center, Quaternion head_orientation)
+	private void setHumanPoseControl(Vector4 position_center, Quaternion head_orientation, Quaternion neck_orientation)
 	{
         Vector3 waist;
         Quaternion waistrot = oldwaistrot;
@@ -460,31 +608,57 @@ public class SkeletonHandler : ScriptableObject {
 				trackingSegment [targetBone [i]] = (joint [e] - joint [s]).normalized;
 			}
 		}
-        
+
+        foreach (HumanBodyBones bone in targetBone)
+        {
+            rigBoneTarget[bone] = waistrot * Quaternion.identity;
+        }
+
         eyesVector = joint[JointType_EyesRight] - joint[JointType_EyesLeft];
         Vector3 hearsVector = joint[JointType_HearRight] - joint[JointType_HearLeft]; // tests
         //eyesVector = (eyesVector + hearsVector) / 2;
-
+        Vector3 headOrientationVector = (joint[JointType_EyesRight] + joint[JointType_HearRight]) / 2 - (joint[JointType_EyesLeft] + joint[JointType_HearLeft]) / 2;
         headVector = joint[JointType_Head] - joint[JointType_Neck];
-        headOrientation = Vector3.Cross(eyesVector.normalized, headVector.normalized);
+        //headOrientation = Vector3.Cross(headOrientationVector.normalized, headVector.normalized);
+        Debug.Log("headOrientationVector : " + headOrientationVector);
+        //rigBoneTarget[HumanBodyBones.Head] = Quaternion.FromToRotation(Vector3.left, headOrientationVector);// Quaternion.LookRotation(headOrientation, Vector3.up);
+        Vector3 eulerLeft_Right_Turn = Quaternion.FromToRotation(Vector3.left, headOrientationVector).eulerAngles ;
+        Vector3 euler_UpDown_Turn = Quaternion.FromToRotation(Vector3.up, headVector).eulerAngles ;
+        Quaternion composedRotation = Quaternion.identity;
+        composedRotation *= Quaternion.AngleAxis(euler_UpDown_Turn.x, Vector3.left);
+        composedRotation *= Quaternion.AngleAxis(euler_UpDown_Turn.z, Vector3.forward);
+        composedRotation *= Quaternion.AngleAxis(eulerLeft_Right_Turn.y, Vector3.up);
+        Debug.Log("eulerLeft_Right_Turn" + eulerLeft_Right_Turn);
+        Debug.Log("euler_UpDown_Turn" + euler_UpDown_Turn);
+        Debug.Log("composedRotation " + composedRotation.eulerAngles);
 
-        //Debug.Log("orientation" + headOrientation);
 
-        foreach (HumanBodyBones bone in targetBone) {
-			rigBoneTarget [bone] = waistrot * Quaternion.identity;	
-		}
 
-		rigBoneTarget[HumanBodyBones.Spine] = Quaternion.FromToRotation (waistrot * Vector3.up, trackingSegment [HumanBodyBones.Spine]) * waistrot ;
 
-        if (headOrientation != Vector3.zero)
+        composedRotation = Quaternion.FromToRotation(Vector3.left, headOrientationVector ) * Quaternion.Inverse(waistrot)  * Quaternion.FromToRotation(Vector3.up, headVector);
+
+        rigBoneTarget[HumanBodyBones.Neck] = composedRotation * waistrot;// Quaternion.FromToRotation(Vector3.left, headOrientationVector) * Quaternion.FromToRotation(Vector3.up, headVector); /* *Quaternion.FromToRotation(Vector3.left, headOrientationVector)*/;
+        // Debug.Log("Neck" + rigBoneTarget[HumanBodyBones.Neck].eulerAngles);
+        
+
+
+
+        rigBoneTarget[HumanBodyBones.Spine] = Quaternion.FromToRotation (waistrot * Vector3.up, trackingSegment [HumanBodyBones.Spine]) * waistrot ;
+
+       /* if (headOrientation != Vector3.zero)
         {
-            rigBoneTarget[HumanBodyBones.Neck] = Quaternion.LookRotation(headOrientation);
+            rigBoneTarget[HumanBodyBones.Neck] = Quaternion.LookRotation(Vector3.forward,headOrientation);
         }
         else rigBoneTarget[HumanBodyBones.Neck] = Quaternion.FromToRotation(shoulderrot * Vector3.up, trackingSegment[HumanBodyBones.Neck]) * shoulderrot;
+        */
+        //rigBoneTarget[HumanBodyBones.Head] = head_orientation;
+        //rigBoneTarget[HumanBodyBones.Neck] = neck_orientation;
 
-        rigBoneTarget[HumanBodyBones.Neck] = head_orientation;
-       
-        rigBoneTarget [HumanBodyBones.LeftUpperArm] = Quaternion.FromToRotation (shoulderrot * Vector3.left, trackingSegment [HumanBodyBones.LeftUpperArm]) * shoulderrot;
+        //Debug.Log("Head : " + head_orientation);
+        //Debug.Log("Neck : " + neck_orientation);
+
+
+        rigBoneTarget[HumanBodyBones.LeftUpperArm] = Quaternion.FromToRotation (shoulderrot * Vector3.left, trackingSegment [HumanBodyBones.LeftUpperArm]) * shoulderrot;
 		rigBoneTarget [HumanBodyBones.LeftLowerArm] = Quaternion.FromToRotation (shoulderrot * Vector3.left, trackingSegment [HumanBodyBones.LeftLowerArm]) * shoulderrot;
 		rigBoneTarget [HumanBodyBones.RightUpperArm] = Quaternion.FromToRotation (shoulderrot * Vector3.right, trackingSegment [HumanBodyBones.RightUpperArm]) * shoulderrot;
 		rigBoneTarget [HumanBodyBones.RightLowerArm] = Quaternion.FromToRotation (shoulderrot * Vector3.right, trackingSegment [HumanBodyBones.RightLowerArm]) * shoulderrot;
@@ -508,14 +682,14 @@ public class SkeletonHandler : ScriptableObject {
 	/// </summary>
 	/// <param name="jt">Jt.</param>
 	/// <param name="position_center">Position center.</param>
-	public void setControlWithJointPosition(Vector3[] jt, Vector3 position_center, Quaternion headOrientation) 
+	public void setControlWithJointPosition(Vector3[] jt, Vector3 position_center, Quaternion headOrientation,Quaternion neckOrientation) 
 	{
 
 		for (int i=0; i<jointCount; i++) {
 			joint [i] = new Vector3(jt[i].x,jt[i].y,jt[i].z); 
 		}
 
-		setHumanPoseControl (position_center, headOrientation);
+		setHumanPoseControl (position_center, headOrientation, neckOrientation);
 	}
 
 	/// <summary>

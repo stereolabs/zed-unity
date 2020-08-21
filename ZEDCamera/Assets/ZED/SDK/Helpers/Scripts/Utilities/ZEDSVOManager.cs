@@ -143,7 +143,7 @@ public class ZEDSVOManager : MonoBehaviour
 		zedCam = zedCamera;
         if (record)
         {
-            sl.ERROR_CODE svoerror = zedCamera.EnableRecording(videoFile, compressionMode);
+            sl.ERROR_CODE svoerror = zedCamera.EnableRecording(videoFile, compressionMode,0,0);
             if (svoerror != sl.ERROR_CODE.SUCCESS)
             {
                 record = false;

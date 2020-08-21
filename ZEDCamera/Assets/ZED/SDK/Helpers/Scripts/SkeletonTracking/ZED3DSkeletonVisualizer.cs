@@ -1,5 +1,5 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
-//#define FAKEMODE
+#define FAKEMODE
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -212,15 +212,17 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         //worldbodyRootPosition.y = world_joints_pos[18].y;
         //worldbodyRootPosition.y = 0;
 
-        Quaternion headOrientation = zedManager.GetZedRootTansform().rotation * new Quaternion(data.head_orientation.y, data.head_orientation.z, data.head_orientation.w, data.head_orientation.x);
-        handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition, headOrientation) ;
+        Quaternion headOrientation = zedManager.GetZedRootTansform().rotation * new Quaternion(data.head_orientation.x, data.head_orientation.y, data.head_orientation.z, data.head_orientation.w);
+        Quaternion neckOrientation = zedManager.GetZedRootTansform().rotation * new Quaternion(data.neck_orientation.x, data.neck_orientation.y, data.neck_orientation.z, data.neck_orientation.w);
+
+        handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition, headOrientation,neckOrientation) ;
         //Debug.Log(headOrientation.eulerAngles);
         //Debug.Log(data.head_orientation.x + " / " + data.head_orientation.y + " / " + data.head_orientation.z + " / " + data.head_orientation.w) ;
         //handler.setJointSpherePoint(world_joints_pos);
 
         handler.SetSmoothFactor (smoothFactor);
        
-       // handler.setFakeTest((indexFakeTest));
+        //handler.setFakeTest((indexFakeTest));
     }
 
     void UpdateViewCameraPosition()

@@ -564,6 +564,25 @@ public class ZEDManager : MonoBehaviour
     public sl.SVO_COMPRESSION_MODE svoOutputCompressionMode = sl.SVO_COMPRESSION_MODE.H264_BASED;
 
     /// <summary>
+    /// SVO specific bitrate in KBits/s
+    /// Default : 0 = internal bitrate
+    /// </summary>
+    [HideInInspector]
+    public int svoOutputBitrate = 0;
+    /// <summary>
+    /// SVO specific FPS
+    /// Default : 0 = Camera FPS
+    /// </summary>
+    [HideInInspector]
+    public int svoOutputTargetFPS = 0;
+
+    /// <summary>
+    /// If input is streaming, then set to direct-dump into SVO file (false) or decoding/re-encoding (true).
+    /// Recommended to leave at false to save an encoding session.
+    /// </summary>
+    public bool svoOutputTranscodeStreaming = false;
+
+    /// <summary>
     /// Indicates if frame must be recorded
     /// </summary>
     [HideInInspector]
@@ -616,7 +635,14 @@ public class ZEDManager : MonoBehaviour
     /// Enable/Disable adaptative bitrate
     /// </summary>
     [HideInInspector]
-    public int chunkSize = 32768;
+    public int chunkSize = 8096;
+
+    /// <summary>
+    /// Set a specific target for the streaming framerate
+    /// </summary>
+    [HideInInspector]
+    public int streamingTargetFramerate = 0;
+
 
     /////////////////////////////////////////////////////////////////////////
     ///////////////////////// Advanced  control /////////////////////////////
@@ -1679,6 +1705,9 @@ public class ZEDManager : MonoBehaviour
         initParameters.enableImageEnhancement = enableImageEnhancement;
         initParameters.cameraDisableSelfCalib = !enableSelfCalibration;
 
+        initParameters.sdkVerbose = true;
+        initParameters.sdkVerboseLogFile = "C:/tmp/logsdk.txt";
+
         //Check if this rig is a stereo rig. Will set isStereoRig accordingly.
         CheckStereoMode();
 
@@ -1868,7 +1897,7 @@ public class ZEDManager : MonoBehaviour
             {
                 lock (zedCamera.grabLock)
                 {
-                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize);
+                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize,streamingTargetFramerate);
                     if (err == sl.ERROR_CODE.SUCCESS)
                     {
                         isStreamingEnable = true;
@@ -2620,7 +2649,6 @@ public class ZEDManager : MonoBehaviour
             pauseSVOReading = true;
 
             yield return null;
-            yield return null;
 
             pauseSVOReading = oldpausestate;
 
@@ -3143,7 +3171,7 @@ public class ZEDManager : MonoBehaviour
             {
                 lock (zedCamera.grabLock)
                 {
-                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize);
+                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize,streamingTargetFramerate);
                     if (err == sl.ERROR_CODE.SUCCESS)
                     {
                         isStreamingEnable = true;
