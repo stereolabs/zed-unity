@@ -1,5 +1,5 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
-#define FAKEMODE
+//#define FAKEMODE
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -68,11 +68,10 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 
 		if (zedManager)
         {
-        zedManager.OnObjectDetection += updateSkeletonData;
         zedManager.OnZEDReady += OnZEDReady;
+        zedManager.OnObjectDetection += updateSkeletonData;
 		}
     }
-
 
     private void OnZEDReady()
     {
@@ -172,7 +171,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             indexFakeTest++;
-            if (indexFakeTest == 10) indexFakeTest = 1;
+            if (indexFakeTest == 15) indexFakeTest = 1;
             Debug.Log(indexFakeTest);
         }
 #endif
@@ -209,20 +208,14 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         if (float.IsNaN(world_joints_pos[18].y)) worldbodyRootPosition.y = 0.9f;
         else worldbodyRootPosition.y = world_joints_pos[18].y;
 
-        //worldbodyRootPosition.y = world_joints_pos[18].y;
-        //worldbodyRootPosition.y = 0;
-
         Quaternion headOrientation = zedManager.GetZedRootTansform().rotation * new Quaternion(data.head_orientation.x, data.head_orientation.y, data.head_orientation.z, data.head_orientation.w);
         Quaternion neckOrientation = zedManager.GetZedRootTansform().rotation * new Quaternion(data.neck_orientation.x, data.neck_orientation.y, data.neck_orientation.z, data.neck_orientation.w);
 
         handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition, headOrientation,neckOrientation) ;
-        //Debug.Log(headOrientation.eulerAngles);
-        //Debug.Log(data.head_orientation.x + " / " + data.head_orientation.y + " / " + data.head_orientation.z + " / " + data.head_orientation.w) ;
         //handler.setJointSpherePoint(world_joints_pos);
 
         handler.SetSmoothFactor (smoothFactor);
-       
-        //handler.setFakeTest((indexFakeTest));
+
     }
 
     void UpdateViewCameraPosition()

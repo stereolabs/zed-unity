@@ -878,8 +878,7 @@ namespace sl
             /// <summary>
             /// True to flip images horizontally.
             /// </summary>
-            [MarshalAs(UnmanagedType.U1)]
-            public bool cameraImageFlip;
+            public int cameraImageFlip;
             /// <summary>
             /// True to disable self-calibration, using unoptimized optional calibration parameters.
             /// False is recommended for optimized calibration.

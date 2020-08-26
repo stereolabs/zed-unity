@@ -115,6 +115,8 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty OD_DetectionModel;
     //Object Detection Runtime Prop
     private SerializedProperty OD_DetectionConfidence;
+    private SerializedProperty OD_VehiculeDetectionConfidence;
+    private SerializedProperty OD_PersonDetectionConfidence;
     private SerializedProperty OD_PersonFilter;
     private SerializedProperty OD_VehicleFilter;
 
@@ -250,6 +252,8 @@ public class ZEDCameraEditor : Editor
 
 
         OD_DetectionConfidence = serializedObject.FindProperty("objectDetectionConfidenceThreshold");
+        OD_PersonDetectionConfidence = serializedObject.FindProperty("personDetectionConfidenceThreshold");
+        OD_VehiculeDetectionConfidence = serializedObject.FindProperty("vehiculeDetectionConfidenceThreshold");
         OD_PersonFilter = serializedObject.FindProperty("objectClassPersonFilter");
         OD_VehicleFilter = serializedObject.FindProperty("objectClassVehicleFilter");
 
@@ -747,10 +751,17 @@ public class ZEDCameraEditor : Editor
             EditorGUI.indentLevel++;
 
 
-            GUIContent objectDetectionConfidenceThresholdLabel = new GUIContent("Detection Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+            /*GUIContent objectDetectionConfidenceThresholdLabel = new GUIContent("Detection Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
-            OD_DetectionConfidence.floatValue = EditorGUILayout.Slider(objectDetectionConfidenceThresholdLabel, OD_DetectionConfidence.floatValue, 1, 99);
+            OD_DetectionConfidence.floatValue = EditorGUILayout.Slider(objectDetectionConfidenceThresholdLabel, OD_DetectionConfidence.floatValue, 1, 99);*/
 
+            GUIContent personDetectionConfidenceThresholdLabel = new GUIContent("Person Detection Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+            "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+            OD_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(personDetectionConfidenceThresholdLabel, OD_PersonDetectionConfidence.intValue, 1, 99);
+
+            GUIContent vehiculeDetectionConfidenceThresholdLabel = new GUIContent("Vehicule Detection Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+            "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+            OD_VehiculeDetectionConfidence.intValue = EditorGUILayout.IntSlider(vehiculeDetectionConfidenceThresholdLabel, OD_VehiculeDetectionConfidence.intValue, 1, 99);
 
             GUIContent PersonFilterLabel = new GUIContent("Person Filter", "Whether to detect people during object detection.");
             OD_PersonFilter.boolValue = EditorGUILayout.Toggle(PersonFilterLabel, OD_PersonFilter.boolValue);

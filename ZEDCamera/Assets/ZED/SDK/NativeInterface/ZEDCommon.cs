@@ -1,6 +1,8 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using System.Runtime.InteropServices;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -1118,7 +1120,7 @@ namespace sl
         /// <summary>
         ///  Defines if images are horizontally flipped.
         /// </summary>
-        public bool cameraImageFlip;
+        public int cameraImageFlip;
         /// <summary>
         /// Defines if measures relative to the right sensor should be computed (needed for MEASURE_<XXX>_RIGHT).
         /// </summary>
@@ -1181,7 +1183,7 @@ namespace sl
             this.depthMode = DEPTH_MODE.PERFORMANCE;
             this.depthMinimumDistance = -1;
             this.depthMaximumDistance = -1;
-            this.cameraImageFlip = false;
+            this.cameraImageFlip = 2;
             this.cameraDisableSelfCalib = false;
             this.sdkVerbose = false;
             this.sdkGPUId = -1;
@@ -1288,10 +1290,20 @@ namespace sl
 
     }
 
-	/// <summary>
-	/// Part of the ZED (left/right sensor, center) that's considered its center for tracking purposes.
-	/// </summary>
-	public enum TRACKING_FRAME
+    /// <summary>
+    ///brief Lists available compression modes for SVO recording.
+    /// </summary>
+    public enum FLIP_MODE
+    {
+        OFF = 0,  ///  default behavior.
+        ON = 1,   /// Images and camera sensors data are flipped, useful when your camera is mounted upside down.
+        AUTO = 2, /// in live mode: use the camera orientation (if an IMU is available) to set the flip mode, in SVO mode, read the state of this enum when recorded
+    };
+
+    /// <summary>
+    /// Part of the ZED (left/right sensor, center) that's considered its center for tracking purposes.
+    /// </summary>
+    public enum TRACKING_FRAME
 	{
         /// <summary>
         /// Camera's center is at the left sensor.
@@ -1375,8 +1387,14 @@ namespace sl
         /// <summary>
         ///  
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst =2)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 23)]
         public int[] objectClassFilter;
+
+        /// <summary>
+        ///  
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 23)]
+        public int[] object_confidence_threshold;
     };
 
     /// <summary>
