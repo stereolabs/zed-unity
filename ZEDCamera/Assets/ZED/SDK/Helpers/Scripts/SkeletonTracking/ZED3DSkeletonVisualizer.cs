@@ -60,6 +60,8 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 	/// </summary>
     private void Start()
     {
+        Application.targetFrameRate = 60;
+
 		avatarControlList = new Dictionary<int,SkeletonHandler> ();
         if (!zedManager)
         {
@@ -115,7 +117,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 
         #else
 		List<int> remainingKeyList = new List<int>(avatarControlList.Keys);
-		List<DetectedObject> newobjects = dframe.GetFilteredObjectList(true, true, true);
+		List<DetectedObject> newobjects = dframe.GetFilteredObjectList(true, false, false);
 
 		/*if (dframe.rawObjectsFrame.detectionModel!= sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE &&
 			dframe.rawObjectsFrame.detectionModel!= sl.DETECTION_MODEL.HUMAN_BODY_FAST)
@@ -157,7 +159,6 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 	 
 		#endif
     }
-
 
 	public void Update()
 	{
@@ -208,10 +209,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         if (float.IsNaN(world_joints_pos[18].y)) worldbodyRootPosition.y = 0.9f;
         else worldbodyRootPosition.y = world_joints_pos[18].y;
 
-        Quaternion headOrientation = zedManager.GetZedRootTansform().rotation * new Quaternion(data.head_orientation.x, data.head_orientation.y, data.head_orientation.z, data.head_orientation.w);
-        Quaternion neckOrientation = zedManager.GetZedRootTansform().rotation * new Quaternion(data.neck_orientation.x, data.neck_orientation.y, data.neck_orientation.z, data.neck_orientation.w);
-
-        handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition, headOrientation,neckOrientation) ;
+        handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition) ;
         //handler.setJointSpherePoint(world_joints_pos);
 
         handler.SetSmoothFactor (smoothFactor);

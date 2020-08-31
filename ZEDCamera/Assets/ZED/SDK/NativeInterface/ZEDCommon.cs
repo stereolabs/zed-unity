@@ -1466,20 +1466,6 @@ namespace sl
         // [p2, p4, p5]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
         public float[] position_covariance;// covariance matrix of the 3d position, represented by its upper triangular matrix value
-
-        /// <summary>
-        /// a quaternion that represents the orientation of the head
-        /// note Not available with DETECTION_MODEL::MULTI_CLASS_BOX, the value
-        /// is set to NaN if enable_body_fitting = false
-        /// </summary>
-        public Vector4 head_orientation;
-
-        /// <summary>
-        /// a quaternion that represents the orientation of the neck
-		/// note: Not available with DETECTION_MODEL::MULTI_CLASS_BOX, the value
-		/// is set to NaN if enable_body_fitting = false
-        public Vector4 neck_orientation;
-        /// </summary>
     };
 
 

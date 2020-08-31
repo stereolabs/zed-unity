@@ -96,13 +96,8 @@ public class SkeletonHandler : ScriptableObject {
     Quaternion oldwaistrot = Quaternion.identity;
     Quaternion oldshoulderrot = Quaternion.identity;
 
-    Vector3 eyesVector;
-    Vector3 headVector;
-    Vector3 headOrientation;
-
     private Vector3 targetBodyPosition = new Vector3(0.0f,0.0f,0.0f);
 	public Quaternion targetBodyOrientation = Quaternion.identity;
-	private int count = 0;
 
 	private float smoothFactor = 0.5f;
 	/// <summary>
@@ -138,7 +133,6 @@ public class SkeletonHandler : ScriptableObject {
 
 	    }
 
-
 	    trackingSegment = new Dictionary<HumanBodyBones,Vector3>(targetBone.Length);
 
 		for (int i = 0; i < targetBone.Length; i++) {
@@ -146,7 +140,6 @@ public class SkeletonHandler : ScriptableObject {
         }
 
 	}
-
 
     public void Destroy()
     {
@@ -609,14 +602,14 @@ public class SkeletonHandler : ScriptableObject {
 	public void setFakeTest(int index)
 	{
 		setIdealPosition (index);
-		setHumanPoseControl(new Vector3(0.0f,0.0f,0.0f), Quaternion.identity, Quaternion.identity);
+		setHumanPoseControl(new Vector3(0.0f,0.0f,0.0f));
 	}
 
 	/// <summary>
 	/// Function that handles the humanoid position, rotation and bones movement
 	/// </summary>
 	/// <param name="position_center">Position center.</param>
-	private void setHumanPoseControl(Vector3 position_center, Quaternion head_orientation, Quaternion neck_orientation)
+	private void setHumanPoseControl(Vector3 position_center)
 	{
         Vector3 waist;
         Quaternion waistrot = oldwaistrot;
@@ -662,22 +655,7 @@ public class SkeletonHandler : ScriptableObject {
         }
 
         Vector3 headOrientationVector = (joint[JointType_EyesLeft] + joint[JointType_HearLeft]) / 2 - (joint[JointType_EyesRight] + joint[JointType_HearRight]) / 2;
-        headVector = joint[JointType_Head] - joint[JointType_Neck];
-        /*
-        Debug.Log("headOrientationVector : " + headOrientationVector);
-        Debug.Log("headVector : " + headVector);
-        Vector3 eulerLeft_Right_Turn = Quaternion.FromToRotation(-humanoid.transform.right, headOrientationVector).eulerAngles ;
-        Vector3 euler_UpDown_Turn = Quaternion.FromToRotation(humanoid.transform.up, headVector).eulerAngles ;
-        Quaternion composedRotation = Quaternion.identity;
-        composedRotation *= Quaternion.AngleAxis(euler_UpDown_Turn.x, -humanoid.transform.right);
-        composedRotation *= Quaternion.AngleAxis(-euler_UpDown_Turn.z, humanoid.transform.forward);
-        composedRotation *= Quaternion.AngleAxis(eulerLeft_Right_Turn.y, humanoid.transform.up);
-        Debug.Log("eulerLeft_Right_Turn" + eulerLeft_Right_Turn);
-        Debug.Log("euler_UpDown_Turn" + euler_UpDown_Turn);
-        Debug.Log("composedRotation " + composedRotation.eulerAngles);
-        Debug.Log("waistrot " + waistrot.eulerAngles);
-        */
-        //rigBoneTarget[HumanBodyBones.Neck] = composedRotation * waistrot;
+        Vector3 headVector = joint[JointType_Head] - joint[JointType_Neck];
 
         // DEBUG //
         Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head).position, headOrientationVector, Color.magenta,0.1f);
@@ -688,7 +666,6 @@ public class SkeletonHandler : ScriptableObject {
         
         rigBoneTarget[HumanBodyBones.Neck] = Quaternion.LookRotation(Vector3.Cross(headVector, headOrientationVector), headVector);
         
-        // Debug.Log("Neck" + rigBoneTarget[HumanBodyBones.Neck].eulerAngles);
         rigBoneTarget[HumanBodyBones.Spine] = Quaternion.FromToRotation (waistrot * Vector3.up, trackingSegment [HumanBodyBones.Spine]) * waistrot ;
 
         rigBoneTarget[HumanBodyBones.LeftUpperArm] = Quaternion.FromToRotation (shoulderrot * Vector3.left, trackingSegment [HumanBodyBones.LeftUpperArm]) * shoulderrot;
@@ -715,14 +692,14 @@ public class SkeletonHandler : ScriptableObject {
 	/// </summary>
 	/// <param name="jt">Jt.</param>
 	/// <param name="position_center">Position center.</param>
-	public void setControlWithJointPosition(Vector3[] jt, Vector3 position_center, Quaternion headOrientation,Quaternion neckOrientation)
+	public void setControlWithJointPosition(Vector3[] jt, Vector3 position_center)
 	{
 
 		for (int i=0; i<jointCount; i++) {
 			joint [i] = new Vector3(jt[i].x,jt[i].y,jt[i].z);
 		}
 
-		setHumanPoseControl (position_center, headOrientation, neckOrientation);
+		setHumanPoseControl (position_center);
 	}
 
 	/// <summary>

@@ -383,7 +383,7 @@ public class ZEDManager : MonoBehaviour
     /// Defines if the body fitting will be applied
     /// </summary>
     [HideInInspector]
-    public bool bodyFitting = true;
+    public bool bodyFitting = false;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
@@ -1013,7 +1013,7 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Set the camera in Flip mode
     /// </summary>
-    private sl.FLIP_MODE cameraFlipMode = sl.FLIP_MODE.ON;
+    private sl.FLIP_MODE cameraFlipMode = sl.FLIP_MODE.AUTO;
     /// <summary>
     /// Whether the camera is currently being tracked using the ZED's inside-out tracking. 
     /// </summary>ccvv
@@ -1683,15 +1683,6 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     void Awake()
     {
-        /*string path = Application.dataPath + "/SVOPath.txt";
-        //Read the text from directly from the test.txt file
-        StreamReader reader = new StreamReader(path);
-
-        svoInputFileName = reader.ReadLine();
-        if (svoInputFileName == "") inputType = sl.INPUT_TYPE.INPUT_TYPE_USB;
-        else inputType = sl.INPUT_TYPE.INPUT_TYPE_SVO;
-        */
-
         // If never initialized, init the array of instances linked to each ZEDManager that could be created.
         if (ZEDManagerInstance == null)
         {
@@ -1699,7 +1690,6 @@ public class ZEDManager : MonoBehaviour
             for (int i = 0; i < (int)sl.Constant.MAX_CAMERA_PLUGIN; i++)
                 ZEDManagerInstance[i] = null;
         }
-
 
         initialPosition = transform.localPosition;
         initialRotation = transform.localRotation;
@@ -1722,7 +1712,6 @@ public class ZEDManager : MonoBehaviour
         initParameters.cameraImageFlip = (int)cameraFlipMode;
         initParameters.enableImageEnhancement = enableImageEnhancement;
         initParameters.cameraDisableSelfCalib = !enableSelfCalibration;
-
 
         //Check if this rig is a stereo rig. Will set isStereoRig accordingly.
         CheckStereoMode();
@@ -2724,7 +2713,6 @@ public class ZEDManager : MonoBehaviour
         //Update the runtime parameters in case the user made changes. 
         od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
         od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
-        //od_runtime_params.object_confidence_threshold = new float[(int)sl.OBJECT_CLASS.LAST];
         od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = personDetectionConfidenceThreshold;
         od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehiculeDetectionConfidenceThreshold;
         od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
@@ -2913,7 +2901,6 @@ public class ZEDManager : MonoBehaviour
         arRig.ZEDEyeRight = camRightTransform.gameObject;
         arRig.quadLeft = leftScreen.transform;
         arRig.quadRight = rightScreen.transform;
-
 
         ZEDMixedRealityPlugin.OnHmdCalibChanged += CalibrationHasChanged;
         if (hasXRDevice())
