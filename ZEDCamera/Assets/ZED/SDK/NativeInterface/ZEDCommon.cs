@@ -1393,7 +1393,7 @@ namespace sl
         /// <summary>
         ///  
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 23)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)sl.OBJECT_CLASS.LAST)]
         public int[] object_confidence_threshold;
     };
 

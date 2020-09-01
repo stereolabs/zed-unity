@@ -654,17 +654,18 @@ public class SkeletonHandler : ScriptableObject {
             rigBoneTarget[bone] = waistrot * Quaternion.identity;
         }
 
-        Vector3 headOrientationVector = (joint[JointType_EyesLeft] + joint[JointType_HearLeft]) / 2 - (joint[JointType_EyesRight] + joint[JointType_HearRight]) / 2;
+        Vector3 eyesVector = (joint[JointType_EyesLeft] + joint[JointType_HearLeft]) / 2 - (joint[JointType_EyesRight] + joint[JointType_HearRight]) / 2;
         Vector3 headVector = joint[JointType_Head] - joint[JointType_Neck];
+        Vector3 headOrientationVector = Vector3.Cross(headVector, eyesVector);
 
         // DEBUG //
-        Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head).position, headOrientationVector, Color.magenta,0.1f);
-        Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head).position, - headOrientationVector, Color.magenta, 0.1f);
+        Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head).position, eyesVector, Color.magenta,0.1f);
+        Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head).position, -eyesVector, Color.magenta, 0.1f);
         Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Neck).position, headVector * 2, Color.red, 0.1f);
-        Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head).position, Vector3.Cross(headVector, headOrientationVector) * 2, Color.blue, 0.1f);
+        Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head).position, headOrientationVector * 2, Color.blue, 0.1f);
         //////////
         
-        rigBoneTarget[HumanBodyBones.Neck] = Quaternion.LookRotation(Vector3.Cross(headVector, headOrientationVector), headVector);
+        rigBoneTarget[HumanBodyBones.Neck] = Quaternion.LookRotation(headOrientationVector, headVector);
         
         rigBoneTarget[HumanBodyBones.Spine] = Quaternion.FromToRotation (waistrot * Vector3.up, trackingSegment [HumanBodyBones.Spine]) * waistrot ;
 
