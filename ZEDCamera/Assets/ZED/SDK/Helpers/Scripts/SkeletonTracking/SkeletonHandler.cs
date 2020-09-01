@@ -126,7 +126,7 @@ public class SkeletonHandler : ScriptableObject {
 	    }
 
 	    rigBone = new Dictionary<HumanBodyBones, RigBone>();
-		rigBoneTarget = new Dictionary<HumanBodyBones, Quaternion>();
+		  rigBoneTarget = new Dictionary<HumanBodyBones, Quaternion>();
 	    foreach (HumanBodyBones bone in humanBone) {
 	      rigBone[bone] = new RigBone(humanoid,bone);
 		  rigBoneTarget [bone] = Quaternion.identity;
@@ -137,7 +137,7 @@ public class SkeletonHandler : ScriptableObject {
 
 		for (int i = 0; i < targetBone.Length; i++) {
 			trackingSegment [targetBone [i]] = Vector3.zero;
-        }
+    }
 
 	}
 
@@ -664,9 +664,9 @@ public class SkeletonHandler : ScriptableObject {
         Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Neck).position, headVector * 2, Color.red, 0.1f);
         Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head).position, headOrientationVector * 2, Color.blue, 0.1f);
         //////////
-        
+
         rigBoneTarget[HumanBodyBones.Neck] = Quaternion.LookRotation(headOrientationVector, headVector);
-        
+
         rigBoneTarget[HumanBodyBones.Spine] = Quaternion.FromToRotation (waistrot * Vector3.up, trackingSegment [HumanBodyBones.Spine]) * waistrot ;
 
         rigBoneTarget[HumanBodyBones.LeftUpperArm] = Quaternion.FromToRotation (shoulderrot * Vector3.left, trackingSegment [HumanBodyBones.LeftUpperArm]) * shoulderrot;

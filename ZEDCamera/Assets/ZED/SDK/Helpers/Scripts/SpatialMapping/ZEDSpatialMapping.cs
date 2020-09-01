@@ -368,7 +368,7 @@ public class ZEDSpatialMapping
     /// <param name="resolutionPreset">Resolution setting - how detailed the mesh should be at scan time.</param>
     /// <param name="rangePreset">Range setting - how close geometry must be to be scanned.</param>
     /// <param name="isTextured">Whether to scan texture, or only the geometry.</param>
-    public void StartStatialMapping(RESOLUTION resolutionPreset, RANGE rangePreset, bool isTextured)
+    public void StartStatialMapping(sl.SPATIAL_MAP_TYPE type, RESOLUTION resolutionPreset, RANGE rangePreset, bool isTextured)
     {
         //Create the Holder object, to which all scanned chunks will be parented.
         holder = new GameObject();
@@ -382,7 +382,7 @@ public class ZEDSpatialMapping
         spatialMappingRequested = true;
         if (spatialMappingRequested && scanningInitState != sl.ERROR_CODE.SUCCESS)
         {
-            scanningInitState = EnableSpatialMapping(resolutionPreset, rangePreset, isTextured);
+            scanningInitState = EnableSpatialMapping(type, resolutionPreset, rangePreset, isTextured);
         }
 
         zedManager.gravityRotation = Quaternion.identity;
@@ -399,13 +399,13 @@ public class ZEDSpatialMapping
     /// <param name="rangePreset">Range setting - how close geometry must be to be scanned.</param>
     /// <param name="isTextured">Whether to scan texture, or only the geometry.</param>
     /// <returns></returns>
-    private sl.ERROR_CODE EnableSpatialMapping(RESOLUTION resolutionPreset, RANGE rangePreset, bool isTextured)
+    private sl.ERROR_CODE EnableSpatialMapping(sl.SPATIAL_MAP_TYPE type,RESOLUTION resolutionPreset, RANGE rangePreset, bool isTextured)
     {
         sl.ERROR_CODE error;
         this.isTextured = isTextured;
 
         //Tell the helper to start scanning. This call gets passed directly to the wrapper call in ZEDCamera. 
-        error = spatialMappingHelper.EnableSpatialMapping(ZEDSpatialMappingHelper.ConvertResolutionPreset(resolutionPreset), ZEDSpatialMappingHelper.ConvertRangePreset(rangePreset), isTextured);
+        error = spatialMappingHelper.EnableSpatialMapping(type,ZEDSpatialMappingHelper.ConvertResolutionPreset(resolutionPreset), ZEDSpatialMappingHelper.ConvertRangePreset(rangePreset), isTextured);
         if (meshRenderer[0]) meshRenderer[0].isTextured = isTextured;
         if (meshRenderer[1]) meshRenderer[1].isTextured = isTextured;
         stopWanted = false;
@@ -1373,9 +1373,9 @@ public class ZEDSpatialMapping
         /// </summary>
         /// <returns></returns>
 
-        public sl.ERROR_CODE EnableSpatialMapping(float resolutionMeter, float maxRangeMeter, bool saveTexture)
+        public sl.ERROR_CODE EnableSpatialMapping(sl.SPATIAL_MAP_TYPE type,float resolutionMeter, float maxRangeMeter, bool saveTexture)
         {
-            return zedCamera.EnableSpatialMapping(resolutionMeter, maxRangeMeter, saveTexture);
+            return zedCamera.EnableSpatialMapping(type,resolutionMeter, maxRangeMeter, saveTexture);
         }
 
         /// <summary>

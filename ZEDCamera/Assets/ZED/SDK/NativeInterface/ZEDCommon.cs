@@ -971,6 +971,24 @@ namespace sl
         HEVC_BASED
     }
 
+
+    /// <summary>
+    /// Spatial Mapping type (default is mesh)
+    /// </summary>
+    public enum SPATIAL_MAP_TYPE
+    {
+        /// <summary>
+        /// Represent a surface with faces, 3D points are linked by edges, no color information
+        /// </summary>
+        MESH,
+        /// <summary>
+        ///  Geometry is represented by a set of 3D colored points.
+        /// </summary>
+        FUSED_POINT_CLOUD
+    };
+
+
+
     /// <summary>
     /// Mesh formats that can be saved/loaded with spatial mapping.
     /// </summary>

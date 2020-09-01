@@ -9,7 +9,7 @@ using System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
- 
+
 
 /// <summary>
 /// Contols the ZEDSkeletonTracking . Links the SDK to Unity
@@ -18,13 +18,14 @@ using UnityEditor;
 public class ZED3DSkeletonVisualizer : MonoBehaviour
 {
 	/// <summary>
-    /// The scene's ZEDManager. 
-    /// If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DSkeletonVisualizer commponents in the scene. 
+    /// The scene's ZEDManager.
+    /// If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DSkeletonVisualizer commponents in the scene.
     /// </summary>
     [Tooltip("The scene's ZEDManager.\r\n" +
         "If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DSkeletonVisualizer commponents in the scene. ")]
     public ZEDManager zedManager;
 
+    [Tooltip("The camera view to display ZED images")]
     public Camera viewCamera;
 
 
@@ -34,7 +35,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 	[Header("Game Control")]
     public bool startObjectDetectionAutomatically = true;
 
- 
+
 
 	[Header("Avatar Control")]
 	/// <summary>
@@ -73,6 +74,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         zedManager.OnZEDReady += OnZEDReady;
         zedManager.OnObjectDetection += updateSkeletonData;
 		}
+
     }
 
     private void OnZEDReady()
@@ -111,7 +113,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         {
             SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
             handler.Create(Avatar, Vector3.zero);
-            avatarControlList.Add(0, handler);        
+            avatarControlList.Add(0, handler);
         }
 
 
@@ -127,7 +129,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 		}*/
 
  		foreach (DetectedObject dobj in newobjects)
-        {			 
+        {
 			int person_id = dobj.rawObjectData.id;
 
 			//Avatar controller already exist --> update position
@@ -136,7 +138,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 				SkeletonHandler handler = avatarControlList[person_id];
 				UpdateAvatarControl(handler,dobj.rawObjectData);
 
-				// remove keys from list 
+				// remove keys from list
 				remainingKeyList.Remove(person_id);
 			}
 			else
@@ -156,7 +158,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 			handler.Destroy();
 			avatarControlList.Remove(index);
 		}
-	 
+
 		#endif
     }
 
@@ -167,7 +169,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 		}
 
         UpdateViewCameraPosition();
-        
+
 #if FAKEMODE
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -177,8 +179,8 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         }
 #endif
     }
- 
- 
+
+
 	/// <summary>
 	/// Function to update avatar control with data from ZED SDK.
 	/// </summary>
@@ -197,14 +199,14 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 			world_joints_pos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
 		}
 
-        //Create Joint with middle position : 
+        //Create Joint with middle position :
         world_joints_pos[0] = (world_joints_pos[16] + world_joints_pos[17]) / 2;
         world_joints_pos[18] = (world_joints_pos[8] + world_joints_pos[11])/2;
 
         /*
 		for (int i=0;i<19;i++)
 		Debug.Log(" jt "+i+" : "+world_joints_pos[i]);*/
-        
+
         Vector3 worldbodyRootPosition = zedManager.GetZedRootTansform().TransformPoint(bodyCenter);
         if (float.IsNaN(world_joints_pos[18].y)) worldbodyRootPosition.y = 0.9f;
         else worldbodyRootPosition.y = world_joints_pos[18].y;
@@ -221,4 +223,3 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         viewCamera.transform.position = zedManager.transform.localPosition;
     }
 }
- 

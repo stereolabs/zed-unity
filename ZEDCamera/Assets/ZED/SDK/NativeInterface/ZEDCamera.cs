@@ -535,7 +535,7 @@ namespace sl
         * Spatial Mapping functions.
         */
         [DllImport(nameDll, EntryPoint = "dllz_enable_spatial_mapping")]
-        private static extern int dllz_enable_spatial_mapping(int cameraID, float resolution_meter, float max_range_meter, int saveTexture,int max_memory_usage);
+        private static extern int dllz_enable_spatial_mapping(int cameraID, int type, float resolution_meter, float max_range_meter, int saveTexture,int max_memory_usage);
 
         [DllImport(nameDll, EntryPoint = "dllz_disable_spatial_mapping")]
         private static extern void dllz_disable_spatial_mapping(int cameraID);
@@ -554,6 +554,12 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "dllz_retrieve_mesh")]
         private static extern int dllz_retrieve_mesh(int cameraID, Vector3[] vertices, int[] triangles, int nbSubmesh, Vector2[] uvs, IntPtr textures);
+
+        [DllImport(nameDll, EntryPoint = "dllz_update_fused_point_cloud")]
+        private static extern int dllz_update_fused_point_cloud(int cameraID,  ref int pbPoints);
+
+        [DllImport(nameDll, EntryPoint = "dllz_retrieve_fused_point_cloud")]
+        private static extern int dllz_retrieve_fused_point_cloud(int cameraID, Vector4[] points);
 
         [DllImport(nameDll, EntryPoint = "dllz_save_mesh")]
         private static extern bool dllz_save_mesh(int cameraID, string filename, MESH_FILE_FORMAT format);
@@ -2072,12 +2078,12 @@ namespace sl
         /// <param name="max_range_meter">Maximum scanning range in meters.</param>
         /// <param name="saveTexture">True to scan surface textures in addition to geometry.</param>
         /// <returns></returns>
-        public sl.ERROR_CODE EnableSpatialMapping(float resolution_meter, float max_range_meter, bool saveTexture = false)
+        public sl.ERROR_CODE EnableSpatialMapping(SPATIAL_MAP_TYPE type, float resolution_meter, float max_range_meter, bool saveTexture = false)
         {
             sl.ERROR_CODE spatialMappingStatus = ERROR_CODE.FAILURE;
-            lock (grabLock)
+            //lock (grabLock)
             {
-                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture),4096);
+                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, (int)type,resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture),2048);
             }
             return spatialMappingStatus;
         }
@@ -2122,6 +2128,28 @@ namespace sl
         public sl.ERROR_CODE RetrieveMesh(Vector3[] vertices, int[] triangles, int nbSubmeshMax, Vector2[] uvs, IntPtr textures)
         {
             return (sl.ERROR_CODE)dllz_retrieve_mesh(CameraID, vertices, triangles, nbSubmeshMax, uvs, textures);
+        }
+
+        /// <summary>
+        /// Updates the fused point cloud (if spatial map type was FUSED_POINT_CLOUD
+        /// </summary>
+        /// <returns>Error code indicating if the update was successful, and why it wasn't otherwise.</returns>
+        public sl.ERROR_CODE UpdateFusedPointCloud(ref int nbVertices)
+        {
+            sl.ERROR_CODE err = sl.ERROR_CODE.FAILURE;
+            err = (sl.ERROR_CODE)dllz_update_fused_point_cloud(CameraID, ref nbVertices);
+            return err;
+        }
+
+        /// <summary>
+        /// Retrieves all points of the fused point cloud. Call UpdateFusedPointCloud() before calling this.
+        /// Vertex arrays must be at least of the sizes returned by UpdateFusedPointCloud
+        /// </summary>
+        /// <param name="vertices">Points of the fused point cloud.</param>
+        /// <returns>Error code indicating if the retrieval was successful, and why it wasn't otherwise.</returns>
+        public sl.ERROR_CODE RetrieveFusedPointCloud(Vector4[] vertices)
+        {
+            return (sl.ERROR_CODE)dllz_retrieve_fused_point_cloud(CameraID, vertices);
         }
 
         /// <summary>
