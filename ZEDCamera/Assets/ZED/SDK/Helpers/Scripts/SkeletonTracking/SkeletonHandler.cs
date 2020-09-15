@@ -11,8 +11,6 @@ using System.Text;
 
 public class SkeletonHandler : ScriptableObject {
 
-
-
 	private const int
 	// JointType
 	JointType_Head= 0,
@@ -51,12 +49,51 @@ public class SkeletonHandler : ScriptableObject {
 	JointType_KneeRight, JointType_AnkleRight,           // RightLowerLeg
 	};
 
-	public Vector3[] joint = new Vector3[jointCount];
-	private int[] jointState = new int[jointCount];
+    private static readonly int[] bonesList = new int[] {
+    JointType_SpineBase, JointType_Neck,                 // Spine
+	JointType_Neck, JointType_Head,                      // Neck
+    JointType_HipLeft, JointType_HipRight,
+	// left
+    JointType_Neck, JointType_ShoulderLeft,
+    JointType_ShoulderLeft, JointType_ElbowLeft,         // LeftUpperArm
+	JointType_ElbowLeft, JointType_WristLeft,            // LeftLowerArm
+	JointType_HipLeft, JointType_KneeLeft,               // LeftUpperLeg
+	JointType_KneeLeft, JointType_AnkleLeft,             // LeftLowerLeg6
+	// right
+    JointType_Neck, JointType_ShoulderRight,
+    JointType_ShoulderRight, JointType_ElbowRight,       // RightUpperArm
+	JointType_ElbowRight, JointType_WristRight,          // RightLowerArm
+	JointType_HipRight, JointType_KneeRight,             // RightUpperLeg
+	JointType_KneeRight, JointType_AnkleRight,           // RightLowerLeg
+	};
+
+    private static readonly int[] sphereList = new int[] {
+    JointType_SpineBase,
+    JointType_Neck,
+    JointType_Head,                      
+    JointType_HipLeft,
+    JointType_HipRight,
+    JointType_ShoulderLeft,
+    JointType_ElbowLeft,         
+	JointType_WristLeft,           
+	JointType_KneeLeft,
+	JointType_AnkleLeft,    
+    JointType_ShoulderRight,
+    JointType_ElbowRight,
+	JointType_WristRight,
+	JointType_KneeRight,
+	JointType_AnkleRight,
+	};
+
+    public Vector3[] joint = new Vector3[jointCount];
 
 	Dictionary<HumanBodyBones,Vector3> trackingSegment = null;
 
-	private static HumanBodyBones[] humanBone = new HumanBodyBones[] {
+    GameObject skeleton;
+    public GameObject[] bones;
+    public GameObject[] spheres;
+
+    private static HumanBodyBones[] humanBone = new HumanBodyBones[] {
 	HumanBodyBones.Hips,
 	HumanBodyBones.Spine,
 	HumanBodyBones.UpperChest,
@@ -99,6 +136,8 @@ public class SkeletonHandler : ScriptableObject {
     private Vector3 targetBodyPosition = new Vector3(0.0f,0.0f,0.0f);
 	public Quaternion targetBodyOrientation = Quaternion.identity;
 
+    private bool isInit = false;
+
 	private float smoothFactor = 0.5f;
 	/// <summary>
 	/// Sets the smooth factor.
@@ -137,16 +176,17 @@ public class SkeletonHandler : ScriptableObject {
 
 		for (int i = 0; i < targetBone.Length; i++) {
 			trackingSegment [targetBone [i]] = Vector3.zero;
+        }
     }
-
-	}
 
     public void Destroy()
     {
         GameObject.Destroy(humanoid);
+        GameObject.Destroy(skeleton);
         rigBone.Clear();
         rigBoneTarget.Clear();
-
+        Array.Clear(bones, 0, bones.Length);
+        Array.Clear(spheres, 0, spheres.Length);
     }
 
 	/// <summary>
@@ -658,14 +698,10 @@ public class SkeletonHandler : ScriptableObject {
         Vector3 headVector = joint[JointType_Head] - joint[JointType_Neck];
         Vector3 headOrientationVector = Vector3.Cross(headVector, eyesVector);
 
-        // DEBUG //
-        Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head).position, eyesVector, Color.magenta,0.1f);
-        Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head).position, -eyesVector, Color.magenta, 0.1f);
-        Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Neck).position, headVector * 2, Color.red, 0.1f);
-        Debug.DrawRay(humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Head).position, headOrientationVector * 2, Color.blue, 0.1f);
-        //////////
-
-        rigBoneTarget[HumanBodyBones.Neck] = Quaternion.LookRotation(headOrientationVector, headVector);
+        if (headOrientationVector != Vector3.zero && headVector != Vector3.zero && !ZEDSupportFunctions.IsVector3NaN(headOrientationVector) && !ZEDSupportFunctions.IsVector3NaN(headVector)) 
+            rigBoneTarget[HumanBodyBones.Neck] = Quaternion.LookRotation(headOrientationVector, headVector);
+        else
+            rigBoneTarget[HumanBodyBones.Neck] = Quaternion.FromToRotation(shoulderrot * Vector3.up, trackingSegment[HumanBodyBones.Spine]) * shoulderrot;
 
         rigBoneTarget[HumanBodyBones.Spine] = Quaternion.FromToRotation (waistrot * Vector3.up, trackingSegment [HumanBodyBones.Spine]) * waistrot ;
 
@@ -688,19 +724,73 @@ public class SkeletonHandler : ScriptableObject {
         oldwaistrot = waistrot;
     }
 
-	/// <summary>
-	/// Sets the avatar control with joint position.
-	/// </summary>
-	/// <param name="jt">Jt.</param>
-	/// <param name="position_center">Position center.</param>
-	public void setControlWithJointPosition(Vector3[] jt, Vector3 position_center)
-	{
+    public void initSkeleton(int person_id)
+    {
+        bones = new GameObject[bonesList.Length / 2];
+        spheres = new GameObject[sphereList.Length];
+        skeleton = new GameObject();
+        skeleton.name = "Skeleton_ID_" + person_id;
+        float width = 0.025f;
 
+        Color color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+        for (int i = 0; i < bones.Length; i++)
+        {
+            GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            cylinder.GetComponent<Renderer>().material.color = color;
+            cylinder.transform.parent = skeleton.transform;
+            bones[i] = cylinder;
+        }
+        for (int j = 0; j < spheres.Length; j++)
+        {
+            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.GetComponent<Renderer>().material.color = color;
+            sphere.transform.localScale = new Vector3(width * 2, width * 2, width * 2);
+            sphere.transform.parent = skeleton.transform;
+            spheres[j] = sphere;
+        }
+    }
+
+    void updateSkeleton()
+    {
+        float width = 0.025f;
+
+        for (int j = 0; j < spheres.Length; j++)
+        {
+            spheres[j].transform.position = joint[sphereList[j]];
+        }
+
+        for (int i = 0; i < bones.Length; i++)
+        {
+            Vector3 start = spheres[Array.IndexOf(sphereList, bonesList[2 * i])].transform.position;
+            Vector3 end = spheres[Array.IndexOf(sphereList, bonesList[2 * i + 1 ])].transform.position;
+            Vector3 offset = end - start;
+            Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
+            Vector3 position = start + (offset / 2.0f);
+
+            bones[i].transform.position = position;
+            bones[i].transform.up = offset;
+            bones[i].transform.localScale = scale;
+
+        }
+    }
+
+    /// <summary>
+    /// Sets the avatar control with joint position.
+    /// </summary>
+    /// <param name="jt">Jt.</param>
+    /// <param name="position_center">Position center.</param>
+    public void setControlWithJointPosition(Vector3[] jt, Vector3 position_center, bool useAvatar)
+	{
 		for (int i=0; i<jointCount; i++) {
 			joint [i] = new Vector3(jt[i].x,jt[i].y,jt[i].z);
 		}
 
-		setHumanPoseControl (position_center);
+        humanoid.SetActive(useAvatar);
+        skeleton.SetActive(!useAvatar);
+
+        if (useAvatar) setHumanPoseControl(position_center);
+        else updateSkeleton();
+
 	}
 
 	/// <summary>
@@ -731,8 +821,17 @@ public class SkeletonHandler : ScriptableObject {
 	/// </summary>
 	public void MoveAvatar()
 	{
-        humanoid.transform.position = smoothFactor != 0f ? Vector3.Lerp(humanoid.transform.position, targetBodyPosition, smoothFactor) : targetBodyPosition;
-        humanoid.transform.rotation = smoothFactor != 0f ? Quaternion.Lerp(humanoid.transform.rotation, targetBodyOrientation, smoothFactor) : targetBodyOrientation;
+        if (isInit)
+        {
+            humanoid.transform.position = smoothFactor != 0f ? Vector3.Lerp(humanoid.transform.position, targetBodyPosition, smoothFactor) : targetBodyPosition;
+            humanoid.transform.rotation = smoothFactor != 0f ? Quaternion.Lerp(humanoid.transform.rotation, targetBodyOrientation, smoothFactor) : targetBodyOrientation;
+        }
+        else
+        {
+            humanoid.transform.position = targetBodyPosition;
+            humanoid.transform.rotation = targetBodyOrientation;
+            isInit = true;
+        }
 
         foreach (HumanBodyBones bone in targetBone) {
             if (smoothFactor != 0f)

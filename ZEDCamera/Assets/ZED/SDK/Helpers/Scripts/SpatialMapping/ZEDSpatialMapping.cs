@@ -669,7 +669,6 @@ public class ZEDSpatialMapping
                 trianglesOffsetLastFrame = trianglesOffset;
                 uvsOffsetLastFrame = uvsOffset;
             }
-
             //Save the mesh here if we requested it to be saved, as we just updated the meshes, including textures, if applicable. 
             if (saveRequested && remainMeshes == false)
             {
@@ -1013,7 +1012,6 @@ public class ZEDSpatialMapping
             //filterThread.Start();
             stopRunning = true;
         }
-
         SwitchDisplayMeshState(true); //Make it default to visible. 
     }
 

@@ -366,7 +366,7 @@ MonoBehaviour:
   - {r: 0.412, g: 0.4, b: 0.804, a: 1}
   - {r: 1, g: 0.725, b: 0, a: 1}
   - {r: 0.989, g: 0.388, b: 0.419, a: 1}
-  showObjectMask: 1
+  showObjectMask: 0
   showONTracked: 1
   showSEARCHINGTracked: 0
   showOFFTracked: 0
@@ -520,12 +520,12 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: inputType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: svoInputFileName
-      value: 
+      value: C:/Users/Benjamin/Downloads/SVO/MultiSkeletonCafet.svo
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -545,7 +545,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: svoRealTimeMode
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -620,7 +620,12 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: bodyFitting
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: objectDetectionModel
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114589286496521468, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}

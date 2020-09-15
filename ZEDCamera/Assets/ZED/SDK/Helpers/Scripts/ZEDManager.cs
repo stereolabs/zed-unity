@@ -60,7 +60,7 @@ public class ZEDManager : MonoBehaviour
     /// at C:/ProgramData/stereolabs/SL_Unity_wrapper.txt. This helps find issues that may occur within
     /// the protected .dll, but can decrease performance. 
     /// </summary>
-    private bool wrapperVerbose = false;
+    private bool wrapperVerbose = true;
 
     /// <summary>
     /// Current instance of the ZED Camera, which handles calls to the Unity wrapper .dll. 
@@ -388,8 +388,8 @@ public class ZEDManager : MonoBehaviour
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
-    [HideInInspector]
-    public float objectDetectionConfidenceThreshold = 50;
+    /*[HideInInspector]
+    public float objectDetectionConfidenceThreshold = 50;*/
 
     /// <summary>
     /// 
@@ -1595,9 +1595,8 @@ public class ZEDManager : MonoBehaviour
     /// Called by Unity when the application is closed. 
     /// Also called by Reset() to properly start from a 'clean slate.'
     /// </summary>
-    void OnApplicationQuit()
+    private void OnApplicationQuit()
     {
-
         CloseManager();
         //sl.ZEDCamera.UnloadPlugin();
 
@@ -2224,7 +2223,6 @@ public class ZEDManager : MonoBehaviour
                 pathSpatialMemory = "";
             }
 
-
             //Now enable the tracking with the proper parameters.
             if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
                 enablePoseSmoothing, estimateInitialPosition, trackingIsStatic, enableIMUFusion, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
@@ -2426,7 +2424,6 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
 	void Update()
     {
-
         //Check if ZED is disconnected; invoke event and call function if so. 
         if (isDisconnected)
         {
@@ -2436,8 +2433,6 @@ public class ZEDManager : MonoBehaviour
             ZEDDisconnected(); //Tries to reset the camera. 
             return;
         }
-
-
         // Then update all modules
         UpdateImages(); //Image is updated first so we have its timestamp for latency compensation. 
 
@@ -2468,7 +2463,6 @@ public class ZEDManager : MonoBehaviour
 #endif
 
     }
-
     public void LateUpdate()
     {
         if (IsStereoRig)
@@ -2497,7 +2491,6 @@ public class ZEDManager : MonoBehaviour
         //OnApplicationQuit();
         CloseManager();
     }
-
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2661,7 +2654,7 @@ public class ZEDManager : MonoBehaviour
             od_param.enable2DMask = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
             od_param.enableBodyFitting = bodyFitting;
-            od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
+            //od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = personDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehiculeDetectionConfidenceThreshold;
@@ -2710,7 +2703,7 @@ public class ZEDManager : MonoBehaviour
         if (!objectDetectionRunning) return;
 
         //Update the runtime parameters in case the user made changes. 
-        od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
+        //od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
         od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
         od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = personDetectionConfidenceThreshold;
         od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehiculeDetectionConfidenceThreshold;
@@ -2750,12 +2743,11 @@ public class ZEDManager : MonoBehaviour
 
             }
         }
-
     }
 
     /// <summary>
     /// Requests the latest object detection frame information. If it's new, it'll fill the objectsFrame object
-    /// with the new frame info, set requestobjectsframe to true, and set newobjectsframeready to true. 
+    /// with the new frame info, set requestobjectsframe to false, and set newobjectsframeready to true. 
     /// </summary>
     private void RetrieveObjectDetectionFrame()
     {

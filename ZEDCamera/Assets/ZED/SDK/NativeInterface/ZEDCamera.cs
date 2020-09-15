@@ -564,6 +564,9 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "dllz_save_mesh")]
         private static extern bool dllz_save_mesh(int cameraID, string filename, MESH_FILE_FORMAT format);
 
+        [DllImport(nameDll, EntryPoint = "dllz_save_point_cloud")]
+        private static extern bool dllz_save_point_cloud(int cameraID, string filename, MESH_FILE_FORMAT format);
+
         [DllImport(nameDll, EntryPoint = "dllz_load_mesh")]
         private static extern bool dllz_load_mesh(int cameraID, string filename, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int nbMaxSubmesh, int[] textureSize = null);
 
@@ -586,7 +589,7 @@ namespace sl
          * Plane Detection functions (starting v2.4)
          */
         [DllImport(nameDll, EntryPoint = "dllz_find_floor_plane")]
-        private static extern IntPtr dllz_find_floor_plane(int cameraID, out Quaternion rotation, out Vector3 translation, Vector3 priorQuaternion, Vector3 priorTranslation);
+        private static extern IntPtr dllz_find_floor_plane(int cameraID, out Quaternion rotation, out Vector3 translation, Quaternion priorQuaternion, Vector3 priorTranslation);
 
         [DllImport(nameDll, EntryPoint = "dllz_find_plane_at_hit")]
         private static extern IntPtr dllz_find_plane_at_hit(int cameraID, Vector2 HitPixel, bool refine);
@@ -2081,7 +2084,7 @@ namespace sl
         public sl.ERROR_CODE EnableSpatialMapping(SPATIAL_MAP_TYPE type, float resolution_meter, float max_range_meter, bool saveTexture = false)
         {
             sl.ERROR_CODE spatialMappingStatus = ERROR_CODE.FAILURE;
-            //lock (grabLock)
+            lock (grabLock)
             {
                 spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, (int)type,resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture),2048);
             }
@@ -2131,7 +2134,7 @@ namespace sl
         }
 
         /// <summary>
-        /// Updates the fused point cloud (if spatial map type was FUSED_POINT_CLOUD
+        /// Updates the fused point cloud (if spatial map type was FUSED_POINT_CLOUD)
         /// </summary>
         /// <returns>Error code indicating if the update was successful, and why it wasn't otherwise.</returns>
         public sl.ERROR_CODE UpdateFusedPointCloud(ref int nbVertices)
@@ -2186,6 +2189,16 @@ namespace sl
         public bool SaveMesh(string filename, MESH_FILE_FORMAT format)
         {
             return dllz_save_mesh(CameraID, filename, format);
+        }
+
+        /// <summary>
+        /// Saves the scanned point cloud in a specific file format.
+        /// </summary>
+        /// <param name="filename">Path and filename of the point cloud.</param>
+        /// <param name="format">File format (extension). Can be .obj, .ply or .bin.</param>
+        public bool SavePointCloud(string filename, MESH_FILE_FORMAT format)
+        {
+            return dllz_save_point_cloud(CameraID, filename, format);
         }
 
         /// <summary>
@@ -2364,7 +2377,7 @@ namespace sl
             IntPtr p = IntPtr.Zero;
             Quaternion out_quat = Quaternion.identity;
             Vector3 out_trans = Vector3.zero;
-            p = dllz_find_floor_plane(CameraID, out out_quat, out out_trans, priorTrans, priorTrans);
+            p = dllz_find_floor_plane(CameraID, out out_quat, out out_trans, priorQuat, priorTrans);
             plane.Bounds = new Vector3[256];
             playerHeight = 0;
 

@@ -47,10 +47,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraID: 0
   depthMode: 1
-  inputType: 1
+  inputType: 0
   resolution: 2
   FPS: 60
-  svoInputFileName: 
+  svoInputFileName: Assets/Recording.svo
   svoLoopBack: 1
   svoRealTimeMode: 0
   currentFrame: 0
@@ -76,7 +76,10 @@ MonoBehaviour:
   objectDetectionTracking: 1
   objectDetection2DMask: 0
   objectDetectionModel: 0
-  objectDetectionConfidenceThreshold: 50
+  bodyFitting: 0
+  personDetectionConfidenceThreshold: 50
+  vehiculeDetectionConfidenceThreshold: 50
+  objectDetectionConfidenceThresholds: []
   objectClassPersonFilter: 1
   objectClassVehicleFilter: 1
   depthOcclusion: 1
@@ -86,6 +89,9 @@ MonoBehaviour:
   m_maxDepthRange: 40
   svoOutputFileName: Assets/Recording.svo
   svoOutputCompressionMode: 1
+  svoOutputBitrate: 0
+  svoOutputTargetFPS: 0
+  svoOutputTranscodeStreaming: 0
   needRecordFrame: 0
   enableStreaming: 0
   streamingCodec: 0
@@ -94,6 +100,7 @@ MonoBehaviour:
   gopSize: -1
   adaptativeBitrate: 0
   chunkSize: 32768
+  streamingTargetFramerate: 0
   fadeInOnStart: 1
   dontDestroyOnLoad: 0
   greySkybox: 1
@@ -207,6 +214,7 @@ MeshRenderer:
   m_MotionVectors: 2
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -218,6 +226,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -288,9 +297,10 @@ Camera:
   m_ClearFlags: 3
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_GateFitMode: 2
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2

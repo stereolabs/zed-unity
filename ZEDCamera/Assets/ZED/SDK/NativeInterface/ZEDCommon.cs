@@ -431,7 +431,7 @@ namespace sl
 		/// <summary>
 		/// Displays a normal map.
 		/// </summary>
-		VIEW_NORMALS
+		VIEW_NORMALS,
 	};
 
 
@@ -1197,7 +1197,7 @@ namespace sl
             this.pathSVO = "";
             this.svoRealTimeMode = false;
             this.coordinateUnit = UNIT.METER;
-            this.coordinateSystem = COORDINATE_SYSTEM.IMAGE;
+            this.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP;
             this.depthMode = DEPTH_MODE.PERFORMANCE;
             this.depthMinimumDistance = -1;
             this.depthMaximumDistance = -1;

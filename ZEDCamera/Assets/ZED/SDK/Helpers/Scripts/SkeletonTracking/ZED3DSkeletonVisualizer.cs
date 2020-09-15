@@ -33,11 +33,31 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 	/// Activate skeleton tracking when play mode is on and ZED ready
 	/// </summary>
 	[Header("Game Control")]
+
     public bool startObjectDetectionAutomatically = true;
 
+    /// <summary>
+    /// Display 3D avatar. If set to false, only display bones and joint
+    /// </summary>
+    [Tooltip("Display 3D avatar. If set to false, only display bones and joint")]
+    public bool useAvatar = true;
 
+    [Space(5)]
+    [Header("Filters")]
+    [Tooltip("Display objects that are actively being tracked by object tracking, where valid positions are known. ")]
+    public bool showONTracked = true;
+    /// <summary>
+    /// Display objects that were actively being tracked by object tracking, but that were lost very recently.
+    /// </summary>
+    [Tooltip("Display objects that were actively being tracked by object tracking, but that were lost very recently.")]
+    public bool showSEARCHINGTracked = false;
+    /// <summary>
+    /// Display objects that are visible but not actively being tracked by object tracking (usually because object tracking is disabled in ZEDManager).
+    /// </summary>
+    [Tooltip("Display objects that are visible but not actively being tracked by object tracking (usually because object tracking is disabled in ZEDManager).")]
+    public bool showOFFTracked = false;
 
-	[Header("Avatar Control")]
+    [Header("Avatar Control")]
 	/// <summary>
 	/// Avatar game object
 	/// </summary>
@@ -51,7 +71,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
     public float smoothFactor = 0.5f;
 
 
-    public int indexFakeTest = 9;
+    int indexFakeTest = 9;
 	public Dictionary<int,SkeletonHandler> avatarControlList;
 
     private Vector3 initialPosition;
@@ -61,7 +81,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 	/// </summary>
     private void Start()
     {
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = 60; // Set Engine frame rate to 60fps
 
 		avatarControlList = new Dictionary<int,SkeletonHandler> ();
         if (!zedManager)
@@ -74,7 +94,6 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         zedManager.OnZEDReady += OnZEDReady;
         zedManager.OnObjectDetection += updateSkeletonData;
 		}
-
     }
 
     private void OnZEDReady()
@@ -119,7 +138,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 
         #else
 		List<int> remainingKeyList = new List<int>(avatarControlList.Keys);
-		List<DetectedObject> newobjects = dframe.GetFilteredObjectList(true, false, false);
+		List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showONTracked, showSEARCHINGTracked, showOFFTracked);
 
 		/*if (dframe.rawObjectsFrame.detectionModel!= sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE &&
 			dframe.rawObjectsFrame.detectionModel!= sl.DETECTION_MODEL.HUMAN_BODY_FAST)
@@ -136,7 +155,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 			if (avatarControlList.ContainsKey(person_id))
 			{
 				SkeletonHandler handler = avatarControlList[person_id];
-				UpdateAvatarControl(handler,dobj.rawObjectData);
+				UpdateAvatarControl(handler,dobj.rawObjectData, useAvatar);
 
 				// remove keys from list
 				remainingKeyList.Remove(person_id);
@@ -145,10 +164,10 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 			{
 				SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
                 Vector3 spawnPosition = zedManager.GetZedRootTansform().TransformPoint(dobj.rawObjectData.rootWorldPosition);
-                spawnPosition.y = 0;
                 handler.Create(Avatar, spawnPosition);
-				avatarControlList.Add(person_id,handler);
-				UpdateAvatarControl(handler,dobj.rawObjectData);
+                handler.initSkeleton(person_id);
+                avatarControlList.Add(person_id, handler);
+                UpdateAvatarControl(handler, dobj.rawObjectData, useAvatar);
 			}
 		}
 
@@ -165,7 +184,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 	public void Update()
 	{
 		foreach (var skelet in avatarControlList) {
-			skelet.Value.Move ();
+            skelet.Value.Move ();
 		}
 
         UpdateViewCameraPosition();
@@ -186,7 +205,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 	/// </summary>
 	/// <param name="handler">Handler.</param>
 	/// <param name="p">P.</param>
-	private void UpdateAvatarControl(SkeletonHandler handler, sl.ObjectDataSDK data)
+	private void UpdateAvatarControl(SkeletonHandler handler, sl.ObjectDataSDK data, bool useAvatar)
 	{
 
 		Vector3 bodyCenter = data.rootWorldPosition;
@@ -201,7 +220,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 
         //Create Joint with middle position :
         world_joints_pos[0] = (world_joints_pos[16] + world_joints_pos[17]) / 2;
-        world_joints_pos[18] = (world_joints_pos[8] + world_joints_pos[11])/2;
+        world_joints_pos[18] = (world_joints_pos[8] + world_joints_pos[11]) / 2;
 
         /*
 		for (int i=0;i<19;i++)
@@ -211,7 +230,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
         if (float.IsNaN(world_joints_pos[18].y)) worldbodyRootPosition.y = 0.9f;
         else worldbodyRootPosition.y = world_joints_pos[18].y;
 
-        handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition) ;
+        handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition, useAvatar) ;
         //handler.setJointSpherePoint(world_joints_pos);
 
         handler.SetSmoothFactor (smoothFactor);
