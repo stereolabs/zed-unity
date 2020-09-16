@@ -395,7 +395,7 @@ public class ZEDCameraEditor : Editor
                 EditorGUILayout.EndHorizontal();
                 GUIContent svoLoopLabel = new GUIContent("Loop SVO", "Loop SVO when it reaches the end.");
                 svoLoopProperty.boolValue = EditorGUILayout.Toggle(svoLoopLabel, svoLoopProperty.boolValue);
-                GUIContent svoRealTimeModelabel = new GUIContent("Real-Time mode", "When enabled, the time between frames comes from the actual timestamps of each frame. Otherwise, " +
+                GUIContent svoRealTimeModelabel = new GUIContent("Real-Time Mode", "When enabled, the time between frames comes from the actual timestamps of each frame. Otherwise, " +
                     "each frame is read based on the maximum FPS of the recorded resolution (ex. 30FPS for HD1080). Real-Time mode makes playback speed more true, but dropped frames result in pauses.");
                 svoRealTimeModeProperty.boolValue = EditorGUILayout.Toggle(svoRealTimeModelabel, svoRealTimeModeProperty.boolValue);
                 EditorGUI.BeginChangeCheck();
@@ -708,49 +708,58 @@ public class ZEDCameraEditor : Editor
         /////////////////////////////////////////////////////////////
         GUILayout.Space(10);
 
-        showObjectDetection.boolValue = EditorGUILayout.Foldout(showObjectDetection.boolValue, "Object Detection", boldfoldout);
+        showObjectDetection.boolValue = EditorGUILayout.Foldout(showObjectDetection.boolValue, "Object Detection / Skeleton Tracking", boldfoldout);
         if (showObjectDetection.boolValue)
         {
-            EditorGUI.indentLevel++;
             bool cameraIsReady = false;
             if (manager)
                 cameraIsReady = manager.zedCamera != null ? manager.zedCamera.IsCameraReady : false;
 
+            GUILayout.Space(10);
+            EditorGUILayout.LabelField("Detection Mode", EditorStyles.boldLabel);
+            GUILayout.Space(5);
+
+            EditorGUI.indentLevel++;
+
+            GUIContent ObjectDetectionModelLabel = new GUIContent("Object Detection Model", "Select the available object detection model. HUMAN_XXX for skeleton tracking");
+            OD_DetectionModel.enumValueIndex = (int)(sl.DETECTION_MODEL)EditorGUILayout.EnumPopup(ObjectDetectionModelLabel, (sl.DETECTION_MODEL)OD_DetectionModel.enumValueIndex);
+
+            EditorGUI.indentLevel--;
 
             GUILayout.Space(10);
-            EditorGUILayout.LabelField("Initialization", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Init parameters", EditorStyles.boldLabel);
             GUILayout.Space(5);
 
             EditorGUI.indentLevel++;
 
             GUI.enabled = !cameraIsReady || !manager.IsObjectDetectionRunning;
 
-            GUIContent ImageSyncModeLabel = new GUIContent("Image sync", "If enabled, object detection will be computed for each image before the next frame is available, " +
+            GUIContent ImageSyncModeLabel = new GUIContent("Image Sync", "If enabled, object detection will be computed for each image before the next frame is available, " +
                 "locking the main thread if necessary.\r\n\nRecommended setting is false for real-time applications.");
             OD_ImageSyncMode.boolValue = EditorGUILayout.Toggle(ImageSyncModeLabel, OD_ImageSyncMode.boolValue);
 
-            GUIContent ObjectTrackingLabel = new GUIContent("Object Tracking", "Whether to track objects across multiple frames using the ZED's position relative to the floor.\r\n\n" +
+            GUIContent ObjectTrackingLabel = new GUIContent("Enable Object Tracking", "Whether to track objects across multiple frames using the ZED's position relative to the floor.\r\n\n" +
                 "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
             OD_ObjectTracking.boolValue = EditorGUILayout.Toggle(ObjectTrackingLabel, OD_ObjectTracking.boolValue);
 
-            GUIContent BodyFittingLabel = new GUIContent("Body Fitting", "Defines if the body fitting will be applied.\r\n\n" +
-            "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
-            OD_BodyFitting.boolValue = EditorGUILayout.Toggle(BodyFittingLabel, OD_BodyFitting.boolValue);
-
-            GUIContent Object2DMaskLabel = new GUIContent("Enable 2D Mask", "Whether to calculate 2D masks for each object, showing exactly which pixels within the 2D bounding box are the object.\r\n\n" +
+            if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX)
+            {
+                GUIContent Object2DMaskLabel = new GUIContent("Enable 2D Mask", "Whether to calculate 2D masks for each object, showing exactly which pixels within the 2D bounding box are the object.\r\n\n" +
                 "Must be on when Object Detection starts. Requires more performance, so do not enable unless needed.");
-            OD_2DMask.boolValue = EditorGUILayout.Toggle(Object2DMaskLabel, OD_2DMask.boolValue);
-
-            GUIContent ObjectDetectionModelLabel = new GUIContent("Object Detection Model", "Select the available object detection model. HUMAN_XXX for skeleton tracking");
-            OD_DetectionModel.enumValueIndex = (int)(sl.DETECTION_MODEL)EditorGUILayout.EnumPopup(ObjectDetectionModelLabel, (sl.DETECTION_MODEL)OD_DetectionModel.enumValueIndex);
-     
-
+                OD_2DMask.boolValue = EditorGUILayout.Toggle(Object2DMaskLabel, OD_2DMask.boolValue);
+            }
+            else
+            {
+                GUIContent BodyFittingLabel = new GUIContent("Enable Body Fitting", "Defines if the body fitting will be applied.\r\n\n" +
+                "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
+                OD_BodyFitting.boolValue = EditorGUILayout.Toggle(BodyFittingLabel, OD_BodyFitting.boolValue);
+            }
 
             GUI.enabled = true;
 
             EditorGUI.indentLevel--;
             GUILayout.Space(10);
-            EditorGUILayout.LabelField("Runtime", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
             GUILayout.Space(5);
             EditorGUI.indentLevel++;
 
@@ -759,21 +768,22 @@ public class ZEDCameraEditor : Editor
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
             OD_DetectionConfidence.floatValue = EditorGUILayout.Slider(objectDetectionConfidenceThresholdLabel, OD_DetectionConfidence.floatValue, 1, 99);*/
 
-            GUIContent personDetectionConfidenceThresholdLabel = new GUIContent("Person Detection Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+            GUIContent personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
             "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
             OD_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(personDetectionConfidenceThresholdLabel, OD_PersonDetectionConfidence.intValue, 1, 99);
+            if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX)
+            {
+                GUIContent vehiculeDetectionConfidenceThresholdLabel = new GUIContent("Vehicule Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_VehiculeDetectionConfidence.intValue = EditorGUILayout.IntSlider(vehiculeDetectionConfidenceThresholdLabel, OD_VehiculeDetectionConfidence.intValue, 1, 99);
 
-            GUIContent vehiculeDetectionConfidenceThresholdLabel = new GUIContent("Vehicule Detection Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
-            "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
-            OD_VehiculeDetectionConfidence.intValue = EditorGUILayout.IntSlider(vehiculeDetectionConfidenceThresholdLabel, OD_VehiculeDetectionConfidence.intValue, 1, 99);
+                GUIContent PersonFilterLabel = new GUIContent("Person Filter", "Whether to detect people during object detection.");
+                OD_PersonFilter.boolValue = EditorGUILayout.Toggle(PersonFilterLabel, OD_PersonFilter.boolValue);
 
-            GUIContent PersonFilterLabel = new GUIContent("Person Filter", "Whether to detect people during object detection.");
-            OD_PersonFilter.boolValue = EditorGUILayout.Toggle(PersonFilterLabel, OD_PersonFilter.boolValue);
-
-            GUIContent VehicleFilterLabel = new GUIContent("Vehicle Filter", "Whether to detect vehicles during object detection.");
-            OD_VehicleFilter.boolValue = EditorGUILayout.Toggle(VehicleFilterLabel, OD_VehicleFilter.boolValue);
-            EditorGUI.indentLevel--;
-
+                GUIContent VehicleFilterLabel = new GUIContent("Vehicle Filter", "Whether to detect vehicles during object detection.");
+                OD_VehicleFilter.boolValue = EditorGUILayout.Toggle(VehicleFilterLabel, OD_VehicleFilter.boolValue);
+                EditorGUI.indentLevel--;
+            }
             GUI.enabled = cameraIsReady;
 
             GUILayout.Space(10);
@@ -795,7 +805,6 @@ public class ZEDCameraEditor : Editor
             }
 
             GUI.enabled = true;
-            EditorGUI.indentLevel--;
         }
 
         ///////////////////////////////////////////////////////////////

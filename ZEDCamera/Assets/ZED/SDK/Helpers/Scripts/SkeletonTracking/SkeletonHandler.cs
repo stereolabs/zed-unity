@@ -124,7 +124,15 @@ public class SkeletonHandler : ScriptableObject {
 	HumanBodyBones.RightLowerLeg,
 	};
 
-	private GameObject humanoid;
+    private Color[] colors = new Color[]{
+    new Color(.231f, .909f, .69f),
+    new Color(.098f, .686f, .816f),
+    new Color(.412f, .4f, .804f),
+    new Color(1, .725f, .0f),
+    new Color(.989f, .388f, .419f)
+    };
+
+    private GameObject humanoid;
 	private Dictionary<HumanBodyBones, RigBone> rigBone = null;
 	private Dictionary<HumanBodyBones, Quaternion> rigBoneTarget = null;
 
@@ -732,7 +740,8 @@ public class SkeletonHandler : ScriptableObject {
         skeleton.name = "Skeleton_ID_" + person_id;
         float width = 0.025f;
 
-        Color color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+        Color color = colors[person_id % colors.Length];
+
         for (int i = 0; i < bones.Length; i++)
         {
             GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
@@ -756,13 +765,30 @@ public class SkeletonHandler : ScriptableObject {
 
         for (int j = 0; j < spheres.Length; j++)
         {
-            spheres[j].transform.position = joint[sphereList[j]];
+            if (ZEDSupportFunctions.IsVector3NaN(joint[sphereList[j]]))
+            {
+                spheres[j].transform.position = Vector3.zero;
+                spheres[j].SetActive(false);
+            }
+            else
+            {
+                spheres[j].transform.position = joint[sphereList[j]];
+                spheres[j].SetActive(true);
+            }
         }
 
         for (int i = 0; i < bones.Length; i++)
         {
             Vector3 start = spheres[Array.IndexOf(sphereList, bonesList[2 * i])].transform.position;
             Vector3 end = spheres[Array.IndexOf(sphereList, bonesList[2 * i + 1 ])].transform.position;
+
+            if (start == Vector3.zero || end == Vector3.zero)
+            {
+                bones[i].SetActive(false);
+                continue;
+            }
+
+            bones[i].SetActive(true);
             Vector3 offset = end - start;
             Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
             Vector3 position = start + (offset / 2.0f);

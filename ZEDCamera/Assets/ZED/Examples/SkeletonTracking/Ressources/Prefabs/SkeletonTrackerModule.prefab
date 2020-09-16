@@ -46,8 +46,9 @@ MonoBehaviour:
   zedManager: {fileID: 0}
   viewCamera: {fileID: 0}
   startObjectDetectionAutomatically: 1
-  showONTracked: 1
-  showSEARCHINGTracked: 0
-  showOFFTracked: 0
-  Avatar: {fileID: 5313161901996908151, guid: 4069a2e0e94ebb84ab0c428ea6a7c36c, type: 3}
+  useAvatar: 1
+  showON: 1
+  showSEARCHING: 0
+  showOFF: 0
+  Avatar: {fileID: 7319989575081748950, guid: 80332038e573d7e43ae6eecc9e2f5b89, type: 3}
   smoothFactor: 0.5

@@ -15,7 +15,7 @@ using UnityEditor;
 /// Contols the ZEDSkeletonTracking . Links the SDK to Unity
 /// </summary>
 [DisallowMultipleComponent]
-public class ZED3DSkeletonVisualizer : MonoBehaviour
+public class ZEDSkeletonTrackingViewer : MonoBehaviour
 {
 	/// <summary>
     /// The scene's ZEDManager.
@@ -43,19 +43,19 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
     public bool useAvatar = true;
 
     [Space(5)]
-    [Header("Filters")]
+    [Header("State Filters")]
     [Tooltip("Display objects that are actively being tracked by object tracking, where valid positions are known. ")]
-    public bool showONTracked = true;
+    public bool showON = true;
     /// <summary>
     /// Display objects that were actively being tracked by object tracking, but that were lost very recently.
     /// </summary>
     [Tooltip("Display objects that were actively being tracked by object tracking, but that were lost very recently.")]
-    public bool showSEARCHINGTracked = false;
+    public bool showSEARCHING = false;
     /// <summary>
     /// Display objects that are visible but not actively being tracked by object tracking (usually because object tracking is disabled in ZEDManager).
     /// </summary>
     [Tooltip("Display objects that are visible but not actively being tracked by object tracking (usually because object tracking is disabled in ZEDManager).")]
-    public bool showOFFTracked = false;
+    public bool showOFF = false;
 
     [Header("Avatar Control")]
 	/// <summary>
@@ -76,6 +76,8 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 
     private Vector3 initialPosition;
     private Quaternion initialRotation;
+
+    private float SpineHeight = 0.85f;
 	/// <summary>
 	/// Start this instance.
 	/// </summary>
@@ -138,7 +140,7 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 
         #else
 		List<int> remainingKeyList = new List<int>(avatarControlList.Keys);
-		List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showONTracked, showSEARCHINGTracked, showOFFTracked);
+		List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showON, showSEARCHING, showOFF);
 
 		/*if (dframe.rawObjectsFrame.detectionModel!= sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE &&
 			dframe.rawObjectsFrame.detectionModel!= sl.DETECTION_MODEL.HUMAN_BODY_FAST)
@@ -227,8 +229,8 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
 		Debug.Log(" jt "+i+" : "+world_joints_pos[i]);*/
 
         Vector3 worldbodyRootPosition = zedManager.GetZedRootTansform().TransformPoint(bodyCenter);
-        if (float.IsNaN(world_joints_pos[18].y)) worldbodyRootPosition.y = 0.9f;
-        else worldbodyRootPosition.y = world_joints_pos[18].y;
+        if (float.IsNaN(world_joints_pos[18].y)) worldbodyRootPosition.y = 0;
+        else worldbodyRootPosition.y = world_joints_pos[18].y - SpineHeight;
 
         handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition, useAvatar) ;
         //handler.setJointSpherePoint(world_joints_pos);
@@ -240,5 +242,6 @@ public class ZED3DSkeletonVisualizer : MonoBehaviour
     void UpdateViewCameraPosition()
     {
         viewCamera.transform.position = zedManager.transform.localPosition;
+        viewCamera.transform.rotation = zedManager.transform.localRotation;
     }
 }

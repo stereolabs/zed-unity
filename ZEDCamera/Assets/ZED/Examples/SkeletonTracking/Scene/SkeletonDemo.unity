@@ -219,12 +219,12 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: svoInputFileName
-      value: Assets/Recordings.svo
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: svoLoopBack
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -319,6 +319,11 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: postProcessing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: objectDetectionTracking
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -735,13 +740,29 @@ PrefabInstance:
     - target: {fileID: 6327103935139800441, guid: 2cfe5c2c50521ba459beb0adcd424d3c,
         type: 3}
       propertyPath: useAvatar
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: 2cfe5c2c50521ba459beb0adcd424d3c,
         type: 3}
       propertyPath: smoothFactor
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6327103935139800441, guid: 2cfe5c2c50521ba459beb0adcd424d3c,
+        type: 3}
+      propertyPath: startObjectDetectionAutomatically
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6327103935139800441, guid: 2cfe5c2c50521ba459beb0adcd424d3c,
+        type: 3}
+      propertyPath: showON
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6327103935139800441, guid: 2cfe5c2c50521ba459beb0adcd424d3c,
+        type: 3}
+      propertyPath: Avatar
+      value: 
+      objectReference: {fileID: 7319989575081748950, guid: 80332038e573d7e43ae6eecc9e2f5b89,
+        type: 3}
     - target: {fileID: 6327103935139800442, guid: 2cfe5c2c50521ba459beb0adcd424d3c,
         type: 3}
       propertyPath: m_Name
