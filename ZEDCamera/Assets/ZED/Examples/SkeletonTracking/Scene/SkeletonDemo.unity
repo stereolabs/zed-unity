@@ -224,7 +224,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: svoLoopBack
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -740,7 +740,7 @@ PrefabInstance:
     - target: {fileID: 6327103935139800441, guid: 2cfe5c2c50521ba459beb0adcd424d3c,
         type: 3}
       propertyPath: useAvatar
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: 2cfe5c2c50521ba459beb0adcd424d3c,
         type: 3}

@@ -37,6 +37,10 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     public bool startObjectDetectionAutomatically = true;
 
     /// <summary>
+    /// Vizualisation mode. Use a 3D model or only display the skeleton
+    /// </summary>
+    [Header("Vizualisation Mode")]
+    /// <summary>
     /// Display 3D avatar. If set to false, only display bones and joint
     /// </summary>
     [Tooltip("Display 3D avatar. If set to false, only display bones and joint")]
@@ -96,6 +100,11 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         zedManager.OnZEDReady += OnZEDReady;
         zedManager.OnObjectDetection += updateSkeletonData;
 		}
+
+        if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX)
+        {
+            Debug.LogWarning("MULTI_CLASS_BOX model can't be used for skeleton tracking, please use either HUMAN_BODY_FAST or HUMAN_BODY_ACCURATE");
+        }
     }
 
     private void OnZEDReady()

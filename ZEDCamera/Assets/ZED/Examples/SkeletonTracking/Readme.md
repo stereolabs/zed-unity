@@ -31,24 +31,24 @@ To make your own scene without doing any scripting, do the following:
 - Make sure ZEDManager has Enable Tracking and Estimate Initial Position enabled in the Tracking options.
 - Set the Object Detection Model to HUMAN_BODY_FAST or HUMAN_BODY_ACCURATE.
 - *(Optional)* Set the Depth Mode to ULTRA and use at least 1080p resolution to ensure the highest quality detections.
-- Make an object with a ZEDSkeletonTrackingViewer component attached, and fill its Avatar values with the appropriate prefab in ZED -> Examples -> SkeletonTracking -> Ressources -> Prefabs.
+- Make an object with a ZEDSkeletonTrackingViewer component attached, and fill its Avatar values with the appropriate prefab in ZED -> Examples -> SkeletonTracking -> Ressources -> Prefabs. You can also disable the **Use Avatar** paramater
+to change the visualization mode and only see the skeleton.
 
 ## Configuration
 
 In ZEDManager's Inspector, there is a section dedicated to Object Detection/Skeleton tracking. In it are two categories of parameters: Init and Runtime. Init parameters must be set before Object Detection is started. Runtime parameters can be adjusted whenever you want, and will be applied instantly.
 
-### Initialization Settings:
+### Initialization Parameters:
 
-- **Image Sync:** If enabled, the ZED SDK will update object detection data at the same rate as images are published. This costs performance and is not usually necessary, especially for realtime applications. However, it can ensure that there is no latency between the video feed and object detection.
-- **Object Tracking:** If enabled, the ZED SDK will track objects between frames, providing more accurate data and giving access to more information, such as velocity.
-- **Body Fitting**
+- **Image Sync:** If enabled, the ZED SDK will update object detection data at the same rate as images are published. This costs performance and is not usually necessary, especially for real time applications. However, it can ensure that there is no latency between the video feed and object detection.
+- **Enable Object Tracking:** If enabled, the ZED SDK will track objects between frames, providing more accurate data and giving access to more information, such as velocity.
+- **Enable Body Fitting**
 
-### Runtime Settings:
+### Runtime Parameters:
 
 - **Confidence Threshold**: Sets the minimum confidence value for a detected object to be published. Ex: If set to 40, the ZED SDK needs to be at least 40% confident that a detected object exists.
 
 Note the "Start Object Detection" button at the end. Object Detection requires a lot of performance, so there is not an option in ZEDManager to start it automatically. To start it, you must either press that button yourself, or have a script start it. The ZEDSkeletonTrackingViewer script will do this for you, provided this option is checked in the Inspector.
-
 
 ## Accessing Object Detection Data
 

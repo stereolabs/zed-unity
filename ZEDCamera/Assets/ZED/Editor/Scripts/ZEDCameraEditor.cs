@@ -727,7 +727,7 @@ public class ZEDCameraEditor : Editor
             EditorGUI.indentLevel--;
 
             GUILayout.Space(10);
-            EditorGUILayout.LabelField("Init parameters", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Init Parameters", EditorStyles.boldLabel);
             GUILayout.Space(5);
 
             EditorGUI.indentLevel++;
