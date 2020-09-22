@@ -32,7 +32,8 @@ public class SkeletonHandler : ScriptableObject {
 	JointType_HearRight= 16,
 	JointType_HearLeft= 17,
 	JointType_SpineBase = 18,  //Not in the list but created from 8 + 11
-	jointCount = 19;
+    JointType_Nose = 19,
+	jointCount = 20;
 
 	private static int[] jointSegment = new int[] {
 	JointType_SpineBase, JointType_Neck,                 // Spine
@@ -50,9 +51,13 @@ public class SkeletonHandler : ScriptableObject {
 	};
 
     private static readonly int[] bonesList = new int[] {
-    JointType_SpineBase, JointType_Neck,                 // Spine
-	JointType_Neck, JointType_Head,                      // Neck
+    JointType_SpineBase, JointType_Neck,                 // Spine                     // Neck
     JointType_HipLeft, JointType_HipRight,
+    JointType_HearRight, JointType_EyesRight,
+    JointType_HearLeft, JointType_EyesLeft,
+    JointType_EyesRight, JointType_Nose,
+    JointType_EyesLeft, JointType_Nose,
+    JointType_Nose, JointType_Neck,
 	// left
     JointType_Neck, JointType_ShoulderLeft,
     JointType_ShoulderLeft, JointType_ElbowLeft,         // LeftUpperArm
@@ -69,8 +74,7 @@ public class SkeletonHandler : ScriptableObject {
 
     private static readonly int[] sphereList = new int[] {
     JointType_SpineBase,
-    JointType_Neck,
-    JointType_Head,                      
+    JointType_Neck,                     
     JointType_HipLeft,
     JointType_HipRight,
     JointType_ShoulderLeft,
@@ -83,6 +87,11 @@ public class SkeletonHandler : ScriptableObject {
 	JointType_WristRight,
 	JointType_KneeRight,
 	JointType_AnkleRight,
+    JointType_EyesLeft,
+    JointType_EyesRight,
+    JointType_HearRight,
+    JointType_HearLeft,
+    JointType_Nose
 	};
 
     public Vector3[] joint = new Vector3[jointCount];

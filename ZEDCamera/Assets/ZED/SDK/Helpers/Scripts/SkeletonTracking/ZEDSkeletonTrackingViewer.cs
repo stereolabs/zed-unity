@@ -223,7 +223,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
         if (bodyCenter == Vector3.zero)  return; // Object not detected
 
-		Vector3[] world_joints_pos = new Vector3[19];
+		Vector3[] world_joints_pos = new Vector3[20];
 		for (int i=0;i<18;i++)
 		{
 			world_joints_pos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
@@ -232,6 +232,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         //Create Joint with middle position :
         world_joints_pos[0] = (world_joints_pos[16] + world_joints_pos[17]) / 2;
         world_joints_pos[18] = (world_joints_pos[8] + world_joints_pos[11]) / 2;
+        world_joints_pos[19] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[0]); // Add Nose Joint for skeleton vizualisation
 
         /*
 		for (int i=0;i<19;i++)
