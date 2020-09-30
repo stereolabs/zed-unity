@@ -773,7 +773,7 @@ public class ZEDManager : MonoBehaviour
 
     [SerializeField]
     [HideInInspector]
-    private int m_textureConfidenceThreshold = 90;
+    private int m_textureConfidenceThreshold = 100;
     /// <summary>
     /// How tolerant the ZED SDK is to low confidence values. Lower values filter more pixels.
     /// </summary>
