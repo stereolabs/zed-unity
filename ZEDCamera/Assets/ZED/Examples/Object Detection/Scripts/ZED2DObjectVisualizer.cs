@@ -274,7 +274,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
             if (boxhandler)
             {
                 boxhandler.SetColor(col);
-                boxhandler.SetID((int)dobj.objectClass);
+                boxhandler.SetID(dobj.id);
             }
 
 
