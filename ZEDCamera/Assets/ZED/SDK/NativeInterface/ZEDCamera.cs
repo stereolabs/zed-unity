@@ -275,7 +275,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(3, 1, 0);
+        public static readonly System.Version PluginVersion = new System.Version(3, 2, 0);
 
 
         /******** DLL members ***********/
@@ -334,11 +334,10 @@ namespace sl
         * Recording functions.
         */
         [DllImport(nameDll, EntryPoint = "dllz_enable_recording")]
-        private static extern int dllz_enable_recording(int cameraID, byte[] video_filename, int compresssionMode);
+        private static extern int dllz_enable_recording(int cameraID, byte[] video_filename, int compresssionMode,int bitrate,int target_fps,bool transcode);
 
         [DllImport(nameDll, EntryPoint = "dllz_disable_recording")]
         private static extern bool dllz_disable_recording(int cameraID);
-
 
         /*
         * Texturing functions.
@@ -537,7 +536,7 @@ namespace sl
         * Spatial Mapping functions.
         */
         [DllImport(nameDll, EntryPoint = "dllz_enable_spatial_mapping")]
-        private static extern int dllz_enable_spatial_mapping(int cameraID, float resolution_meter, float max_range_meter, int saveTexture);
+        private static extern int dllz_enable_spatial_mapping(int cameraID, int type, float resolution_meter, float max_range_meter, int saveTexture,int max_memory_usage);
 
         [DllImport(nameDll, EntryPoint = "dllz_disable_spatial_mapping")]
         private static extern void dllz_disable_spatial_mapping(int cameraID);
@@ -556,6 +555,12 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "dllz_retrieve_mesh")]
         private static extern int dllz_retrieve_mesh(int cameraID, Vector3[] vertices, int[] triangles, int nbSubmesh, Vector2[] uvs, IntPtr textures);
+
+        [DllImport(nameDll, EntryPoint = "dllz_update_fused_point_cloud")]
+        private static extern int dllz_update_fused_point_cloud(int cameraID,  ref int pbPoints);
+
+        [DllImport(nameDll, EntryPoint = "dllz_retrieve_fused_point_cloud")]
+        private static extern int dllz_retrieve_fused_point_cloud(int cameraID, Vector4[] points);
 
         [DllImport(nameDll, EntryPoint = "dllz_save_mesh")]
         private static extern bool dllz_save_mesh(int cameraID, string filename, MESH_FILE_FORMAT format);
@@ -598,7 +603,7 @@ namespace sl
          * Streaming Module functions (starting v2.8)
          */
         [DllImport(nameDll, EntryPoint = "dllz_enable_streaming")]
-        private static extern int dllz_enable_streaming(int cameraID, sl.STREAMING_CODEC codec, uint bitrate, ushort port, int gopSize, int adaptativeBitrate,int chunk_size);
+        private static extern int dllz_enable_streaming(int cameraID, sl.STREAMING_CODEC codec, uint bitrate, ushort port, int gopSize, int adaptativeBitrate,int chunk_size,int target_fps);
 
         [DllImport(nameDll, EntryPoint = "dllz_is_streaming_enabled")]
         private static extern int dllz_is_streaming_enabled(int cameraID);
@@ -1093,9 +1098,9 @@ namespace sl
         /// <param name="videoFileName">Filename. Whether it ends with .svo or .avi defines its file type.</param>
         /// <param name="compressionMode">How much compression to use</param>
         /// <returns>An ERROR_CODE that defines if the file was successfully created and can be filled with images.</returns>
-        public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.H264_BASED)
+        public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.H264_BASED, int bitrate = 0, int target_fps = 0,bool transcode = false)
         {
-            return (ERROR_CODE)dllz_enable_recording(CameraID, StringUtf8ToByte(videoFileName), (int)compressionMode);
+            return (ERROR_CODE)dllz_enable_recording(CameraID, StringUtf8ToByte(videoFileName), (int)compressionMode,bitrate,target_fps,transcode);
         }
 
 
@@ -2075,12 +2080,12 @@ namespace sl
         /// <param name="max_range_meter">Maximum scanning range in meters.</param>
         /// <param name="saveTexture">True to scan surface textures in addition to geometry.</param>
         /// <returns></returns>
-        public sl.ERROR_CODE EnableSpatialMapping(float resolution_meter, float max_range_meter, bool saveTexture = false)
+        public sl.ERROR_CODE EnableSpatialMapping(SPATIAL_MAP_TYPE type, float resolution_meter, float max_range_meter, bool saveTexture = false)
         {
             sl.ERROR_CODE spatialMappingStatus = ERROR_CODE.FAILURE;
-            lock (grabLock)
+            //lock (grabLock)
             {
-                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture));
+                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, (int)type,resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture),2048);
             }
             return spatialMappingStatus;
         }
@@ -2125,6 +2130,28 @@ namespace sl
         public sl.ERROR_CODE RetrieveMesh(Vector3[] vertices, int[] triangles, int nbSubmeshMax, Vector2[] uvs, IntPtr textures)
         {
             return (sl.ERROR_CODE)dllz_retrieve_mesh(CameraID, vertices, triangles, nbSubmeshMax, uvs, textures);
+        }
+
+        /// <summary>
+        /// Updates the fused point cloud (if spatial map type was FUSED_POINT_CLOUD
+        /// </summary>
+        /// <returns>Error code indicating if the update was successful, and why it wasn't otherwise.</returns>
+        public sl.ERROR_CODE UpdateFusedPointCloud(ref int nbVertices)
+        {
+            sl.ERROR_CODE err = sl.ERROR_CODE.FAILURE;
+            err = (sl.ERROR_CODE)dllz_update_fused_point_cloud(CameraID, ref nbVertices);
+            return err;
+        }
+
+        /// <summary>
+        /// Retrieves all points of the fused point cloud. Call UpdateFusedPointCloud() before calling this.
+        /// Vertex arrays must be at least of the sizes returned by UpdateFusedPointCloud
+        /// </summary>
+        /// <param name="vertices">Points of the fused point cloud.</param>
+        /// <returns>Error code indicating if the retrieval was successful, and why it wasn't otherwise.</returns>
+        public sl.ERROR_CODE RetrieveFusedPointCloud(Vector4[] vertices)
+        {
+            return (sl.ERROR_CODE)dllz_retrieve_fused_point_cloud(CameraID, vertices);
         }
 
         /// <summary>
@@ -2422,10 +2449,10 @@ namespace sl
         /// Streaming parameters: See sl::StreamingParameters of ZED SDK. See ZED SDK API doc for more informations
         /// </params>
         /// <returns>An ERROR_CODE that defines if the streaming pipe was successfully created</returns>
-        public ERROR_CODE EnableStreaming(STREAMING_CODEC codec = STREAMING_CODEC.AVCHD_BASED, uint bitrate = 8000, ushort port = 30000, int gopSize = -1, bool adaptativeBitrate = false,int chunk_size = 32768)
+        public ERROR_CODE EnableStreaming(STREAMING_CODEC codec = STREAMING_CODEC.AVCHD_BASED, uint bitrate = 8000, ushort port = 30000, int gopSize = -1, bool adaptativeBitrate = false,int chunk_size = 8096,int target_fps = 0)
         {
             int doAdaptBitrate = adaptativeBitrate ? 1 : 0;
-            return (ERROR_CODE)dllz_enable_streaming(CameraID, codec, bitrate, port, gopSize, doAdaptBitrate, chunk_size);
+            return (ERROR_CODE)dllz_enable_streaming(CameraID, codec, bitrate, port, gopSize, doAdaptBitrate, chunk_size,target_fps);
         }
 
         /// <summary>

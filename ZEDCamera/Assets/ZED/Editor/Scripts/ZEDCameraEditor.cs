@@ -59,6 +59,10 @@ public class ZEDCameraEditor : Editor
     //Recording Prop
     private SerializedProperty svoOutputFileNameProperty;
     private SerializedProperty svoOutputCompressionModeProperty;
+    private SerializedProperty svoOutputBitrateProperty;
+    private SerializedProperty svoOutputTargetFPSProperty;
+    private SerializedProperty svoOutputTranscodeProperty;
+    
 
     //Streaming Prop
     private SerializedProperty streamingOutProperty;
@@ -68,6 +72,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty streamingOutGopSizeProperty;
     private SerializedProperty streamingOutAdaptBitrateProperty;
     private SerializedProperty streamingOutChunkSizeProperty;
+    private SerializedProperty streamingOutTargetFPSProperty;
 
 
     //Spatial mapping prop
@@ -106,6 +111,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty OD_ImageSyncMode;
     private SerializedProperty OD_ObjectTracking;
     private SerializedProperty OD_2DMask;
+    private SerializedProperty OD_DetectionModel;
     //Object Detection Runtime Prop
     private SerializedProperty OD_DetectionConfidence;
     private SerializedProperty OD_PersonFilter;
@@ -123,6 +129,8 @@ public class ZEDCameraEditor : Editor
     SerializedProperty confidenceThresholdProperty;
     SerializedProperty textureConfidenceThresholdProperty;
     SerializedProperty enableSelfCalibrationProperty;
+    SerializedProperty enableIMUFusionProperty;
+
 
     // Rendering Prop
     private int arlayer;
@@ -238,6 +246,7 @@ public class ZEDCameraEditor : Editor
         OD_ImageSyncMode = serializedObject.FindProperty("objectDetectionImageSyncMode");
         OD_ObjectTracking = serializedObject.FindProperty("objectDetectionTracking");
         OD_2DMask = serializedObject.FindProperty("objectDetection2DMask");
+        OD_DetectionModel = serializedObject.FindProperty("objectDetectionModel"); 
 
 
         OD_DetectionConfidence = serializedObject.FindProperty("objectDetectionConfidenceThreshold");
@@ -247,6 +256,10 @@ public class ZEDCameraEditor : Editor
         //Recording Serialized Properties
         svoOutputFileNameProperty = serializedObject.FindProperty("svoOutputFileName");
         svoOutputCompressionModeProperty = serializedObject.FindProperty("svoOutputCompressionMode");
+        svoOutputBitrateProperty = serializedObject.FindProperty("svoOutputBitrate");
+        svoOutputTargetFPSProperty = serializedObject.FindProperty("svoOutputTargetFPS");
+        svoOutputTranscodeProperty = serializedObject.FindProperty("svoOutputTranscodeStreaming");
+        
 
         streamingOutProperty = serializedObject.FindProperty("enableStreaming");
         streamingOutCodecProperty = serializedObject.FindProperty("streamingCodec");
@@ -255,6 +268,8 @@ public class ZEDCameraEditor : Editor
         streamingOutGopSizeProperty = serializedObject.FindProperty("gopSize");
         streamingOutAdaptBitrateProperty = serializedObject.FindProperty("adaptativeBitrate");
         streamingOutChunkSizeProperty = serializedObject.FindProperty("chunkSize");
+        streamingOutTargetFPSProperty = serializedObject.FindProperty("streamingTargetFramerate");
+        
 
 
         ///Advanced Settings Serialized Properties
@@ -270,6 +285,7 @@ public class ZEDCameraEditor : Editor
         confidenceThresholdProperty = serializedObject.FindProperty("m_confidenceThreshold");
         textureConfidenceThresholdProperty = serializedObject.FindProperty("m_textureConfidenceThreshold");
         enableSelfCalibrationProperty = serializedObject.FindProperty("enableSelfCalibration");
+        enableIMUFusionProperty = serializedObject.FindProperty("enableIMUFusion");
         allowPassThroughProperty = serializedObject.FindProperty("allowARPassThrough");
         setIMUPrior = serializedObject.FindProperty("setIMUPriorInAR");
         enableImageEnhancementProperty = serializedObject.FindProperty("enableImageEnhancement");
@@ -550,6 +566,7 @@ public class ZEDCameraEditor : Editor
 
             EditorGUILayout.EndHorizontal();
 
+            
             GUIContent resolutionlabel = new GUIContent("Resolution", "Resolution setting for the scan. " +
                                          "A higher resolution creates more submeshes and uses more memory, but is more accurate.");
             ZEDSpatialMapping.RESOLUTION newResolution = (ZEDSpatialMapping.RESOLUTION)EditorGUILayout.EnumPopup(resolutionlabel, manager.mappingResolutionPreset);
@@ -714,6 +731,11 @@ public class ZEDCameraEditor : Editor
                 "Must be on when Object Detection starts. Requires more performance, so do not enable unless needed.");
             OD_2DMask.boolValue = EditorGUILayout.Toggle(Object2DMaskLabel, OD_2DMask.boolValue);
 
+            GUIContent ObjectDetectionModelLabel = new GUIContent("Object Detection Model", "Select the available object detection model. HUMAN_XXX for skeleton tracking");
+            OD_DetectionModel.enumValueIndex = (int)(sl.DETECTION_MODEL)EditorGUILayout.EnumPopup(ObjectDetectionModelLabel, (sl.DETECTION_MODEL)OD_DetectionModel.enumValueIndex);
+     
+
+
             GUI.enabled = true;
 
             EditorGUI.indentLevel--;
@@ -779,6 +801,15 @@ public class ZEDCameraEditor : Editor
             GUIContent svoCompressionModeLabel = new GUIContent("SVO Compression", "SVO Compression mode for the recorded SVO file");
             svoOutputCompressionModeProperty.enumValueIndex = (int)(sl.SVO_COMPRESSION_MODE)EditorGUILayout.EnumPopup(svoCompressionModeLabel, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex, GUILayout.ExpandWidth(true));
 
+            GUIContent svoOutBitrateLabel = new GUIContent("Bitrate", "Bitrate for H264/5 recording");
+            svoOutputBitrateProperty.intValue = EditorGUILayout.IntField(svoOutBitrateLabel, svoOutputBitrateProperty.intValue);
+
+            GUIContent svoOutTargetFPSLabel = new GUIContent("Target FPS", "Target FPS for SVO recording");
+            svoOutputTargetFPSProperty.intValue = EditorGUILayout.IntField(svoOutTargetFPSLabel, svoOutputTargetFPSProperty.intValue);
+
+            GUIContent svoOutputTranscodeLabel = new GUIContent("Transcode", "If streaming input, set to false to avoid transcoding (decoding+ re-encoding for SVO). Recommended to leave at false.");
+            svoOutputTranscodeProperty.boolValue = EditorGUILayout.Toggle(svoOutputTranscodeLabel, svoOutputTranscodeProperty.boolValue);
+
             EditorGUILayout.BeginHorizontal();
             GUI.enabled = cameraIsReady;
             string recordLabel = manager.needRecordFrame ? "Stop Recording" : "Start Recording";
@@ -795,7 +826,7 @@ public class ZEDCameraEditor : Editor
                 else
                 {
 
-                    if (manager.zedCamera.EnableRecording(svoOutputFileNameProperty.stringValue, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex) == sl.ERROR_CODE.SUCCESS)
+                    if (manager.zedCamera.EnableRecording(svoOutputFileNameProperty.stringValue, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex,(int)svoOutputBitrateProperty.intValue,(int)svoOutputTargetFPSProperty.intValue,svoOutputTranscodeProperty.boolValue) == sl.ERROR_CODE.SUCCESS)
                         manager.needRecordFrame = true;
                     else
                     {
@@ -839,6 +870,9 @@ public class ZEDCameraEditor : Editor
 
             GUIContent streamingOutChunkSizePropertyLabel = new GUIContent("Payload", "Chunk size for packet streaming");
             streamingOutChunkSizeProperty.intValue = EditorGUILayout.IntField(streamingOutChunkSizePropertyLabel, streamingOutChunkSizeProperty.intValue);
+
+            GUIContent streamingOutTargetFPSPropertyLabel = new GUIContent("Target FPS", "Target FPS for streaming output");
+            streamingOutTargetFPSProperty.intValue = EditorGUILayout.IntField(streamingOutTargetFPSPropertyLabel, streamingOutTargetFPSProperty.intValue);
 
             EditorGUI.indentLevel--;
         }
@@ -1023,8 +1057,12 @@ public class ZEDCameraEditor : Editor
             GUIContent enableselfcaliblabel = new GUIContent("Self-Calibration", "If true, the ZED SDK will subtly adjust the ZED's calibration " +
                 "during runtime to account for heat and other factors. Reasons to disable this are rare. ");
             enableSelfCalibrationProperty.boolValue = EditorGUILayout.Toggle(enableselfcaliblabel, enableSelfCalibrationProperty.boolValue);
-            EditorGUI.EndDisabledGroup();
 
+            GUIContent enalbeIMUFusionLabel = new GUIContent("Visual-Inertial Tracking", "If true, and you are using a ZED2 or ZED Mini, IMU fusion uses data from the camera's IMU to improve tracking results. ");
+            enableIMUFusionProperty.boolValue = EditorGUILayout.Toggle(enalbeIMUFusionLabel, enableIMUFusionProperty.boolValue);
+
+
+            EditorGUI.EndDisabledGroup();
             EditorGUI.indentLevel--;
         }
 

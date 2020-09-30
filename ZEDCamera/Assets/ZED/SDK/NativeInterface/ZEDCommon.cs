@@ -969,6 +969,24 @@ namespace sl
         HEVC_BASED
     }
 
+
+    /// <summary>
+    /// Spatial Mapping type (default is mesh)
+    /// </summary>
+    public enum SPATIAL_MAP_TYPE
+    {
+        /// <summary>
+        /// Represent a surface with faces, 3D points are linked by edges, no color information
+        /// </summary>
+        MESH,
+        /// <summary>
+        ///  Geometry is represented by a set of 3D colored points.
+        /// </summary>
+        FUSED_POINT_CLOUD
+    };
+
+
+
     /// <summary>
     /// Mesh formats that can be saved/loaded with spatial mapping.
     /// </summary>
@@ -1350,6 +1368,10 @@ namespace sl
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool enable2DMask;
+         /// <summary>
+        /// Defines the AI model used for detection 
+        /// </summary>
+        public sl.DETECTION_MODEL detectionModel;
     };
 
 
@@ -1379,8 +1401,8 @@ namespace sl
     {
         //public int valid; //is Data Valid
         public int id; //person ID
-        public sl.OBJECT_CLASS obj_type;
-        public sl.OBJECT_TRACK_STATE obj_track_state;
+        public sl.OBJECT_CLASS objectClass;
+        public sl.OBJECT_TRACK_STATE objectTrackingState;
         public float confidence;
 
         public System.IntPtr mask;
@@ -1402,6 +1424,7 @@ namespace sl
         /// 3D space data (Camera Frame since this is what we used in Unity)
         /// </summary>
         public Vector3 rootWorldPosition; //object root position
+        public Vector3 headWorldPosition; //object head position (only for HUMAN detectionModel)
         public Vector3 rootWorldVelocity; //object root velocity
 
 
@@ -1417,7 +1440,28 @@ namespace sl
         /// 4 ---------7
         /// 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public Vector3[] worldBoundingBox;
+        public Vector3[] worldBoundingBox; // 3D Bounding Box of object
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public Vector3[] headBoundingBox;// 3D Bounding Box of head (only for HUMAN detectionModel)
+
+
+        
+        /// <summary>
+        /// The 3D position of skeleton joints
+        /// </summary>
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        public Vector3[] skeletonJointPosition;// 3D position of the joints of the skeleton
+
+
+        // Full covariance matrix for position (3x3). Only 6 values are necessary
+        // [p0, p1, p2]
+        // [p1, p3, p4]
+        // [p2, p4, p5]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+        public float[] position_covariance;// covariance matrix of the 3d position, represented by its upper triangular matrix value
+
+
     };
 
 
@@ -1441,6 +1485,18 @@ namespace sl
         /// </summary>
         public ulong timestamp;
         /// <summary>
+        /// Defines if the object frame is new (new timestamp)
+        /// </summary>
+        public int isNew;
+        /// <summary>
+        /// Defines if the object is tracked
+        /// </summary>
+        public int isTracked;
+        /// <summary>
+        /// Current detection model used.
+        /// </summary>
+        public sl.DETECTION_MODEL detectionModel;
+        /// <summary>
         /// Array of objects 
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)(Constant.MAX_OBJECTS))]
@@ -1462,8 +1518,46 @@ namespace sl
     /// </summary>
     public enum OBJECT_TRACK_STATE
     {
-        OFF,
-        OK,
-        SEARCHING
+        OFF, /**< The tracking is not yet initialized, the object ID is not usable */
+        OK, /**< The object is tracked */
+        SEARCHING,/**< The object couldn't be detected in the image and is potentially occluded, the trajectory is estimated */
+        TERMINATE/**< This is the last searching state of the track, the track will be deleted in the next retreiveObject */
     };
+
+
+    /// <summary>
+    /// List available models for detection
+    /// </summary>
+    public enum DETECTION_MODEL {
+        MULTI_CLASS_BOX, /**< Any objects, bounding box based */
+        HUMAN_BODY_FAST, /**<  Keypoints based, specific to human skeleton, real time performance even on Jetson or low end GPU cards */
+        HUMAN_BODY_ACCURATE /**<  Keypoints based, specific to human skeleton, state of the art accuracy, requires powerful GPU */
+    };
+
+
+    /// <summary>
+    /// semantic and order of human body keypoints.
+    /// </summary>
+    public enum BODY_PARTS {
+        NOSE = 0,
+        NECK = 1,
+        RIGHT_SHOULDER = 2,
+        RIGHT_ELBOW= 3,
+        RIGHT_WRIST = 4,
+        LEFT_SHOULDER = 5,
+        LEFT_ELBOW = 6,
+        LEFT_WRIST = 7,
+        RIGHT_HIP = 8,
+        RIGHT_KNEE = 9,
+        RIGHT_ANKLE = 10,
+        LEFT_HIP = 11,
+        LEFT_KNEE = 12,
+        LEFT_ANKLE = 13,
+        RIGHT_EYE = 14,
+        LEFT_EYE = 15,
+        RIGHT_EAR = 16,
+        LEFT_EAR = 17,
+        LAST = 18
+    };
+
 }// end namespace sl

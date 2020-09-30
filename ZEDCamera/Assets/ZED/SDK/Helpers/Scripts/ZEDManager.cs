@@ -264,7 +264,6 @@ public class ZEDManager : MonoBehaviour
     /////////////////////////////////////////////////////////////////////////
     ///////////////////////// Spatial Mapping ///////////////////////////////
     /////////////////////////////////////////////////////////////////////////
-
     /// <summary>
     /// Resolution setting for the scan. A higher resolution creates more submeshes and uses more memory, but is more accurate.
     /// </summary>
@@ -371,6 +370,12 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public bool objectDetection2DMask = false;
+
+    /// <summary>
+    /// Choose what detection model to use in the Object detection module
+    /// </summary>
+    [HideInInspector]
+    public sl.DETECTION_MODEL objectDetectionModel = sl.DETECTION_MODEL.MULTI_CLASS_BOX;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
@@ -551,6 +556,25 @@ public class ZEDManager : MonoBehaviour
     public sl.SVO_COMPRESSION_MODE svoOutputCompressionMode = sl.SVO_COMPRESSION_MODE.H264_BASED;
 
     /// <summary>
+    /// SVO specific bitrate in KBits/s
+    /// Default : 0 = internal bitrate
+    /// </summary>
+    [HideInInspector]
+    public int svoOutputBitrate = 0;
+    /// <summary>
+    /// SVO specific FPS
+    /// Default : 0 = Camera FPS
+    /// </summary>
+    [HideInInspector]
+    public int svoOutputTargetFPS = 0;
+
+    /// <summary>
+    /// If input is streaming, then set to direct-dump into SVO file (false) or decoding/re-encoding (true).
+    /// Recommended to leave at false to save an encoding session.
+    /// </summary>
+    public bool svoOutputTranscodeStreaming = false;
+
+    /// <summary>
     /// Indicates if frame must be recorded
     /// </summary>
     [HideInInspector]
@@ -603,7 +627,14 @@ public class ZEDManager : MonoBehaviour
     /// Enable/Disable adaptative bitrate
     /// </summary>
     [HideInInspector]
-    public int chunkSize = 32768;
+    public int chunkSize = 8096;
+
+    /// <summary>
+    /// Set a specific target for the streaming framerate
+    /// </summary>
+    [HideInInspector]
+    public int streamingTargetFramerate = 0;
+
 
     /////////////////////////////////////////////////////////////////////////
     ///////////////////////// Advanced  control /////////////////////////////
@@ -771,6 +802,7 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// If true, and you are using a ZED2 or ZED Mini, IMU fusion uses data from the camera's IMU to improve tracking results. 
     /// </summary>
+    [HideInInspector]
     public bool enableIMUFusion = true;
 
     /// <summary>
@@ -1847,7 +1879,7 @@ public class ZEDManager : MonoBehaviour
             {
                 lock (zedCamera.grabLock)
                 {
-                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize);
+                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize,streamingTargetFramerate);
                     if (err == sl.ERROR_CODE.SUCCESS)
                     {
                         isStreamingEnable = true;
@@ -2458,8 +2490,7 @@ public class ZEDManager : MonoBehaviour
     {
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
-
-        spatialMapping.StartStatialMapping(mappingResolutionPreset, mappingRangePreset, isMappingTextured);
+        spatialMapping.StartStatialMapping(sl.SPATIAL_MAP_TYPE.MESH, mappingResolutionPreset, mappingRangePreset, isMappingTextured);
     }
 
     /// <summary>
@@ -2608,6 +2639,7 @@ public class ZEDManager : MonoBehaviour
             od_param.imageSync = objectDetectionImageSyncMode;
             od_param.enableObjectTracking = objectDetectionTracking;
             od_param.enable2DMask = objectDetection2DMask;
+            od_param.detectionModel = objectDetectionModel;
 
             od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
             od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
@@ -3122,7 +3154,7 @@ public class ZEDManager : MonoBehaviour
             {
                 lock (zedCamera.grabLock)
                 {
-                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize);
+                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize,streamingTargetFramerate);
                     if (err == sl.ERROR_CODE.SUCCESS)
                     {
                         isStreamingEnable = true;
