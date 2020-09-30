@@ -134,11 +134,11 @@ public class SkeletonHandler : ScriptableObject {
 	};
 
     private Color[] colors = new Color[]{
-    new Color(.231f, .909f, .69f),
-    new Color(.098f, .686f, .816f),
-    new Color(.412f, .4f, .804f),
-    new Color(1, .725f, .0f),
-    new Color(.989f, .388f, .419f)
+    new Color(0.0f, 0.0f, 1.0f),
+    new Color(1.0f, 0.0f, 0.0f),
+    new Color(0.0f, 1.0f, 0.0f),
+    new Color(0.0f, 1.0f, 1.0f),
+    new Color(1.0f, 0.0f, 1.0f)
     };
 
     private GameObject humanoid;

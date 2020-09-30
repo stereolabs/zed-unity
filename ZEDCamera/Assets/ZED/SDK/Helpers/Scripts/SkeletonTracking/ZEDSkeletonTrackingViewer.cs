@@ -200,6 +200,11 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
         UpdateViewCameraPosition();
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            useAvatar = !useAvatar;
+        }
+
 #if FAKEMODE
         if (Input.GetKeyDown(KeyCode.Space))
         {
