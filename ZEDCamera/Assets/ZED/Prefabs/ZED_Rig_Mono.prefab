@@ -72,16 +72,22 @@ MonoBehaviour:
   saveMeshWhenOver: 0
   meshPath: Assets/ZEDMesh.obj
   meshFilterParameters: 0
-  objectDetectionImageSyncMode: 0
   objectDetectionTracking: 1
   objectDetection2DMask: 0
   objectDetectionModel: 0
   bodyFitting: 0
-  personDetectionConfidenceThreshold: 50
-  vehiculeDetectionConfidenceThreshold: 50
-  objectDetectionConfidenceThresholds: []
+  personDetectionConfidenceThreshold: 20
+  vehicleDetectionConfidenceThreshold: 20
+  bagDetectionConfidenceThreshold: 20
+  animalDetectionConfidenceThreshold: 20
+  electronicsDetectionConfidenceThreshold: 20
+  fruitVegetableDetectionConfidenceThreshold: 20
   objectClassPersonFilter: 1
   objectClassVehicleFilter: 1
+  objectClassBagFilter: 1
+  objectClassAnimalFilter: 1
+  objectClassElectronicsFilter: 1
+  objectClassFruitVegetableFilter: 1
   depthOcclusion: 1
   postProcessing: 1
   m_cameraBrightness: 100
@@ -143,7 +149,7 @@ MonoBehaviour:
   advancedPanelOpen: 0
   spatialMappingFoldoutOpen: 0
   objectDetectionFoldoutOpen: 0
-  recordingFoldoutOpen: 1
+  recordingFoldoutOpen: 0
   streamingOutFoldoutOpen: 0
   camControlFoldoutOpen: 0
   zedRigDisplayer: {fileID: 0}

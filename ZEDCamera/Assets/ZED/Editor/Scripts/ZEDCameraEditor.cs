@@ -114,21 +114,18 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty OD_2DMask;
     private SerializedProperty OD_DetectionModel;
     //Object Detection Runtime Prop
-    private SerializedProperty OD_DetectionConfidence;
     private SerializedProperty OD_VehicleDetectionConfidence;
     private SerializedProperty OD_PersonDetectionConfidence;
-    private SerializedProperty OD_CarDetectionConfidence;
-    private SerializedProperty OD_TruckDetectionConfidence;
-    private SerializedProperty OD_BusDetectionConfidence;
-    private SerializedProperty OD_MotorBikeDetectionConfidence;
-    private SerializedProperty OD_BicycleDetectionConfidence;
+    private SerializedProperty OD_BagDetectionConfidence;
+    private SerializedProperty OD_AnimalDetectionConfidence;
+    private SerializedProperty OD_ElectronicsDetectionConfidence;
+    private SerializedProperty OD_FruitVegetableDetectionConfidence;
     private SerializedProperty OD_PersonFilter;
     private SerializedProperty OD_VehicleFilter;
-    private SerializedProperty OD_CarFilter;
-    private SerializedProperty OD_TruckFilter;
-    private SerializedProperty OD_BusFilter;
-    private SerializedProperty OD_MotorBikeFilter;
-    private SerializedProperty OD_BicycleFilter;
+    private SerializedProperty OD_BagFilter;
+    private SerializedProperty OD_AnimalFilter;
+    private SerializedProperty OD_ElectronicsFilter;
+    private SerializedProperty OD_FruitVegetableFilter;
 
     /// <summary>
     /// Layout option used to draw the '...' button for opening a File Explorer window to find a mesh file. 
@@ -262,22 +259,18 @@ public class ZEDCameraEditor : Editor
         OD_2DMask = serializedObject.FindProperty("objectDetection2DMask");
         OD_DetectionModel = serializedObject.FindProperty("objectDetectionModel"); 
 
-
-        OD_DetectionConfidence = serializedObject.FindProperty("objectDetectionConfidenceThreshold");
         OD_PersonDetectionConfidence = serializedObject.FindProperty("personDetectionConfidenceThreshold");
         OD_VehicleDetectionConfidence = serializedObject.FindProperty("vehicleDetectionConfidenceThreshold");
-        OD_CarDetectionConfidence = serializedObject.FindProperty("carDetectionConfidenceThreshold");
-        OD_TruckDetectionConfidence = serializedObject.FindProperty("truckDetectionConfidenceThreshold");
-        OD_BusDetectionConfidence = serializedObject.FindProperty("busDetectionConfidenceThreshold");
-        OD_MotorBikeDetectionConfidence = serializedObject.FindProperty("motorBikeDetectionConfidenceThreshold");
-        OD_BicycleDetectionConfidence = serializedObject.FindProperty("bicycleDetectionConfidenceThreshold");
+        OD_BagDetectionConfidence = serializedObject.FindProperty("bagDetectionConfidenceThreshold");
+        OD_AnimalDetectionConfidence = serializedObject.FindProperty("animalDetectionConfidenceThreshold");
+        OD_ElectronicsDetectionConfidence = serializedObject.FindProperty("electronicsDetectionConfidenceThreshold");
+        OD_FruitVegetableDetectionConfidence = serializedObject.FindProperty("fruitVegetableDetectionConfidenceThreshold");
         OD_PersonFilter = serializedObject.FindProperty("objectClassPersonFilter");
         OD_VehicleFilter = serializedObject.FindProperty("objectClassVehicleFilter");
-        OD_CarFilter = serializedObject.FindProperty("objectClassCarFilter");
-        OD_TruckFilter = serializedObject.FindProperty("objectClassTruckFilter");
-        OD_BusFilter = serializedObject.FindProperty("objectClassBusFilter");
-        OD_MotorBikeFilter = serializedObject.FindProperty("objectClassMotorBikeFilter");
-        OD_BicycleFilter = serializedObject.FindProperty("objectClassBicycleFilter");
+        OD_BagFilter = serializedObject.FindProperty("objectClassBagFilter");
+        OD_AnimalFilter = serializedObject.FindProperty("objectClassAnimalFilter");
+        OD_ElectronicsFilter = serializedObject.FindProperty("objectClassElectronicsFilter");
+        OD_FruitVegetableFilter = serializedObject.FindProperty("objectClassFruitVegetableFilter");
 
         //Recording Serialized Properties
         svoOutputFileNameProperty = serializedObject.FindProperty("svoOutputFileName");
@@ -285,7 +278,7 @@ public class ZEDCameraEditor : Editor
         svoOutputBitrateProperty = serializedObject.FindProperty("svoOutputBitrate");
         svoOutputTargetFPSProperty = serializedObject.FindProperty("svoOutputTargetFPS");
         svoOutputTranscodeProperty = serializedObject.FindProperty("svoOutputTranscodeStreaming");
-        
+      
 
         streamingOutProperty = serializedObject.FindProperty("enableStreaming");
         streamingOutCodecProperty = serializedObject.FindProperty("streamingCodec");
@@ -783,40 +776,33 @@ public class ZEDCameraEditor : Editor
             GUILayout.Space(5);
             EditorGUI.indentLevel++;
 
-
-            /*GUIContent objectDetectionConfidenceThresholdLabel = new GUIContent("Detection Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
-                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
-            OD_DetectionConfidence.floatValue = EditorGUILayout.Slider(objectDetectionConfidenceThresholdLabel, OD_DetectionConfidence.floatValue, 1, 99);*/
-
             GUIContent personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
             "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
             OD_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(personDetectionConfidenceThresholdLabel, OD_PersonDetectionConfidence.intValue, 1, 99);
 
             if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX)
             {
-                /*GUIContent carDetectionConfidenceThresholdLabel = new GUIContent("Car Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
-                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
-                OD_CarDetectionConfidence.intValue = EditorGUILayout.IntSlider(carDetectionConfidenceThresholdLabel, OD_CarDetectionConfidence.intValue, 1, 99);
-
-                GUIContent truckDetectionConfidenceThresholdLabel = new GUIContent("Truck Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
-                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
-                OD_TruckDetectionConfidence.intValue = EditorGUILayout.IntSlider(truckDetectionConfidenceThresholdLabel, OD_TruckDetectionConfidence.intValue, 1, 99);
-
-                GUIContent busDetectionConfidenceThresholdLabel = new GUIContent("Bus Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
-                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
-                OD_BusDetectionConfidence.intValue = EditorGUILayout.IntSlider(busDetectionConfidenceThresholdLabel, OD_BusDetectionConfidence.intValue, 1, 99);
-
-                GUIContent motorBikeDetectionConfidenceThresholdLabel = new GUIContent("Motorbike Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
-                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
-                OD_MotorBikeDetectionConfidence.intValue = EditorGUILayout.IntSlider(motorBikeDetectionConfidenceThresholdLabel, OD_MotorBikeDetectionConfidence.intValue, 1, 99);
-
-                GUIContent bicycleDetectionConfidenceThresholdLabel = new GUIContent("Bicycle Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
-                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
-                OD_BicycleDetectionConfidence.intValue = EditorGUILayout.IntSlider(bicycleDetectionConfidenceThresholdLabel, OD_BicycleDetectionConfidence.intValue, 1, 99);*/
 
                 GUIContent vehicleDetectionConfidenceThresholdLabel = new GUIContent("Vehicle Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
                 OD_VehicleDetectionConfidence.intValue = EditorGUILayout.IntSlider(vehicleDetectionConfidenceThresholdLabel, OD_VehicleDetectionConfidence.intValue, 1, 99);
+
+                GUIContent bagDetectionConfidenceThresholdLabel = new GUIContent("Bag Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_BagDetectionConfidence.intValue = EditorGUILayout.IntSlider(bagDetectionConfidenceThresholdLabel, OD_BagDetectionConfidence.intValue, 1, 99);
+
+                GUIContent animalDetectionConfidenceThresholdLabel = new GUIContent("Animal Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_AnimalDetectionConfidence.intValue = EditorGUILayout.IntSlider(animalDetectionConfidenceThresholdLabel, OD_AnimalDetectionConfidence.intValue, 1, 99);
+
+                GUIContent electronicsDetectionConfidenceThresholdLabel = new GUIContent("Electronics Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_ElectronicsDetectionConfidence.intValue = EditorGUILayout.IntSlider(electronicsDetectionConfidenceThresholdLabel, OD_ElectronicsDetectionConfidence.intValue, 1, 99);
+
+                GUIContent fruitVegetableDetectionConfidenceThresholdLabel = new GUIContent("Fruit and Vegetable Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_FruitVegetableDetectionConfidence.intValue = EditorGUILayout.IntSlider(fruitVegetableDetectionConfidenceThresholdLabel, OD_FruitVegetableDetectionConfidence.intValue, 1, 99);
+
                 GUILayout.Space(5);
 
                 GUIContent PersonFilterLabel = new GUIContent("Person Filter", "Whether to detect people during object detection.");
@@ -825,20 +811,17 @@ public class ZEDCameraEditor : Editor
                 GUIContent VehicleFilterLabel = new GUIContent("Vehicle Filter", "Whether to detect vehicles during object detection.");
                 OD_VehicleFilter.boolValue = EditorGUILayout.Toggle(VehicleFilterLabel, OD_VehicleFilter.boolValue);
 
-                /*GUIContent CarFilterLabel = new GUIContent("Car Filter", "Whether to detect car during object detection.");
-                OD_CarFilter.boolValue = EditorGUILayout.Toggle(CarFilterLabel, OD_CarFilter.boolValue);
+                GUIContent BagFilterLabel = new GUIContent("Bag Filter", "Whether to detect bags during object detection.");
+                OD_BagFilter.boolValue = EditorGUILayout.Toggle(BagFilterLabel, OD_BagFilter.boolValue);
 
-                GUIContent TruckFilterLabel = new GUIContent("Truck Filter", "Whether to detect truck during object detection.");
-                OD_TruckFilter.boolValue = EditorGUILayout.Toggle(TruckFilterLabel, OD_TruckFilter.boolValue);
+                GUIContent AnimalFilterLabel = new GUIContent("Animal Filter", "Whether to detect animals during object detection.");
+                OD_AnimalFilter.boolValue = EditorGUILayout.Toggle(AnimalFilterLabel, OD_AnimalFilter.boolValue);
 
-                GUIContent BusFilterLabel = new GUIContent("Bus Filter", "Whether to detect bus during object detection.");
-                OD_BusFilter.boolValue = EditorGUILayout.Toggle(BusFilterLabel, OD_BusFilter.boolValue);
+                GUIContent ElectronicsFilterLabel = new GUIContent("Electronics Filter", "Whether to detect electronics devices during object detection.");
+                OD_ElectronicsFilter.boolValue = EditorGUILayout.Toggle(ElectronicsFilterLabel, OD_ElectronicsFilter.boolValue);
 
-                GUIContent MotorBikeFilterLabel = new GUIContent("Motorbike Filter", "Whether to detect motorbike during object detection.");
-                OD_MotorBikeFilter.boolValue = EditorGUILayout.Toggle(MotorBikeFilterLabel, OD_MotorBikeFilter.boolValue);
-
-                GUIContent BicycleFilterLabel = new GUIContent("Bicycle Filter", "Whether to detect bicycles during object detection.");
-                OD_BicycleFilter.boolValue = EditorGUILayout.Toggle(BicycleFilterLabel, OD_BicycleFilter.boolValue);*/
+                GUIContent FruitVegetableFilterLabel = new GUIContent("Fruit and Vegetable Filter", "Whether to detect fruits and vegetablesduring object detection.");
+                OD_FruitVegetableFilter.boolValue = EditorGUILayout.Toggle(FruitVegetableFilterLabel, OD_FruitVegetableFilter.boolValue);
 
                 EditorGUI.indentLevel--;
             }

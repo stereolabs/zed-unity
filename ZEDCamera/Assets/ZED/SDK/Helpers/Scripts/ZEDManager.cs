@@ -388,7 +388,7 @@ public class ZEDManager : MonoBehaviour
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
     [HideInInspector]
-    public int personDetectionConfidenceThreshold = 50;
+    public int personDetectionConfidenceThreshold = 20;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
@@ -402,42 +402,28 @@ public class ZEDManager : MonoBehaviour
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
     [HideInInspector]
-    public int carDetectionConfidenceThreshold = 20;
+    public int bagDetectionConfidenceThreshold = 20;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
     [HideInInspector]
-    public int truckDetectionConfidenceThreshold = 20;
+    public int animalDetectionConfidenceThreshold = 20;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
     [HideInInspector]
-    public int busDetectionConfidenceThreshold = 20;
+    public int electronicsDetectionConfidenceThreshold = 20;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
     [HideInInspector]
-    public int motorBikeDetectionConfidenceThreshold = 20;
-
-    /// <summary>
-    /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
-    /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
-    /// </summary>
-    [HideInInspector]
-    public int bicycleDetectionConfidenceThreshold = 20;
-
-    /// <summary>
-    /// Detection sensitivity per OBJECT_CLASS. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
-    /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
-    /// </summary>
-    [HideInInspector]
-    public float[] objectDetectionConfidenceThresholds;
+    public int fruitVegetableDetectionConfidenceThreshold = 20;
 
     /// <summary>
     /// Whether to detect people during object detection. 
@@ -452,34 +438,28 @@ public class ZEDManager : MonoBehaviour
     public bool objectClassVehicleFilter = true;
 
     /// <summary>
-    /// Whether to detect cars during object detection. 
+    /// Whether to detect bags during object detection. 
     /// </summary>
     [HideInInspector]
-    public bool objectClassCarFilter = true;
+    public bool objectClassBagFilter = true;
 
     /// <summary>
-    /// Whether to detect Trucks during object detection. 
+    /// Whether to detect animals during object detection. 
     /// </summary>
     [HideInInspector]
-    public bool objectClassTruckFilter = true;
+    public bool objectClassAnimalFilter = true;
 
     /// <summary>
-    /// Whether to detect buses during object detection. 
+    /// Whether to detect electronics during object detection. 
     /// </summary>
     [HideInInspector]
-    public bool objectClassBusFilter = true;
+    public bool objectClassElectronicsFilter = true;
 
     /// <summary>
-    /// Whether to detect motorbikes during object detection. 
+    /// Whether to detect fruits and vegetables during object detection. 
     /// </summary>
     [HideInInspector]
-    public bool objectClassMotorBikeFilter = true;
-
-    /// <summary>
-    /// Whether to detect bikes during object detection. 
-    /// </summary>
-    [HideInInspector]
-    public bool objectClassBicycleFilter = true;
+    public bool objectClassFruitVegetableFilter = true;
 
     /// <summary>
     /// Whether the object detection module has been activated successfully. 
@@ -498,7 +478,6 @@ public class ZEDManager : MonoBehaviour
     /// Set to true when a new frame of detected objects has been retrieved in the image acquisition thread, ready for the main thread to process. 
     /// </summary>
     private bool newobjectsframeready = false;
-
 
     /// <summary>
     /// Last object detection frame detected by the SDK. This data comes straight from the C++ SDK; see detectionFrame for an abstracted version
@@ -1073,7 +1052,7 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Set the camera in Flip mode
     /// </summary>
-    private sl.FLIP_MODE cameraFlipMode = sl.FLIP_MODE.AUTO;
+    private sl.FLIP_MODE cameraFlipMode = sl.FLIP_MODE.ON;
     /// <summary>
     /// Whether the camera is currently being tracked using the ZED's inside-out tracking. 
     /// </summary>ccvv
@@ -2250,7 +2229,6 @@ public class ZEDManager : MonoBehaviour
             ZEDMixedRealityPlugin.Pose pose = arRig.InitTrackingAR();
             OriginPosition = pose.translation;
             OriginRotation = pose.rotation;
-
             if (!zedCamera.IsHmdCompatible && zedCamera.IsCameraReady)
                 Debug.LogWarning("WARNING: AR Passtrough with a ZED is not recommended. Consider using ZED Mini, designed for this purpose.");
         }
@@ -2440,7 +2418,6 @@ public class ZEDManager : MonoBehaviour
                 arRig.AdjustTrackingAR(zedPosition, zedOrientation, out r, out v, setIMUPriorInAR);
                 zedRigRoot.localRotation = r;
                 zedRigRoot.localPosition = v;
-
                 //Debug.DrawLine(new Vector3(0, 0.05f, 0), (r * Vector3.one * 5) + new Vector3(0, 0.05f, 0), Color.red);
                 //Debug.DrawLine(Vector3.zero, zedOrientation * Vector3.one * 5, Color.green);
 
@@ -2448,6 +2425,7 @@ public class ZEDManager : MonoBehaviour
                 ZEDSyncRotation = r;
                 HMDSyncPosition = arRig.LatencyPose().translation;
                 HMDSyncRotation = arRig.LatencyPose().rotation;
+
             }
             else //Not AR pass-through mode. 
             {
@@ -2521,8 +2499,8 @@ public class ZEDManager : MonoBehaviour
                 trackingState = "Camera Not Tracked";
         }
 #endif
-
     }
+
     public void LateUpdate()
     {
         if (IsStereoRig)
@@ -2717,10 +2695,17 @@ public class ZEDManager : MonoBehaviour
             od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = personDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehicleDetectionConfidenceThreshold;
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.BAG] = bagDetectionConfidenceThreshold;
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ANIMAL] = animalDetectionConfidenceThreshold;
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ELECTRONICS] = electronicsDetectionConfidenceThreshold;
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = fruitVegetableDetectionConfidenceThreshold;
             od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.VEHICLE] = Convert.ToInt32(objectClassVehicleFilter);
-
+            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.BAG] = Convert.ToInt32(objectClassBagFilter);
+            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
+            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
+            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
 
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user. 
             watch.Start();
@@ -2767,9 +2752,17 @@ public class ZEDManager : MonoBehaviour
         od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
         od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = personDetectionConfidenceThreshold;
         od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehicleDetectionConfidenceThreshold;
+        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.BAG] = bagDetectionConfidenceThreshold;
+        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ANIMAL] = animalDetectionConfidenceThreshold;
+        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ELECTRONICS] = electronicsDetectionConfidenceThreshold;
+        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = fruitVegetableDetectionConfidenceThreshold;
         od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
         od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
         od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.VEHICLE] = Convert.ToInt32(objectClassVehicleFilter);
+        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.BAG] = Convert.ToInt32(objectClassBagFilter);
+        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
+        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
+        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
 
         if (objectDetectionImageSyncMode == false) RetrieveObjectDetectionFrame(); //If true, this is called in the AcquireImages function in the image acquisition thread. 
 

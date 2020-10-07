@@ -39,13 +39,24 @@ public class DetectedObject
     }
 
     /// <summary>
-    /// Category of object that was detected (person, vehicle, etc.) 
+    /// Class of object that was detected (person, vehicle, etc.)
     /// </summary>
     public OBJECT_CLASS objectClass
     {
         get
         {
             return objectData.objectClass;
+        }
+    }
+
+    /// <summary>
+    /// SubClass of object that was detected  
+    /// </summary>
+    public OBJECT_SUBCLASS objectSubClass
+    {
+        get
+        {
+            return objectData.objectSubClass;
         }
     }
 

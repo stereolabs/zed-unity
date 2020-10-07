@@ -328,7 +328,6 @@ namespace sl
         /// </summary>
         public Vector3 Trans;
     };
-
     /// <summary>
     /// Container for information about the current SVO recording process.
     /// </summary><remarks>
@@ -1405,7 +1404,7 @@ namespace sl
         /// <summary>
         ///  
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 23)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)sl.OBJECT_CLASS.LAST)]
         public int[] objectClassFilter;
 
         /// <summary>
@@ -1425,6 +1424,7 @@ namespace sl
         //public int valid; //is Data Valid
         public int id; //person ID
         public sl.OBJECT_CLASS objectClass;
+        public sl.OBJECT_SUBCLASS objectSubClass;
         public sl.OBJECT_TRACK_STATE objectTrackingState;
         public sl.OBJECT_ACTION_STATE actionState;
         public float confidence;
@@ -1526,39 +1526,52 @@ namespace sl
     };
 
     /// <summary>
-    /// Types of detected objects.
+    /// Lists available object class
     /// </summary>
     public enum OBJECT_CLASS
     {
-        PERSON = 0, // For people detection 
-        VEHICLE = 1, // Legacy : For vehicles detection. It can be cars, trucks, buses, motorcycles etc
+        PERSON = 0,
+        VEHICLE = 1,
+        BAG = 2,
+        ANIMAL = 3,
+        ELECTRONICS = 4,
+        FRUIT_VEGETABLE = 5,
+        LAST = 6
+    };
+
+    /// <summary>
+    /// Lists available object subclass.
+    /// </summary>
+    public enum OBJECT_SUBCLASS
+    {
+        PERSON = 0,
         // VEHICLES
-        BICYCLE = 2,
-        CAR = 3,
-        MOTORBIKE = 4,
-        BUS = 5,
-        TRUCK = 6,
-        BOAT = 7,
-        TRAIN = 8,
+        BICYCLE = 1,
+        CAR = 2,
+        MOTORBIKE = 3,
+        BUS = 4,
+        TRUCK = 5,
+        BOAT = 6,
         // BAGS
-        BACKPACK = 9,
-        HANDBAG = 10,
-        SUITCASE = 11,
+        BACKPACK = 7,
+        HANDBAG = 8,
+        SUITCASE = 9,
         // ANIMALS
-        BIRD = 12,
-        CAT = 13,
-        DOG = 14,
-        HORSE = 15,
-        SHEEP = 16,
-        COW = 17,
+        BIRD = 10,
+        CAT = 11,
+        DOG = 12,
+        HORSE = 13,
+        SHEEP = 14,
+        COW = 15,
         // ELECTRONICS
-        CELL_PHONE = 18,
+        CELLPHONE = 16,
+        LAPTOP = 17,
         // FRUITS/VEGETABLES
-        BANANA = 19,
-        APPLE = 20,
-        ORANGE = 21,
-        CARROT = 22,
-        LAST = 23
+        BANANA = 18,
+        APPLE = 19,
+        ORANGE = 20,
+        CARROT = 21,
+        LAST = 22
     };
 
     /// <summary>
