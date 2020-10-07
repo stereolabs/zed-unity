@@ -355,7 +355,7 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Sync the Object on the image on the image.
     /// </summary>
-    private bool objectDetectionImageSyncMode = false;
+    private bool objectDetectionImageSyncMode = true;
 
     /// <summary>
     /// Whether to track objects across multiple frames using the ZED's position relative to the floor. 
@@ -1052,7 +1052,7 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Set the camera in Flip mode
     /// </summary>
-    private sl.FLIP_MODE cameraFlipMode = sl.FLIP_MODE.ON;
+    private sl.FLIP_MODE cameraFlipMode = sl.FLIP_MODE.AUTO;
     /// <summary>
     /// Whether the camera is currently being tracked using the ZED's inside-out tracking. 
     /// </summary>ccvv

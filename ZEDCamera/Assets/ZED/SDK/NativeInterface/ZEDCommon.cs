@@ -1597,6 +1597,7 @@ namespace sl
     /// </summary>
     public enum DETECTION_MODEL {
         MULTI_CLASS_BOX, /**< Any objects, bounding box based */
+        MULTI_CLASS_BOX_ACCURATE , /**< Any objects, bounding box based, more accurate but slower than the base model */
         HUMAN_BODY_FAST, /**<  Keypoints based, specific to human skeleton, real time performance even on Jetson or low end GPU cards */
         HUMAN_BODY_ACCURATE /**<  Keypoints based, specific to human skeleton, state of the art accuracy, requires powerful GPU */
     };
