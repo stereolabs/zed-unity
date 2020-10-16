@@ -77,9 +77,9 @@ public class ZED2DObjectVisualizer : MonoBehaviour
     /// <summary>
     /// If true, draws a 2D mask over where the SDK believes the detected object is. 
     /// </summary>
-    [Space(5)]
-    [Header("Mask")]
-    public bool showObjectMask = true;
+    //[Space(5)]
+    //[Header("Mask")]
+    // bool showObjectMask = false;
     /// <summary>
     /// Used to warn the user only once if they enable the mask but the mask was not enabled when object detection was initialized. See OnValidate. 
     /// </summary>
@@ -140,7 +140,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
             canvas = canvasgo.AddComponent<Canvas>();
         }
 
-        lastShowObjectMaskValue = showObjectMask;
+        //lastShowObjectMaskValue = showObjectMask;
     }
 
     private void OnZEDReady()
@@ -225,7 +225,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
 
 
             //Apply the mask. 
-            if (showObjectMask)
+            /*if (showObjectMask)
             {
                 //Make a new image for this new mask. 
                 Texture2D maskimage;
@@ -234,7 +234,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
                     idtext.SetMaskImage(maskimage); //Apply to 2D bbox. 
                     lastFrameMasks.Add(maskimage);   //Cache the texture so it's deleted next time we update our objects. 
                 }   
-            }
+            }*/
         }
 
         //Remove boxes for objects that the ZED can no longer see. 
@@ -394,7 +394,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
         }
     }
 
-    private void OnValidate()
+    /*private void OnValidate()
     {
         //If the user changes the showObjectMask setting to true, warn them if its ZEDManager has objectDetection2DMask set to false, because masks won't show up. 
         if (Application.isPlaying && showObjectMask != lastShowObjectMaskValue)
@@ -407,7 +407,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
                 "objectDetection2DMask must be enabled when Object Detection is started or masks will not be visible.");
             }
         }
-    }
+    }*/
 
     private void OnDestroy()
     {

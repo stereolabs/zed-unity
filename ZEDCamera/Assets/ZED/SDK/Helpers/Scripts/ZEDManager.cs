@@ -2631,14 +2631,13 @@ public class ZEDManager : MonoBehaviour
             pauseSVOReading = true;
 
             yield return null;
-            yield return null;
 
             pauseSVOReading = oldpausestate;
 
             sl.dll_ObjectDetectionParameters od_param = new sl.dll_ObjectDetectionParameters();
             od_param.imageSync = objectDetectionImageSyncMode;
             od_param.enableObjectTracking = objectDetectionTracking;
-            od_param.enable2DMask = objectDetection2DMask;
+           // od_param.enable2DMask = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
 
             od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
@@ -2739,11 +2738,11 @@ public class ZEDManager : MonoBehaviour
         if (res == sl.ERROR_CODE.SUCCESS && oframebuffer.timestamp >= objectsFrameSDK.timestamp)
         {
             //Release memory from masks. 
-            for (int i = 0; i < objectsFrameSDK.numObject; i++)
+            /*for (int i = 0; i < objectsFrameSDK.numObject; i++)
             {
                 sl.ZEDMat oldmat = new sl.ZEDMat(objectsFrameSDK.objectData[i].mask);
                 oldmat.Free();
-            }
+            }*/
 
             objectsFrameSDK = oframebuffer;
 
