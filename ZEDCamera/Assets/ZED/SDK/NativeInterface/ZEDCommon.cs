@@ -302,6 +302,163 @@ namespace sl
         public Resolution resolution;
     };
 
+    /// <summary>
+    /// List of the available onboard sensors
+    /// </summary>
+    public enum SENSOR_TYPE
+    {
+        /// <summary>
+        /// Three axis Accelerometer sensor to measure the inertial accelerations.
+        /// </summary>
+        ACCELEROMETER,
+        /// <summary>
+        /// Three axis Gyroscope sensor to measure the angular velocitiers.
+        /// </summary>
+        GYROSCOPE,
+        /// <summary>
+        /// Three axis Magnetometer sensor to measure the orientation of the device respect to the earth magnetic field.
+        /// </summary>
+        MAGNETOMETER,
+        /// <summary>
+        /// Barometer sensor to measure the atmospheric pressure.
+        /// </summary>
+        BAROMETER,
+
+        LAST
+    };
+
+    /// <summary>
+    /// List of the available onboard sensors measurement units
+    /// </summary>
+    public enum SENSORS_UNIT
+    {
+        /// <summary>
+        /// Acceleration [m/s²].
+        /// </summary>
+        M_SEC_2,
+        /// <summary>
+        /// Angular velocity [deg/s].
+        /// </summary>
+        DEG_SEC,
+        /// <summary>
+        /// Magnetic Fiels [uT].
+        /// </summary>
+        U_T,
+        /// <summary>
+        /// Atmospheric pressure [hPa].
+        /// </summary>
+        HPA,
+        /// <summary>
+        /// Temperature [°C].
+        /// </summary>
+        CELSIUS,
+        /// <summary>
+        /// Frequency [Hz].
+        /// </summary>
+        HERTZ,
+        /// <summary>
+        /// 
+        /// </summary>
+        LAST
+    };
+
+    /// <summary>
+    /// Structure containing information about a single sensor available in the current device
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SensorParameters
+    {
+        /// <summary>
+        /// The type of the sensor as \ref DEVICE_SENSORS.
+        /// </summary>
+        public SENSOR_TYPE type;
+        /// <summary>
+        /// The resolution of the sensor.
+        /// </summary>
+        public float resolution;
+        /// <summary>
+        /// The sampling rate (or ODR) of the sensor.
+        /// </summary>
+        public float sampling_rate;
+        /// <summary>
+        /// The range values of the sensor. MIN: `range.x`, MAX: `range.y`
+        /// </summary>
+        public float2 range;
+        /// <summary>
+        /// also known as white noise, given as continous (frequency independant). Units will be expressed in sensor_unit/√(Hz). `NAN` if the information is not available.
+        /// </summary>
+        public float noise_density;
+        /// <summary>
+        /// derived from the Allan Variance, given as continous (frequency independant). Units will be expressed in sensor_unit/s/√(Hz).`NAN` if the information is not available.
+        /// </summary>
+        public float random_walk;
+        /// <summary>
+        /// The string relative to the measurement unit of the sensor.
+        /// </summary>
+        public SENSORS_UNIT sensor_unit;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool isAvailable;
+    };
+
+    /// <summary>
+    /// Structure containing information about all the sensors available in the current device
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SensorsConfiguration
+    {
+        /// <summary>
+        /// The firmware version of the sensor module, 0 if no sensors are available (ZED camera model).
+        /// </summary>
+        public uint firmware_version;
+        /// <summary>
+        /// contains rotation between IMU frame and camera frame.
+        /// </summary>
+        public float4 camera_imu_rotation;
+        /// <summary>
+        /// contains translation between IMU frame and camera frame.
+        /// </summary>
+        public float3 camera_imu_translation;
+        /// <summary>
+        /// Configuration of the accelerometer device.
+        /// </summary>
+        public SensorParameters accelerometer_parameters;
+        /// <summary>
+        /// Configuration of the gyroscope device.
+        /// </summary>
+        public SensorParameters gyroscope_parameters;
+        /// <summary>
+        /// Configuration of the magnetometer device.
+        /// </summary>
+        public SensorParameters magnetometer_parameters;
+        /// <summary>
+        /// Configuration of the barometer device
+        /// </summary>
+        public SensorParameters barometer_parameters;
+        /// <summary>
+        /// if a sensor type is available on the device 
+        /// </summary>
+        /// <param name="sensor_type"></param>
+        /// <returns></returns>
+        public bool isSensorAvailable(SENSOR_TYPE sensor_type)
+        {
+            switch (sensor_type)
+            {
+                case SENSOR_TYPE.ACCELEROMETER:
+                    return accelerometer_parameters.isAvailable;
+                case SENSOR_TYPE.GYROSCOPE:
+                    return gyroscope_parameters.isAvailable;
+                case SENSOR_TYPE.MAGNETOMETER:
+                    return magnetometer_parameters.isAvailable;
+                case SENSOR_TYPE.BAROMETER:
+                    return barometer_parameters.isAvailable;
+                default:
+                    break;
+            }
+            return false;
+        }
+    };
 
     /// <summary>
     /// Holds calibration information about the current ZED's hardware, including per-sensor

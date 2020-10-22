@@ -550,7 +550,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
 		Quaternion r;
 		r = latencyPose.rotation;
-	 
+
         //Plane's distance from the final camera never changes, but it's rotated around it based on the latency pose. 
 		quadLeft.localRotation = r;
 		quadLeft.localPosition = finalLeftEye.transform.localPosition + r * (offset);
@@ -628,7 +628,6 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	public void AdjustTrackingAR(Vector3 position, Quaternion orientation, out Quaternion r, out Vector3 t, bool setimuprior)
 	{
         hasVRDevice = hasXRDevice();
-
 #if UNITY_2019_1_OR_NEWER
         InputTracking.GetNodeStates(nodeStates);
         XRNodeState nodeState = nodeStates.Find(node => node.nodeType == XRNode.Head);

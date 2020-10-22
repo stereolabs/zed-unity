@@ -116,6 +116,7 @@ public class ZEDCameraEditor : Editor
     //Object Detection Runtime Prop
     private SerializedProperty OD_VehicleDetectionConfidence;
     private SerializedProperty OD_PersonDetectionConfidence;
+    private SerializedProperty SK_PersonDetectionConfidence;
     private SerializedProperty OD_BagDetectionConfidence;
     private SerializedProperty OD_AnimalDetectionConfidence;
     private SerializedProperty OD_ElectronicsDetectionConfidence;
@@ -259,7 +260,8 @@ public class ZEDCameraEditor : Editor
         OD_2DMask = serializedObject.FindProperty("objectDetection2DMask");
         OD_DetectionModel = serializedObject.FindProperty("objectDetectionModel"); 
 
-        OD_PersonDetectionConfidence = serializedObject.FindProperty("personDetectionConfidenceThreshold");
+        OD_PersonDetectionConfidence = serializedObject.FindProperty("OD_personDetectionConfidenceThreshold");
+        SK_PersonDetectionConfidence = serializedObject.FindProperty("SK_personDetectionConfidenceThreshold");
         OD_VehicleDetectionConfidence = serializedObject.FindProperty("vehicleDetectionConfidenceThreshold");
         OD_BagDetectionConfidence = serializedObject.FindProperty("bagDetectionConfidenceThreshold");
         OD_AnimalDetectionConfidence = serializedObject.FindProperty("animalDetectionConfidenceThreshold");
@@ -776,12 +778,12 @@ public class ZEDCameraEditor : Editor
             GUILayout.Space(5);
             EditorGUI.indentLevel++;
 
-            GUIContent personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
-            "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
-            OD_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(personDetectionConfidenceThresholdLabel, OD_PersonDetectionConfidence.intValue, 1, 99);
-
             if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
             {
+
+                GUIContent OD_personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(OD_personDetectionConfidenceThresholdLabel, OD_PersonDetectionConfidence.intValue, 1, 99);
 
                 GUIContent vehicleDetectionConfidenceThresholdLabel = new GUIContent("Vehicle Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
@@ -825,6 +827,13 @@ public class ZEDCameraEditor : Editor
 
                 EditorGUI.indentLevel--;
             }
+            else
+            {
+                GUIContent SK_personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                SK_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(SK_personDetectionConfidenceThresholdLabel, SK_PersonDetectionConfidence.intValue, 1, 99);
+            }
+
             GUI.enabled = cameraIsReady;
 
             GUILayout.Space(10);

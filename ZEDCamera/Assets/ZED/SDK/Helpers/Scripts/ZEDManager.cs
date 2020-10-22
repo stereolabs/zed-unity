@@ -388,42 +388,50 @@ public class ZEDManager : MonoBehaviour
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
     [HideInInspector]
-    public int personDetectionConfidenceThreshold = 20;
+    public int SK_personDetectionConfidenceThreshold = 50;
+
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
     [HideInInspector]
-    public int vehicleDetectionConfidenceThreshold = 20;
+    public int OD_personDetectionConfidenceThreshold = 35;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
     [HideInInspector]
-    public int bagDetectionConfidenceThreshold = 20;
+    public int vehicleDetectionConfidenceThreshold = 35;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
     [HideInInspector]
-    public int animalDetectionConfidenceThreshold = 20;
+    public int bagDetectionConfidenceThreshold = 35;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
     [HideInInspector]
-    public int electronicsDetectionConfidenceThreshold = 20;
+    public int animalDetectionConfidenceThreshold = 35;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
     [HideInInspector]
-    public int fruitVegetableDetectionConfidenceThreshold = 20;
+    public int electronicsDetectionConfidenceThreshold = 35;
+
+    /// <summary>
+    /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
+    /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
+    /// </summary>
+    [HideInInspector]
+    public int fruitVegetableDetectionConfidenceThreshold = 35;
 
     /// <summary>
     /// Whether to detect people during object detection. 
@@ -2167,7 +2175,7 @@ public class ZEDManager : MonoBehaviour
                     {
                         zedtrackingState = zedCamera.GetPosition(ref zedOrientation, ref zedPosition, sl.TRACKING_FRAME.LEFT_EYE);
                         //zedtrackingState = sl.TRACKING_STATE.TRACKING_OK;
-                        if(inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO && svoLoopBack == true && initialPoseCached == false)
+                        if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO && svoLoopBack == true && initialPoseCached == false)
                         {
                             initialPosition = zedPosition;
                             initialRotation = zedOrientation;
@@ -2219,7 +2227,6 @@ public class ZEDManager : MonoBehaviour
             if (err != sl.ERROR_CODE.SUCCESS)
                 Debug.LogWarning("Failed to estimate initial camera position");
         }
-
         if (enableTracking)
             trackerThread.Join();
 
@@ -2271,6 +2278,7 @@ public class ZEDManager : MonoBehaviour
             {
                 isTrackingEnable = true;
             }
+
         }
     }
 
@@ -2395,9 +2403,7 @@ public class ZEDManager : MonoBehaviour
     private void UpdateTracking()
     {
         if (!zedReady)
-            return;
-
-        
+            return;     
 
         if (isZEDTracked) //ZED inside-out tracking is enabled and initialized. 
         {
@@ -2693,13 +2699,14 @@ public class ZEDManager : MonoBehaviour
             od_param.detectionModel = objectDetectionModel;
             od_param.enableBodyFitting = bodyFitting;
             od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
-            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = personDetectionConfidenceThreshold;
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST) ? SK_personDetectionConfidenceThreshold : OD_personDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehicleDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.BAG] = bagDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ANIMAL] = animalDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ELECTRONICS] = electronicsDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = fruitVegetableDetectionConfidenceThreshold;
             od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
+
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.VEHICLE] = Convert.ToInt32(objectClassVehicleFilter);
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.BAG] = Convert.ToInt32(objectClassBagFilter);
@@ -2750,7 +2757,7 @@ public class ZEDManager : MonoBehaviour
         //Update the runtime parameters in case the user made changes. 
         //od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
         od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
-        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = personDetectionConfidenceThreshold;
+        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST) ? SK_personDetectionConfidenceThreshold : OD_personDetectionConfidenceThreshold;
         od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehicleDetectionConfidenceThreshold;
         od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.BAG] = bagDetectionConfidenceThreshold;
         od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ANIMAL] = animalDetectionConfidenceThreshold;
