@@ -114,6 +114,7 @@ namespace sl
                
         }
 
+<<<<<<< HEAD
         void OnDestoy()
         {
             canUpdate = false;
@@ -122,6 +123,14 @@ namespace sl
             {
                 zed.DisableSpatialMapping();
             }
+=======
+        void OnDestroy()
+        {
+            canUpdate = false;
+           
+            if (zed != null)
+                zed.DisableSpatialMapping();
+>>>>>>> cc28bdd3ae6ca1ad7e437fa7af45876ea2fe1e1c
 
             if (_pointBuffer != null)
             {
@@ -162,6 +171,16 @@ namespace sl
             }
         }
 
+<<<<<<< HEAD
+=======
+
+        void OnApplicationQuit()
+        {
+            OnDestroy();
+        }
+
+
+>>>>>>> cc28bdd3ae6ca1ad7e437fa7af45876ea2fe1e1c
         /// <summary>
         /// On Render Fct
         /// </summary>
@@ -198,14 +217,22 @@ namespace sl
 #if UNITY_2019_1_OR_NEWER
                     Graphics.DrawProceduralNow(MeshTopology.Points, _pointBuffer.count, 1);
 #else
+<<<<<<< HEAD
                     Graphics.DrawProcedural(MeshTopology.Points, _pointBuffer.count, 1);
+=======
+                Graphics.DrawProcedural(MeshTopology.Points, _pointBuffer.count, 1);
+>>>>>>> cc28bdd3ae6ca1ad7e437fa7af45876ea2fe1e1c
 #endif
                 }
                 //Draw with Disk shader
                 else
                 {
                     _diskMaterial.SetPass(0);
+<<<<<<< HEAD
                     _diskMaterial.SetMatrix("_Transform", transform.localToWorldMatrix);
+=======
+                     _diskMaterial.SetMatrix("_Transform", transform.localToWorldMatrix);
+>>>>>>> cc28bdd3ae6ca1ad7e437fa7af45876ea2fe1e1c
                     _diskMaterial.SetBuffer("_PointBuffer", _pointBuffer);
                     _diskMaterial.SetFloat("_PointSize", _pointSize);
 #if UNITY_2019_1_OR_NEWER

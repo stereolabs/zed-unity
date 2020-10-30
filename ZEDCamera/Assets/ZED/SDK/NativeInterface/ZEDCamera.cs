@@ -2111,7 +2111,7 @@ namespace sl
         public sl.ERROR_CODE EnableSpatialMapping(SPATIAL_MAP_TYPE type, float resolution_meter, float max_range_meter, bool saveTexture = false)
         {
             sl.ERROR_CODE spatialMappingStatus = ERROR_CODE.FAILURE;
-            lock (grabLock)
+            //lock (grabLock)
             {
                 spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, (int)type,resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture),2048);
             }

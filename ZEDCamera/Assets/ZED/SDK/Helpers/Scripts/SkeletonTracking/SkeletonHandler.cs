@@ -186,9 +186,10 @@ public class SkeletonHandler : ScriptableObject {
 	    foreach (HumanBodyBones bone in humanBone) {
 	      rigBone[bone] = new RigBone(humanoid,bone);
 		  rigBoneTarget [bone] = Quaternion.identity;
-
+ 
 	    }
 
+	  
 	    trackingSegment = new Dictionary<HumanBodyBones,Vector3>(targetBone.Length);
 
 		for (int i = 0; i < targetBone.Length; i++) {
@@ -214,39 +215,39 @@ public class SkeletonHandler : ScriptableObject {
 	{
 		//left knee up in front of us + "plane" down left to up right
 		if (type == 0) {
-			joint [JointType_Head] = new Vector3 (0.0f, 2.0f, 0.0f);
-			joint [JointType_Neck] = new Vector3 (0.0f, 1.75f, 0.0f);
-			joint [JointType_SpineBase] = new Vector3 (0.0f, 1.0f, 0.0f);
+			joint [JointType_Head] = new Vector3 (0.0f, 2.0f, 0.0f); 
+			joint [JointType_Neck] = new Vector3 (0.0f, 1.75f, 0.0f); 
+			joint [JointType_SpineBase] = new Vector3 (0.0f, 1.0f, 0.0f); 
 
-			joint [JointType_ShoulderRight] = new Vector3 (-0.5f, 1.70f, 0.0f);
-			joint [JointType_ElbowRight] = new Vector3 (-1.0f, 1.90f, 0.0f);
-			joint [JointType_WristRight] = new Vector3 (-1.5f, 2.10f, 0.0f);
+			joint [JointType_ShoulderRight] = new Vector3 (-0.5f, 1.70f, 0.0f); 
+			joint [JointType_ElbowRight] = new Vector3 (-1.0f, 1.90f, 0.0f); 
+			joint [JointType_WristRight] = new Vector3 (-1.5f, 2.10f, 0.0f); 
 
-			joint [JointType_HipRight] = new Vector3 (-0.5f, 1.0f, 0.0f);
-			joint [JointType_KneeRight] = new Vector3 (-0.5f, 0.5f, 0.0f);
+			joint [JointType_HipRight] = new Vector3 (-0.5f, 1.0f, 0.0f); 
+			joint [JointType_KneeRight] = new Vector3 (-0.5f, 0.5f, 0.0f); 
 			joint [JointType_AnkleRight] = new Vector3 (-0.5f, 0.0f, 0.0f);
 
             joint[JointType_ShoulderLeft] = new Vector3(0.5f, 1.70f, 0.0f);
-            joint [JointType_ElbowLeft] = new Vector3 (1.0f, 1.50f, 0.0f);
-			joint [JointType_WristLeft] = new Vector3 (1.5f, 1.30f, 0.0f);
+            joint [JointType_ElbowLeft] = new Vector3 (1.0f, 1.50f, 0.0f); 
+			joint [JointType_WristLeft] = new Vector3 (1.5f, 1.30f, 0.0f); 
 
-			joint [JointType_HipLeft] = new Vector3 (0.5f, 1.0f, 0.0f);
-			joint [JointType_KneeLeft] = new Vector3 (0.6f, 1.0f, -1.0f);
+			joint [JointType_HipLeft] = new Vector3 (0.5f, 1.0f, 0.0f); 
+			joint [JointType_KneeLeft] = new Vector3 (0.6f, 1.0f, -1.0f); 
 			joint [JointType_AnkleLeft] = new Vector3 (0.5f, 0.0f, -1.0f);
 
             joint[JointType_HearLeft] = new Vector3(0.5f, 2.0f, 0f);
             joint[JointType_HearRight] = new Vector3(-0.5f, 2.0f, 0f);
-        }
+        } 
 		else if (type == 1) // right knee up back to camera + "plane" down left to up right
 		{
-			joint [JointType_Head] = new Vector3 (0.5f, 2.0f, 0.0f);
-			joint [JointType_Neck] = new Vector3 (0.0f, 1.75f, 0.0f);
-			joint [JointType_SpineBase] = new Vector3 (0.0f, 1.0f, 0.0f);
+			joint [JointType_Head] = new Vector3 (0.0f, 2.0f, 0.0f); 
+			joint [JointType_Neck] = new Vector3 (0.0f, 1.75f, 0.0f); 
+			joint [JointType_SpineBase] = new Vector3 (0.0f, 1.0f, 0.0f); 
 
-			joint [JointType_ShoulderRight] = new Vector3 (0.5f, 1.70f, 0.0f);
-			joint [JointType_ElbowRight] = new Vector3 (1.0f, 1.90f, 0.0f);
-			joint [JointType_WristRight] = new Vector3 (1.5f, 2.10f, 0.0f);
-
+			joint [JointType_ShoulderRight] = new Vector3 (0.5f, 1.70f, 0.0f); 
+			joint [JointType_ElbowRight] = new Vector3 (1.0f, 1.90f, 0.0f); 
+			joint [JointType_WristRight] = new Vector3 (1.5f, 2.10f, 0.0f); 
+ 
 			joint [JointType_HipRight] = new Vector3 (0.5f, 1.0f, 0.0f);
 			joint [JointType_KneeRight] = new Vector3 (0.5f, 1.0f, 0.5f);
 			joint [JointType_AnkleRight] = new Vector3 (0.5f, 0.0f, 0.5f);
