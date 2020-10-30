@@ -2363,7 +2363,6 @@ public class ZEDManager : MonoBehaviour
                 zedCamera.RetrieveTextures(); //Tell the wrapper to compute the textures. 
                 zedCamera.UpdateTextures(); //Tell the wrapper to update the textures. 
                 imageTimeStamp = zedCamera.GetImagesTimeStamp();
-
             }
 
             //For external module ... Trigger the capture done event.

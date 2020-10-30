@@ -1118,8 +1118,6 @@ namespace sl
             return (ERROR_CODE)dllz_enable_recording(CameraID, StringUtf8ToByte(videoFileName), (int)compressionMode,bitrate,target_fps,transcode);
         }
 
-
-
         /// <summary>
         /// Stops recording to an SVO/AVI, if applicable, and closes the file.
         /// </summary>
@@ -1786,12 +1784,12 @@ namespace sl
             trackingStatus = (sl.ERROR_CODE)dllz_set_imu_prior_orientation(CameraID, rotation);
             return trackingStatus;
         }
-
         /// <summary>
         /// Gets the rotation given by the ZED-M/ZED2 IMU. Return an error if using ZED (v1) which does not contains internal sensors
         /// </summary>
-        /// <returns>Error code status.</returns>
         /// <param name="rotation">Rotation from the IMU.</param>
+        /// <param name="referenceTime">time reference.</param>
+        /// <returns>Error code status.</returns>
         public ERROR_CODE GetInternalIMUOrientation(ref Quaternion rotation, TIME_REFERENCE referenceTime = TIME_REFERENCE.IMAGE)
         {
             sl.ERROR_CODE err = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
@@ -1802,8 +1800,9 @@ namespace sl
         /// <summary>
         /// Gets the full Sensor data from the ZED-M or ZED2 . Return an error if using ZED (v1) which does not contains internal sensors
         /// </summary>
+        /// <param name="data">Sensor Data.</param>
+        /// <param name="referenceTime">Time reference.</param>
         /// <returns>Error code status.</returns>
-        /// <param name="rotation">Rotation from the IMU.</param>
         public ERROR_CODE GetInternalSensorsData(ref SensorsData data, TIME_REFERENCE referenceTime = TIME_REFERENCE.IMAGE)
         {
             sl.ERROR_CODE err = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
@@ -2113,7 +2112,7 @@ namespace sl
             sl.ERROR_CODE spatialMappingStatus = ERROR_CODE.FAILURE;
             //lock (grabLock)
             {
-                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, (int)type,resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture),2048);
+                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, (int)type,resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture), 4096);
             }
             return spatialMappingStatus;
         }
@@ -2293,7 +2292,7 @@ namespace sl
         /// <summary>
         /// Gets a vector pointing toward the direction of gravity. This is estimated from a 3D scan of the environment,
         /// and as such, a scan must be started/finished for this value to be calculated.
-        /// If using the ZED Mini, this isn't required thanks to its IMU.
+        /// If using the ZED Mini / ZED2, this isn't required thanks to its IMU.
         /// </summary>
         /// <returns>Vector3 pointing downward.</returns>
         public Vector3 GetGravityEstimate()

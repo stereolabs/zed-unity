@@ -670,7 +670,7 @@ MonoBehaviour:
   HMDSyncPosition: {x: 0, y: 0, z: 0}
   ZEDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
   HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
-  advancedPanelOpen: 0
+  advancedPanelOpen: 1
   spatialMappingFoldoutOpen: 0
   objectDetectionFoldoutOpen: 0
   recordingFoldoutOpen: 0
