@@ -50,7 +50,7 @@ MonoBehaviour:
   inputType: 0
   resolution: 2
   FPS: 60
-  svoInputFileName: 
+  svoInputFileName: Assets/Recording.svo
   svoLoopBack: 1
   svoRealTimeMode: 0
   currentFrame: 0
@@ -72,12 +72,23 @@ MonoBehaviour:
   saveMeshWhenOver: 0
   meshPath: Assets/ZEDMesh.obj
   meshFilterParameters: 0
-  objectDetectionImageSyncMode: 0
   objectDetectionTracking: 1
   objectDetection2DMask: 0
-  objectDetectionConfidenceThreshold: 50
+  objectDetectionModel: 1
+  bodyFitting: 0
+  SK_personDetectionConfidenceThreshold: 50
+  OD_personDetectionConfidenceThreshold: 35
+  vehicleDetectionConfidenceThreshold: 35
+  bagDetectionConfidenceThreshold: 35
+  animalDetectionConfidenceThreshold: 35
+  electronicsDetectionConfidenceThreshold: 35
+  fruitVegetableDetectionConfidenceThreshold: 35
   objectClassPersonFilter: 1
   objectClassVehicleFilter: 1
+  objectClassBagFilter: 1
+  objectClassAnimalFilter: 1
+  objectClassElectronicsFilter: 1
+  objectClassFruitVegetableFilter: 1
   depthOcclusion: 1
   postProcessing: 1
   m_cameraBrightness: 100
@@ -85,6 +96,9 @@ MonoBehaviour:
   m_maxDepthRange: 40
   svoOutputFileName: Assets/Recording.svo
   svoOutputCompressionMode: 1
+  svoOutputBitrate: 0
+  svoOutputTargetFPS: 0
+  svoOutputTranscodeStreaming: 0
   needRecordFrame: 0
   enableStreaming: 0
   streamingCodec: 0
@@ -92,10 +106,13 @@ MonoBehaviour:
   bitrate: 8000
   gopSize: -1
   adaptativeBitrate: 0
+  chunkSize: 32768
+  streamingTargetFramerate: 0
   fadeInOnStart: 1
   dontDestroyOnLoad: 0
   greySkybox: 1
   m_confidenceThreshold: 100
+  m_textureConfidenceThreshold: 100
   enableRightDepthMeasure: 0
   showarrig: 0
   enableIMUFusion: 1
@@ -111,6 +128,7 @@ MonoBehaviour:
   videoAutoWhiteBalance: 1
   videoWhiteBalance: 3200
   videoSharpness: 3
+  videoGamma: 5
   videoLEDStatus: 1
   cameraModel: '-'
   cameraSerialNumber: '-'
@@ -131,11 +149,10 @@ MonoBehaviour:
   HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
   advancedPanelOpen: 0
   spatialMappingFoldoutOpen: 0
-  objectDetectionFoldoutOpen: 0
-  recordingFoldoutOpen: 1
+  objectDetectionFoldoutOpen: 1
+  recordingFoldoutOpen: 0
   streamingOutFoldoutOpen: 0
   camControlFoldoutOpen: 0
-  arlayer: 30
   zedRigDisplayer: {fileID: 0}
 --- !u!114 &114452247113840790
 MonoBehaviour:
@@ -204,6 +221,7 @@ MeshRenderer:
   m_MotionVectors: 2
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -215,6 +233,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -285,9 +304,10 @@ Camera:
   m_ClearFlags: 3
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_GateFitMode: 2
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2

@@ -4,6 +4,7 @@ using System.Threading;
 using UnityEngine.XR;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -352,10 +353,9 @@ public class ZEDManager : MonoBehaviour
     ////////////////////////  Object Detection //////////////////////////////
     /////////////////////////////////////////////////////////////////////////
     /// <summary>
-    /// Sync the Object on the image on the image. It's recommended to leave it false for Real-Time applications.
+    /// Sync the Object on the image on the image.
     /// </summary>
-    [HideInInspector]
-    public bool objectDetectionImageSyncMode = false;
+    private bool objectDetectionImageSyncMode = true;
 
     /// <summary>
     /// Whether to track objects across multiple frames using the ZED's position relative to the floor. 
@@ -378,11 +378,60 @@ public class ZEDManager : MonoBehaviour
     public sl.DETECTION_MODEL objectDetectionModel = sl.DETECTION_MODEL.MULTI_CLASS_BOX;
 
     /// <summary>
+    /// Defines if the body fitting will be applied
+    /// </summary>
+    [HideInInspector]
+    public bool bodyFitting = false;
+
+    /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
     [HideInInspector]
-    public float objectDetectionConfidenceThreshold = 50;
+    public int SK_personDetectionConfidenceThreshold = 50;
+
+
+    /// <summary>
+    /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
+    /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
+    /// </summary>
+    [HideInInspector]
+    public int OD_personDetectionConfidenceThreshold = 35;
+
+    /// <summary>
+    /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
+    /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
+    /// </summary>
+    [HideInInspector]
+    public int vehicleDetectionConfidenceThreshold = 35;
+
+    /// <summary>
+    /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
+    /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
+    /// </summary>
+    [HideInInspector]
+    public int bagDetectionConfidenceThreshold = 35;
+
+    /// <summary>
+    /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
+    /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
+    /// </summary>
+    [HideInInspector]
+    public int animalDetectionConfidenceThreshold = 35;
+
+    /// <summary>
+    /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
+    /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
+    /// </summary>
+    [HideInInspector]
+    public int electronicsDetectionConfidenceThreshold = 35;
+
+    /// <summary>
+    /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
+    /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
+    /// </summary>
+    [HideInInspector]
+    public int fruitVegetableDetectionConfidenceThreshold = 35;
 
     /// <summary>
     /// Whether to detect people during object detection. 
@@ -395,6 +444,30 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public bool objectClassVehicleFilter = true;
+
+    /// <summary>
+    /// Whether to detect bags during object detection. 
+    /// </summary>
+    [HideInInspector]
+    public bool objectClassBagFilter = true;
+
+    /// <summary>
+    /// Whether to detect animals during object detection. 
+    /// </summary>
+    [HideInInspector]
+    public bool objectClassAnimalFilter = true;
+
+    /// <summary>
+    /// Whether to detect electronics during object detection. 
+    /// </summary>
+    [HideInInspector]
+    public bool objectClassElectronicsFilter = true;
+
+    /// <summary>
+    /// Whether to detect fruits and vegetables during object detection. 
+    /// </summary>
+    [HideInInspector]
+    public bool objectClassFruitVegetableFilter = true;
 
     /// <summary>
     /// Whether the object detection module has been activated successfully. 
@@ -413,7 +486,6 @@ public class ZEDManager : MonoBehaviour
     /// Set to true when a new frame of detected objects has been retrieved in the image acquisition thread, ready for the main thread to process. 
     /// </summary>
     private bool newobjectsframeready = false;
-
 
     /// <summary>
     /// Last object detection frame detected by the SDK. This data comes straight from the C++ SDK; see detectionFrame for an abstracted version
@@ -988,10 +1060,10 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Set the camera in Flip mode
     /// </summary>
-    private bool cameraFlipMode = false;
+    private sl.FLIP_MODE cameraFlipMode = sl.FLIP_MODE.AUTO;
     /// <summary>
     /// Whether the camera is currently being tracked using the ZED's inside-out tracking. 
-    /// </summary>
+    /// </summary>ccvv
     private bool isZEDTracked = false;
     /// <summary>
     /// Whether the ZED's inside-out tracking has been activated.
@@ -1570,9 +1642,8 @@ public class ZEDManager : MonoBehaviour
     /// Called by Unity when the application is closed. 
     /// Also called by Reset() to properly start from a 'clean slate.'
     /// </summary>
-    void OnApplicationQuit()
+    private void OnApplicationQuit()
     {
-
         CloseManager();
         //sl.ZEDCamera.UnloadPlugin();
 
@@ -1658,7 +1729,6 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     void Awake()
     {
-
         // If never initialized, init the array of instances linked to each ZEDManager that could be created.
         if (ZEDManagerInstance == null)
         {
@@ -1666,7 +1736,6 @@ public class ZEDManager : MonoBehaviour
             for (int i = 0; i < (int)sl.Constant.MAX_CAMERA_PLUGIN; i++)
                 ZEDManagerInstance[i] = null;
         }
-
 
         initialPosition = transform.localPosition;
         initialRotation = transform.localRotation;
@@ -1686,7 +1755,7 @@ public class ZEDManager : MonoBehaviour
         initParameters.depthStabilization = depthStabilizer;
         initParameters.sensorsRequired = sensorsRequired;
         initParameters.depthMaximumDistance = 40.0f; // 40 meters should be enough for all applications
-        initParameters.cameraImageFlip = cameraFlipMode;
+        initParameters.cameraImageFlip = (int)cameraFlipMode;
         initParameters.enableImageEnhancement = enableImageEnhancement;
         initParameters.cameraDisableSelfCalib = !enableSelfCalibration;
 
@@ -1721,6 +1790,7 @@ public class ZEDManager : MonoBehaviour
         {
             initParameters.ipStream = streamInputIP;
             initParameters.portStream = (ushort)streamInputPort;
+
         }
 
         versionZED = "[SDK]: " + sl.ZEDCamera.GetSDKVersion().ToString() + " [Plugin]: " + sl.ZEDCamera.PluginVersion.ToString();
@@ -1786,14 +1856,13 @@ public class ZEDManager : MonoBehaviour
 
     }
 
-
     void Start()
     {
         //adjust layers for multiple camera
         //setLayersForMultiCamera ();
     }
 
-#region INITIALIZATION
+    #region INITIALIZATION
     //const int MAX_OPENING_TRIES = 10;
     private uint numberTriesOpening = 0;/// Counter of tries to open the ZED
                                         /// <summary>
@@ -2105,8 +2174,8 @@ public class ZEDManager : MonoBehaviour
                     if (isTrackingEnable)
                     {
                         zedtrackingState = zedCamera.GetPosition(ref zedOrientation, ref zedPosition, sl.TRACKING_FRAME.LEFT_EYE);
-                        
-                        if(inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO && svoLoopBack == true && initialPoseCached == false)
+                        //zedtrackingState = sl.TRACKING_STATE.TRACKING_OK;
+                        if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO && svoLoopBack == true && initialPoseCached == false)
                         {
                             initialPosition = zedPosition;
                             initialRotation = zedOrientation;
@@ -2158,7 +2227,6 @@ public class ZEDManager : MonoBehaviour
             if (err != sl.ERROR_CODE.SUCCESS)
                 Debug.LogWarning("Failed to estimate initial camera position");
         }
-
         if (enableTracking)
             trackerThread.Join();
 
@@ -2168,7 +2236,6 @@ public class ZEDManager : MonoBehaviour
             ZEDMixedRealityPlugin.Pose pose = arRig.InitTrackingAR();
             OriginPosition = pose.translation;
             OriginRotation = pose.rotation;
-
             if (!zedCamera.IsHmdCompatible && zedCamera.IsCameraReady)
                 Debug.LogWarning("WARNING: AR Passtrough with a ZED is not recommended. Consider using ZED Mini, designed for this purpose.");
         }
@@ -2181,7 +2248,6 @@ public class ZEDManager : MonoBehaviour
         //Set the original transform for the Rig
         zedRigRoot.localPosition = OriginPosition;
         zedRigRoot.localRotation = OriginRotation;
-
 
 #if UNITY_EDITOR
         EditorApplication.playmodeStateChanged = HandleOnPlayModeChanged;
@@ -2202,7 +2268,6 @@ public class ZEDManager : MonoBehaviour
                 pathSpatialMemory = "";
             }
 
-
             //Now enable the tracking with the proper parameters.
             if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
                 enablePoseSmoothing, estimateInitialPosition, trackingIsStatic, enableIMUFusion, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
@@ -2213,6 +2278,7 @@ public class ZEDManager : MonoBehaviour
             {
                 isTrackingEnable = true;
             }
+
         }
     }
 
@@ -2297,7 +2363,6 @@ public class ZEDManager : MonoBehaviour
                 zedCamera.RetrieveTextures(); //Tell the wrapper to compute the textures. 
                 zedCamera.UpdateTextures(); //Tell the wrapper to update the textures. 
                 imageTimeStamp = zedCamera.GetImagesTimeStamp();
-
             }
 
             //For external module ... Trigger the capture done event.
@@ -2337,9 +2402,7 @@ public class ZEDManager : MonoBehaviour
     private void UpdateTracking()
     {
         if (!zedReady)
-            return;
-
-        
+            return;     
 
         if (isZEDTracked) //ZED inside-out tracking is enabled and initialized. 
         {
@@ -2360,7 +2423,6 @@ public class ZEDManager : MonoBehaviour
                 arRig.AdjustTrackingAR(zedPosition, zedOrientation, out r, out v, setIMUPriorInAR);
                 zedRigRoot.localRotation = r;
                 zedRigRoot.localPosition = v;
-
                 //Debug.DrawLine(new Vector3(0, 0.05f, 0), (r * Vector3.one * 5) + new Vector3(0, 0.05f, 0), Color.red);
                 //Debug.DrawLine(Vector3.zero, zedOrientation * Vector3.one * 5, Color.green);
 
@@ -2368,6 +2430,7 @@ public class ZEDManager : MonoBehaviour
                 ZEDSyncRotation = r;
                 HMDSyncPosition = arRig.LatencyPose().translation;
                 HMDSyncRotation = arRig.LatencyPose().rotation;
+
             }
             else //Not AR pass-through mode. 
             {
@@ -2404,7 +2467,6 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
 	void Update()
     {
-
         //Check if ZED is disconnected; invoke event and call function if so. 
         if (isDisconnected)
         {
@@ -2414,8 +2476,6 @@ public class ZEDManager : MonoBehaviour
             ZEDDisconnected(); //Tries to reset the camera. 
             return;
         }
-
-
         // Then update all modules
         UpdateImages(); //Image is updated first so we have its timestamp for latency compensation. 
 
@@ -2423,7 +2483,6 @@ public class ZEDManager : MonoBehaviour
         UpdateTracking(); //Apply position/rotation changes to zedRigRoot. 
         UpdateObjectsDetection(); //Update od if activated
         UpdateMapping(); //Update mapping if activated
-
 
         /// If in Unity Editor, update the ZEDManager status list
 #if UNITY_EDITOR
@@ -2445,7 +2504,6 @@ public class ZEDManager : MonoBehaviour
                 trackingState = "Camera Not Tracked";
         }
 #endif
-
     }
 
     public void LateUpdate()
@@ -2476,7 +2534,6 @@ public class ZEDManager : MonoBehaviour
         //OnApplicationQuit();
         CloseManager();
     }
-
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2639,11 +2696,22 @@ public class ZEDManager : MonoBehaviour
             od_param.enableObjectTracking = objectDetectionTracking;
            // od_param.enable2DMask = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
-
-            od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
+            od_param.enableBodyFitting = bodyFitting;
+            od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST) ? SK_personDetectionConfidenceThreshold : OD_personDetectionConfidenceThreshold;
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehicleDetectionConfidenceThreshold;
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.BAG] = bagDetectionConfidenceThreshold;
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ANIMAL] = animalDetectionConfidenceThreshold;
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ELECTRONICS] = electronicsDetectionConfidenceThreshold;
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = fruitVegetableDetectionConfidenceThreshold;
             od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
+
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.VEHICLE] = Convert.ToInt32(objectClassVehicleFilter);
+            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.BAG] = Convert.ToInt32(objectClassBagFilter);
+            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
+            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
+            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
 
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user. 
             watch.Start();
@@ -2686,10 +2754,21 @@ public class ZEDManager : MonoBehaviour
         if (!objectDetectionRunning) return;
 
         //Update the runtime parameters in case the user made changes. 
-        od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
+        //od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
+        od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
+        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST) ? SK_personDetectionConfidenceThreshold : OD_personDetectionConfidenceThreshold;
+        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehicleDetectionConfidenceThreshold;
+        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.BAG] = bagDetectionConfidenceThreshold;
+        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ANIMAL] = animalDetectionConfidenceThreshold;
+        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ELECTRONICS] = electronicsDetectionConfidenceThreshold;
+        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = fruitVegetableDetectionConfidenceThreshold;
         od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
         od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
         od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.VEHICLE] = Convert.ToInt32(objectClassVehicleFilter);
+        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.BAG] = Convert.ToInt32(objectClassBagFilter);
+        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
+        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
+        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
 
         if (objectDetectionImageSyncMode == false) RetrieveObjectDetectionFrame(); //If true, this is called in the AcquireImages function in the image acquisition thread. 
 
@@ -2700,7 +2779,7 @@ public class ZEDManager : MonoBehaviour
                 float objdetect_fps = 1000000000.0f / (objectsFrameSDK.timestamp - lastObjectFrameTimeStamp);
                 objDetectionModuleFPS = (objDetectionModuleFPS + objdetect_fps) / 2.0f;
                 objectDetectionFPS = objDetectionModuleFPS.ToString("F1") + " FPS";
-
+                lastObjectFrameTimeStamp = objectsFrameSDK.timestamp;
                 ///Trigger the event that holds the raw data, and pass the whole objects frame.
                 if (OnObjectDetection_SDKData != null)
                 {
@@ -2715,7 +2794,6 @@ public class ZEDManager : MonoBehaviour
                     //DetectionFrame oframe = new DetectionFrame(objectsFrame, this);
                     detectionFrame = new DetectionFrame(objectsFrameSDK, this);
                     OnObjectDetection(detectionFrame);
-
                     if (oldoframe != null) oldoframe.CleanUpAllObjects();
                 }
 
@@ -2728,14 +2806,13 @@ public class ZEDManager : MonoBehaviour
 
     /// <summary>
     /// Requests the latest object detection frame information. If it's new, it'll fill the objectsFrame object
-    /// with the new frame info, set requestobjectsframe to true, and set newobjectsframeready to true. 
+    /// with the new frame info, set requestobjectsframe to false, and set newobjectsframeready to true. 
     /// </summary>
     private void RetrieveObjectDetectionFrame()
     {
         sl.ObjectsFrameSDK oframebuffer = new sl.ObjectsFrameSDK();
-        
         sl.ERROR_CODE res = zedCamera.RetrieveObjectsDetectionData(ref od_runtime_params, ref oframebuffer);
-        if (res == sl.ERROR_CODE.SUCCESS && oframebuffer.timestamp >= objectsFrameSDK.timestamp)
+        if (res == sl.ERROR_CODE.SUCCESS && oframebuffer.isNew != 0)
         {
             //Release memory from masks. 
             /*for (int i = 0; i < objectsFrameSDK.numObject; i++)
@@ -2874,7 +2951,6 @@ public class ZEDManager : MonoBehaviour
         arRig.ZEDEyeRight = camRightTransform.gameObject;
         arRig.quadLeft = leftScreen.transform;
         arRig.quadRight = rightScreen.transform;
-
 
         ZEDMixedRealityPlugin.OnHmdCalibChanged += CalibrationHasChanged;
         if (hasXRDevice())

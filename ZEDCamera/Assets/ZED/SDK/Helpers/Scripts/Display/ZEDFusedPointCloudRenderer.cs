@@ -160,13 +160,6 @@ namespace sl
             }
         }
 
-
-        void OnApplicationQuit()
-        {
-            OnDestroy();
-        }
-
-
         /// <summary>
         /// On Render Fct
         /// </summary>
@@ -203,14 +196,17 @@ namespace sl
 #if UNITY_2019_1_OR_NEWER
                     Graphics.DrawProceduralNow(MeshTopology.Points, _pointBuffer.count, 1);
 #else
-                Graphics.DrawProcedural(MeshTopology.Points, _pointBuffer.count, 1);
+                    Graphics.DrawProcedural(MeshTopology.Points, _pointBuffer.count, 1);
+
 #endif
                 }
                 //Draw with Disk shader
                 else
                 {
                     _diskMaterial.SetPass(0);
-                     _diskMaterial.SetMatrix("_Transform", transform.localToWorldMatrix);
+
+                    _diskMaterial.SetMatrix("_Transform", transform.localToWorldMatrix);
+
                     _diskMaterial.SetBuffer("_PointBuffer", _pointBuffer);
                     _diskMaterial.SetFloat("_PointSize", _pointSize);
 #if UNITY_2019_1_OR_NEWER

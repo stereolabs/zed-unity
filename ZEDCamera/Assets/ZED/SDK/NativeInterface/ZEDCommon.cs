@@ -1,6 +1,8 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using System.Runtime.InteropServices;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -186,12 +188,12 @@ namespace sl
         public ulong timestamp;
         /// <summary>
         /// Magnetic field calibrated values in uT
-        /// </summary>     
+        /// </summary>
         /// </summary>
         public Vector3 magneticField;
         /// <summary>
         /// Magnetic field raw values in uT
-        /// </summary>        
+        /// </summary>
         public Vector3 magneticFieldUncalibrated;
      };
 
@@ -300,6 +302,163 @@ namespace sl
         public Resolution resolution;
     };
 
+    /// <summary>
+    /// List of the available onboard sensors
+    /// </summary>
+    public enum SENSOR_TYPE
+    {
+        /// <summary>
+        /// Three axis Accelerometer sensor to measure the inertial accelerations.
+        /// </summary>
+        ACCELEROMETER,
+        /// <summary>
+        /// Three axis Gyroscope sensor to measure the angular velocitiers.
+        /// </summary>
+        GYROSCOPE,
+        /// <summary>
+        /// Three axis Magnetometer sensor to measure the orientation of the device respect to the earth magnetic field.
+        /// </summary>
+        MAGNETOMETER,
+        /// <summary>
+        /// Barometer sensor to measure the atmospheric pressure.
+        /// </summary>
+        BAROMETER,
+
+        LAST
+    };
+
+    /// <summary>
+    /// List of the available onboard sensors measurement units
+    /// </summary>
+    public enum SENSORS_UNIT
+    {
+        /// <summary>
+        /// Acceleration [m/s²].
+        /// </summary>
+        M_SEC_2,
+        /// <summary>
+        /// Angular velocity [deg/s].
+        /// </summary>
+        DEG_SEC,
+        /// <summary>
+        /// Magnetic Fiels [uT].
+        /// </summary>
+        U_T,
+        /// <summary>
+        /// Atmospheric pressure [hPa].
+        /// </summary>
+        HPA,
+        /// <summary>
+        /// Temperature [°C].
+        /// </summary>
+        CELSIUS,
+        /// <summary>
+        /// Frequency [Hz].
+        /// </summary>
+        HERTZ,
+        /// <summary>
+        ///
+        /// </summary>
+        LAST
+    };
+
+    /// <summary>
+    /// Structure containing information about a single sensor available in the current device
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SensorParameters
+    {
+        /// <summary>
+        /// The type of the sensor as \ref DEVICE_SENSORS.
+        /// </summary>
+        public SENSOR_TYPE type;
+        /// <summary>
+        /// The resolution of the sensor.
+        /// </summary>
+        public float resolution;
+        /// <summary>
+        /// The sampling rate (or ODR) of the sensor.
+        /// </summary>
+        public float sampling_rate;
+        /// <summary>
+        /// The range values of the sensor. MIN: `range.x`, MAX: `range.y`
+        /// </summary>
+        public float2 range;
+        /// <summary>
+        /// also known as white noise, given as continous (frequency independant). Units will be expressed in sensor_unit/√(Hz). `NAN` if the information is not available.
+        /// </summary>
+        public float noise_density;
+        /// <summary>
+        /// derived from the Allan Variance, given as continous (frequency independant). Units will be expressed in sensor_unit/s/√(Hz).`NAN` if the information is not available.
+        /// </summary>
+        public float random_walk;
+        /// <summary>
+        /// The string relative to the measurement unit of the sensor.
+        /// </summary>
+        public SENSORS_UNIT sensor_unit;
+        /// <summary>
+        ///
+        /// </summary>
+        public bool isAvailable;
+    };
+
+    /// <summary>
+    /// Structure containing information about all the sensors available in the current device
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SensorsConfiguration
+    {
+        /// <summary>
+        /// The firmware version of the sensor module, 0 if no sensors are available (ZED camera model).
+        /// </summary>
+        public uint firmware_version;
+        /// <summary>
+        /// contains rotation between IMU frame and camera frame.
+        /// </summary>
+        public float4 camera_imu_rotation;
+        /// <summary>
+        /// contains translation between IMU frame and camera frame.
+        /// </summary>
+        public float3 camera_imu_translation;
+        /// <summary>
+        /// Configuration of the accelerometer device.
+        /// </summary>
+        public SensorParameters accelerometer_parameters;
+        /// <summary>
+        /// Configuration of the gyroscope device.
+        /// </summary>
+        public SensorParameters gyroscope_parameters;
+        /// <summary>
+        /// Configuration of the magnetometer device.
+        /// </summary>
+        public SensorParameters magnetometer_parameters;
+        /// <summary>
+        /// Configuration of the barometer device
+        /// </summary>
+        public SensorParameters barometer_parameters;
+        /// <summary>
+        /// if a sensor type is available on the device
+        /// </summary>
+        /// <param name="sensor_type"></param>
+        /// <returns></returns>
+        public bool isSensorAvailable(SENSOR_TYPE sensor_type)
+        {
+            switch (sensor_type)
+            {
+                case SENSOR_TYPE.ACCELEROMETER:
+                    return accelerometer_parameters.isAvailable;
+                case SENSOR_TYPE.GYROSCOPE:
+                    return gyroscope_parameters.isAvailable;
+                case SENSOR_TYPE.MAGNETOMETER:
+                    return magnetometer_parameters.isAvailable;
+                case SENSOR_TYPE.BAROMETER:
+                    return barometer_parameters.isAvailable;
+                default:
+                    break;
+            }
+            return false;
+        }
+    };
 
     /// <summary>
     /// Holds calibration information about the current ZED's hardware, including per-sensor
@@ -326,7 +485,6 @@ namespace sl
         /// </summary>
         public Vector3 Trans;
     };
-
     /// <summary>
     /// Container for information about the current SVO recording process.
     /// </summary><remarks>
@@ -429,7 +587,7 @@ namespace sl
 		/// <summary>
 		/// Displays a normal map.
 		/// </summary>
-		VIEW_NORMALS
+		VIEW_NORMALS,
 	};
 
 
@@ -580,7 +738,7 @@ namespace sl
         /// <summary>
         /// an error occur while tracking objects
         /// </summary>
-        AI_UNKNOWN_ERROR, 
+        AI_UNKNOWN_ERROR,
         /// <summary>
         /// End of ERROR_CODE
         /// </summary>
@@ -771,7 +929,7 @@ namespace sl
         /// </summary>
         EXPOSURE,
         /// <summary>
-        /// Auto-exposure and auto gain. Setting this to true switches on both. Assigning a specifc value to GAIN or EXPOSURE will set this to 0. 
+        /// Auto-exposure and auto gain. Setting this to true switches on both. Assigning a specifc value to GAIN or EXPOSURE will set this to 0.
         /// </summary>
         AEC_AGC,
         /// <summary>
@@ -1136,7 +1294,7 @@ namespace sl
         /// <summary>
         ///  Defines if images are horizontally flipped.
         /// </summary>
-        public bool cameraImageFlip;
+        public int cameraImageFlip;
         /// <summary>
         /// Defines if measures relative to the right sensor should be computed (needed for MEASURE_<XXX>_RIGHT).
         /// </summary>
@@ -1179,7 +1337,7 @@ namespace sl
         /// </summary>
         public ushort portStream = 30000;
         /// <summary>
-        /// Whether to enable improved color/gamma curves added in ZED SDK 3.0. 
+        /// Whether to enable improved color/gamma curves added in ZED SDK 3.0.
         /// </summary>
         public bool enableImageEnhancement = true;
 
@@ -1195,11 +1353,11 @@ namespace sl
             this.pathSVO = "";
             this.svoRealTimeMode = false;
             this.coordinateUnit = UNIT.METER;
-            this.coordinateSystem = COORDINATE_SYSTEM.IMAGE;
+            this.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP;
             this.depthMode = DEPTH_MODE.PERFORMANCE;
             this.depthMinimumDistance = -1;
             this.depthMaximumDistance = -1;
-            this.cameraImageFlip = false;
+            this.cameraImageFlip = 2;
             this.cameraDisableSelfCalib = false;
             this.sdkVerbose = false;
             this.sdkGPUId = -1;
@@ -1300,16 +1458,26 @@ namespace sl
         /// </summary>
         public int confidenceThreshold;
         /// <summary>
-        /// Defines texture confidence threshold for the depth. Based on textureness confidence. 
+        /// Defines texture confidence threshold for the depth. Based on textureness confidence.
         /// </summary>
         public int textureConfidenceThreshold;
 
     }
 
-	/// <summary>
-	/// Part of the ZED (left/right sensor, center) that's considered its center for tracking purposes.
-	/// </summary>
-	public enum TRACKING_FRAME
+    /// <summary>
+    ///brief Lists available compression modes for SVO recording.
+    /// </summary>
+    public enum FLIP_MODE
+    {
+        OFF = 0,  ///  default behavior.
+        ON = 1,   /// Images and camera sensors data are flipped, useful when your camera is mounted upside down.
+        AUTO = 2, /// in live mode: use the camera orientation (if an IMU is available) to set the flip mode, in SVO mode, read the state of this enum when recorded
+    };
+
+    /// <summary>
+    /// Part of the ZED (left/right sensor, center) that's considered its center for tracking purposes.
+    /// </summary>
+    public enum TRACKING_FRAME
 	{
         /// <summary>
         /// Camera's center is at the left sensor.
@@ -1364,12 +1532,17 @@ namespace sl
         [MarshalAs(UnmanagedType.U1)]
         public bool enableObjectTracking;
         /// <summary>
-        /// Defines if the SDK will calculate 2D masks for each object. Requires more performance, so don't enable if you don't need these masks. 
+        /// Defines if the SDK will calculate 2D masks for each object. Requires more performance, so don't enable if you don't need these masks.
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool enable2DMask;
-         /// <summary>
-        /// Defines the AI model used for detection 
+        /// <summary>
+        /// Defines if the body fitting will be applied
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableBodyFitting;
+        /// <summary>
+        /// Defines the AI model used for detection
         /// </summary>
         public sl.DETECTION_MODEL detectionModel;
     };
@@ -1379,22 +1552,28 @@ namespace sl
     public struct dll_ObjectDetectionRuntimeParameters
     {
         /// <summary>
-        /// The detection confidence threshold between 1 and 99. 
+        /// The detection confidence threshold between 1 and 99.
         /// A confidence of 1 means a low threshold, more uncertain objects and 99 very few but very precise objects.
-        /// Ex: If set to 80, then the SDK must be at least 80% sure that a given object exists before reporting it in the list of detected objects. 
+        /// Ex: If set to 80, then the SDK must be at least 80% sure that a given object exists before reporting it in the list of detected objects.
         /// If the scene contains a lot of objects, increasing the confidence can slightly speed up the process, since every object instance is tracked.
         /// </summary>
         public float detectionConfidenceThreshold;
         /// <summary>
-        ///  
+        ///
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst =2)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)sl.OBJECT_CLASS.LAST)]
         public int[] objectClassFilter;
+
+        /// <summary>
+        ///
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)sl.OBJECT_CLASS.LAST)]
+        public int[] object_confidence_threshold;
     };
 
     /// <summary>
-    /// Object data structure directly from the SDK. Represents a single object detection. 
-    /// See DetectedObject for an abstracted version with helper functions that make this data easier to use in Unity. 
+    /// Object data structure directly from the SDK. Represents a single object detection.
+    /// See DetectedObject for an abstracted version with helper functions that make this data easier to use in Unity.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct ObjectDataSDK
@@ -1402,17 +1581,18 @@ namespace sl
         //public int valid; //is Data Valid
         public int id; //person ID
         public sl.OBJECT_CLASS objectClass;
+        public sl.OBJECT_SUBCLASS objectSubClass;
         public sl.OBJECT_TRACK_STATE objectTrackingState;
-        public sl.OBJECT_ACTION_STATE action_state;
+        public sl.OBJECT_ACTION_STATE actionState;
         public float confidence;
 
         public System.IntPtr mask;
 
         /// <summary>
         /// Image data.
-        /// Note that Y in these values is relative from the top of the image, whereas the opposite is true 
-        /// in most related Unity functions. If using this raw value, subtract Y from the 
-        /// image height to get the height relative to the bottom. 
+        /// Note that Y in these values is relative from the top of the image, whereas the opposite is true
+        /// in most related Unity functions. If using this raw value, subtract Y from the
+        /// image height to get the height relative to the bottom.
         /// </summary>
         ///  0 ------- 1
         ///  |   obj   |
@@ -1432,21 +1612,21 @@ namespace sl
         /// <summary>
         /// The 3D space bounding box. given as array of vertices
         /// </summary>
-        ///   1 ---------2  
+        ///   1 ---------2
         ///  /|         /|
         /// 0 |--------3 |
         /// | |        | |
         /// | 5--------|-6
         /// |/         |/
         /// 4 ---------7
-        /// 
+        ///
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
         public Vector3[] worldBoundingBox; // 3D Bounding Box of object
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
         public Vector3[] headBoundingBox;// 3D Bounding Box of head (only for HUMAN detectionModel)
 
 
-        
+
         /// <summary>
         /// The 3D position of skeleton joints
         /// </summary>
@@ -1461,15 +1641,13 @@ namespace sl
         // [p2, p4, p5]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
         public float[] position_covariance;// covariance matrix of the 3d position, represented by its upper triangular matrix value
-
-
     };
 
 
 
     /// <summary>
-    /// Object Scene data directly from the ZED SDK. Represents all detections given during a single image frame. 
-    /// See DetectionFrame for an abstracted version with helper functions that make this data easier to use in Unity. 
+    /// Object Scene data directly from the ZED SDK. Represents all detections given during a single image frame.
+    /// See DetectionFrame for an abstracted version with helper functions that make this data easier to use in Unity.
     /// Contains the number of object in the scene and the objectData structure for each object.
     /// Since the data is transmitted from C++ to C#, the size of the structure must be constant. Therefore, there is a limitation of 200 (MAX_OBJECT constant) objects in the image.
     /// <c> This number cannot be changed.<c>
@@ -1478,7 +1656,7 @@ namespace sl
     public struct ObjectsFrameSDK
     {
         /// <summary>
-        /// How many objects were detected this frame. Use this to iterate through the top of objectData; objects with indexes greater than numObject are empty. 
+        /// How many objects were detected this frame. Use this to iterate through the top of objectData; objects with indexes greater than numObject are empty.
         /// </summary>
         public int numObject;
         /// <summary>
@@ -1498,24 +1676,63 @@ namespace sl
         /// </summary>
         public sl.DETECTION_MODEL detectionModel;
         /// <summary>
-        /// Array of objects 
+        /// Array of objects
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)(Constant.MAX_OBJECTS))]
         public ObjectDataSDK[] objectData;
     };
 
     /// <summary>
-    /// Types of detected objects.
+    /// Lists available object class
     /// </summary>
     public enum OBJECT_CLASS
     {
-         PERSON = 0,
-         VEHICLE = 1,
-         LAST = 2
+        PERSON = 0,
+        VEHICLE = 1,
+        BAG = 2,
+        ANIMAL = 3,
+        ELECTRONICS = 4,
+        FRUIT_VEGETABLE = 5,
+        LAST = 6
     };
 
     /// <summary>
-    /// Tracking state of an individual object. 
+    /// Lists available object subclass.
+    /// </summary>
+    public enum OBJECT_SUBCLASS
+    {
+        PERSON = 0,
+        // VEHICLES
+        BICYCLE = 1,
+        CAR = 2,
+        MOTORBIKE = 3,
+        BUS = 4,
+        TRUCK = 5,
+        BOAT = 6,
+        // BAGS
+        BACKPACK = 7,
+        HANDBAG = 8,
+        SUITCASE = 9,
+        // ANIMALS
+        BIRD = 10,
+        CAT = 11,
+        DOG = 12,
+        HORSE = 13,
+        SHEEP = 14,
+        COW = 15,
+        // ELECTRONICS
+        CELLPHONE = 16,
+        LAPTOP = 17,
+        // FRUITS/VEGETABLES
+        BANANA = 18,
+        APPLE = 19,
+        ORANGE = 20,
+        CARROT = 21,
+        LAST = 22
+    };
+
+    /// <summary>
+    /// Tracking state of an individual object.
     /// </summary>
     public enum OBJECT_TRACK_STATE
     {
@@ -1532,12 +1749,12 @@ namespace sl
         LAST = 2
     };
 
-
     /// <summary>
     /// List available models for detection
     /// </summary>
     public enum DETECTION_MODEL {
         MULTI_CLASS_BOX, /**< Any objects, bounding box based */
+        MULTI_CLASS_BOX_ACCURATE , /**< Any objects, bounding box based, more accurate but slower than the base model */
         HUMAN_BODY_FAST, /**<  Keypoints based, specific to human skeleton, real time performance even on Jetson or low end GPU cards */
         HUMAN_BODY_ACCURATE /**<  Keypoints based, specific to human skeleton, state of the art accuracy, requires powerful GPU */
     };

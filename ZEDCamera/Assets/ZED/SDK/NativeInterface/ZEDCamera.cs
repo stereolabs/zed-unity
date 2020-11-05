@@ -191,6 +191,10 @@ namespace sl
             get { return fov_V; }
         }
         /// <summary>
+        /// Structure containing information about all the sensors available in the current device
+        /// </summary>
+        private SensorsConfiguration sensorsConfiguration;
+        /// <summary>
         /// Stereo parameters for current ZED camera prior to rectification (distorted).
         /// </summary>
         private CalibrationParameters calibrationParametersRaw;
@@ -208,6 +212,13 @@ namespace sl
         /// </summary>
         private bool cameraReady = false;
 
+        /// <summary>
+        /// Structure containing information about all the sensors available in the current device
+        /// </summary>
+        public SensorsConfiguration SensorsConfiguration
+        {
+            get { return sensorsConfiguration; }
+        }
         /// <summary>
         /// Stereo parameters for current ZED camera prior to rectification (distorted).
         /// </summary>
@@ -275,8 +286,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(3, 2, 0);
-
+        public static readonly System.Version PluginVersion = new System.Version(3, 3, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -406,6 +416,9 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "dllz_get_calibration_parameters")]
         private static extern IntPtr dllz_get_calibration_parameters(int cameraID, bool raw);
+
+        [DllImport(nameDll, EntryPoint = "dllz_get_sensors_configuration")]
+        private static extern IntPtr dllz_get_sensors_configuration(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "dllz_get_camera_model")]
         private static extern int dllz_get_camera_model(int cameraID);
@@ -565,6 +578,9 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "dllz_save_mesh")]
         private static extern bool dllz_save_mesh(int cameraID, string filename, MESH_FILE_FORMAT format);
 
+        [DllImport(nameDll, EntryPoint = "dllz_save_point_cloud")]
+        private static extern bool dllz_save_point_cloud(int cameraID, string filename, MESH_FILE_FORMAT format);
+
         [DllImport(nameDll, EntryPoint = "dllz_load_mesh")]
         private static extern bool dllz_load_mesh(int cameraID, string filename, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int nbMaxSubmesh, int[] textureSize = null);
 
@@ -587,7 +603,7 @@ namespace sl
          * Plane Detection functions (starting v2.4)
          */
         [DllImport(nameDll, EntryPoint = "dllz_find_floor_plane")]
-        private static extern IntPtr dllz_find_floor_plane(int cameraID, out Quaternion rotation, out Vector3 translation, Vector3 priorQuaternion, Vector3 priorTranslation);
+        private static extern IntPtr dllz_find_floor_plane(int cameraID, out Quaternion rotation, out Vector3 translation, Quaternion priorQuaternion, Vector3 priorTranslation);
 
         [DllImport(nameDll, EntryPoint = "dllz_find_plane_at_hit")]
         private static extern IntPtr dllz_find_plane_at_hit(int cameraID, Vector2 HitPixel, bool refine);
@@ -885,8 +901,7 @@ namespace sl
             /// <summary>
             /// True to flip images horizontally.
             /// </summary>
-            [MarshalAs(UnmanagedType.U1)]
-            public bool cameraImageFlip;
+            public int cameraImageFlip;
             /// <summary>
             /// True to disable self-calibration, using unoptimized optional calibration parameters.
             /// False is recommended for optimized calibration.
@@ -1102,8 +1117,6 @@ namespace sl
         {
             return (ERROR_CODE)dllz_enable_recording(CameraID, StringUtf8ToByte(videoFileName), (int)compressionMode,bitrate,target_fps,transcode);
         }
-
-
 
         /// <summary>
         /// Stops recording to an SVO/AVI, if applicable, and closes the file.
@@ -1582,6 +1595,19 @@ namespace sl
 
         }
 
+        public SensorsConfiguration GetInternalSensorsConfiguration()
+        {
+            IntPtr p = dllz_get_sensors_configuration(CameraID);
+
+            if (p == IntPtr.Zero)
+            {
+                return new SensorsConfiguration();
+            }
+            SensorsConfiguration configuration = (SensorsConfiguration)Marshal.PtrToStructure(p, typeof(SensorsConfiguration));
+
+            return configuration;
+        }
+
         /// <summary>
         /// Gets the ZED camera model (ZED or ZED Mini).
         /// </summary>
@@ -1758,12 +1784,12 @@ namespace sl
             trackingStatus = (sl.ERROR_CODE)dllz_set_imu_prior_orientation(CameraID, rotation);
             return trackingStatus;
         }
-
         /// <summary>
         /// Gets the rotation given by the ZED-M/ZED2 IMU. Return an error if using ZED (v1) which does not contains internal sensors
         /// </summary>
-        /// <returns>Error code status.</returns>
         /// <param name="rotation">Rotation from the IMU.</param>
+        /// <param name="referenceTime">time reference.</param>
+        /// <returns>Error code status.</returns>
         public ERROR_CODE GetInternalIMUOrientation(ref Quaternion rotation, TIME_REFERENCE referenceTime = TIME_REFERENCE.IMAGE)
         {
             sl.ERROR_CODE err = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
@@ -1774,8 +1800,9 @@ namespace sl
         /// <summary>
         /// Gets the full Sensor data from the ZED-M or ZED2 . Return an error if using ZED (v1) which does not contains internal sensors
         /// </summary>
+        /// <param name="data">Sensor Data.</param>
+        /// <param name="referenceTime">Time reference.</param>
         /// <returns>Error code status.</returns>
-        /// <param name="rotation">Rotation from the IMU.</param>
         public ERROR_CODE GetInternalSensorsData(ref SensorsData data, TIME_REFERENCE referenceTime = TIME_REFERENCE.IMAGE)
         {
             sl.ERROR_CODE err = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
@@ -2085,7 +2112,7 @@ namespace sl
             sl.ERROR_CODE spatialMappingStatus = ERROR_CODE.FAILURE;
             //lock (grabLock)
             {
-                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, (int)type,resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture),2048);
+                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, (int)type,resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture), 4096);
             }
             return spatialMappingStatus;
         }
@@ -2133,7 +2160,7 @@ namespace sl
         }
 
         /// <summary>
-        /// Updates the fused point cloud (if spatial map type was FUSED_POINT_CLOUD
+        /// Updates the fused point cloud (if spatial map type was FUSED_POINT_CLOUD)
         /// </summary>
         /// <returns>Error code indicating if the update was successful, and why it wasn't otherwise.</returns>
         public sl.ERROR_CODE UpdateFusedPointCloud(ref int nbVertices)
@@ -2188,6 +2215,16 @@ namespace sl
         public bool SaveMesh(string filename, MESH_FILE_FORMAT format)
         {
             return dllz_save_mesh(CameraID, filename, format);
+        }
+
+        /// <summary>
+        /// Saves the scanned point cloud in a specific file format.
+        /// </summary>
+        /// <param name="filename">Path and filename of the point cloud.</param>
+        /// <param name="format">File format (extension). Can be .obj, .ply or .bin.</param>
+        public bool SavePointCloud(string filename, MESH_FILE_FORMAT format)
+        {
+            return dllz_save_point_cloud(CameraID, filename, format);
         }
 
         /// <summary>
@@ -2255,7 +2292,7 @@ namespace sl
         /// <summary>
         /// Gets a vector pointing toward the direction of gravity. This is estimated from a 3D scan of the environment,
         /// and as such, a scan must be started/finished for this value to be calculated.
-        /// If using the ZED Mini, this isn't required thanks to its IMU.
+        /// If using the ZED Mini / ZED2, this isn't required thanks to its IMU.
         /// </summary>
         /// <returns>Vector3 pointing downward.</returns>
         public Vector3 GetGravityEstimate()
@@ -2366,7 +2403,7 @@ namespace sl
             IntPtr p = IntPtr.Zero;
             Quaternion out_quat = Quaternion.identity;
             Vector3 out_trans = Vector3.zero;
-            p = dllz_find_floor_plane(CameraID, out out_quat, out out_trans, priorTrans, priorTrans);
+            p = dllz_find_floor_plane(CameraID, out out_quat, out out_trans, priorQuat, priorTrans);
             plane.Bounds = new Vector3[256];
             playerHeight = 0;
 
