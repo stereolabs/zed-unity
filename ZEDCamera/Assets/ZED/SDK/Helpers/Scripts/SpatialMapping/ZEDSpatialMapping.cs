@@ -1157,7 +1157,7 @@ public class ZEDSpatialMapping
                 Texture textosave = savemat.mainTexture;
 
                 RenderTexture buffertex = new RenderTexture(textosave.width, textosave.height, 0);
-                Graphics.Blit(textosave, buffertex);
+				Graphics.Blit(textosave, buffertex, savemat);
 
                 RenderTexture oldactivert = RenderTexture.active;
                 RenderTexture.active = buffertex;
