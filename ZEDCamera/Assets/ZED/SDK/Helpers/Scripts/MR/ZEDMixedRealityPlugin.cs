@@ -4,12 +4,10 @@ using UnityEngine;
 using System.Runtime.InteropServices;
 using UnityEngine.XR;
 using System.IO;
-<<<<<<< HEAD
 using UnityEngine.Rendering;
-=======
 using System.Collections.Generic;
 using System.Linq;
->>>>>>> v3.3
+
 
 /// <summary>
 /// In pass-through AR mode, handles the final output to the VR headset, positioning the final images
@@ -725,32 +723,22 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     /// <param name="cam">Cam.</param>
     public void PreRender(Camera cam)
 	{
-		if (cam == finalLeftEye || cam == finalRightEye)
-		{
+        if (cam == finalCenterEye)
+        {
 
-			if ((!manager.IsZEDReady && manager.IsStereoRig))
-			{
-#if UNITY_2019_1_OR_NEWER
+            if ((!manager.IsZEDReady && manager.IsStereoRig))
+            {
+                System.Collections.Generic.List<XRNodeState> nodeStates = new System.Collections.Generic.List<XRNodeState>();
                 InputTracking.GetNodeStates(nodeStates);
                 XRNodeState nodeState = nodeStates.Find(node => node.nodeType == XRNode.Head);
                 nodeState.TryGetRotation(out Quaternion rot);
                 nodeState.TryGetPosition(out Vector3 pos);
 
-                quadLeft.localRotation = rot;
-                quadLeft.localPosition = pos + quadLeft.localRotation * offset;
-
-                quadRight.localRotation = rot;
-                quadRight.localPosition = pos + quadRight.localRotation * offset;
-#else
-                quadLeft.localRotation = InputTracking.GetLocalRotation(XRNode.Head);
-				quadLeft.localPosition = InputTracking.GetLocalPosition(XRNode.Head) + quadLeft.localRotation * offset;
-
-				quadRight.localRotation = InputTracking.GetLocalRotation(XRNode.Head);
-				quadRight.localPosition = InputTracking.GetLocalPosition(XRNode.Head) + quadRight.localRotation * offset;
-#endif
+                quadCenter.localRotation = rot;
+                quadCenter.localPosition = pos + quadCenter.localRotation * offset;
             }
-		}
-	}
+        }
+    }
 #endif
 
     /// <summary>
