@@ -160,7 +160,7 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// <summary>
     /// A lower resolution of the depth and normals textures from the ZED.
     /// </summary>
-    private sl.Resolution resolution = new sl.Resolution(384, 192);
+    private sl.Resolution resolution = new sl.Resolution(1280, 720);
 
     /***LIGHTS definitions***/
     /// <summary>
@@ -1309,8 +1309,6 @@ public class ZEDRenderingPlane : MonoBehaviour
             ConfigureLightAndShadow(cam.actualRenderingPath);
         }
 #endif
-
-
     }
 
     /// <summary>

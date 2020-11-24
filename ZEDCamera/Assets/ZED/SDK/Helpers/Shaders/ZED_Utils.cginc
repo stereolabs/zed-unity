@@ -119,4 +119,14 @@ float computeAlphaYUVFromYUV(float3 colorCamera, in float3 keyColor) {
 	return distance(keyColor.yz, colorCamera.yz);
 }
 
+// Decode uint32 into RGBA
+float4 PCDecodeColor(uint data)
+{
+	float b = (data) & 0xff;
+	float g = (data >> 8) & 0xff;
+	float r = (data >> 16) & 0xff;
+	float a = (data >> 24) & 0xff;
+	return float4(r / 255.f, g / 255.f, b / 255.f, a / 255.f);
+}
+
 #endif

@@ -149,8 +149,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b439f5618c4d04684914fe2a698b8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   xRevolutionsPerSecond: 0.5
   yRevolutionsPerSecond: 0.25
   zRevolutionsPerSecond: 0
@@ -164,8 +164,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 11471153}
   interiorCone: 0.1
 --- !u!108 &11471153
@@ -178,6 +178,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 1, b: 0.25517225, a: 1}
   m_Intensity: 10
   m_Range: 10
@@ -272,8 +273,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 0}
   interiorCone: 0.1
 --- !u!108 &111758443
@@ -286,6 +287,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 2
+  m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 6
   m_Range: 10
@@ -346,8 +348,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19408c4b0147b4e40b6eee9724281a66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   startDelay: -0
   secondsBetweenFlashes: 0.475
   flashDurationInSeconds: 0.1
@@ -375,8 +377,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46118e064c903c64fb6d78a157096cec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   zedManager: {fileID: 0}
 --- !u!1 &167691177
 GameObject:
@@ -421,8 +423,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8d6c8f66403e9e46beb0f2af558afd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   timeToPoint: 0.1
 --- !u!114 &167691180
 MonoBehaviour:
@@ -434,8 +436,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 167691181}
   interiorCone: 0.1
 --- !u!108 &167691181
@@ -448,6 +450,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 0.6689658, b: 1, a: 0}
   m_Intensity: 8
   m_Range: 10
@@ -591,8 +594,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b439f5618c4d04684914fe2a698b8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   xRevolutionsPerSecond: 0
   yRevolutionsPerSecond: 0.1
   zRevolutionsPerSecond: 0
@@ -625,8 +628,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b439f5618c4d04684914fe2a698b8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   xRevolutionsPerSecond: 0
   yRevolutionsPerSecond: 0.5
   zRevolutionsPerSecond: 0
@@ -640,8 +643,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 311198987}
   interiorCone: 0.1
 --- !u!108 &311198987
@@ -654,6 +657,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0.986207, g: 0, b: 1, a: 1}
   m_Intensity: 10
   m_Range: 7
@@ -761,8 +765,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 0}
   interiorCone: 0.1
 --- !u!108 &361327216
@@ -775,6 +779,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 0.751724, b: 1, a: 1}
   m_Intensity: 8
   m_Range: 10
@@ -835,8 +840,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3fe36b7881f1ea14ba10fd3ef9565656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   animationCurve:
     serializedVersion: 2
     m_Curve:
@@ -919,8 +924,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b439f5618c4d04684914fe2a698b8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   xRevolutionsPerSecond: 0.5
   yRevolutionsPerSecond: 0.25
   zRevolutionsPerSecond: 0
@@ -934,8 +939,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 423338576}
   interiorCone: 0.1
 --- !u!108 &423338576
@@ -948,6 +953,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 1, b: 0.25517225, a: 1}
   m_Intensity: 10
   m_Range: 10
@@ -1055,8 +1061,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8d6c8f66403e9e46beb0f2af558afd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   timeToPoint: 0.1
 --- !u!114 &445666553
 MonoBehaviour:
@@ -1068,8 +1074,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 445666554}
   interiorCone: 0.1
 --- !u!108 &445666554
@@ -1082,6 +1088,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 0.6689658, b: 1, a: 0}
   m_Intensity: 8
   m_Range: 10
@@ -1177,8 +1184,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b3d618a95ffb03445b07e260dbe9c87c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   sequenceDurationSeconds: 7.6
   sequenceObjects:
   - {fileID: 2124941620}
@@ -1194,8 +1201,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46118e064c903c64fb6d78a157096cec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   zedManager: {fileID: 0}
 --- !u!1 &593659634 stripped
 GameObject:
@@ -1286,8 +1293,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8d6c8f66403e9e46beb0f2af558afd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   timeToPoint: 0.1
 --- !u!114 &627396526
 MonoBehaviour:
@@ -1299,8 +1306,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 627396527}
   interiorCone: 0.1
 --- !u!108 &627396527
@@ -1313,6 +1320,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 0.6689658, b: 1, a: 0}
   m_Intensity: 8
   m_Range: 10
@@ -1406,8 +1414,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 0}
   interiorCone: 0.1
 --- !u!108 &659201225
@@ -1420,6 +1428,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_Intensity: 8
   m_Range: 10
@@ -1480,8 +1489,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3fe36b7881f1ea14ba10fd3ef9565656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   animationCurve:
     serializedVersion: 2
     m_Curve:
@@ -1578,8 +1587,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 0}
   interiorCone: 0.1
 --- !u!108 &768756273
@@ -1592,6 +1601,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_Intensity: 8
   m_Range: 10
@@ -1652,8 +1662,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3fe36b7881f1ea14ba10fd3ef9565656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   animationCurve:
     serializedVersion: 2
     m_Curve:
@@ -1750,8 +1760,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 0}
   interiorCone: 0.1
 --- !u!108 &805229595
@@ -1764,6 +1774,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 0.751724, b: 1, a: 1}
   m_Intensity: 8
   m_Range: 10
@@ -1824,8 +1835,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3fe36b7881f1ea14ba10fd3ef9565656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   animationCurve:
     serializedVersion: 2
     m_Curve:
@@ -1908,8 +1919,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b439f5618c4d04684914fe2a698b8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   xRevolutionsPerSecond: 0.5
   yRevolutionsPerSecond: 0.25
   zRevolutionsPerSecond: 0
@@ -1923,8 +1934,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 831507619}
   interiorCone: 0.1
 --- !u!108 &831507619
@@ -1937,6 +1948,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 1, b: 0.25517225, a: 1}
   m_Intensity: 10
   m_Range: 10
@@ -2042,6 +2054,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 1
+  m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 5
   m_Range: 1
@@ -2135,8 +2148,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3fe36b7881f1ea14ba10fd3ef9565656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   animationCurve:
     serializedVersion: 2
     m_Curve:
@@ -2200,8 +2213,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 0}
   interiorCone: 0.1
 --- !u!108 &1067827102
@@ -2214,6 +2227,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_Intensity: 8
   m_Range: 10
@@ -2402,8 +2416,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46118e064c903c64fb6d78a157096cec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   zedManager: {fileID: 2107856817}
 --- !u!1 &1281869212
 GameObject:
@@ -2434,8 +2448,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 1281869215}
   interiorCone: 0.1
 --- !u!114 &1281869214
@@ -2448,8 +2462,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b439f5618c4d04684914fe2a698b8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   xRevolutionsPerSecond: 0.5
   yRevolutionsPerSecond: 0.25
   zRevolutionsPerSecond: 0
@@ -2463,6 +2477,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0.986207, g: 0, b: 1, a: 1}
   m_Intensity: 10
   m_Range: 7
@@ -2570,8 +2585,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8d6c8f66403e9e46beb0f2af558afd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   timeToPoint: 0.1
 --- !u!114 &1341029550
 MonoBehaviour:
@@ -2583,8 +2598,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 1341029551}
   interiorCone: 0.1
 --- !u!108 &1341029551
@@ -2597,6 +2612,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 0.6689658, b: 1, a: 0}
   m_Intensity: 8
   m_Range: 10
@@ -2676,8 +2692,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 1369015212}
   interiorCone: 0.1
 --- !u!108 &1369015212
@@ -2690,6 +2706,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0.986207, g: 0, b: 1, a: 1}
   m_Intensity: 10
   m_Range: 7
@@ -2764,8 +2781,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b439f5618c4d04684914fe2a698b8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   xRevolutionsPerSecond: 0.5
   yRevolutionsPerSecond: 0.25
   zRevolutionsPerSecond: 0
@@ -2798,8 +2815,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b439f5618c4d04684914fe2a698b8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   xRevolutionsPerSecond: 0
   yRevolutionsPerSecond: 0.5
   zRevolutionsPerSecond: 0
@@ -2813,8 +2830,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 1488806383}
   interiorCone: 0.1
 --- !u!108 &1488806383
@@ -2827,6 +2844,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0.986207, g: 0, b: 1, a: 1}
   m_Intensity: 10
   m_Range: 7
@@ -2918,8 +2936,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 39f27458fe693ce4b8abc007963bd1b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   secondsBetweenPulses: 0.475
   startDelay: 0
   ColorOptions:
@@ -2993,8 +3011,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8d6c8f66403e9e46beb0f2af558afd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   timeToPoint: 0.1
 --- !u!114 &1526281000
 MonoBehaviour:
@@ -3006,8 +3024,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 1526281001}
   interiorCone: 0.1
 --- !u!108 &1526281001
@@ -3020,6 +3038,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 0.6689658, b: 1, a: 0}
   m_Intensity: 8
   m_Range: 10
@@ -3150,8 +3169,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8d6c8f66403e9e46beb0f2af558afd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   timeToPoint: 0.1
 --- !u!114 &1716389880
 MonoBehaviour:
@@ -3163,8 +3182,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 1716389881}
   interiorCone: 0.1
 --- !u!108 &1716389881
@@ -3177,6 +3196,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 0.6689658, b: 1, a: 0}
   m_Intensity: 8
   m_Range: 10
@@ -3308,7 +3328,7 @@ PrefabInstance:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: spatialMappingFoldoutOpen
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
@@ -3338,7 +3358,7 @@ PrefabInstance:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: svoInputFileName
-      value: 
+      value:
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
@@ -3353,12 +3373,12 @@ PrefabInstance:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: recordingFoldoutOpen
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: streamingOutFoldoutOpen
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
@@ -3373,6 +3393,16 @@ PrefabInstance:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: showarrig
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
+      propertyPath: m_textureConfidenceThreshold
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
+      propertyPath: objectDetectionFoldoutOpen
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -3418,6 +3448,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 2
@@ -3511,8 +3542,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 0}
   interiorCone: 0.1
 --- !u!108 &1896090281
@@ -3525,6 +3556,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 0.751724, b: 1, a: 1}
   m_Intensity: 8
   m_Range: 10
@@ -3585,8 +3617,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3fe36b7881f1ea14ba10fd3ef9565656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   animationCurve:
     serializedVersion: 2
     m_Curve:
@@ -3683,8 +3715,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 0}
   interiorCone: 0.1
 --- !u!108 &1976644743
@@ -3697,6 +3729,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_Intensity: 8
   m_Range: 10
@@ -3757,8 +3790,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3fe36b7881f1ea14ba10fd3ef9565656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   animationCurve:
     serializedVersion: 2
     m_Curve:
@@ -3841,8 +3874,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46b439f5618c4d04684914fe2a698b8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   xRevolutionsPerSecond: 0.5
   yRevolutionsPerSecond: 0.25
   zRevolutionsPerSecond: 0
@@ -3856,8 +3889,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 2030907906}
   interiorCone: 0.1
 --- !u!108 &2030907906
@@ -3870,6 +3903,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 1, b: 0.25517225, a: 1}
   m_Intensity: 10
   m_Range: 10
@@ -3944,8 +3978,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1 &2120341550
 GameObject:
   m_ObjectHideFlags: 0
@@ -3989,8 +4023,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8d6c8f66403e9e46beb0f2af558afd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   timeToPoint: 0.1
 --- !u!114 &2120341553
 MonoBehaviour:
@@ -4002,8 +4036,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 2120341554}
   interiorCone: 0.1
 --- !u!108 &2120341554
@@ -4016,6 +4050,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 0
+  m_Shape: 0
   m_Color: {r: 0, g: 0.6689658, b: 1, a: 0}
   m_Intensity: 8
   m_Range: 10

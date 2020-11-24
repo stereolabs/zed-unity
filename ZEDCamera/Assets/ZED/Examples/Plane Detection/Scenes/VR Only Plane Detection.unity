@@ -170,17 +170,17 @@ PrefabInstance:
     - target: {fileID: 23075913095688566, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
-      value: 
+      value:
       objectReference: {fileID: 2100000, guid: 9e0ce7c1c09fe2541bf6202cef4b0d0c, type: 2}
     - target: {fileID: 33711742071643766, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: m_Mesh
-      value: 
+      value:
       objectReference: {fileID: 4300002, guid: 624b5e6716f850143b1b3881a8423407, type: 3}
     - target: {fileID: 114278110183374612, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: capsulefollowerprefab
-      value: 
+      value:
       objectReference: {fileID: 114284262561179570, guid: 426deaf652deccc4ab8025e0222d5b0a,
         type: 3}
     - target: {fileID: 114380879406418918, guid: 201563e25e8761a40adb2b278a2fb4f7,
@@ -191,56 +191,56 @@ PrefabInstance:
     - target: {fileID: 114380879406418918, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: _rayOrigin
-      value: 
+      value:
       objectReference: {fileID: 406601174}
     - target: {fileID: 114380879406418918, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: bunnyPrefab
-      value: 
+      value:
       objectReference: {fileID: 1791071174324572, guid: 0bcfb109574c6044a8d247157698abd6,
         type: 3}
     - target: {fileID: 114380879406418918, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: pointerPrefab
-      value: 
+      value:
       objectReference: {fileID: 1013873881802346, guid: 059643d321daca8498088bf53a3c033d,
         type: 3}
     - target: {fileID: 114380879406418918, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: rayOrigin
-      value: 
+      value:
       objectReference: {fileID: 406601174}
     - target: {fileID: 114380879406418918, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: uiPrefab
-      value: 
+      value:
       objectReference: {fileID: 1113032969764556, guid: e118d12ab4eb21e488383f4b65090bd9,
         type: 3}
     - target: {fileID: 114380879406418918, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: placeHolderMat.Array.data[0]
-      value: 
+      value:
       objectReference: {fileID: 2100000, guid: 8c191c3046c025b4584bcfcf4a5f46ce, type: 2}
     - target: {fileID: 114380879406418918, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: placeHolderMat.Array.data[1]
-      value: 
+      value:
       objectReference: {fileID: 2100000, guid: 1afc1a2666b033a4b9ee6e36cb577b8a, type: 2}
     - target: {fileID: 114380879406418918, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: zedManager
-      value: 
+      value:
       objectReference: {fileID: 906526638}
     - target: {fileID: 114397233949422500, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: capsulefollowerprefab
-      value: 
+      value:
       objectReference: {fileID: 114284262561179570, guid: 426deaf652deccc4ab8025e0222d5b0a,
         type: 3}
     - target: {fileID: 114743274994090928, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: zedManager
-      value: 
+      value:
       objectReference: {fileID: 906526638}
     - target: {fileID: 114762965782928386, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
@@ -255,33 +255,33 @@ PrefabInstance:
     - target: {fileID: 114762965782928386, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: goodPlacementTex.Array.data[0]
-      value: 
+      value:
       objectReference: {fileID: 2800000, guid: f6d1923cc5b827e4b9c373156b027ad4, type: 3}
     - target: {fileID: 114762965782928386, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: goodPlacementTex.Array.data[1]
-      value: 
+      value:
       objectReference: {fileID: 2800000, guid: 8cf16a9446836704e9c64c8ec86e3d33, type: 3}
     - target: {fileID: 114762965782928386, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: badPlacementTex.Array.data[0]
-      value: 
+      value:
       objectReference: {fileID: 2800000, guid: 6cae7f5684515a04b98d208d3d8c16ed, type: 3}
     - target: {fileID: 114762965782928386, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: badPlacementTex.Array.data[1]
-      value: 
+      value:
       objectReference: {fileID: 2800000, guid: 1978663b19a840f4096000c039a6bf84, type: 3}
     - target: {fileID: 114819210581546514, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: capsulefollowerprefab
-      value: 
+      value:
       objectReference: {fileID: 114284262561179570, guid: 426deaf652deccc4ab8025e0222d5b0a,
         type: 3}
     - target: {fileID: 114828685860240006, guid: 201563e25e8761a40adb2b278a2fb4f7,
         type: 3}
       propertyPath: capsulefollowerprefab
-      value: 
+      value:
       objectReference: {fileID: 114284262561179570, guid: 426deaf652deccc4ab8025e0222d5b0a,
         type: 3}
     m_RemovedComponents:
@@ -309,14 +309,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  index: -1
-  useLegacySteamVRInput: 0
+  m_Name:
+  m_EditorClassIdentifier:
   deviceToTrack: 0
   latencyCompensation: 78
   correctControllerDrift: 1
-  SNHolder: 
+  SNHolder:
   zedManager: {fileID: 906526638}
   fireBinding: {fileID: 11400000, guid: 478100cf30a0ef0468e1363105b03c0e, type: 2}
   clickBinding: {fileID: 11400000, guid: 1fe8ff4629cffba44a4e88cce00ce483, type: 2}
@@ -375,8 +373,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 0}
   interiorCone: 0.1
 --- !u!108 &630262883
@@ -389,6 +387,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 1
+  m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
@@ -562,6 +561,16 @@ PrefabInstance:
       propertyPath: showarrig
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
+      propertyPath: objectDetectionFoldoutOpen
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
+      propertyPath: inputType
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
 --- !u!114 &906526638 stripped
@@ -574,8 +583,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1 &1210051178
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,8 +612,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ba700bf1e7ba50c42a63a0d43378e2a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   hitPlaneList: []
   addPhysicsOption: 1
   isVisibleInSceneOption: 1
@@ -651,6 +660,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 1
+  m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
@@ -743,8 +753,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
@@ -762,8 +772,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 5
