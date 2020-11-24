@@ -60,7 +60,7 @@ public class ZEDManager : MonoBehaviour
     /// at C:/ProgramData/stereolabs/SL_Unity_wrapper.txt. This helps find issues that may occur within
     /// the protected .dll, but can decrease performance. 
     /// </summary>
-    private bool wrapperVerbose = false;
+    private bool wrapperVerbose = true;
 
     /// <summary>
     /// Current instance of the ZED Camera, which handles calls to the Unity wrapper .dll. 
@@ -2268,9 +2268,11 @@ public class ZEDManager : MonoBehaviour
                 pathSpatialMemory = "";
             }
 
+            sl.ERROR_CODE err = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
+                enablePoseSmoothing, estimateInitialPosition, trackingIsStatic, enableIMUFusion, pathSpatialMemory));
+
             //Now enable the tracking with the proper parameters.
-            if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
-                enablePoseSmoothing, estimateInitialPosition, trackingIsStatic, enableIMUFusion, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
+            if (!(enableTracking = (err == sl.ERROR_CODE.SUCCESS)))
             {
                 throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
             }
