@@ -57,6 +57,10 @@ public class ZEDCameraEditor : Editor
     //Recording Prop
     private SerializedProperty svoOutputFileNameProperty;
     private SerializedProperty svoOutputCompressionModeProperty;
+    private SerializedProperty svoOutputBitrateProperty;
+    private SerializedProperty svoOutputTargetFPSProperty;
+    private SerializedProperty svoOutputTranscodeProperty;
+    
 
     //Streaming Prop
     private SerializedProperty streamingOutProperty;
@@ -66,6 +70,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty streamingOutGopSizeProperty;
     private SerializedProperty streamingOutAdaptBitrateProperty;
     private SerializedProperty streamingOutChunkSizeProperty;
+    private SerializedProperty streamingOutTargetFPSProperty;
 
 
     //Spatial mapping prop
@@ -101,13 +106,25 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty meshPath;
 
     //Object Detection Prop 
-    private SerializedProperty OD_ImageSyncMode;
+    //private SerializedProperty OD_ImageSyncMode;
     private SerializedProperty OD_ObjectTracking;
+    private SerializedProperty OD_BodyFitting;
     private SerializedProperty OD_2DMask;
+    private SerializedProperty OD_DetectionModel;
     //Object Detection Runtime Prop
-    private SerializedProperty OD_DetectionConfidence;
+    private SerializedProperty OD_VehicleDetectionConfidence;
+    private SerializedProperty OD_PersonDetectionConfidence;
+    private SerializedProperty SK_PersonDetectionConfidence;
+    private SerializedProperty OD_BagDetectionConfidence;
+    private SerializedProperty OD_AnimalDetectionConfidence;
+    private SerializedProperty OD_ElectronicsDetectionConfidence;
+    private SerializedProperty OD_FruitVegetableDetectionConfidence;
     private SerializedProperty OD_PersonFilter;
     private SerializedProperty OD_VehicleFilter;
+    private SerializedProperty OD_BagFilter;
+    private SerializedProperty OD_AnimalFilter;
+    private SerializedProperty OD_ElectronicsFilter;
+    private SerializedProperty OD_FruitVegetableFilter;
 
     /// <summary>
     /// Layout option used to draw the '...' button for opening a File Explorer window to find a mesh file. 
@@ -121,6 +138,8 @@ public class ZEDCameraEditor : Editor
     SerializedProperty confidenceThresholdProperty;
     SerializedProperty textureConfidenceThresholdProperty;
     SerializedProperty enableSelfCalibrationProperty;
+    SerializedProperty enableIMUFusionProperty;
+
 
     // Rendering Prop
     private int arlayer;
@@ -231,18 +250,33 @@ public class ZEDCameraEditor : Editor
         meshPath = serializedObject.FindProperty("meshPath");
 
         ///Object Detection Serialized Properties
-        OD_ImageSyncMode = serializedObject.FindProperty("objectDetectionImageSyncMode");
+        //OD_ImageSyncMode = serializedObject.FindProperty("objectDetectionImageSyncMode");
         OD_ObjectTracking = serializedObject.FindProperty("objectDetectionTracking");
+        OD_BodyFitting = serializedObject.FindProperty("bodyFitting");
         OD_2DMask = serializedObject.FindProperty("objectDetection2DMask");
+        OD_DetectionModel = serializedObject.FindProperty("objectDetectionModel"); 
 
-
-        OD_DetectionConfidence = serializedObject.FindProperty("objectDetectionConfidenceThreshold");
+        OD_PersonDetectionConfidence = serializedObject.FindProperty("OD_personDetectionConfidenceThreshold");
+        SK_PersonDetectionConfidence = serializedObject.FindProperty("SK_personDetectionConfidenceThreshold");
+        OD_VehicleDetectionConfidence = serializedObject.FindProperty("vehicleDetectionConfidenceThreshold");
+        OD_BagDetectionConfidence = serializedObject.FindProperty("bagDetectionConfidenceThreshold");
+        OD_AnimalDetectionConfidence = serializedObject.FindProperty("animalDetectionConfidenceThreshold");
+        OD_ElectronicsDetectionConfidence = serializedObject.FindProperty("electronicsDetectionConfidenceThreshold");
+        OD_FruitVegetableDetectionConfidence = serializedObject.FindProperty("fruitVegetableDetectionConfidenceThreshold");
         OD_PersonFilter = serializedObject.FindProperty("objectClassPersonFilter");
         OD_VehicleFilter = serializedObject.FindProperty("objectClassVehicleFilter");
+        OD_BagFilter = serializedObject.FindProperty("objectClassBagFilter");
+        OD_AnimalFilter = serializedObject.FindProperty("objectClassAnimalFilter");
+        OD_ElectronicsFilter = serializedObject.FindProperty("objectClassElectronicsFilter");
+        OD_FruitVegetableFilter = serializedObject.FindProperty("objectClassFruitVegetableFilter");
 
         //Recording Serialized Properties
         svoOutputFileNameProperty = serializedObject.FindProperty("svoOutputFileName");
         svoOutputCompressionModeProperty = serializedObject.FindProperty("svoOutputCompressionMode");
+        svoOutputBitrateProperty = serializedObject.FindProperty("svoOutputBitrate");
+        svoOutputTargetFPSProperty = serializedObject.FindProperty("svoOutputTargetFPS");
+        svoOutputTranscodeProperty = serializedObject.FindProperty("svoOutputTranscodeStreaming");
+      
 
         streamingOutProperty = serializedObject.FindProperty("enableStreaming");
         streamingOutCodecProperty = serializedObject.FindProperty("streamingCodec");
@@ -251,6 +285,8 @@ public class ZEDCameraEditor : Editor
         streamingOutGopSizeProperty = serializedObject.FindProperty("gopSize");
         streamingOutAdaptBitrateProperty = serializedObject.FindProperty("adaptativeBitrate");
         streamingOutChunkSizeProperty = serializedObject.FindProperty("chunkSize");
+        streamingOutTargetFPSProperty = serializedObject.FindProperty("streamingTargetFramerate");
+        
 
 
         ///Advanced Settings Serialized Properties
@@ -266,6 +302,7 @@ public class ZEDCameraEditor : Editor
         confidenceThresholdProperty = serializedObject.FindProperty("m_confidenceThreshold");
         textureConfidenceThresholdProperty = serializedObject.FindProperty("m_textureConfidenceThreshold");
         enableSelfCalibrationProperty = serializedObject.FindProperty("enableSelfCalibration");
+        enableIMUFusionProperty = serializedObject.FindProperty("enableIMUFusion");
         allowPassThroughProperty = serializedObject.FindProperty("allowARPassThrough");
         setIMUPrior = serializedObject.FindProperty("setIMUPriorInAR");
         enableImageEnhancementProperty = serializedObject.FindProperty("enableImageEnhancement");
@@ -369,7 +406,7 @@ public class ZEDCameraEditor : Editor
                 EditorGUILayout.EndHorizontal();
                 GUIContent svoLoopLabel = new GUIContent("Loop SVO", "Loop SVO when it reaches the end.");
                 svoLoopProperty.boolValue = EditorGUILayout.Toggle(svoLoopLabel, svoLoopProperty.boolValue);
-                GUIContent svoRealTimeModelabel = new GUIContent("Real-Time mode", "When enabled, the time between frames comes from the actual timestamps of each frame. Otherwise, " +
+                GUIContent svoRealTimeModelabel = new GUIContent("Real-Time Mode", "When enabled, the time between frames comes from the actual timestamps of each frame. Otherwise, " +
                     "each frame is read based on the maximum FPS of the recorded resolution (ex. 30FPS for HD1080). Real-Time mode makes playback speed more true, but dropped frames result in pauses.");
                 svoRealTimeModeProperty.boolValue = EditorGUILayout.Toggle(svoRealTimeModelabel, svoRealTimeModeProperty.boolValue);
                 EditorGUI.BeginChangeCheck();
@@ -533,6 +570,7 @@ public class ZEDCameraEditor : Editor
 
             EditorGUILayout.EndHorizontal();
 
+            
             GUIContent resolutionlabel = new GUIContent("Resolution", "Resolution setting for the scan. " +
                                          "A higher resolution creates more submeshes and uses more memory, but is more accurate.");
             ZEDSpatialMapping.RESOLUTION newResolution = (ZEDSpatialMapping.RESOLUTION)EditorGUILayout.EnumPopup(resolutionlabel, manager.mappingResolutionPreset);
@@ -668,55 +706,116 @@ public class ZEDCameraEditor : Editor
         /////////////////////////////////////////////////////////////
         GUILayout.Space(10);
 
-        showObjectDetection.boolValue = EditorGUILayout.Foldout(showObjectDetection.boolValue, "Object Detection", boldfoldout);
+        showObjectDetection.boolValue = EditorGUILayout.Foldout(showObjectDetection.boolValue, "Object Detection / Skeleton Tracking", boldfoldout);
         if (showObjectDetection.boolValue)
         {
-            EditorGUI.indentLevel++;
             bool cameraIsReady = false;
             if (manager)
                 cameraIsReady = manager.zedCamera != null ? manager.zedCamera.IsCameraReady : false;
 
+            GUILayout.Space(10);
+            EditorGUILayout.LabelField("Detection Mode", EditorStyles.boldLabel);
+            GUILayout.Space(5);
+
+            EditorGUI.indentLevel++;
+
+            GUIContent ObjectDetectionModelLabel = new GUIContent("Object Detection Model", "Select the available object detection model. HUMAN_XXX for skeleton tracking");
+            OD_DetectionModel.enumValueIndex = (int)(sl.DETECTION_MODEL)EditorGUILayout.EnumPopup(ObjectDetectionModelLabel, (sl.DETECTION_MODEL)OD_DetectionModel.enumValueIndex);
+
+            EditorGUI.indentLevel--;
 
             GUILayout.Space(10);
-            EditorGUILayout.LabelField("Initialization", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Init Parameters", EditorStyles.boldLabel);
             GUILayout.Space(5);
 
             EditorGUI.indentLevel++;
 
             GUI.enabled = !cameraIsReady || !manager.IsObjectDetectionRunning;
 
-            GUIContent ImageSyncModeLabel = new GUIContent("Image sync", "If enabled, object detection will be computed for each image before the next frame is available, " +
+            /*GUIContent ImageSyncModeLabel = new GUIContent("Image Sync", "If enabled, object detection will be computed for each image before the next frame is available, " +
                 "locking the main thread if necessary.\r\n\nRecommended setting is false for real-time applications.");
-            OD_ImageSyncMode.boolValue = EditorGUILayout.Toggle(ImageSyncModeLabel, OD_ImageSyncMode.boolValue);
+            OD_ImageSyncMode.boolValue = EditorGUILayout.Toggle(ImageSyncModeLabel, OD_ImageSyncMode.boolValue);*/
 
-            GUIContent ObjectTrackingLabel = new GUIContent("Object Tracking", "Whether to track objects across multiple frames using the ZED's position relative to the floor.\r\n\n" +
+            GUIContent ObjectTrackingLabel = new GUIContent("Enable Object Tracking", "Whether to track objects across multiple frames using the ZED's position relative to the floor.\r\n\n" +
                 "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
             OD_ObjectTracking.boolValue = EditorGUILayout.Toggle(ObjectTrackingLabel, OD_ObjectTracking.boolValue);
 
-            GUIContent Object2DMaskLabel = new GUIContent("Enable 2D Mask", "Whether to calculate 2D masks for each object, showing exactly which pixels within the 2D bounding box are the object.\r\n\n" +
+            if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
+            {
+                GUIContent Object2DMaskLabel = new GUIContent("Enable 2D Mask", "Whether to calculate 2D masks for each object, showing exactly which pixels within the 2D bounding box are the object.\r\n\n" +
                 "Must be on when Object Detection starts. Requires more performance, so do not enable unless needed.");
-            OD_2DMask.boolValue = EditorGUILayout.Toggle(Object2DMaskLabel, OD_2DMask.boolValue);
+                OD_2DMask.boolValue = EditorGUILayout.Toggle(Object2DMaskLabel, OD_2DMask.boolValue);
+            }
+            else
+            {
+                GUIContent BodyFittingLabel = new GUIContent("Enable Body Fitting", "Defines if the body fitting will be applied.\r\n\n" +
+                "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
+                OD_BodyFitting.boolValue = EditorGUILayout.Toggle(BodyFittingLabel, OD_BodyFitting.boolValue);
+            }
 
             GUI.enabled = true;
 
             EditorGUI.indentLevel--;
             GUILayout.Space(10);
-            EditorGUILayout.LabelField("Runtime", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
             GUILayout.Space(5);
             EditorGUI.indentLevel++;
 
+            if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
+            {
 
-            GUIContent objectDetectionConfidenceThresholdLabel = new GUIContent("Detection Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                GUIContent OD_personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
-            OD_DetectionConfidence.floatValue = EditorGUILayout.Slider(objectDetectionConfidenceThresholdLabel, OD_DetectionConfidence.floatValue, 1, 99);
+                OD_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(OD_personDetectionConfidenceThresholdLabel, OD_PersonDetectionConfidence.intValue, 1, 99);
 
+                GUIContent vehicleDetectionConfidenceThresholdLabel = new GUIContent("Vehicle Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_VehicleDetectionConfidence.intValue = EditorGUILayout.IntSlider(vehicleDetectionConfidenceThresholdLabel, OD_VehicleDetectionConfidence.intValue, 1, 99);
 
-            GUIContent PersonFilterLabel = new GUIContent("Person Filter", "Whether to detect people during object detection.");
-            OD_PersonFilter.boolValue = EditorGUILayout.Toggle(PersonFilterLabel, OD_PersonFilter.boolValue);
+                GUIContent bagDetectionConfidenceThresholdLabel = new GUIContent("Bag Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_BagDetectionConfidence.intValue = EditorGUILayout.IntSlider(bagDetectionConfidenceThresholdLabel, OD_BagDetectionConfidence.intValue, 1, 99);
 
-            GUIContent VehicleFilterLabel = new GUIContent("Vehicle Filter", "Whether to detect vehicles during object detection.");
-            OD_VehicleFilter.boolValue = EditorGUILayout.Toggle(VehicleFilterLabel, OD_VehicleFilter.boolValue);
-            EditorGUI.indentLevel--;
+                GUIContent animalDetectionConfidenceThresholdLabel = new GUIContent("Animal Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_AnimalDetectionConfidence.intValue = EditorGUILayout.IntSlider(animalDetectionConfidenceThresholdLabel, OD_AnimalDetectionConfidence.intValue, 1, 99);
+
+                GUIContent electronicsDetectionConfidenceThresholdLabel = new GUIContent("Electronics Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_ElectronicsDetectionConfidence.intValue = EditorGUILayout.IntSlider(electronicsDetectionConfidenceThresholdLabel, OD_ElectronicsDetectionConfidence.intValue, 1, 99);
+
+                GUIContent fruitVegetableDetectionConfidenceThresholdLabel = new GUIContent("Fruit and Vegetable Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_FruitVegetableDetectionConfidence.intValue = EditorGUILayout.IntSlider(fruitVegetableDetectionConfidenceThresholdLabel, OD_FruitVegetableDetectionConfidence.intValue, 1, 99);
+
+                GUILayout.Space(5);
+
+                GUIContent PersonFilterLabel = new GUIContent("Person Filter", "Whether to detect people during object detection.");
+                OD_PersonFilter.boolValue = EditorGUILayout.Toggle(PersonFilterLabel, OD_PersonFilter.boolValue);
+
+                GUIContent VehicleFilterLabel = new GUIContent("Vehicle Filter", "Whether to detect vehicles during object detection.");
+                OD_VehicleFilter.boolValue = EditorGUILayout.Toggle(VehicleFilterLabel, OD_VehicleFilter.boolValue);
+
+                GUIContent BagFilterLabel = new GUIContent("Bag Filter", "Whether to detect bags during object detection.");
+                OD_BagFilter.boolValue = EditorGUILayout.Toggle(BagFilterLabel, OD_BagFilter.boolValue);
+
+                GUIContent AnimalFilterLabel = new GUIContent("Animal Filter", "Whether to detect animals during object detection.");
+                OD_AnimalFilter.boolValue = EditorGUILayout.Toggle(AnimalFilterLabel, OD_AnimalFilter.boolValue);
+
+                GUIContent ElectronicsFilterLabel = new GUIContent("Electronics Filter", "Whether to detect electronics devices during object detection.");
+                OD_ElectronicsFilter.boolValue = EditorGUILayout.Toggle(ElectronicsFilterLabel, OD_ElectronicsFilter.boolValue);
+
+                GUIContent FruitVegetableFilterLabel = new GUIContent("Fruit and Vegetable Filter", "Whether to detect fruits and vegetablesduring object detection.");
+                OD_FruitVegetableFilter.boolValue = EditorGUILayout.Toggle(FruitVegetableFilterLabel, OD_FruitVegetableFilter.boolValue);
+
+                EditorGUI.indentLevel--;
+            }
+            else
+            {
+                GUIContent SK_personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                SK_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(SK_personDetectionConfidenceThresholdLabel, SK_PersonDetectionConfidence.intValue, 1, 99);
+            }
 
             GUI.enabled = cameraIsReady;
 
@@ -739,7 +838,6 @@ public class ZEDCameraEditor : Editor
             }
 
             GUI.enabled = true;
-            EditorGUI.indentLevel--;
         }
 
         ///////////////////////////////////////////////////////////////
@@ -762,6 +860,15 @@ public class ZEDCameraEditor : Editor
             GUIContent svoCompressionModeLabel = new GUIContent("SVO Compression", "SVO Compression mode for the recorded SVO file");
             svoOutputCompressionModeProperty.enumValueIndex = (int)(sl.SVO_COMPRESSION_MODE)EditorGUILayout.EnumPopup(svoCompressionModeLabel, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex, GUILayout.ExpandWidth(true));
 
+            GUIContent svoOutBitrateLabel = new GUIContent("Bitrate", "Bitrate for H264/5 recording");
+            svoOutputBitrateProperty.intValue = EditorGUILayout.IntField(svoOutBitrateLabel, svoOutputBitrateProperty.intValue);
+
+            GUIContent svoOutTargetFPSLabel = new GUIContent("Target FPS", "Target FPS for SVO recording");
+            svoOutputTargetFPSProperty.intValue = EditorGUILayout.IntField(svoOutTargetFPSLabel, svoOutputTargetFPSProperty.intValue);
+
+            GUIContent svoOutputTranscodeLabel = new GUIContent("Transcode", "If streaming input, set to false to avoid transcoding (decoding+ re-encoding for SVO). Recommended to leave at false.");
+            svoOutputTranscodeProperty.boolValue = EditorGUILayout.Toggle(svoOutputTranscodeLabel, svoOutputTranscodeProperty.boolValue);
+
             EditorGUILayout.BeginHorizontal();
             GUI.enabled = cameraIsReady;
             string recordLabel = manager.needRecordFrame ? "Stop Recording" : "Start Recording";
@@ -778,7 +885,7 @@ public class ZEDCameraEditor : Editor
                 else
                 {
 
-                    if (manager.zedCamera.EnableRecording(svoOutputFileNameProperty.stringValue, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex) == sl.ERROR_CODE.SUCCESS)
+                    if (manager.zedCamera.EnableRecording(svoOutputFileNameProperty.stringValue, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex,(int)svoOutputBitrateProperty.intValue,(int)svoOutputTargetFPSProperty.intValue,svoOutputTranscodeProperty.boolValue) == sl.ERROR_CODE.SUCCESS)
                         manager.needRecordFrame = true;
                     else
                     {
@@ -822,6 +929,9 @@ public class ZEDCameraEditor : Editor
 
             GUIContent streamingOutChunkSizePropertyLabel = new GUIContent("Payload", "Chunk size for packet streaming");
             streamingOutChunkSizeProperty.intValue = EditorGUILayout.IntField(streamingOutChunkSizePropertyLabel, streamingOutChunkSizeProperty.intValue);
+
+            GUIContent streamingOutTargetFPSPropertyLabel = new GUIContent("Target FPS", "Target FPS for streaming output");
+            streamingOutTargetFPSProperty.intValue = EditorGUILayout.IntField(streamingOutTargetFPSPropertyLabel, streamingOutTargetFPSProperty.intValue);
 
             EditorGUI.indentLevel--;
         }
@@ -1004,8 +1114,12 @@ public class ZEDCameraEditor : Editor
             GUIContent enableselfcaliblabel = new GUIContent("Self-Calibration", "If true, the ZED SDK will subtly adjust the ZED's calibration " +
                 "during runtime to account for heat and other factors. Reasons to disable this are rare. ");
             enableSelfCalibrationProperty.boolValue = EditorGUILayout.Toggle(enableselfcaliblabel, enableSelfCalibrationProperty.boolValue);
-            EditorGUI.EndDisabledGroup();
 
+            GUIContent enalbeIMUFusionLabel = new GUIContent("Visual-Inertial Tracking", "If true, and you are using a ZED2 or ZED Mini, IMU fusion uses data from the camera's IMU to improve tracking results. ");
+            enableIMUFusionProperty.boolValue = EditorGUILayout.Toggle(enalbeIMUFusionLabel, enableIMUFusionProperty.boolValue);
+
+
+            EditorGUI.EndDisabledGroup();
             EditorGUI.indentLevel--;
         }
 

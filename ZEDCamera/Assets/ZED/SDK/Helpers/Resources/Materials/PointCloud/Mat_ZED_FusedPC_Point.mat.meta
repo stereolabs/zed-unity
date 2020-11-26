@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+<<<<<<< HEAD
+guid: 71b4e64e2d9a25c40972bcca9d0d5aef
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:
+=======
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/SDK/Helpers/Resources/Materials/PointCloud/Scene/SkeletonDemo.unity.meta
+guid: f535049b49f244347b6c7b6622796d14
+DefaultImporter:
+=======
+guid: 71b4e64e2d9a25c40972bcca9d0d5aef
+NativeFormatImporter:
+>>>>>>> cc28bdd3ae6ca1ad7e437fa7af45876ea2fe1e1c:ZEDCamera/Assets/ZED/SDK/Helpers/Resources/Materials/PointCloud/Mat_ZED_FusedPC_Point.mat.meta
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+>>>>>>> cc28bdd3ae6ca1ad7e437fa7af45876ea2fe1e1c

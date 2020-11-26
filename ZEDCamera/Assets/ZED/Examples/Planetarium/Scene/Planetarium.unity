@@ -131,8 +131,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1001 &357707471
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -377,6 +377,21 @@ PrefabInstance:
       propertyPath: m_Depth
       value: -1.1
       objectReference: {fileID: 0}
+    - target: {fileID: 20426257081025226, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
+      propertyPath: m_Depth
+      value: -1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 20426257081025226, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 20846656237544980, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: enableTracking
@@ -385,7 +400,7 @@ PrefabInstance:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: showarrig
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
@@ -481,8 +496,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 441482e8936e35048a1dffac814e3ef8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_Profile: {fileID: 11400000, guid: eeed9a0cde831a244a3f3d23aca255c3, type: 2}
   m_StaticLightingSkyUniqueID: 0
   m_SkySettings: {fileID: 0}
@@ -528,14 +543,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   index: -1
   useLegacySteamVRInput: 0
   deviceToTrack: 1
   latencyCompensation: 78
   correctControllerDrift: 1
-  SNHolder: 
+  SNHolder:
   zedManager: {fileID: 139748563}
   fireBinding:
     actionPath: /actions/zed-default/in/Fire
@@ -617,14 +632,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   index: -1
   useLegacySteamVRInput: 0
   deviceToTrack: 0
   latencyCompensation: 78
   correctControllerDrift: 1
-  SNHolder: 
+  SNHolder:
   zedManager: {fileID: 139748563}
   fireBinding:
     actionPath: /actions/zed-default/in/Fire

@@ -87,8 +87,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e14eefa25813a3489cc8b38d2027ac8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   canvas: {fileID: 1473301405527320}
   viewSide: 1
   viewMode: 0
@@ -104,8 +104,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 23c1ce4fb46143f46bc5cb5224c934f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   clearColorMode: 1
   backgroundColorHDR: {r: 0.025, g: 0.07, b: 0.19, a: 0}
   clearDepth: 1
@@ -280,8 +280,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e14eefa25813a3489cc8b38d2027ac8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   canvas: {fileID: 1386713500692820}
   viewSide: 0
   viewMode: 0
@@ -297,8 +297,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 23c1ce4fb46143f46bc5cb5224c934f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   clearColorMode: 1
   backgroundColorHDR: {r: 0.025, g: 0.07, b: 0.19, a: 0}
   clearDepth: 1
@@ -580,6 +580,7 @@ MeshRenderer:
   m_MotionVectors: 2
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -614,8 +615,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 313514277d565454383ea4c1a1f8beb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   showInNonZEDCameras: 1
 --- !u!1 &1473301405527320
 GameObject:
@@ -672,6 +673,7 @@ MeshRenderer:
   m_MotionVectors: 2
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -706,8 +708,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 313514277d565454383ea4c1a1f8beb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   showInNonZEDCameras: 1
 --- !u!1 &1603769914748404
 GameObject:
@@ -752,8 +754,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c602d2dc840f0144911c39c566846cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!114 &114711245158774928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -764,14 +766,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cameraID: 0
   depthMode: 1
   inputType: 0
   resolution: 2
   FPS: 60
-  svoInputFileName: 
+  svoInputFileName:
   svoLoopBack: 1
   svoRealTimeMode: 0
   currentFrame: 0
@@ -786,7 +788,7 @@ MonoBehaviour:
   applyZEDNormals: 0
   enableTracking: 1
   enableSpatialMemory: 1
-  pathSpatialMemory: 
+  pathSpatialMemory:
   estimateInitialPosition: 0
   trackingIsStatic: 0
   mappingResolutionPreset: 1
@@ -796,19 +798,33 @@ MonoBehaviour:
   saveMeshWhenOver: 0
   meshPath: Assets/ZEDMesh.obj
   meshFilterParameters: 0
-  objectDetectionImageSyncMode: 0
   objectDetectionTracking: 1
   objectDetection2DMask: 0
-  objectDetectionConfidenceThreshold: 50
+  objectDetectionModel: 0
+  bodyFitting: 0
+  SK_personDetectionConfidenceThreshold: 50
+  OD_personDetectionConfidenceThreshold: 35
+  vehicleDetectionConfidenceThreshold: 35
+  bagDetectionConfidenceThreshold: 35
+  animalDetectionConfidenceThreshold: 35
+  electronicsDetectionConfidenceThreshold: 35
+  fruitVegetableDetectionConfidenceThreshold: 35
   objectClassPersonFilter: 1
   objectClassVehicleFilter: 1
+  objectClassBagFilter: 1
+  objectClassAnimalFilter: 1
+  objectClassElectronicsFilter: 1
+  objectClassFruitVegetableFilter: 1
   depthOcclusion: 1
   postProcessing: 1
   m_cameraBrightness: 100
   enableImageEnhancement: 1
   m_maxDepthRange: 40
   svoOutputFileName: Assets/Recording.svo
-  svoOutputCompressionMode: 3
+  svoOutputCompressionMode: 1
+  svoOutputBitrate: 0
+  svoOutputTargetFPS: 0
+  svoOutputTranscodeStreaming: 0
   needRecordFrame: 0
   enableStreaming: 0
   streamingCodec: 0
@@ -816,10 +832,13 @@ MonoBehaviour:
   bitrate: 8000
   gopSize: -1
   adaptativeBitrate: 0
+  chunkSize: 8096
+  streamingTargetFramerate: 0
   fadeInOnStart: 1
   dontDestroyOnLoad: 0
   greySkybox: 1
   m_confidenceThreshold: 100
+  m_textureConfidenceThreshold: 100
   enableRightDepthMeasure: 0
   showarrig: 0
   enableIMUFusion: 1
@@ -835,6 +854,7 @@ MonoBehaviour:
   videoAutoWhiteBalance: 1
   videoWhiteBalance: 3200
   videoSharpness: 3
+  videoGamma: 5
   videoLEDStatus: 1
   cameraModel: '-'
   cameraSerialNumber: '-'
@@ -853,13 +873,12 @@ MonoBehaviour:
   HMDSyncPosition: {x: 0, y: 0, z: 0}
   ZEDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
   HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
-  advancedPanelOpen: 0
+  advancedPanelOpen: 1
   spatialMappingFoldoutOpen: 0
   objectDetectionFoldoutOpen: 0
   recordingFoldoutOpen: 0
   streamingOutFoldoutOpen: 0
   camControlFoldoutOpen: 0
-  arlayer: 30
   zedRigDisplayer: {fileID: 0}
 --- !u!1 &1721814514466412
 GameObject:
@@ -929,6 +948,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:

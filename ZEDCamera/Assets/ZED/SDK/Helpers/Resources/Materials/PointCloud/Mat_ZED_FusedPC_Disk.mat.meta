@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+<<<<<<< HEAD
+guid: 0f0e0f258a10d9d4582614d34e40ef46
+=======
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/SDK/Helpers/Resources/Materials/PointCloud/Ressources/Textures/Unlit_UnlitWithMask.mat.meta
+guid: 501a9c78f0d9ebb40846d33511ab14af
+=======
+guid: 0f0e0f258a10d9d4582614d34e40ef46
+>>>>>>> cc28bdd3ae6ca1ad7e437fa7af45876ea2fe1e1c:ZEDCamera/Assets/ZED/SDK/Helpers/Resources/Materials/PointCloud/Mat_ZED_FusedPC_Disk.mat.meta
+>>>>>>> cc28bdd3ae6ca1ad7e437fa7af45876ea2fe1e1c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

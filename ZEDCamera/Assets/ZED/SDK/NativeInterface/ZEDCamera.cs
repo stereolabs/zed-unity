@@ -191,6 +191,10 @@ namespace sl
             get { return fov_V; }
         }
         /// <summary>
+        /// Structure containing information about all the sensors available in the current device
+        /// </summary>
+        private SensorsConfiguration sensorsConfiguration;
+        /// <summary>
         /// Stereo parameters for current ZED camera prior to rectification (distorted).
         /// </summary>
         private CalibrationParameters calibrationParametersRaw;
@@ -208,6 +212,13 @@ namespace sl
         /// </summary>
         private bool cameraReady = false;
 
+        /// <summary>
+        /// Structure containing information about all the sensors available in the current device
+        /// </summary>
+        public SensorsConfiguration SensorsConfiguration
+        {
+            get { return sensorsConfiguration; }
+        }
         /// <summary>
         /// Stereo parameters for current ZED camera prior to rectification (distorted).
         /// </summary>
@@ -276,8 +287,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(3, 1, 0);
-
+        public static readonly System.Version PluginVersion = new System.Version(3, 3, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -335,11 +345,10 @@ namespace sl
         * Recording functions.
         */
         [DllImport(nameDll, EntryPoint = "dllz_enable_recording")]
-        private static extern int dllz_enable_recording(int cameraID, byte[] video_filename, int compresssionMode);
+        private static extern int dllz_enable_recording(int cameraID, byte[] video_filename, int compresssionMode,int bitrate,int target_fps,bool transcode);
 
         [DllImport(nameDll, EntryPoint = "dllz_disable_recording")]
         private static extern bool dllz_disable_recording(int cameraID);
-
 
         /*
         * Texturing functions.
@@ -408,6 +417,9 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "dllz_get_calibration_parameters")]
         private static extern IntPtr dllz_get_calibration_parameters(int cameraID, bool raw);
+
+        [DllImport(nameDll, EntryPoint = "dllz_get_sensors_configuration")]
+        private static extern IntPtr dllz_get_sensors_configuration(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "dllz_get_camera_model")]
         private static extern int dllz_get_camera_model(int cameraID);
@@ -538,7 +550,7 @@ namespace sl
         * Spatial Mapping functions.
         */
         [DllImport(nameDll, EntryPoint = "dllz_enable_spatial_mapping")]
-        private static extern int dllz_enable_spatial_mapping(int cameraID, float resolution_meter, float max_range_meter, int saveTexture);
+        private static extern int dllz_enable_spatial_mapping(int cameraID, int type, float resolution_meter, float max_range_meter, int saveTexture,int max_memory_usage);
 
         [DllImport(nameDll, EntryPoint = "dllz_disable_spatial_mapping")]
         private static extern void dllz_disable_spatial_mapping(int cameraID);
@@ -558,8 +570,17 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "dllz_retrieve_mesh")]
         private static extern int dllz_retrieve_mesh(int cameraID, Vector3[] vertices, int[] triangles, int nbSubmesh, Vector2[] uvs, IntPtr textures);
 
+        [DllImport(nameDll, EntryPoint = "dllz_update_fused_point_cloud")]
+        private static extern int dllz_update_fused_point_cloud(int cameraID,  ref int pbPoints);
+
+        [DllImport(nameDll, EntryPoint = "dllz_retrieve_fused_point_cloud")]
+        private static extern int dllz_retrieve_fused_point_cloud(int cameraID, Vector4[] points);
+
         [DllImport(nameDll, EntryPoint = "dllz_save_mesh")]
         private static extern bool dllz_save_mesh(int cameraID, string filename, MESH_FILE_FORMAT format);
+
+        [DllImport(nameDll, EntryPoint = "dllz_save_point_cloud")]
+        private static extern bool dllz_save_point_cloud(int cameraID, string filename, MESH_FILE_FORMAT format);
 
         [DllImport(nameDll, EntryPoint = "dllz_load_mesh")]
         private static extern bool dllz_load_mesh(int cameraID, string filename, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int nbMaxSubmesh, int[] textureSize = null);
@@ -583,7 +604,7 @@ namespace sl
          * Plane Detection functions (starting v2.4)
          */
         [DllImport(nameDll, EntryPoint = "dllz_find_floor_plane")]
-        private static extern IntPtr dllz_find_floor_plane(int cameraID, out Quaternion rotation, out Vector3 translation, Vector3 priorQuaternion, Vector3 priorTranslation);
+        private static extern IntPtr dllz_find_floor_plane(int cameraID, out Quaternion rotation, out Vector3 translation, Quaternion priorQuaternion, Vector3 priorTranslation);
 
         [DllImport(nameDll, EntryPoint = "dllz_find_plane_at_hit")]
         private static extern IntPtr dllz_find_plane_at_hit(int cameraID, Vector2 HitPixel, bool refine);
@@ -599,7 +620,7 @@ namespace sl
          * Streaming Module functions (starting v2.8)
          */
         [DllImport(nameDll, EntryPoint = "dllz_enable_streaming")]
-        private static extern int dllz_enable_streaming(int cameraID, sl.STREAMING_CODEC codec, uint bitrate, ushort port, int gopSize, int adaptativeBitrate,int chunk_size);
+        private static extern int dllz_enable_streaming(int cameraID, sl.STREAMING_CODEC codec, uint bitrate, ushort port, int gopSize, int adaptativeBitrate,int chunk_size,int target_fps);
 
         [DllImport(nameDll, EntryPoint = "dllz_is_streaming_enabled")]
         private static extern int dllz_is_streaming_enabled(int cameraID);
@@ -881,8 +902,7 @@ namespace sl
             /// <summary>
             /// True to flip images horizontally.
             /// </summary>
-            [MarshalAs(UnmanagedType.U1)]
-            public bool cameraImageFlip;
+            public int cameraImageFlip;
             /// <summary>
             /// True to disable self-calibration, using unoptimized optional calibration parameters.
             /// False is recommended for optimized calibration.
@@ -1094,12 +1114,10 @@ namespace sl
         /// <param name="videoFileName">Filename. Whether it ends with .svo or .avi defines its file type.</param>
         /// <param name="compressionMode">How much compression to use</param>
         /// <returns>An ERROR_CODE that defines if the file was successfully created and can be filled with images.</returns>
-        public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.H264_BASED)
+        public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.H264_BASED, int bitrate = 0, int target_fps = 0,bool transcode = false)
         {
-            return (ERROR_CODE)dllz_enable_recording(CameraID, StringUtf8ToByte(videoFileName), (int)compressionMode);
+            return (ERROR_CODE)dllz_enable_recording(CameraID, StringUtf8ToByte(videoFileName), (int)compressionMode,bitrate,target_fps,transcode);
         }
-
-
 
         /// <summary>
         /// Stops recording to an SVO/AVI, if applicable, and closes the file.
@@ -1578,6 +1596,19 @@ namespace sl
 
         }
 
+        public SensorsConfiguration GetInternalSensorsConfiguration()
+        {
+            IntPtr p = dllz_get_sensors_configuration(CameraID);
+
+            if (p == IntPtr.Zero)
+            {
+                return new SensorsConfiguration();
+            }
+            SensorsConfiguration configuration = (SensorsConfiguration)Marshal.PtrToStructure(p, typeof(SensorsConfiguration));
+
+            return configuration;
+        }
+
         /// <summary>
         /// Gets the ZED camera model (ZED or ZED Mini).
         /// </summary>
@@ -1754,12 +1785,12 @@ namespace sl
             trackingStatus = (sl.ERROR_CODE)dllz_set_imu_prior_orientation(CameraID, rotation);
             return trackingStatus;
         }
-
         /// <summary>
         /// Gets the rotation given by the ZED-M/ZED2 IMU. Return an error if using ZED (v1) which does not contains internal sensors
         /// </summary>
-        /// <returns>Error code status.</returns>
         /// <param name="rotation">Rotation from the IMU.</param>
+        /// <param name="referenceTime">time reference.</param>
+        /// <returns>Error code status.</returns>
         public ERROR_CODE GetInternalIMUOrientation(ref Quaternion rotation, TIME_REFERENCE referenceTime = TIME_REFERENCE.IMAGE)
         {
             sl.ERROR_CODE err = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
@@ -1770,8 +1801,9 @@ namespace sl
         /// <summary>
         /// Gets the full Sensor data from the ZED-M or ZED2 . Return an error if using ZED (v1) which does not contains internal sensors
         /// </summary>
+        /// <param name="data">Sensor Data.</param>
+        /// <param name="referenceTime">Time reference.</param>
         /// <returns>Error code status.</returns>
-        /// <param name="rotation">Rotation from the IMU.</param>
         public ERROR_CODE GetInternalSensorsData(ref SensorsData data, TIME_REFERENCE referenceTime = TIME_REFERENCE.IMAGE)
         {
             sl.ERROR_CODE err = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
@@ -2076,12 +2108,12 @@ namespace sl
         /// <param name="max_range_meter">Maximum scanning range in meters.</param>
         /// <param name="saveTexture">True to scan surface textures in addition to geometry.</param>
         /// <returns></returns>
-        public sl.ERROR_CODE EnableSpatialMapping(float resolution_meter, float max_range_meter, bool saveTexture = false)
+        public sl.ERROR_CODE EnableSpatialMapping(SPATIAL_MAP_TYPE type, float resolution_meter, float max_range_meter, bool saveTexture = false)
         {
             sl.ERROR_CODE spatialMappingStatus = ERROR_CODE.FAILURE;
-            lock (grabLock)
+            //lock (grabLock)
             {
-                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture));
+                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, (int)type,resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture), 4096);
             }
             return spatialMappingStatus;
         }
@@ -2129,6 +2161,28 @@ namespace sl
         }
 
         /// <summary>
+        /// Updates the fused point cloud (if spatial map type was FUSED_POINT_CLOUD)
+        /// </summary>
+        /// <returns>Error code indicating if the update was successful, and why it wasn't otherwise.</returns>
+        public sl.ERROR_CODE UpdateFusedPointCloud(ref int nbVertices)
+        {
+            sl.ERROR_CODE err = sl.ERROR_CODE.FAILURE;
+            err = (sl.ERROR_CODE)dllz_update_fused_point_cloud(CameraID, ref nbVertices);
+            return err;
+        }
+
+        /// <summary>
+        /// Retrieves all points of the fused point cloud. Call UpdateFusedPointCloud() before calling this.
+        /// Vertex arrays must be at least of the sizes returned by UpdateFusedPointCloud
+        /// </summary>
+        /// <param name="vertices">Points of the fused point cloud.</param>
+        /// <returns>Error code indicating if the retrieval was successful, and why it wasn't otherwise.</returns>
+        public sl.ERROR_CODE RetrieveFusedPointCloud(Vector4[] vertices)
+        {
+            return (sl.ERROR_CODE)dllz_retrieve_fused_point_cloud(CameraID, vertices);
+        }
+
+        /// <summary>
         /// Starts the mesh generation process in a thread that doesn't block the spatial mapping process.
         /// ZEDSpatialMappingHelper calls this each time it has finished applying the last mesh update.
         /// </summary>
@@ -2162,6 +2216,16 @@ namespace sl
         public bool SaveMesh(string filename, MESH_FILE_FORMAT format)
         {
             return dllz_save_mesh(CameraID, filename, format);
+        }
+
+        /// <summary>
+        /// Saves the scanned point cloud in a specific file format.
+        /// </summary>
+        /// <param name="filename">Path and filename of the point cloud.</param>
+        /// <param name="format">File format (extension). Can be .obj, .ply or .bin.</param>
+        public bool SavePointCloud(string filename, MESH_FILE_FORMAT format)
+        {
+            return dllz_save_point_cloud(CameraID, filename, format);
         }
 
         /// <summary>
@@ -2229,7 +2293,7 @@ namespace sl
         /// <summary>
         /// Gets a vector pointing toward the direction of gravity. This is estimated from a 3D scan of the environment,
         /// and as such, a scan must be started/finished for this value to be calculated.
-        /// If using the ZED Mini, this isn't required thanks to its IMU.
+        /// If using the ZED Mini / ZED2, this isn't required thanks to its IMU.
         /// </summary>
         /// <returns>Vector3 pointing downward.</returns>
         public Vector3 GetGravityEstimate()
@@ -2340,7 +2404,7 @@ namespace sl
             IntPtr p = IntPtr.Zero;
             Quaternion out_quat = Quaternion.identity;
             Vector3 out_trans = Vector3.zero;
-            p = dllz_find_floor_plane(CameraID, out out_quat, out out_trans, priorTrans, priorTrans);
+            p = dllz_find_floor_plane(CameraID, out out_quat, out out_trans, priorQuat, priorTrans);
             plane.Bounds = new Vector3[256];
             playerHeight = 0;
 
@@ -2423,10 +2487,10 @@ namespace sl
         /// Streaming parameters: See sl::StreamingParameters of ZED SDK. See ZED SDK API doc for more informations
         /// </params>
         /// <returns>An ERROR_CODE that defines if the streaming pipe was successfully created</returns>
-        public ERROR_CODE EnableStreaming(STREAMING_CODEC codec = STREAMING_CODEC.AVCHD_BASED, uint bitrate = 8000, ushort port = 30000, int gopSize = -1, bool adaptativeBitrate = false,int chunk_size = 32768)
+        public ERROR_CODE EnableStreaming(STREAMING_CODEC codec = STREAMING_CODEC.AVCHD_BASED, uint bitrate = 8000, ushort port = 30000, int gopSize = -1, bool adaptativeBitrate = false,int chunk_size = 8096,int target_fps = 0)
         {
             int doAdaptBitrate = adaptativeBitrate ? 1 : 0;
-            return (ERROR_CODE)dllz_enable_streaming(CameraID, codec, bitrate, port, gopSize, doAdaptBitrate, chunk_size);
+            return (ERROR_CODE)dllz_enable_streaming(CameraID, codec, bitrate, port, gopSize, doAdaptBitrate, chunk_size,target_fps);
         }
 
         /// <summary>

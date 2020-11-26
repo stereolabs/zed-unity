@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+<<<<<<< HEAD
+guid: f67463b1f928c9947812e7dccc7d2197
+=======
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/SDK/Helpers/Scripts/Display/ZEDFusedPointCloudRenderer.cs.meta
+guid: 2210f9bccb917b54dbc1083ddda6bd96
+=======
+guid: f67463b1f928c9947812e7dccc7d2197
+>>>>>>> cc28bdd3ae6ca1ad7e437fa7af45876ea2fe1e1c:ZEDCamera/Assets/ZED/SDK/Helpers/Scripts/SkeletonTracking/RigBone.cs.meta
+>>>>>>> cc28bdd3ae6ca1ad7e437fa7af45876ea2fe1e1c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

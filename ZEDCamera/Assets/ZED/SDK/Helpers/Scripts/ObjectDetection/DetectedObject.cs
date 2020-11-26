@@ -39,13 +39,24 @@ public class DetectedObject
     }
 
     /// <summary>
-    /// Category of object that was detected (person, vehicle, etc.) 
+    /// Class of object that was detected (person, vehicle, etc.)
     /// </summary>
-    public OBJECT_CLASS objectType
+    public OBJECT_CLASS objectClass
     {
         get
         {
-            return objectData.obj_type;
+            return objectData.objectClass;
+        }
+    }
+
+    /// <summary>
+    /// SubClass of object that was detected  
+    /// </summary>
+    public OBJECT_SUBCLASS objectSubClass
+    {
+        get
+        {
+            return objectData.objectSubClass;
         }
     }
 
@@ -58,13 +69,25 @@ public class DetectedObject
     {
         get
         {
-            return objectData.obj_track_state;
+            return objectData.objectTrackingState;
         }
     }
 
     /// <summary>
+    /// Current action state. "IDLE" means the object is not moving. "MOVING" means the object is moving.
+    /// </summary>
+    public OBJECT_ACTION_STATE actionState
+    {
+        get
+        {
+            return objectData.actionState;
+        }
+    }
+
+
+    /// <summary>
     /// How confident the ZED SDK is that this object is in fact a valid detection. From 1 to 100. 
-    /// Higher is better, eg. if objectType is PERSON and confidence is 99, there's a 99% chance it's indeed a person. 
+    /// Higher is better, eg. if objectClass is PERSON and confidence is 99, there's a 99% chance it's indeed a person. 
     /// <para>You can set the minimum confidence threshold in ZEDManager's Inspector.</para>
     /// </summary>
     public float confidence

@@ -6,6 +6,8 @@
 	Properties{
 		[MaterialToggle] directionalLightEffect("Directional light affects image", Int) = 0
 		_MaxDepth("Max Depth Range", Range(1,40)) = 40
+		_DepthXYZTex("Depth texture", 2D) = "" {}
+		_MainTex("Main texture", 2D) = "" {}
 	}
 		SubShader
 		{

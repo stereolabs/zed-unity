@@ -168,8 +168,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e14eefa25813a3489cc8b38d2027ac8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   canvas: {fileID: 1750122611}
   viewSide: 1
   viewMode: 0
@@ -229,8 +229,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 23c1ce4fb46143f46bc5cb5224c934f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_Version: 7
   m_ObsoleteRenderingPath: 0
   m_ObsoleteFrameSettings:
@@ -354,8 +354,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 093ceb9e77bac7a4ea5ec3013f638a87, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   secondsToDisplayEffect: 1
 --- !u!135 &78578991
 SphereCollider:
@@ -621,8 +621,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 313514277d565454383ea4c1a1f8beb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   showInNonZEDCameras: 1
 --- !u!1 &390797088
 GameObject:
@@ -683,8 +683,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_Version: 9
   m_ObsoleteShadowResolutionTier: 1
   m_ObsoleteUseShadowQualitySettings: 0
@@ -903,8 +903,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e14eefa25813a3489cc8b38d2027ac8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   canvas: {fileID: 374019520}
   viewSide: 0
   viewMode: 0
@@ -964,8 +964,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 23c1ce4fb46143f46bc5cb5224c934f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_Version: 7
   m_ObsoleteRenderingPath: 0
   m_ObsoleteFrameSettings:
@@ -1074,29 +1074,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   index: -1
   useLegacySteamVRInput: 0
   deviceToTrack: 0
   latencyCompensation: 78
   correctControllerDrift: 1
-  SNHolder: 
+  SNHolder:
   zedManager: {fileID: 1344833222}
   fireBinding:
     actionPath: /actions/zed-default/in/Fire
     needsReinit: 0
   clickBinding:
-    actionPath: 
+    actionPath:
     needsReinit: 0
   backBinding:
-    actionPath: 
+    actionPath:
     needsReinit: 0
   grabBinding:
-    actionPath: 
+    actionPath:
     needsReinit: 0
   navigateUIBinding:
-    actionPath: 
+    actionPath:
     needsReinit: 0
   onFireDown:
     m_PersistentCalls:
@@ -1173,7 +1173,7 @@ PrefabInstance:
     - target: {fileID: 114228649437443144, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
         type: 3}
       propertyPath: zedManager
-      value: 
+      value:
       objectReference: {fileID: 1344833222}
     - target: {fileID: 114575857264643554, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
         type: 3}
@@ -1183,7 +1183,7 @@ PrefabInstance:
     - target: {fileID: 114575857264643554, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
         type: 3}
       propertyPath: zedManager
-      value: 
+      value:
       objectReference: {fileID: 1344833222}
     m_RemovedComponents:
     - {fileID: 114575857264643554, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 3}
@@ -1246,8 +1246,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
@@ -1265,8 +1265,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 5
@@ -1375,8 +1375,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: deca4f9199ed3eb4daefaa38ac81e7cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   laserShotPrefab: {fileID: 1300082734421426, guid: e63673e297726e74c80253a7265f6670,
     type: 3}
   laserPointerBeadHolder: {fileID: 1888571830}
@@ -1507,8 +1507,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 1320592376}
   interiorCone: 0.1
 --- !u!108 &1320592376
@@ -1596,8 +1596,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_Version: 9
   m_ObsoleteShadowResolutionTier: 1
   m_ObsoleteUseShadowQualitySettings: 0
@@ -1724,14 +1724,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cameraID: 0
   depthMode: 1
   inputType: 0
   resolution: 2
   FPS: 60
-  svoInputFileName: 
+  svoInputFileName:
   svoLoopBack: 1
   svoRealTimeMode: 0
   currentFrame: 0
@@ -1744,7 +1744,7 @@ MonoBehaviour:
   srpShaderType: 0
   enableTracking: 1
   enableSpatialMemory: 0
-  pathSpatialMemory: 
+  pathSpatialMemory:
   estimateInitialPosition: 0
   trackingIsStatic: 0
   mappingResolutionPreset: 1
@@ -1754,19 +1754,32 @@ MonoBehaviour:
   saveMeshWhenOver: 0
   meshPath: Assets/ZEDMesh.obj
   meshFilterParameters: 0
-  objectDetectionImageSyncMode: 0
   objectDetectionTracking: 1
   objectDetection2DMask: 0
-  objectDetectionConfidenceThreshold: 50
+  objectDetectionModel: 0
+  bodyFitting: 0
+  personDetectionConfidenceThreshold: 20
+  vehicleDetectionConfidenceThreshold: 20
+  bagDetectionConfidenceThreshold: 20
+  animalDetectionConfidenceThreshold: 20
+  electronicsDetectionConfidenceThreshold: 20
+  fruitVegetableDetectionConfidenceThreshold: 20
   objectClassPersonFilter: 1
   objectClassVehicleFilter: 1
+  objectClassBagFilter: 1
+  objectClassAnimalFilter: 1
+  objectClassElectronicsFilter: 1
+  objectClassFruitVegetableFilter: 1
   depthOcclusion: 1
   postProcessing: 1
   m_cameraBrightness: 100
   enableImageEnhancement: 1
   m_maxDepthRange: 20
   svoOutputFileName: Assets/Recording.svo
-  svoOutputCompressionMode: 3
+  svoOutputCompressionMode: 2
+  svoOutputBitrate: 0
+  svoOutputTargetFPS: 0
+  svoOutputTranscodeStreaming: 0
   needRecordFrame: 0
   enableStreaming: 0
   streamingCodec: 0
@@ -1775,12 +1788,14 @@ MonoBehaviour:
   gopSize: -1
   adaptativeBitrate: 0
   chunkSize: 32768
+  streamingTargetFramerate: 0
   fadeInOnStart: 1
   dontDestroyOnLoad: 0
   greySkybox: 0
   m_confidenceThreshold: 100
+  m_textureConfidenceThreshold: 100
   enableRightDepthMeasure: 0
-  showarrig: 0
+  showarrig: 1
   enableIMUFusion: 1
   enableSelfCalibration: 1
   videoSettingsInitMode: 0
@@ -1794,6 +1809,7 @@ MonoBehaviour:
   videoAutoWhiteBalance: 1
   videoWhiteBalance: 3200
   videoSharpness: 3
+  videoGamma: 5
   videoLEDStatus: 1
   cameraModel: '-'
   cameraSerialNumber: '-'
@@ -1815,8 +1831,8 @@ MonoBehaviour:
   advancedPanelOpen: 1
   spatialMappingFoldoutOpen: 0
   objectDetectionFoldoutOpen: 0
-  recordingFoldoutOpen: 1
-  streamingOutFoldoutOpen: 1
+  recordingFoldoutOpen: 0
+  streamingOutFoldoutOpen: 0
   camControlFoldoutOpen: 0
   zedRigDisplayer: {fileID: 0}
 --- !u!114 &1344833223
@@ -1830,8 +1846,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c602d2dc840f0144911c39c566846cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!4 &1344833224
 Transform:
   m_ObjectHideFlags: 0
@@ -1975,7 +1991,7 @@ PrefabInstance:
     - target: {fileID: 114191359626448276, guid: 558a4b76067e3e44089fbed55a2687e6,
         type: 3}
       propertyPath: zedManager
-      value: 
+      value:
       objectReference: {fileID: 1344833222}
     - target: {fileID: 114191359626448276, guid: 558a4b76067e3e44089fbed55a2687e6,
         type: 3}
@@ -1985,7 +2001,7 @@ PrefabInstance:
     - target: {fileID: 114506010654110848, guid: 558a4b76067e3e44089fbed55a2687e6,
         type: 3}
       propertyPath: zedManager
-      value: 
+      value:
       objectReference: {fileID: 1344833222}
     m_RemovedComponents:
     - {fileID: 114191359626448276, guid: 558a4b76067e3e44089fbed55a2687e6, type: 3}
@@ -2006,29 +2022,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   index: -1
   useLegacySteamVRInput: 0
   deviceToTrack: 1
   latencyCompensation: 78
   correctControllerDrift: 1
-  SNHolder: 
+  SNHolder:
   zedManager: {fileID: 0}
   fireBinding:
     actionPath: /actions/zed-default/in/Fire
     needsReinit: 0
   clickBinding:
-    actionPath: 
+    actionPath:
     needsReinit: 0
   backBinding:
-    actionPath: 
+    actionPath:
     needsReinit: 0
   grabBinding:
-    actionPath: 
+    actionPath:
     needsReinit: 0
   navigateUIBinding:
-    actionPath: 
+    actionPath:
     needsReinit: 0
   onFireDown:
     m_PersistentCalls:
@@ -2148,8 +2164,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 313514277d565454383ea4c1a1f8beb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   showInNonZEDCameras: 1
 --- !u!1 &1888571830
 GameObject:
