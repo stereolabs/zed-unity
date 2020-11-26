@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using UnityEngine.XR;
 using System.IO;
 using UnityEngine.Rendering;
+using System.Collections.Generic;
 
 /// <summary>
 /// In pass-through AR mode, handles the final output to the VR headset, positioning the final images
