@@ -1037,8 +1037,15 @@ namespace sl
         ///  Normals vector for right view. As a ZEDMat, MAT_TYPE is set to MAT_32F_C4.
         ///  Channel 4 is empty (set to 0).
         /// </summary>
-        NORMALS_RIGHT
-
+        NORMALS_RIGHT,
+        /// <summary>
+        /// Depth map in millimeter. Each pixel  contains 1 unsigned short. As a ZEDMat, MAT_TYPE is set to MAT_U16_C1.
+        /// </summary>
+        DEPTH_U16_MM,
+        /// <summary>
+        /// Depth map in millimeter for right sensor. Each pixel  contains 1 unsigned short. As a ZEDMat, MAT_TYPE is set to MAT_U16_C1.
+        /// </summary>
+        DEPTH_U16_MM_RIGHT
     };
 
 
