@@ -387,7 +387,7 @@ public class ZEDManager : MonoBehaviour
     /// Defines a upper depth range for detections.
     /// </summary>
     [HideInInspector]
-    public float maxRange = -1f;
+    public float maxRange = 40.0f;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects

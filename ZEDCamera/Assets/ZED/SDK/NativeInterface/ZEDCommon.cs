@@ -1643,10 +1643,8 @@ namespace sl
         /// <summary>
         /// The 3D position of skeleton joints
         /// </summary>
-
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
         public Vector3[] skeletonJointPosition;// 3D position of the joints of the skeleton
-
 
         // Full covariance matrix for position (3x3). Only 6 values are necessary
         // [p0, p1, p2]
@@ -1654,6 +1652,14 @@ namespace sl
         // [p2, p4, p5]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
         public float[] position_covariance;// covariance matrix of the 3d position, represented by its upper triangular matrix value
+
+        /// <summary>
+        ///  Per keypoint detection confidence, can not be lower than the ObjectDetectionRuntimeParameters.detection_confidence_threshold.
+        ///  Not available with DETECTION_MODEL.MULTI_CLASS_BOX.
+        ///  in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        public float[] keypoint_confidence;
     };
 
 

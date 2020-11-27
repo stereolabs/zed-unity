@@ -232,6 +232,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 		for (int i=0;i<18;i++)
 		{
 			world_joints_pos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
+            Debug.Log(data.keypoint_confidence[i]);
 		}
 
         //Create Joint with middle position :
