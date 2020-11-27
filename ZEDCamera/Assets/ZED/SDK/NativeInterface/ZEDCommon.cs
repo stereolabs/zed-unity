@@ -1552,6 +1552,12 @@ namespace sl
         /// Defines the AI model used for detection 
         /// </summary>
         public sl.DETECTION_MODEL detectionModel;
+        /// <summary>
+        /// Defines a upper depth range for detections.
+        /// Defined in  UNIT set at  sl.Camera.Open.
+        /// Default value is set to sl.Initparameters.depthMaximumDistance (can not be higher).
+        /// </summary>
+        public float maxRange;
     };
 
 

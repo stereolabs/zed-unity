@@ -384,6 +384,12 @@ public class ZEDManager : MonoBehaviour
     public bool bodyFitting = false;
 
     /// <summary>
+    /// Defines a upper depth range for detections.
+    /// </summary>
+    [HideInInspector]
+    public float maxRange = -1f;
+
+    /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
     /// </summary>
@@ -2699,6 +2705,7 @@ public class ZEDManager : MonoBehaviour
             od_param.enable2DMask = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
             od_param.enableBodyFitting = bodyFitting;
+            od_param.maxRange = maxRange;
             od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST) ? SK_personDetectionConfidenceThreshold : OD_personDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehicleDetectionConfidenceThreshold;
