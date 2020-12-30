@@ -1347,6 +1347,12 @@ namespace sl
         /// Whether to enable improved color/gamma curves added in ZED SDK 3.0. 
         /// </summary>
         public bool enableImageEnhancement = true;
+        /// <summary>
+        /// Set an optional file path where the SDK can find a file containing the calibration information of the camera computed by OpenCV.
+        /// <remarks> Using this will disable the factory calibration of the camera. </remarks>
+        /// <warning> Erroneous calibration values can lead to poor SDK modules accuracy. </warning>
+        /// </summary>
+        public string optionalOpencvCalibrationFile = "";
 
         /// <summary>
         /// Constructor. Sets default initialization parameters recommended for Unity.
@@ -1376,6 +1382,7 @@ namespace sl
             this.ipStream = "";
             this.portStream = 30000;
             this.enableImageEnhancement = true;
+            this.optionalOpencvCalibrationFile = " ";
         }
 
     }

@@ -113,6 +113,11 @@ public class ZEDManager : MonoBehaviour
     public string svoInputFileName = "";
 
     /// <summary>
+    /// Optional opencv calib file
+    /// </summary>
+    public string opencvCalibFile = "";
+
+    /// <summary>
     /// SVO loop back option
     /// </summary>
     [HideInInspector]
@@ -1764,6 +1769,7 @@ public class ZEDManager : MonoBehaviour
         initParameters.cameraImageFlip = (int)cameraFlipMode;
         initParameters.enableImageEnhancement = enableImageEnhancement;
         initParameters.cameraDisableSelfCalib = !enableSelfCalibration;
+        initParameters.optionalOpencvCalibrationFile = opencvCalibFile;
 
         //Check if this rig is a stereo rig. Will set isStereoRig accordingly.
         CheckStereoMode();
@@ -2475,6 +2481,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
 	void Update()
     {
+
         //Check if ZED is disconnected; invoke event and call function if so. 
         if (isDisconnected)
         {

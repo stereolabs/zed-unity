@@ -142,7 +142,7 @@ public class ZEDCameraEditor : Editor
     SerializedProperty textureConfidenceThresholdProperty;
     SerializedProperty enableSelfCalibrationProperty;
     SerializedProperty enableIMUFusionProperty;
-
+    SerializedProperty opencvCalibFilePath;
 
     // Rendering Prop
     private int arlayer;
@@ -312,6 +312,7 @@ public class ZEDCameraEditor : Editor
         allowPassThroughProperty = serializedObject.FindProperty("allowARPassThrough");
         setIMUPrior = serializedObject.FindProperty("setIMUPriorInAR");
         enableImageEnhancementProperty = serializedObject.FindProperty("enableImageEnhancement");
+        opencvCalibFilePath = serializedObject.FindProperty("opencvCalibFile");
 
         //Video Settings Serialized Properties
         videoSettingsInitModeProperty = serializedObject.FindProperty("videoSettingsInitMode");
@@ -1143,6 +1144,8 @@ public class ZEDCameraEditor : Editor
             GUIContent enalbeIMUFusionLabel = new GUIContent("Visual-Inertial Tracking", "If true, and you are using a ZED2 or ZED Mini, IMU fusion uses data from the camera's IMU to improve tracking results. ");
             enableIMUFusionProperty.boolValue = EditorGUILayout.Toggle(enalbeIMUFusionLabel, enableIMUFusionProperty.boolValue);
 
+            GUIContent openCalibPathlabel = new GUIContent("Opencv Calibration File ", "Optional, Set an optional file path where the SDK can find a file containing the calibration information of the camera computed by OpenCV. ");
+            opencvCalibFilePath.stringValue = EditorGUILayout.TextField(openCalibPathlabel, opencvCalibFilePath.stringValue);
 
             EditorGUI.EndDisabledGroup();
             EditorGUI.indentLevel--;
