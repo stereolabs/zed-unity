@@ -549,7 +549,16 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 			return; //Make sure we're in pass-through AR mode. 
 
 		Quaternion r;
-		r = latencyPose.rotation;
+		//Modified code to ensure view in HMD does not play like a movie screen
+		if (manager.inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO || manager.inputType == sl.INPUT_TYPE.INPUT_TYPE_STREAM)
+        {
+            r = finalLeftEye.transform.localRotation;
+        }
+        else
+        {
+            r = latencyPose.rotation;
+        }
+		// End of modified code
 
         //Plane's distance from the final camera never changes, but it's rotated around it based on the latency pose. 
 		quadLeft.localRotation = r;
