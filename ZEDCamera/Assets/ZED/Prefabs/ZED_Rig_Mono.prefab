@@ -47,10 +47,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraID: 0
   depthMode: 1
-  inputType: 0
+  inputType: 2
   resolution: 2
   FPS: 60
   svoInputFileName: Assets/Recording.svo
+  opencvCalibFile: 
   svoLoopBack: 1
   svoRealTimeMode: 0
   currentFrame: 0
@@ -76,6 +77,7 @@ MonoBehaviour:
   objectDetection2DMask: 0
   objectDetectionModel: 1
   bodyFitting: 0
+  maxRange: 40
   SK_personDetectionConfidenceThreshold: 50
   OD_personDetectionConfidenceThreshold: 35
   vehicleDetectionConfidenceThreshold: 35

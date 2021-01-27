@@ -286,7 +286,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(3, 3, 0);
+        public static readonly System.Version PluginVersion = new System.Version(3, 4, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -320,7 +320,7 @@ namespace sl
         * Opening function (Opens camera and creates textures).
         */
         [DllImport(nameDll, EntryPoint = "dllz_open")]
-        private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, System.Text.StringBuilder svoPath, System.Text.StringBuilder ipStream, int portStream, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path);
+        private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, System.Text.StringBuilder svoPath, System.Text.StringBuilder ipStream, int portStream, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
 
 
 
@@ -413,6 +413,9 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "dllz_get_height")]
         private static extern int dllz_get_height(int cameraID);
+
+        [DllImport(nameDll, EntryPoint = "dllz_update_self_calibration")]
+        private static extern void dllz_update_self_calibration(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "dllz_get_calibration_parameters")]
         private static extern IntPtr dllz_get_calibration_parameters(int cameraID, bool raw);
@@ -962,6 +965,12 @@ namespace sl
             /// </summary>
             [MarshalAs(UnmanagedType.U1)]
             public bool enableImageEnhancement;
+            /// <summary>
+            /// Set an optional file path where the SDK can find a file containing the calibration information of the camera computed by OpenCV.
+            /// <remarks> Using this will disable the factory calibration of the camera. </remarks>
+            /// <warning> Erroneous calibration values can lead to poor SDK modules accuracy. </warning>
+            /// </summary>
+            public string optionalOpencvCalibrationFile;
 
             /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
@@ -987,6 +996,7 @@ namespace sl
                 depthStabilization = init.depthStabilization;
                 sensorsRequired = init.sensorsRequired;
                 enableImageEnhancement = init.enableImageEnhancement;
+                optionalOpencvCalibrationFile = init.optionalOpencvCalibrationFile;
             }
         }
 
@@ -1007,7 +1017,6 @@ namespace sl
             {
                 initParameters.cameraFPS = (int)fpsMax;
             }
-
             dll_initParameters initP = new dll_initParameters(initParameters); //DLL-friendly version of InitParameters.
             initP.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP; //Left-hand, Y-up is Unity's coordinate system, so we match that.
             int v = dllz_open(CameraID, ref initP,
@@ -1015,7 +1024,8 @@ namespace sl
                 new System.Text.StringBuilder(initParameters.ipStream, initParameters.ipStream.Length),
                 initParameters.portStream,
                 new System.Text.StringBuilder(initParameters.sdkVerboseLogFile, initParameters.sdkVerboseLogFile.Length),
-                new System.Text.StringBuilder(initParameters.optionalSettingsPath, initParameters.optionalSettingsPath.Length));
+                new System.Text.StringBuilder(initParameters.optionalSettingsPath, initParameters.optionalSettingsPath.Length),
+                new System.Text.StringBuilder(initParameters.optionalOpencvCalibrationFile, initParameters.optionalOpencvCalibrationFile.Length));
 
             if ((ERROR_CODE)v != ERROR_CODE.SUCCESS)
             {
@@ -1678,6 +1688,20 @@ namespace sl
         public ulong GetImagesTimeStamp()
         {
             return dllz_get_updated_textures_timestamp(CameraID);
+        }
+
+        /// <summary>
+        /// Perform a new self calibration process.
+        /// In some cases, due to temperature changes or strong vibrations, the stereo calibration becomes less accurate.
+        /// Use this function to update the self-calibration data and get more reliable depth values.
+        /// <remarks>The self calibration will occur at the next \ref grab() call.</remarks> 
+        /// New values will then be available in \ref getCameraInformation(), be sure to get them to still have consistent 2D <-> 3D conversion.
+        /// </summary>
+        /// <param name="cameraID"></param>
+        /// <returns></returns>
+        public void UpdateSelfCalibration()
+        {
+            dllz_update_self_calibration(CameraID);
         }
 
         /// <summary>

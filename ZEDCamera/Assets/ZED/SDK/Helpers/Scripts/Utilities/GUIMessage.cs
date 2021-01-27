@@ -342,6 +342,18 @@ public class GUIMessage : MonoBehaviour
                     textright.text = "Invalid SVO File/Path";
                 }
             }
+            else if (e == sl.ERROR_CODE.INVALID_CALIBRATION_FILE && oldInitStatus == sl.ERROR_CODE.INVALID_CALIBRATION_FILE)
+            {
+                if (textmono)
+                {
+                    textmono.text = "Invalid Calibration file";
+                }
+                else if (textleft)
+                {
+                    textleft.text = "Invalid Calibration file";
+                    textright.text = "Invalid Calibration file";
+                }
+            }
             else if (e == oldInitStatus)
             {
                 if (textmono)

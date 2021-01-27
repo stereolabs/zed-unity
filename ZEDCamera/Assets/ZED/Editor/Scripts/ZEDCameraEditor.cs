@@ -113,6 +113,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty OD_BodyFitting;
     private SerializedProperty OD_2DMask;
     private SerializedProperty OD_DetectionModel;
+    private SerializedProperty OD_MaxRange;
     //Object Detection Runtime Prop
     private SerializedProperty OD_VehicleDetectionConfidence;
     private SerializedProperty OD_PersonDetectionConfidence;
@@ -141,7 +142,7 @@ public class ZEDCameraEditor : Editor
     SerializedProperty textureConfidenceThresholdProperty;
     SerializedProperty enableSelfCalibrationProperty;
     SerializedProperty enableIMUFusionProperty;
-
+    SerializedProperty opencvCalibFilePath;
 
     // Rendering Prop
     private int arlayer;
@@ -258,7 +259,8 @@ public class ZEDCameraEditor : Editor
         OD_ObjectTracking = serializedObject.FindProperty("objectDetectionTracking");
         OD_BodyFitting = serializedObject.FindProperty("bodyFitting");
         OD_2DMask = serializedObject.FindProperty("objectDetection2DMask");
-        OD_DetectionModel = serializedObject.FindProperty("objectDetectionModel"); 
+        OD_DetectionModel = serializedObject.FindProperty("objectDetectionModel");
+        OD_MaxRange = serializedObject.FindProperty("maxRange");
 
         OD_PersonDetectionConfidence = serializedObject.FindProperty("OD_personDetectionConfidenceThreshold");
         SK_PersonDetectionConfidence = serializedObject.FindProperty("SK_personDetectionConfidenceThreshold");
@@ -310,6 +312,7 @@ public class ZEDCameraEditor : Editor
         allowPassThroughProperty = serializedObject.FindProperty("allowARPassThrough");
         setIMUPrior = serializedObject.FindProperty("setIMUPriorInAR");
         enableImageEnhancementProperty = serializedObject.FindProperty("enableImageEnhancement");
+        opencvCalibFilePath = serializedObject.FindProperty("opencvCalibFile");
 
         //Video Settings Serialized Properties
         videoSettingsInitModeProperty = serializedObject.FindProperty("videoSettingsInitMode");
@@ -770,6 +773,10 @@ public class ZEDCameraEditor : Editor
                 OD_BodyFitting.boolValue = EditorGUILayout.Toggle(BodyFittingLabel, OD_BodyFitting.boolValue);
             }
 
+            GUIContent maxRangeLabel = new GUIContent("Max Range", "Defines a upper depth range for detections." +
+            "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+            OD_MaxRange.floatValue = EditorGUILayout.Slider(maxRangeLabel, OD_MaxRange.floatValue, 0, 40.0f);
+
             GUI.enabled = true;
 
             EditorGUI.indentLevel--;
@@ -1137,6 +1144,8 @@ public class ZEDCameraEditor : Editor
             GUIContent enalbeIMUFusionLabel = new GUIContent("Visual-Inertial Tracking", "If true, and you are using a ZED2 or ZED Mini, IMU fusion uses data from the camera's IMU to improve tracking results. ");
             enableIMUFusionProperty.boolValue = EditorGUILayout.Toggle(enalbeIMUFusionLabel, enableIMUFusionProperty.boolValue);
 
+            GUIContent openCalibPathlabel = new GUIContent("Opencv Calibration File ", "Optional, Set an optional file path where the SDK can find a file containing the calibration information of the camera computed by OpenCV. ");
+            opencvCalibFilePath.stringValue = EditorGUILayout.TextField(openCalibPathlabel, opencvCalibFilePath.stringValue);
 
             EditorGUI.EndDisabledGroup();
             EditorGUI.indentLevel--;
