@@ -1037,8 +1037,15 @@ namespace sl
         ///  Normals vector for right view. As a ZEDMat, MAT_TYPE is set to MAT_32F_C4.
         ///  Channel 4 is empty (set to 0).
         /// </summary>
-        NORMALS_RIGHT
-
+        NORMALS_RIGHT,
+        /// <summary>
+        /// Depth map in millimeter. Each pixel  contains 1 unsigned short. As a ZEDMat, MAT_TYPE is set to MAT_U16_C1.
+        /// </summary>
+        DEPTH_U16_MM,
+        /// <summary>
+        /// Depth map in millimeter for right sensor. Each pixel  contains 1 unsigned short. As a ZEDMat, MAT_TYPE is set to MAT_U16_C1.
+        /// </summary>
+        DEPTH_U16_MM_RIGHT
     };
 
 
@@ -1340,6 +1347,12 @@ namespace sl
         /// Whether to enable improved color/gamma curves added in ZED SDK 3.0.
         /// </summary>
         public bool enableImageEnhancement = true;
+        /// <summary>
+        /// Set an optional file path where the SDK can find a file containing the calibration information of the camera computed by OpenCV.
+        /// <remarks> Using this will disable the factory calibration of the camera. </remarks>
+        /// <warning> Erroneous calibration values can lead to poor SDK modules accuracy. </warning>
+        /// </summary>
+        public string optionalOpencvCalibrationFile = "";
 
         /// <summary>
         /// Constructor. Sets default initialization parameters recommended for Unity.
@@ -1369,6 +1382,7 @@ namespace sl
             this.ipStream = "";
             this.portStream = 30000;
             this.enableImageEnhancement = true;
+            this.optionalOpencvCalibrationFile = " ";
         }
 
     }
@@ -1545,6 +1559,12 @@ namespace sl
         /// Defines the AI model used for detection
         /// </summary>
         public sl.DETECTION_MODEL detectionModel;
+        /// <summary>
+        /// Defines a upper depth range for detections.
+        /// Defined in  UNIT set at  sl.Camera.Open.
+        /// Default value is set to sl.Initparameters.depthMaximumDistance (can not be higher).
+        /// </summary>
+        public float maxRange;
     };
 
 
@@ -1630,10 +1650,8 @@ namespace sl
         /// <summary>
         /// The 3D position of skeleton joints
         /// </summary>
-
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
         public Vector3[] skeletonJointPosition;// 3D position of the joints of the skeleton
-
 
         // Full covariance matrix for position (3x3). Only 6 values are necessary
         // [p0, p1, p2]
@@ -1641,6 +1659,14 @@ namespace sl
         // [p2, p4, p5]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
         public float[] position_covariance;// covariance matrix of the 3d position, represented by its upper triangular matrix value
+
+        /// <summary>
+        ///  Per keypoint detection confidence, can not be lower than the ObjectDetectionRuntimeParameters.detection_confidence_threshold.
+        ///  Not available with DETECTION_MODEL.MULTI_CLASS_BOX.
+        ///  in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        public float[] keypoint_confidence;
     };
 
 

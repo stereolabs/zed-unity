@@ -173,7 +173,7 @@ namespace sl
                 {
                     vertPoints = new Vector4[nbPoints];
                     zed.RetrieveFusedPointCloud(vertPoints);
-                    
+
                     if (_pointBuffer != null)
                     {
                         _pointBuffer.Release();
@@ -184,7 +184,6 @@ namespace sl
                     _pointBuffer.SetData(vertPoints);
                 }
             }
-
             if (_pointBuffer != null)
             {
                 //Draw with Point shader
