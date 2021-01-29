@@ -3070,7 +3070,7 @@ public class ZEDManager : MonoBehaviour
     {
         //Sets all the video setting values to the ones currently applied to the ZED. 
         videoBrightness = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS);
-        videoContrast = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SATURATION);
+        videoContrast = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST);
         videoHue = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.HUE);
         videoSaturation = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SATURATION);
         videoSharpness = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SHARPNESS);
