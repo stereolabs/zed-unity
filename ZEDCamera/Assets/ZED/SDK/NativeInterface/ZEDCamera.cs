@@ -344,7 +344,7 @@ namespace sl
         * Recording functions.
         */
         [DllImport(nameDll, EntryPoint = "dllz_enable_recording")]
-        private static extern int dllz_enable_recording(int cameraID, byte[] video_filename, int compresssionMode,int bitrate,int target_fps,bool transcode);
+        private static extern int dllz_enable_recording(int cameraID, System.Text.StringBuilder video_filename, int compresssionMode,int bitrate,int target_fps,bool transcode);
 
         [DllImport(nameDll, EntryPoint = "dllz_disable_recording")]
         private static extern bool dllz_disable_recording(int cameraID);
@@ -1125,7 +1125,7 @@ namespace sl
         /// <returns>An ERROR_CODE that defines if the file was successfully created and can be filled with images.</returns>
         public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.H264_BASED, int bitrate = 0, int target_fps = 0,bool transcode = false)
         {
-            return (ERROR_CODE)dllz_enable_recording(CameraID, StringUtf8ToByte(videoFileName), (int)compressionMode,bitrate,target_fps,transcode);
+            return (ERROR_CODE)dllz_enable_recording(CameraID, new System.Text.StringBuilder(videoFileName, videoFileName.Length), (int)compressionMode,bitrate,target_fps,transcode);
         }
 
         /// <summary>
