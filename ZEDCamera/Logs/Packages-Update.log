@@ -57,3 +57,15 @@ The following packages were added:
   com.unity.multiplayer-hlapi@1.0.6
   com.unity.purchasing@2.1.0
   com.unity.xr.legacyinputhelpers@2.1.4
+
+=== Tue Feb 16 16:05:21 2021
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.ads from version 3.4.9 to 3.5.2
+  com.unity.ide.vscode from version 1.2.1 to 1.2.3
+  com.unity.purchasing from version 2.1.0 to 2.2.1
+  com.unity.test-framework from version 1.1.16 to 1.1.20
+  com.unity.xr.legacyinputhelpers from version 2.1.4 to 2.1.7
