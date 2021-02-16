@@ -846,7 +846,8 @@ public class ZEDSpatialMapping
 
         zedCamera.DisableTracking();
         Quaternion quat = Quaternion.identity; Vector3 tr = Vector3.zero;
-		if (zedCamera.EnableTracking(ref quat, ref tr, true,false,false, false, true, System.IO.File.Exists(basePath + ".area") ? basePath + ".area" : "") != sl.ERROR_CODE.SUCCESS)
+
+        if (zedCamera.EnableTracking(ref quat, ref tr, true, false, false, false, true, System.IO.File.Exists(basePath + ".area") ? basePath + ".area" : "") != sl.ERROR_CODE.SUCCESS)
         {
             Debug.LogWarning(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
         }
@@ -1574,14 +1575,13 @@ public class ZEDSpatialMapping
             Texture2D textureMesh = new Texture2D(texturesSize[0], texturesSize[1], TextureFormat.ARGB32, false);
 
             if (textureMesh != null)
-            {
-                System.IntPtr texture = textureMesh.GetNativeTexturePtr();
+            {  
                 materialTexture.SetTexture("_MainTex", textureMesh);
-
                 vertices = new Vector3[numVertices];
                 uvs = new Vector2[numVertices];
                 triangles = new int[3 * numTriangles];
 
+                System.IntPtr texture = textureMesh.GetNativeTexturePtr();
                 zedCamera.RetrieveMesh(vertices, triangles, MAX_SUBMESH, uvs, texture);
             }
         }
@@ -1598,6 +1598,7 @@ public class ZEDSpatialMapping
             vertices = new Vector3[numVertices];
             uvs = new Vector2[numVertices];
             triangles = new int[3 * numTriangles];
+            Debug.Log(texturesSize[0] + "  /  " + texturesSize[1]);
             return r;
         }
 

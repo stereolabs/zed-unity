@@ -124,7 +124,11 @@ namespace sl
             /// <summary>
             /// Unsigned char, four channels. Used for color images, like the main RGB image from each sensor. 
             /// </summary>
-            MAT_8U_C4 
+            MAT_8U_C4,
+            /// <summary>
+            /// Unsigned short 1 channel.
+            /// </summary>
+            MAT_16U_C1
         };
 
         /// <summary>

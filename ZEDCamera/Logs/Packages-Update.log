@@ -43,3 +43,17 @@ The following packages were added:
   com.unity.textmeshpro@2.1.1
   com.unity.timeline@1.2.16
   com.unity.ugui@1.0.0
+
+=== Fri Jan 29 17:40:48 2021
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were added:
+  com.unity.2d.sprite@1.0.0
+  com.unity.2d.tilemap@1.0.0
+  com.unity.ads@3.4.9
+  com.unity.analytics@3.3.5
+  com.unity.multiplayer-hlapi@1.0.6
+  com.unity.purchasing@2.1.0
+  com.unity.xr.legacyinputhelpers@2.1.4
