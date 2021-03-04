@@ -82,14 +82,15 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     private Quaternion initialRotation;
 
     private float SpineHeight = 0.85f;
-	/// <summary>
-	/// Start this instance.
-	/// </summary>
+
+    /// <summary>
+    /// Start this instance.
+    /// </summary>
     private void Start()
     {
-        Application.targetFrameRate = 60; // Set Engine frame rate to 60fps
+        QualitySettings.vSyncCount = 1; // Activate vsync
 
-		avatarControlList = new Dictionary<int,SkeletonHandler> ();
+        avatarControlList = new Dictionary<int,SkeletonHandler> ();
         if (!zedManager)
         {
             zedManager = FindObjectOfType<ZEDManager>();
@@ -251,7 +252,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         //handler.setJointSpherePoint(world_joints_pos);
 
         handler.SetSmoothFactor (smoothFactor);
-
     }
 
     void UpdateViewCameraPosition()
