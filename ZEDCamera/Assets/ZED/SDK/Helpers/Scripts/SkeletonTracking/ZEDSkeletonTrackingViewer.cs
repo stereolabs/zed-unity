@@ -87,9 +87,9 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// </summary>
     private void Start()
     {
-        Application.targetFrameRate = 60; // Set Engine frame rate to 60fps
+        QualitySettings.vSyncCount = 1; // Activate vsync
 
-		avatarControlList = new Dictionary<int,SkeletonHandler> ();
+        avatarControlList = new Dictionary<int,SkeletonHandler> ();
         if (!zedManager)
         {
             zedManager = FindObjectOfType<ZEDManager>();
