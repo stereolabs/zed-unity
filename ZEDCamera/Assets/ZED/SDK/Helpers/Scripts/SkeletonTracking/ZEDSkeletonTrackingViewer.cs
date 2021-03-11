@@ -1,5 +1,5 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
-//#define FAKEMODE
+#define FAKEMODE
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -75,7 +75,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     public float smoothFactor = 0.5f;
 
 
-    int indexFakeTest = 9;
+    int indexFakeTest = 0;
 	public Dictionary<int,SkeletonHandler> avatarControlList;
 
     private Vector3 initialPosition;
@@ -224,7 +224,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// <param name="p">P.</param>
 	private void UpdateAvatarControl(SkeletonHandler handler, sl.ObjectDataSDK data, bool useAvatar)
 	{
-
 		Vector3 bodyCenter = data.rootWorldPosition;
 
         if (bodyCenter == Vector3.zero)  return; // Object not detected
