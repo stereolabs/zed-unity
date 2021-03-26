@@ -360,7 +360,8 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Sync the Object on the image on the image.
     /// </summary>
-    private bool objectDetectionImageSyncMode = true;
+    [HideInInspector]
+    public bool objectDetectionImageSyncMode = false;
 
     /// <summary>
     /// Whether to track objects across multiple frames using the ZED's position relative to the floor. 
@@ -375,7 +376,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public bool objectDetection2DMask = false;
-
+    
     /// <summary>
     /// Choose what detection model to use in the Object detection module
     /// </summary>
@@ -535,7 +536,6 @@ public class ZEDManager : MonoBehaviour
     /// that makes it easier to use in Unity. 
     /// </summary>
     public event onNewDetectionTriggerSDKDelegate OnObjectDetection_SDKData;
-
     /// <summary>
     /// Delegate for events that take an object detection frame, in the form of a DetectionFrame object which has helper functions. 
     /// </summary>

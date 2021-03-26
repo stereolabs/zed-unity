@@ -1,5 +1,5 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
-#define FAKEMODE
+//#define FAKEMODE
 
 using UnityEngine;
 using System.Collections.Generic;

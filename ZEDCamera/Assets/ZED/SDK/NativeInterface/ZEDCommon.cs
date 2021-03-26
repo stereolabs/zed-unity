@@ -42,7 +42,8 @@ namespace sl
 	{
 		MAX_CAMERA_PLUGIN = 4,
 		PLANE_DISTANCE = 10,
-        MAX_OBJECTS = 200
+        MAX_OBJECTS = 200,
+        MAX_BATCH_SIZE = 200
     };
 
     /// <summary>
@@ -1532,6 +1533,40 @@ namespace sl
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////  Object Detection /////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    /// <summary>
+    /// sets batch trajectory parameters
+    /// The default constructor sets all parameters to their default settings.
+    /// Parameters can be user adjusted.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct BatchParameters
+    {
+        /// <summary>
+        /// Defines if the Batch option in the object detection module is enabled. Batch queueing system provides:
+        ///  - Deep-Learning based re-identification
+        /// - Trajectory smoothing and filtering
+        /// </summary>
+        /// <remarks>
+        /// To activate this option, enable must be set to true.
+        /// </remarks>
+        public bool enable;
+        /// <summary>
+        /// Max retention time in seconds of a detected object. After this time, the same object will mostly have a different ID.
+        /// </summary>
+        public float idRetentionTime;
+        /// <summary>
+        /// Trajectories will be output in batch with the desired latency in seconds.
+        /// During this waiting time, re-identification of objects is done in the background.
+        /// Specifying a short latency will limit the search (falling in timeout) for previously seen object IDs but will be closer to real time output.
+        /// Specifying a long latency will reduce the change of timeout in Re-ID but increase difference with live output.
+        /// </summary>
+        public float latency;
+    }
+    /// <summary>
+    /// Sets the object detection parameters.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct dll_ObjectDetectionParameters
     {
@@ -1551,20 +1586,26 @@ namespace sl
         [MarshalAs(UnmanagedType.U1)]
         public bool enable2DMask;
         /// <summary>
+        /// Defines the AI model used for detection 
+        /// </summary>
+        public sl.DETECTION_MODEL detectionModel;
+        /// <summary>
         /// Defines if the body fitting will be applied
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool enableBodyFitting;
-        /// <summary>
-        /// Defines the AI model used for detection 
-        /// </summary>
-        public sl.DETECTION_MODEL detectionModel;
         /// <summary>
         /// Defines a upper depth range for detections.
         /// Defined in  UNIT set at  sl.Camera.Open.
         /// Default value is set to sl.Initparameters.depthMaximumDistance (can not be higher).
         /// </summary>
         public float maxRange;
+        /// <summary>
+        /// Batching system parameters.
+        /// Batching system(introduced in 3.5) performs short-term re-identification with deep learning and trajectories filtering.
+        /// BatchParameters.enable need to be true to use this feature (by default disabled)
+        /// </summary>
+        BatchParameters batchParameters;
     };
 
 
@@ -1810,5 +1851,81 @@ namespace sl
         LEFT_EAR = 17,
         LAST = 18
     };
+
+    public struct BoundinBox
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public Vector3[] corners;
+    }
+
+    public struct BoundinBox2D
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public Vector2[] corners;
+    }
+
+    ///\ingroup Object_group
+    /// <summary>
+    /// Contains batched data of a detected object
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ObjectsBatch
+    {
+        /// <summary>
+        /// How many data were stored. Use this to iterate through the top of position/velocity/bounding_box/...; objects with indexes greater than numData are empty.
+        /// </summary>
+        public int numData;
+        /// <summary>
+        /// The trajectory id
+        /// </summary>
+        public int id;
+        /// <summary>
+        /// Object Category. Identity the object type
+        /// </summary>
+        public OBJECT_CLASS label;
+        /// <summary>
+        /// Object subclass
+        /// </summary>
+        public OBJECT_SUBCLASS sublabel;
+        /// <summary>
+        ///  Defines the object tracking state
+        /// </summary>
+        public OBJECT_TRACK_STATE trackingState;
+        /// <summary>
+        /// A sample of 3d position
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)Constant.MAX_BATCH_SIZE)]
+        public Vector3[] positions;
+        /// <summary>
+        /// A sample of 3d velocity
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)Constant.MAX_BATCH_SIZE)]
+        public Vector3[] velocities;
+        /// <summary>
+        /// The associated position timestamp
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)Constant.MAX_BATCH_SIZE)]
+        public ulong[] timestamps;
+        /// <summary>
+        /// A sample of 3d bounding boxes
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)Constant.MAX_BATCH_SIZE)]
+        public BoundinBox[] boundingBoxes;
+        /// <summary>
+        /// 2D bounding box of the person represented as four 2D points starting at the top left corner and rotation clockwise.
+        /// Expressed in pixels on the original image resolution, [0, 0] is the top left corner.
+        ///      A ------ B
+        ///      | Object |
+        ///      D ------ C
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)Constant.MAX_BATCH_SIZE)]
+        public BoundinBox2D[] boundingBoxes2d;
+        /// <summary>
+        /// a sample of object detection confidence
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)Constant.MAX_BATCH_SIZE)]
+        public float[] confidences;
+    }
+
 
 }// end namespace sl

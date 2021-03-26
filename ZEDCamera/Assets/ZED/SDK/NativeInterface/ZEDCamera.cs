@@ -646,6 +646,11 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "dllz_retrieve_objects_data")]
         private static extern int dllz_retrieve_objects_data(int cameraID, ref dll_ObjectDetectionRuntimeParameters od_params, ref ObjectsFrameSDK objFrame);
 
+        [DllImport(nameDll, EntryPoint = "dllz_update_objects_batch")]
+        private static extern int dllz_update_objects_batch(int cameraID, out int nbBatches);
+
+        [DllImport(nameDll, EntryPoint = "dllz_get_objects_batch")]
+        private static extern int dllz_get_objects_batch(int cameraID, int batch_index, ref ObjectsBatch objectsBatch);
 
         /*
         * Save utils function
@@ -2630,7 +2635,29 @@ namespace sl
             return (sl.ERROR_CODE)dllz_retrieve_objects_data(CameraID, ref od_params, ref objFrame);
         }
 
+        /// <summary>
+        /// Update the batch trajectories and retrieve the number of batches.
+        /// </summary>
+        /// <param name="nbBatches"> numbers of batches 
+        /// <returns> returns an ERROR_CODE that indicates the type of error </returns>
+        public sl.ERROR_CODE UpdateObjectsBatch(out int nbBatches)
+        {
+            return (sl.ERROR_CODE)dllz_update_objects_batch(CameraID, out nbBatches);
+        }
 
+        /// <summary>
+        /// Retrieve a batch of objects.
+        /// This function need to be called after RetrieveObjects, otherwise trajectories will be empty.
+        /// If also needs to be called after UpdateOBjectsBatch in order to retrieve the number of batch trajectories.
+        /// </summary>
+        /// /// <remarks> To retrieve all the objectsbatches, you need to iterate from 0 to nbBatches (retrieve from UpdateObjectBatches</remarks>
+        /// <param name="batch_index"> index of the batch retrieved.
+        /// <param name="objectsBatch"> trajectory that will be filled by the batching queue process</param>
+        /// <returns> returns an ERROR_CODE that indicates the type of error </returns>
+        public sl.ERROR_CODE GetObjectsBatch(int batch_index, ref ObjectsBatch objectsBatch)
+        {
+            return (sl.ERROR_CODE)dllz_get_objects_batch(CameraID, batch_index, ref objectsBatch);
+        }
 
     }//Zed Camera class
 } // namespace sl

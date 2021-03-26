@@ -701,7 +701,7 @@ public class SkeletonHandler : ScriptableObject
 
         if (Quaternion.Angle(waistrot, shoulderrot) > 45 || Quaternion.Angle(waistrot, shoulderrot) < -45)
         {
-            shoulderrot = oldshoulderrot;
+           // shoulderrot = oldshoulderrot;
         }
 
         for (int i = 0; i < targetBone.Length; i++)
