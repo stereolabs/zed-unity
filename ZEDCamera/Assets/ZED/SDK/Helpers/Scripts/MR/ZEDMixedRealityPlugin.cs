@@ -557,7 +557,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
         if (manager.inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO || manager.inputType == sl.INPUT_TYPE.INPUT_TYPE_STREAM)
         {
-            r = finalLeftEye.transform.localRotation;
+            r = finalCameraCenter.transform.localRotation;
         }
         else
 
