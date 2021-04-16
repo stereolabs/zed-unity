@@ -75,21 +75,22 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     public float smoothFactor = 0.5f;
 
 
-    int indexFakeTest = 9;
+    int indexFakeTest = 0;
 	public Dictionary<int,SkeletonHandler> avatarControlList;
 
     private Vector3 initialPosition;
     private Quaternion initialRotation;
 
     private float SpineHeight = 0.85f;
-	/// <summary>
-	/// Start this instance.
-	/// </summary>
+
+    /// <summary>
+    /// Start this instance.
+    /// </summary>
     private void Start()
     {
-        Application.targetFrameRate = 60; // Set Engine frame rate to 60fps
+        QualitySettings.vSyncCount = 1; // Activate vsync
 
-		avatarControlList = new Dictionary<int,SkeletonHandler> ();
+        avatarControlList = new Dictionary<int,SkeletonHandler> ();
         if (!zedManager)
         {
             zedManager = FindObjectOfType<ZEDManager>();
@@ -101,7 +102,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         zedManager.OnObjectDetection += updateSkeletonData;
 		}
 
-        if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
+        if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM)
         {
             Debug.LogWarning("MULTI_CLASS_BOX model can't be used for skeleton tracking, please use either HUMAN_BODY_FAST or HUMAN_BODY_ACCURATE");
         }
@@ -223,7 +224,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// <param name="p">P.</param>
 	private void UpdateAvatarControl(SkeletonHandler handler, sl.ObjectDataSDK data, bool useAvatar)
 	{
-
 		Vector3 bodyCenter = data.rootWorldPosition;
 
         if (bodyCenter == Vector3.zero)  return; // Object not detected
@@ -251,7 +251,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         //handler.setJointSpherePoint(world_joints_pos);
 
         handler.SetSmoothFactor (smoothFactor);
-
     }
 
     void UpdateViewCameraPosition()

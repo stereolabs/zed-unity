@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.Threading;
 
 namespace sl
 {
@@ -287,7 +288,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(3, 3, 0);
+        public static readonly System.Version PluginVersion = new System.Version(3, 5, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -321,7 +322,7 @@ namespace sl
         * Opening function (Opens camera and creates textures).
         */
         [DllImport(nameDll, EntryPoint = "dllz_open")]
-        private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, System.Text.StringBuilder svoPath, System.Text.StringBuilder ipStream, int portStream, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path);
+        private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, System.Text.StringBuilder svoPath, System.Text.StringBuilder ipStream, int portStream, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
 
 
 
@@ -340,12 +341,23 @@ namespace sl
         private static extern int dllz_grab(int cameraID, ref sl.RuntimeParameters runtimeParameters);
 
 
+        /*
+         * GetDeviceList function
+         */
+        [DllImport(nameDll, EntryPoint = "dllz_get_device_list")]
+        private static extern void dllz_get_device_list(sl.DeviceProperties[] deviceList, out int nbDevices);
+
+        /*
+        * Reboot function.
+        */
+        [DllImport(nameDll, EntryPoint = "dllz_reboot")]
+        private static extern int dllz_reboot(int serialNumber);
 
         /*
         * Recording functions.
         */
         [DllImport(nameDll, EntryPoint = "dllz_enable_recording")]
-        private static extern int dllz_enable_recording(int cameraID, byte[] video_filename, int compresssionMode,int bitrate,int target_fps,bool transcode);
+        private static extern int dllz_enable_recording(int cameraID, System.Text.StringBuilder video_filename, int compresssionMode,int bitrate,int target_fps,bool transcode);
 
         [DllImport(nameDll, EntryPoint = "dllz_disable_recording")]
         private static extern bool dllz_disable_recording(int cameraID);
@@ -414,6 +426,9 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "dllz_get_height")]
         private static extern int dllz_get_height(int cameraID);
+
+        [DllImport(nameDll, EntryPoint = "dllz_update_self_calibration")]
+        private static extern void dllz_update_self_calibration(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "dllz_get_calibration_parameters")]
         private static extern IntPtr dllz_get_calibration_parameters(int cameraID, bool raw);
@@ -644,6 +659,14 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "dllz_retrieve_objects_data")]
         private static extern int dllz_retrieve_objects_data(int cameraID, ref dll_ObjectDetectionRuntimeParameters od_params, ref ObjectsFrameSDK objFrame);
 
+        [DllImport(nameDll, EntryPoint = "dllz_update_objects_batch")]
+        private static extern int dllz_update_objects_batch(int cameraID, out int nbBatches);
+
+        [DllImport(nameDll, EntryPoint = "dllz_get_objects_batch_data")]
+        private static extern int dllz_get_objects_batch_data(int cameraID, int batch_index, ref int numData, ref int id, ref OBJECT_CLASS label, ref OBJECT_SUBCLASS sublabel, ref TRACKING_STATE trackingState,
+            [In, Out] Vector3[] position, [In, Out] float[,] positionCovariances, [In, Out] Vector3[] velocities, [In, Out] ulong[] timestamps, [In, Out] Vector2[,] boundingBoxes2D, [In, Out] Vector3[,] boundingBoxes,
+            [In, Out] float[] confidences, [In, Out] OBJECT_ACTION_STATE[] actionStates, [In, Out] Vector2[,] keypoints2D, [In, Out] Vector3[,] keypoints, [In, Out] Vector2[,] headBoundingBoxes2D, [In, Out] Vector3[,] headBoundingBoxes, [In, Out] Vector3[] headPositions,
+            [In, Out] float[,] keypointsConfidences);
 
         /*
         * Save utils function
@@ -877,7 +900,6 @@ namespace sl
             cameraReady = false;
             dllz_close(CameraID);
             DestroyAllTexture();
-
         }
 
         /// <summary>
@@ -963,6 +985,12 @@ namespace sl
             /// </summary>
             [MarshalAs(UnmanagedType.U1)]
             public bool enableImageEnhancement;
+            /// <summary>
+            /// Set an optional file path where the SDK can find a file containing the calibration information of the camera computed by OpenCV.
+            /// <remarks> Using this will disable the factory calibration of the camera. </remarks>
+            /// <warning> Erroneous calibration values can lead to poor SDK modules accuracy. </warning>
+            /// </summary>
+            public string optionalOpencvCalibrationFile;
 
             /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
@@ -988,6 +1016,7 @@ namespace sl
                 depthStabilization = init.depthStabilization;
                 sensorsRequired = init.sensorsRequired;
                 enableImageEnhancement = init.enableImageEnhancement;
+                optionalOpencvCalibrationFile = init.optionalOpencvCalibrationFile;
             }
         }
 
@@ -1008,7 +1037,6 @@ namespace sl
             {
                 initParameters.cameraFPS = (int)fpsMax;
             }
-
             dll_initParameters initP = new dll_initParameters(initParameters); //DLL-friendly version of InitParameters.
             initP.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP; //Left-hand, Y-up is Unity's coordinate system, so we match that.
             int v = dllz_open(CameraID, ref initP,
@@ -1016,7 +1044,8 @@ namespace sl
                 new System.Text.StringBuilder(initParameters.ipStream, initParameters.ipStream.Length),
                 initParameters.portStream,
                 new System.Text.StringBuilder(initParameters.sdkVerboseLogFile, initParameters.sdkVerboseLogFile.Length),
-                new System.Text.StringBuilder(initParameters.optionalSettingsPath, initParameters.optionalSettingsPath.Length));
+                new System.Text.StringBuilder(initParameters.optionalSettingsPath, initParameters.optionalSettingsPath.Length),
+                new System.Text.StringBuilder(initParameters.optionalOpencvCalibrationFile, initParameters.optionalOpencvCalibrationFile.Length));
 
             if ((ERROR_CODE)v != ERROR_CODE.SUCCESS)
             {
@@ -1097,7 +1126,6 @@ namespace sl
             return (sl.ERROR_CODE)dllz_grab(CameraID, ref runtimeParameters);
         }
 
-
         /// <summary>
         /// Return the INPUT_TYPE currently used
         /// </summary>
@@ -1116,7 +1144,7 @@ namespace sl
         /// <returns>An ERROR_CODE that defines if the file was successfully created and can be filled with images.</returns>
         public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.H264_BASED, int bitrate = 0, int target_fps = 0,bool transcode = false)
         {
-            return (ERROR_CODE)dllz_enable_recording(CameraID, StringUtf8ToByte(videoFileName), (int)compressionMode,bitrate,target_fps,transcode);
+            return (ERROR_CODE)dllz_enable_recording(CameraID, new System.Text.StringBuilder(videoFileName, videoFileName.Length), (int)compressionMode,bitrate,target_fps,transcode);
         }
 
         /// <summary>
@@ -1682,6 +1710,20 @@ namespace sl
         }
 
         /// <summary>
+        /// Perform a new self calibration process.
+        /// In some cases, due to temperature changes or strong vibrations, the stereo calibration becomes less accurate.
+        /// Use this function to update the self-calibration data and get more reliable depth values.
+        /// <remarks>The self calibration will occur at the next \ref grab() call.</remarks> 
+        /// New values will then be available in \ref getCameraInformation(), be sure to get them to still have consistent 2D <-> 3D conversion.
+        /// </summary>
+        /// <param name="cameraID"></param>
+        /// <returns></returns>
+        public void UpdateSelfCalibration()
+        {
+            dllz_update_self_calibration(CameraID);
+        }
+
+        /// <summary>
         /// Gets the number of frames dropped since Grab() was called for the first time.
         /// Based on camera timestamps and an FPS comparison.
         /// </summary><remarks>Similar to the Frame Drop display in the ZED Explorer app.</remarks>
@@ -1979,6 +2021,28 @@ namespace sl
         public static string GetSDKVersion()
         {
             return PtrToStringUtf8(dllz_get_sdk_version());
+        }
+
+        /// <summary>
+        /// List all the connected devices with their associated information.
+        /// This function lists all the cameras available and provides their serial number, models and other information.
+        /// </summary>
+        /// <returns>The device properties for each connected camera</returns>
+        public static sl.DeviceProperties[] GetDeviceList(out int nbDevices)
+        {
+            sl.DeviceProperties[] deviceList = new sl.DeviceProperties[(int)Constant.MAX_CAMERA_PLUGIN];
+            dllz_get_device_list(deviceList, out nbDevices);
+
+            return deviceList;
+        }
+
+        /// <summary>
+        /// Performs an hardware reset of the ZED 2. This function only works for ZED 2 cameras.
+        /// </summary>
+        /// <returns>SUCCESS if everything went fine, CAMERA_NOT_DETECTED if no camera was detected, FAILURE otherwise..</returns>
+        public static sl.ERROR_CODE Reboot(int serialNumber)
+        {
+            return (sl.ERROR_CODE)dllz_reboot(serialNumber);
         }
 
         /// <summary>
@@ -2607,7 +2671,32 @@ namespace sl
             return (sl.ERROR_CODE)dllz_retrieve_objects_data(CameraID, ref od_params, ref objFrame);
         }
 
+        /// <summary>
+        /// Update the batch trajectories and retrieve the number of batches.
+        /// </summary>
+        /// <param name="nbBatches"> numbers of batches 
+        /// <returns> returns an ERROR_CODE that indicates the type of error </returns>
+        public sl.ERROR_CODE UpdateObjectsBatch(out int nbBatches)
+        {
+            return (sl.ERROR_CODE)dllz_update_objects_batch(CameraID, out nbBatches);
+        }
 
+        /// <summary>
+        /// Retrieve a batch of objects.
+        /// This function need to be called after RetrieveObjects, otherwise trajectories will be empty.
+        /// If also needs to be called after UpdateOBjectsBatch in order to retrieve the number of batch trajectories.
+        /// </summary>
+        /// <remarks> To retrieve all the objectsbatches, you need to iterate from 0 to nbBatches (retrieved from UpdateObjectBatches) </remarks>
+        /// <param name="batch_index"> index of the batch retrieved.
+        /// <param name="objectsBatch"> trajectory that will be filled by the batching queue process</param>
+        /// <returns> returns an ERROR_CODE that indicates the type of error </returns>
+        public sl.ERROR_CODE GetObjectsBatch(int batch_index, ref ObjectsBatch objectsBatch)
+        {
+            return (sl.ERROR_CODE)dllz_get_objects_batch_data(CameraID, batch_index, ref objectsBatch.numData, ref objectsBatch.id, ref objectsBatch.label, ref objectsBatch.sublabel,
+                ref objectsBatch.trackingState, objectsBatch.positions, objectsBatch.positionCovariances, objectsBatch.velocities, objectsBatch.timestamps, objectsBatch.boundingBoxes2D,
+                objectsBatch.boundingBoxes, objectsBatch.confidences, objectsBatch.actionStates, objectsBatch.keypoints2D, objectsBatch.keypoints, objectsBatch.headBoundingBoxes2D,
+                objectsBatch.headBoundingBoxes, objectsBatch.headPositions, objectsBatch.keypointConfidences);
+        }
 
     }//Zed Camera class
 } // namespace sl
