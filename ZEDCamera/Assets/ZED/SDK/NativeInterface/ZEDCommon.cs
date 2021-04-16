@@ -42,7 +42,8 @@ namespace sl
 	{
 		MAX_CAMERA_PLUGIN = 4,
 		PLANE_DISTANCE = 10,
-        MAX_OBJECTS = 200
+        MAX_OBJECTS = 75,
+        MAX_BATCH_SIZE = 200
     };
 
     /// <summary>
@@ -102,6 +103,39 @@ namespace sl
         public int y;
         public int width;
         public int height;
+    };
+
+    public enum CAMERA_STATE
+    {
+        /// <summary>
+        /// Defines if the camera can be openned by the sdk
+        /// </summary>
+        AVAILABLE,
+        /// <summary>
+        /// Defines if the camera is already opened and unavailable
+        /// </summary>
+        NOT_AVAILABLE
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DeviceProperties
+    {
+        /// <summary>
+        /// The camera state
+        /// </summary>
+        public sl.CAMERA_STATE cameraState;
+        /// <summary>
+        /// The camera id (Notice that only the camera with id '0' can be used on Windows)
+        /// </summary>
+        public int id;
+        /// <summary>
+        /// The camera model
+        /// </summary>
+        public sl.MODEL cameraModel;
+        /// <summary>
+        /// The camera serial number
+        /// </summary>
+        public int sn;
     };
 
     /// <summary>
@@ -786,7 +820,11 @@ namespace sl
         /// <summary>
         /// ZED2.
         /// </summary>
-        ZED2
+        ZED2,
+        /// <summary>
+        /// ZED2i
+        /// </summary>
+        ZED2i
     };
 
     /// <summary>
@@ -1037,8 +1075,15 @@ namespace sl
         ///  Normals vector for right view. As a ZEDMat, MAT_TYPE is set to MAT_32F_C4.
         ///  Channel 4 is empty (set to 0).
         /// </summary>
-        NORMALS_RIGHT
-
+        NORMALS_RIGHT,
+        /// <summary>
+        /// Depth map in millimeter. Each pixel  contains 1 unsigned short. As a ZEDMat, MAT_TYPE is set to MAT_U16_C1.
+        /// </summary>
+        DEPTH_U16_MM,
+        /// <summary>
+        /// Depth map in millimeter for right sensor. Each pixel  contains 1 unsigned short. As a ZEDMat, MAT_TYPE is set to MAT_U16_C1.
+        /// </summary>
+        DEPTH_U16_MM_RIGHT
     };
 
 
@@ -1089,7 +1134,11 @@ namespace sl
         /// <summary>
         /// Tracking is not enabled.
         /// </summary>
-        TRACKING_OFF
+        TRACKING_OFF,
+        /// <summary>
+        /// This is the last searching state of the track, the track will be deleted in the next retreiveObject
+        /// </summary>
+        TRACKING_TERMINATE
     }
 
     /// <summary>
@@ -1340,6 +1389,12 @@ namespace sl
         /// Whether to enable improved color/gamma curves added in ZED SDK 3.0. 
         /// </summary>
         public bool enableImageEnhancement = true;
+        /// <summary>
+        /// Set an optional file path where the SDK can find a file containing the calibration information of the camera computed by OpenCV.
+        /// <remarks> Using this will disable the factory calibration of the camera. </remarks>
+        /// <warning> Erroneous calibration values can lead to poor SDK modules accuracy. </warning>
+        /// </summary>
+        public string optionalOpencvCalibrationFile = "";
 
         /// <summary>
         /// Constructor. Sets default initialization parameters recommended for Unity.
@@ -1369,6 +1424,7 @@ namespace sl
             this.ipStream = "";
             this.portStream = 30000;
             this.enableImageEnhancement = true;
+            this.optionalOpencvCalibrationFile = " ";
         }
 
     }
@@ -1518,6 +1574,39 @@ namespace sl
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////  Object Detection /////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// sets batch trajectory parameters
+    /// The default constructor sets all parameters to their default settings.
+    /// Parameters can be user adjusted.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct BatchParameters
+    {
+        /// <summary>
+        /// Defines if the Batch option in the object detection module is enabled. Batch queueing system provides:
+        ///  - Deep-Learning based re-identification
+        /// - Trajectory smoothing and filtering
+        /// </summary>
+        /// <remarks>
+        /// To activate this option, enable must be set to true.
+        /// </remarks>
+        public bool enable;
+        /// <summary>
+        /// Max retention time in seconds of a detected object. After this time, the same object will mostly have a different ID.
+        /// </summary>
+        public float idRetentionTime;
+        /// <summary>
+        /// Trajectories will be output in batch with the desired latency in seconds.
+        /// During this waiting time, re-identification of objects is done in the background.
+        /// Specifying a short latency will limit the search (falling in timeout) for previously seen object IDs but will be closer to real time output.
+        /// Specifying a long latency will reduce the change of timeout in Re-ID but increase difference with live output.
+        /// </summary>
+        public float latency;
+    }
+    /// <summary>
+    /// Sets the object detection parameters.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct dll_ObjectDetectionParameters
     {
@@ -1537,14 +1626,26 @@ namespace sl
         [MarshalAs(UnmanagedType.U1)]
         public bool enable2DMask;
         /// <summary>
+        /// Defines the AI model used for detection 
+        /// </summary>
+        public sl.DETECTION_MODEL detectionModel;
+        /// <summary>
         /// Defines if the body fitting will be applied
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool enableBodyFitting;
         /// <summary>
-        /// Defines the AI model used for detection 
+        /// Defines a upper depth range for detections.
+        /// Defined in  UNIT set at  sl.Camera.Open.
+        /// Default value is set to sl.Initparameters.depthMaximumDistance (can not be higher).
         /// </summary>
-        public sl.DETECTION_MODEL detectionModel;
+        public float maxRange;
+        /// <summary>
+        /// Batching system parameters.
+        /// Batching system(introduced in 3.5) performs short-term re-identification with deep learning and trajectories filtering.
+        /// BatchParameters.enable need to be true to use this feature (by default disabled)
+        /// </summary>
+        BatchParameters batchParameters;
     };
 
 
@@ -1625,15 +1726,16 @@ namespace sl
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
         public Vector3[] headBoundingBox;// 3D Bounding Box of head (only for HUMAN detectionModel)
 
-
-        
+        /// <summary>
+        /// The 2D position of skeleton joints
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        public Vector2[] skeletonJointPosition2D;// 2D position of the joints of the skeleton
         /// <summary>
         /// The 3D position of skeleton joints
         /// </summary>
-
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
         public Vector3[] skeletonJointPosition;// 3D position of the joints of the skeleton
-
 
         // Full covariance matrix for position (3x3). Only 6 values are necessary
         // [p0, p1, p2]
@@ -1641,6 +1743,14 @@ namespace sl
         // [p2, p4, p5]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
         public float[] position_covariance;// covariance matrix of the 3d position, represented by its upper triangular matrix value
+
+        /// <summary>
+        ///  Per keypoint detection confidence, can not be lower than the ObjectDetectionRuntimeParameters.detection_confidence_threshold.
+        ///  Not available with DETECTION_MODEL.MULTI_CLASS_BOX.
+        ///  in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        public float[] keypoint_confidence;
     };
 
 
@@ -1753,10 +1863,30 @@ namespace sl
     /// List available models for detection
     /// </summary>
     public enum DETECTION_MODEL {
-        MULTI_CLASS_BOX, /**< Any objects, bounding box based */
-        MULTI_CLASS_BOX_ACCURATE , /**< Any objects, bounding box based, more accurate but slower than the base model */
-        HUMAN_BODY_FAST, /**<  Keypoints based, specific to human skeleton, real time performance even on Jetson or low end GPU cards */
-        HUMAN_BODY_ACCURATE /**<  Keypoints based, specific to human skeleton, state of the art accuracy, requires powerful GPU */
+        /// <summary>
+        /// Any objects, bounding box based.
+        /// </summary>
+		MULTI_CLASS_BOX,
+        /// <summary>
+        /// Any objects, bounding box based.
+        /// </summary>
+        MULTI_CLASS_BOX_ACCURATE,
+        /// <summary>
+        /// Keypoints based, specific to human skeleton, real time performance even on Jetson or low end GPU cards.
+        /// </summary>
+        HUMAN_BODY_FAST,
+        /// <summary>
+        ///  Keypoints based, specific to human skeleton, state of the art accuracy, requires powerful GPU.
+        /// </summary>
+		HUMAN_BODY_ACCURATE,
+        /// <summary>
+        /// Any objects, bounding box based.
+        /// </summary>
+        MULTI_CLASS_BOX_MEDIUM,
+        /// <summary>
+        /// Keypoints based, specific to human skeleton, real time performance even on Jetson or low end GPU cards.
+        /// </summary>
+        HUMAN_BODY_MEDIUM,
     };
 
 
@@ -1784,5 +1914,108 @@ namespace sl
         LEFT_EAR = 17,
         LAST = 18
     };
+
+    /// <summary>
+    /// Contains batched data of a detected object
+    /// </summary>
+    /// <summary>
+    /// Contains batched data of a detected object
+    /// </summary>
+    public class ObjectsBatch
+    {
+        /// <summary>
+        /// How many data were stored. Use this to iterate through the top of position/velocity/bounding_box/...; objects with indexes greater than numData are empty.
+        /// </summary>
+        public int numData = 0;
+        /// <summary>
+        /// The trajectory id
+        /// </summary>
+        public int id = 0;
+        /// <summary>
+        /// Object Category. Identity the object type
+        /// </summary>
+        public OBJECT_CLASS label = OBJECT_CLASS.LAST;
+        /// <summary>
+        /// Object subclass
+        /// </summary>
+        public OBJECT_SUBCLASS sublabel = OBJECT_SUBCLASS.LAST;
+        /// <summary>
+        ///  Defines the object tracking state
+        /// </summary>
+        public TRACKING_STATE trackingState = TRACKING_STATE.TRACKING_TERMINATE;
+        /// <summary>
+        /// A sample of 3d position
+        /// </summary>
+        public Vector3[] positions = new Vector3[(int)Constant.MAX_BATCH_SIZE];
+        /// <summary>
+        /// a sample of the associated position covariance
+        /// </summary>
+        public float[,] positionCovariances = new float[(int)Constant.MAX_BATCH_SIZE, 6];
+        /// <summary>
+        /// A sample of 3d velocity
+        /// </summary>
+        public Vector3[] velocities = new Vector3[(int)Constant.MAX_BATCH_SIZE];
+        /// <summary>
+        /// The associated position timestamp
+        /// </summary>
+        public ulong[] timestamps = new ulong[(int)Constant.MAX_BATCH_SIZE];
+        /// <summary>
+        /// A sample of 3d bounding boxes
+        /// </summary>
+        public Vector3[,] boundingBoxes = new Vector3[(int)Constant.MAX_BATCH_SIZE, 8];
+        /// <summary>
+        /// 2D bounding box of the person represented as four 2D points starting at the top left corner and rotation clockwise.
+        /// Expressed in pixels on the original image resolution, [0, 0] is the top left corner.
+        ///      A ------ B
+        ///      | Object |
+        ///      D ------ C
+        /// </summary>
+        public Vector2[,] boundingBoxes2D = new Vector2[(int)Constant.MAX_BATCH_SIZE, 4];
+        /// <summary>
+        /// a sample of object detection confidence
+        /// </summary>
+        public float[] confidences = new float[(int)Constant.MAX_BATCH_SIZE];
+        /// <summary>
+        /// a sample of the object action state
+        /// </summary>
+        public OBJECT_ACTION_STATE[] actionStates = new OBJECT_ACTION_STATE[(int)Constant.MAX_BATCH_SIZE];
+        /// <summary>
+        /// a sample of 2d person keypoints.
+        /// Not available with DETECTION_MODEL::MULTI_CLASS_BOX.
+        /// in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
+        /// </summary>
+        public Vector2[,] keypoints2D = new Vector2[(int)Constant.MAX_BATCH_SIZE, 18];
+        /// <summary>
+        /// a sample of 3d person keypoints
+        /// Not available with DETECTION_MODEL::MULTI_CLASS_BOX.
+        /// in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
+        /// </summary>
+        public Vector3[,] keypoints = new Vector3[(int)Constant.MAX_BATCH_SIZE, 18];
+        /// <summary>
+        /// bounds the head with four 2D points.
+        /// Expressed in pixels on the original image resolution.
+        /// Not available with DETECTION_MODEL.MULTI_CLASS_BOX.
+        /// </summary>
+        public Vector2[,] headBoundingBoxes2D = new Vector2[(int)Constant.MAX_BATCH_SIZE, 8];
+        /// <summary>
+        /// bounds the head with eight 3D points.
+		/// Defined in sl.InitParameters.UNIT, expressed in RuntimeParameters.measure3DReferenceFrame.
+		/// Not available with DETECTION_MODEL.MULTI_CLASS_BOX.
+        /// </summary>
+        public Vector3[,] headBoundingBoxes = new Vector3[(int)Constant.MAX_BATCH_SIZE, 8];
+        /// <summary>
+        /// 3D head centroid.
+		/// Defined in sl.InitParameters.UNIT, expressed in RuntimeParameters.measure3DReferenceFrame.
+		/// Not available with DETECTION_MODEL.MULTI_CLASS_BOX.
+        /// </summary>
+        public Vector3[] headPositions = new Vector3[(int)Constant.MAX_BATCH_SIZE];
+        /// <summary>
+        ///  Per keypoint detection confidence, can not be lower than the ObjectDetectionRuntimeParameters.detectionConfidenceThreshold.
+		/// Not available with DETECTION_MODEL.MULTI_CLASS_BOX.
+		/// in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
+        /// </summary>
+        public float[,] keypointConfidences = new float[(int)Constant.MAX_BATCH_SIZE, 18];
+    }
+
 
 }// end namespace sl

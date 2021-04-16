@@ -61,7 +61,7 @@ public class ZEDManager : MonoBehaviour
     /// at C:/ProgramData/stereolabs/SL_Unity_wrapper.txt. This helps find issues that may occur within
     /// the protected .dll, but can decrease performance.
     /// </summary>
-    private bool wrapperVerbose = true;
+    private bool wrapperVerbose = false;
 
     /// <summary>
     /// Current instance of the ZED Camera, which handles calls to the Unity wrapper .dll.
@@ -112,6 +112,11 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public string svoInputFileName = "";
+
+    /// <summary>
+    /// Optional opencv calib file
+    /// </summary>
+    public string opencvCalibFile = "";
 
     /// <summary>
     /// SVO loop back option
@@ -343,7 +348,8 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Sync the Object on the image on the image.
     /// </summary>
-    private bool objectDetectionImageSyncMode = true;
+    [HideInInspector]
+    public bool objectDetectionImageSyncMode = false;
 
     /// <summary>
     /// Whether to track objects across multiple frames using the ZED's position relative to the floor.
@@ -372,6 +378,12 @@ public class ZEDManager : MonoBehaviour
     public bool bodyFitting = false;
 
     /// <summary>
+    /// Defines a upper depth range for detections.
+    /// </summary>
+    [HideInInspector]
+    public float maxRange = 40.0f;
+
+    /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
     /// </summary>
@@ -384,42 +396,42 @@ public class ZEDManager : MonoBehaviour
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
     /// </summary>
     [HideInInspector]
-    public int OD_personDetectionConfidenceThreshold = 35;
+    public int OD_personDetectionConfidenceThreshold = 60;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
     /// </summary>
     [HideInInspector]
-    public int vehicleDetectionConfidenceThreshold = 35;
+    public int vehicleDetectionConfidenceThreshold = 60;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
     /// </summary>
     [HideInInspector]
-    public int bagDetectionConfidenceThreshold = 35;
+    public int bagDetectionConfidenceThreshold = 60;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
     /// </summary>
     [HideInInspector]
-    public int animalDetectionConfidenceThreshold = 35;
+    public int animalDetectionConfidenceThreshold = 60;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
     /// </summary>
     [HideInInspector]
-    public int electronicsDetectionConfidenceThreshold = 35;
+    public int electronicsDetectionConfidenceThreshold = 60;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
     /// </summary>
     [HideInInspector]
-    public int fruitVegetableDetectionConfidenceThreshold = 35;
+    public int fruitVegetableDetectionConfidenceThreshold = 60;
 
     /// <summary>
     /// Whether to detect people during object detection.
@@ -512,7 +524,6 @@ public class ZEDManager : MonoBehaviour
     /// that makes it easier to use in Unity.
     /// </summary>
     public event onNewDetectionTriggerSDKDelegate OnObjectDetection_SDKData;
-
     /// <summary>
     /// Delegate for events that take an object detection frame, in the form of a DetectionFrame object which has helper functions.
     /// </summary>
@@ -1576,7 +1587,6 @@ public class ZEDManager : MonoBehaviour
     }
     #endregion
 
-
     /// <summary>
     /// Sets the target GameObject and all its children to the specified layer.
     /// </summary>
@@ -1620,7 +1630,6 @@ public class ZEDManager : MonoBehaviour
         if (IsMappingRunning)
             StopSpatialMapping();
 
-
         Thread.Sleep(10);
     }
 
@@ -1655,7 +1664,12 @@ public class ZEDManager : MonoBehaviour
         if (spatialMapping != null)
             spatialMapping.Dispose();
 
-#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
+        if (objectDetectionRunning)
+        {
+            StopObjectDetection();
+        }
+
+#if !ZED_LWRP && !ZED_HDRP
         ClearRendering();
 #endif
 
@@ -1744,6 +1758,7 @@ public class ZEDManager : MonoBehaviour
         initParameters.cameraImageFlip = (int)cameraFlipMode;
         initParameters.enableImageEnhancement = enableImageEnhancement;
         initParameters.cameraDisableSelfCalib = !enableSelfCalibration;
+        initParameters.optionalOpencvCalibrationFile = opencvCalibFile;
 
         //Check if this rig is a stereo rig. Will set isStereoRig accordingly.
         CheckStereoMode();
@@ -2678,8 +2693,9 @@ public class ZEDManager : MonoBehaviour
             od_param.enable2DMask = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
             od_param.enableBodyFitting = bodyFitting;
+            od_param.maxRange = maxRange;
             od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
-            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST) ? SK_personDetectionConfidenceThreshold : OD_personDetectionConfidenceThreshold;
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM) ? SK_personDetectionConfidenceThreshold : OD_personDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehicleDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.BAG] = bagDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ANIMAL] = animalDetectionConfidenceThreshold;
@@ -2969,6 +2985,55 @@ public class ZEDManager : MonoBehaviour
 
     }
 
+    public void Reboot()
+    {
+        //Save tracking
+        if (enableTracking && isTrackingEnable)
+        {
+            zedCamera.GetPosition(ref zedOrientation, ref zedPosition);
+        }
+
+        int sn = zedCamera.GetZEDSerialNumber();
+        Debug.Log("SN : " + sn);
+        CloseManager();
+
+        bool isCameraAvailable = false;
+        sl.ERROR_CODE err = sl.ZEDCamera.Reboot(sn);
+        if (err == sl.ERROR_CODE.SUCCESS)
+        {
+            int count = 0;
+            // Check if the camera is available before trying to re open it
+            while (!isCameraAvailable && count < 15)
+            {
+                sl.DeviceProperties[] devices = sl.ZEDCamera.GetDeviceList(out int nbDevices);
+                for (int i = 0; i < nbDevices; i++)
+                {
+                    if (sn == devices[i].sn)
+                    {
+                        isCameraAvailable = true;
+                        break;
+                    }
+
+                }
+                Thread.Sleep(500);
+                count++;
+            }
+        }
+
+        openingLaunched = false;
+        running = false;
+        numberTriesOpening = 0;
+        forceCloseInit = false;
+
+        if (isCameraAvailable) {
+            Debug.LogWarning("Reboot successful.");
+            Awake();
+        }
+        else {
+            Debug.LogWarning("Unable to reboot correctly.");
+            UnityEditor.EditorApplication.isPlaying = false;
+        }
+    }
 
     public void InitVideoSettings(VideoSettingsInitMode mode)
     {

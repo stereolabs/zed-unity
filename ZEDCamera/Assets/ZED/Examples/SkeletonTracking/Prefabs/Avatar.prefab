@@ -1404,7 +1404,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 4103878773019131409, guid: e16384d6d6cf33340a49b7f291a0530b, type: 3}
+  m_Mesh: {fileID: 4103878773019131409, guid: b073bacafdf08bc4ca536a0c3dec36b5, type: 3}
   m_Bones:
   - {fileID: 6231802706784277992}
   - {fileID: 2212044960346959050}
@@ -2177,7 +2177,7 @@ GameObject:
   - component: {fileID: 4052729234907654422}
   - component: {fileID: 7589896252196803717}
   m_Layer: 16
-  m_Name: Avatar_HandsClosed
+  m_Name: Avatar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2207,7 +2207,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7319989575081748950}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: e16384d6d6cf33340a49b7f291a0530b, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 67534265227a2ed4b9304aceb7d751ba, type: 3}
   m_Controller: {fileID: 0}
   m_CullingMode: 1
   m_UpdateMode: 0

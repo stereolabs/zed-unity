@@ -268,6 +268,8 @@ public class ZEDToOpenCVRetriever : MonoBehaviour
                 return CvType.CV_8UC3;
             case ZEDMat.MAT_TYPE.MAT_8U_C4:
                 return CvType.CV_8UC4;
+            case ZEDMat.MAT_TYPE.MAT_16U_C1:
+                return CvType.CV_16UC1;
             default:
                 return -1;
         }

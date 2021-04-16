@@ -458,12 +458,11 @@ public class GarbageMatte
 					GameObject.Destroy (sph);
 			}
 		}
-
+       
         Shader.SetGlobalInt("_ZEDStencilComp", 0);
 
         if (go == null) return;
         isClosed = false;
-        
         currentPlaneIndex = 0;
         for (int i = 0; i < go.Count; i++)
         {
