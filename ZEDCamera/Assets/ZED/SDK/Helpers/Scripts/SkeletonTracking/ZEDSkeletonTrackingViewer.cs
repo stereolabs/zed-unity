@@ -102,7 +102,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         zedManager.OnObjectDetection += updateSkeletonData;
 		}
 
-        if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
+        if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM)
         {
             Debug.LogWarning("MULTI_CLASS_BOX model can't be used for skeleton tracking, please use either HUMAN_BODY_FAST or HUMAN_BODY_ACCURATE");
         }
