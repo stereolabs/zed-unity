@@ -1039,7 +1039,7 @@ public class ZEDCameraEditor : Editor
 
             EditorGUI.indentLevel--;
 
-            EditorGUILayout.LabelField("AR Settings", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("AR Pass-through Settings", EditorStyles.boldLabel);
             GUILayout.Space(5);
 
             EditorGUI.indentLevel++;
