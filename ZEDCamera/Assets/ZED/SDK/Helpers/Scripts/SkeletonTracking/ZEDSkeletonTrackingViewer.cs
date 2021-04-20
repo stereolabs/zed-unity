@@ -81,8 +81,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     private Vector3 initialPosition;
     private Quaternion initialRotation;
 
-    private float SpineHeight = 0.85f;
-
     /// <summary>
     /// Start this instance.
     /// </summary>
@@ -176,7 +174,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 			{
 				SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
                 Vector3 spawnPosition = zedManager.GetZedRootTansform().TransformPoint(dobj.rawObjectData.rootWorldPosition);
-                handler.Create(Avatar, spawnPosition);
+                handler.Create(Avatar);
                 handler.initSkeleton(person_id);
                 avatarControlList.Add(person_id, handler);
                 UpdateAvatarControl(handler, dobj.rawObjectData, useAvatar);
@@ -245,7 +243,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
         Vector3 worldbodyRootPosition = zedManager.GetZedRootTansform().TransformPoint(bodyCenter);
         if (float.IsNaN(world_joints_pos[18].y)) worldbodyRootPosition.y = 0;
-        else worldbodyRootPosition.y = world_joints_pos[18].y - SpineHeight;
+        else worldbodyRootPosition.y =  world_joints_pos[18].y - handler.SpineHeight;
 
         handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition, useAvatar) ;
         //handler.setJointSpherePoint(world_joints_pos);
