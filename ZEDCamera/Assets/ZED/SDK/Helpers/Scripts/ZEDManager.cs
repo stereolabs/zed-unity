@@ -1145,11 +1145,13 @@ public class ZEDManager : MonoBehaviour
     /// Enables pose smoothing during drift correction. Leave it to true.
     /// </summary>
     private bool enablePoseSmoothing = true;
+
+#if UNITY_EDITOR
     /// <summary>
     /// The engine FPS, updated every frame. 
     /// </summary>
     private float fps_engine = 90.0f;
-
+#endif
     /// <summary>
     /// Recording state
     /// </summary>

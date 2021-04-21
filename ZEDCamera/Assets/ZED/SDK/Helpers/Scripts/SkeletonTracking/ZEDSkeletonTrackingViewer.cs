@@ -195,16 +195,20 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
 	public void Update()
 	{
-		foreach (var skelet in avatarControlList) {
-            skelet.Value.Move ();
-		}
-
-        UpdateViewCameraPosition();
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
             useAvatar = !useAvatar;
         }
+
+        if (useAvatar)
+        {
+            foreach (var skelet in avatarControlList)
+            {
+                skelet.Value.Move();
+            }
+        }
+
+        UpdateViewCameraPosition();
 
 #if FAKEMODE
         if (Input.GetKeyDown(KeyCode.Space))
@@ -247,10 +251,10 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         if (float.IsNaN(world_joints_pos[18].y)) worldbodyRootPosition.y = 0;
         else worldbodyRootPosition.y =  world_joints_pos[18].y - handler.SpineHeight;
 
-        handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition, useAvatar) ;
+        handler.setControlWithJointPosition(world_joints_pos, worldbodyRootPosition, useAvatar);
         //handler.setJointSpherePoint(world_joints_pos);
 
-        handler.SetSmoothFactor (smoothFactor);
+        handler.SetSmoothFactor(smoothFactor);
     }
 
     void UpdateViewCameraPosition()
