@@ -74,8 +74,10 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     [Tooltip("Smooth factor used for avatar movements and joint rotations.")]
     public float smoothFactor = 0.5f;
 
-
+#if FAKEMODE
     int indexFakeTest = 0;
+#endif
+
 	public Dictionary<int,SkeletonHandler> avatarControlList;
 
     private Vector3 initialPosition;
@@ -131,7 +133,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     private void updateSkeletonData(DetectionFrame dframe)
     {
 
-        #if FAKEMODE
+#if FAKEMODE
 
         if (avatarControlList.ContainsKey(0))
         {
@@ -146,7 +148,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         }
 
 
-        #else
+#else
 		List<int> remainingKeyList = new List<int>(avatarControlList.Keys);
 		List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showON, showSEARCHING, showOFF);
 
@@ -188,7 +190,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 			avatarControlList.Remove(index);
 		}
 
-		#endif
+#endif
     }
 
 	public void Update()

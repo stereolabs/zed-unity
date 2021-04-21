@@ -176,8 +176,7 @@ public class ZEDCameraEditor : Editor
     SerializedProperty gammaProperty;
     SerializedProperty ledStatus;
 
-    private bool hasLoadedSettings = false;
-
+    //private bool hasLoadedSettings = false;
     /// <summary>
     /// Whether we've set a manual value to gain and exposure or if they're in auto mode. 
     /// </summary>

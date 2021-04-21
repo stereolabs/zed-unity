@@ -4,9 +4,6 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using System.Runtime.InteropServices;
-using System.IO;
-using System.Text;
 
 
 public class SkeletonHandler : ScriptableObject
@@ -659,7 +656,6 @@ public class SkeletonHandler : ScriptableObject
             joint[JointType_EyesLeft] = new Vector3(-0.25f, 2.0f, 0.0f);
             joint[JointType_EyesRight] = new Vector3(0.25f, 2.0f, 0.0f);
         }
-
     }
 
     /// <summary>
@@ -705,7 +701,7 @@ public class SkeletonHandler : ScriptableObject
 
         if (Quaternion.Angle(waistrot, shoulderrot) > 45 || Quaternion.Angle(waistrot, shoulderrot) < -45)
         {
-           // shoulderrot = oldshoulderrot;
+            shoulderrot = oldshoulderrot;
         }
 
         for (int i = 0; i < targetBone.Length; i++)

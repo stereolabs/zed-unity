@@ -26,7 +26,6 @@ public class ChooseTrackedObjectMenu : MonoBehaviour
 
     public bool updateTrackedObjects = true;
     public float updateIntervalSeconds = 1f;
-    private float updateTimer = 0f;
 
     /// <summary>
     /// How wide the grid of tracked object buttons can be. Objects are stacked upwards. 
