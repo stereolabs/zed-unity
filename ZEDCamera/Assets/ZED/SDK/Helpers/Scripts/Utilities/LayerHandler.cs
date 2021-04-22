@@ -88,8 +88,6 @@ public class LayerHandler
 				}
 
 			}
-	    	break;
-
 		case sl.ZED_CAMERA_ID.CAMERA_ID_02:
 			{
 				switch (mode) {
@@ -105,7 +103,6 @@ public class LayerHandler
 					return -1;
 				}
 			}
-			break;
 
 		case sl.ZED_CAMERA_ID.CAMERA_ID_03:
 			{
@@ -122,8 +119,6 @@ public class LayerHandler
 					return -1;
 				}
 			}
-			break;
-
 		case sl.ZED_CAMERA_ID.CAMERA_ID_04:
 			{
 				switch (mode) {
@@ -139,8 +134,6 @@ public class LayerHandler
 					return -1;
 				}
 			}
-			break;
-
 		default :
 			return -1;
 		}

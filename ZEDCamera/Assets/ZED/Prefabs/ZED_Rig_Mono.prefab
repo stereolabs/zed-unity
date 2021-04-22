@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraID: 0
   depthMode: 1
-  inputType: 2
+  inputType: 0
   resolution: 2
   FPS: 60
   svoInputFileName: Assets/Recording.svo
@@ -73,18 +73,19 @@ MonoBehaviour:
   saveMeshWhenOver: 0
   meshPath: Assets/ZEDMesh.obj
   meshFilterParameters: 0
+  objectDetectionImageSyncMode: 0
   objectDetectionTracking: 1
   objectDetection2DMask: 0
   objectDetectionModel: 1
   bodyFitting: 0
   maxRange: 40
   SK_personDetectionConfidenceThreshold: 50
-  OD_personDetectionConfidenceThreshold: 35
-  vehicleDetectionConfidenceThreshold: 35
-  bagDetectionConfidenceThreshold: 35
-  animalDetectionConfidenceThreshold: 35
-  electronicsDetectionConfidenceThreshold: 35
-  fruitVegetableDetectionConfidenceThreshold: 35
+  OD_personDetectionConfidenceThreshold: 60
+  vehicleDetectionConfidenceThreshold: 60
+  bagDetectionConfidenceThreshold: 60
+  animalDetectionConfidenceThreshold: 60
+  electronicsDetectionConfidenceThreshold: 60
+  fruitVegetableDetectionConfidenceThreshold: 60
   objectClassPersonFilter: 1
   objectClassVehicleFilter: 1
   objectClassBagFilter: 1
@@ -151,7 +152,7 @@ MonoBehaviour:
   HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
   advancedPanelOpen: 0
   spatialMappingFoldoutOpen: 0
-  objectDetectionFoldoutOpen: 1
+  objectDetectionFoldoutOpen: 0
   recordingFoldoutOpen: 0
   streamingOutFoldoutOpen: 0
   camControlFoldoutOpen: 0

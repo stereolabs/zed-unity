@@ -74,17 +74,18 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     [Tooltip("Smooth factor used for avatar movements and joint rotations.")]
     public float smoothFactor = 0.5f;
 
+#if FAKEMODE
+    int indexFakeTest = 0;
+#endif
 
-    int indexFakeTest = 9;
 	public Dictionary<int,SkeletonHandler> avatarControlList;
 
     private Vector3 initialPosition;
     private Quaternion initialRotation;
 
-    private float SpineHeight = 0.85f;
-	/// <summary>
-	/// Start this instance.
-	/// </summary>
+    /// <summary>
+    /// Start this instance.
+    /// </summary>
     private void Start()
     {
         QualitySettings.vSyncCount = 1; // Activate vsync
@@ -101,7 +102,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         zedManager.OnObjectDetection += updateSkeletonData;
 		}
 
-        if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
+        if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM)
         {
             Debug.LogWarning("MULTI_CLASS_BOX model can't be used for skeleton tracking, please use either HUMAN_BODY_FAST or HUMAN_BODY_ACCURATE");
         }
@@ -132,7 +133,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     private void updateSkeletonData(DetectionFrame dframe)
     {
 
-        #if FAKEMODE
+#if FAKEMODE
 
         if (avatarControlList.ContainsKey(0))
         {
@@ -147,7 +148,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         }
 
 
-        #else
+#else
 		List<int> remainingKeyList = new List<int>(avatarControlList.Keys);
 		List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showON, showSEARCHING, showOFF);
 
@@ -175,7 +176,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 			{
 				SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
                 Vector3 spawnPosition = zedManager.GetZedRootTansform().TransformPoint(dobj.rawObjectData.rootWorldPosition);
-                handler.Create(Avatar, spawnPosition);
+                handler.Create(Avatar);
                 handler.initSkeleton(person_id);
                 avatarControlList.Add(person_id, handler);
                 UpdateAvatarControl(handler, dobj.rawObjectData, useAvatar);
@@ -189,21 +190,25 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 			avatarControlList.Remove(index);
 		}
 
-		#endif
+#endif
     }
 
 	public void Update()
 	{
-		foreach (var skelet in avatarControlList) {
-            skelet.Value.Move ();
-		}
-
-        UpdateViewCameraPosition();
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
             useAvatar = !useAvatar;
         }
+
+        if (useAvatar)
+        {
+            foreach (var skelet in avatarControlList)
+            {
+                skelet.Value.Move();
+            }
+        }
+
+        UpdateViewCameraPosition();
 
 #if FAKEMODE
         if (Input.GetKeyDown(KeyCode.Space))
@@ -223,7 +228,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// <param name="p">P.</param>
 	private void UpdateAvatarControl(SkeletonHandler handler, sl.ObjectDataSDK data, bool useAvatar)
 	{
-
 		Vector3 bodyCenter = data.rootWorldPosition;
 
         if (bodyCenter == Vector3.zero)  return; // Object not detected
@@ -245,13 +249,12 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
         Vector3 worldbodyRootPosition = zedManager.GetZedRootTansform().TransformPoint(bodyCenter);
         if (float.IsNaN(world_joints_pos[18].y)) worldbodyRootPosition.y = 0;
-        else worldbodyRootPosition.y = world_joints_pos[18].y - SpineHeight;
+        else worldbodyRootPosition.y =  world_joints_pos[18].y - handler.SpineHeight;
 
-        handler.setControlWithJointPosition (world_joints_pos, worldbodyRootPosition, useAvatar) ;
+        handler.setControlWithJointPosition(world_joints_pos, worldbodyRootPosition, useAvatar);
         //handler.setJointSpherePoint(world_joints_pos);
 
-        handler.SetSmoothFactor (smoothFactor);
-
+        handler.SetSmoothFactor(smoothFactor);
     }
 
     void UpdateViewCameraPosition()
