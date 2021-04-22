@@ -5,7 +5,7 @@ using UnityEditor;
 using System.Collections;
 
 /// <summary>
-/// Checks your system for the required ZED SDK version, and displays an error window with instructions if it's missing. 
+/// Checks your system for the required ZED SDK version, and displays an error window with instructions if it's missing.
 /// Runs automatically when Unity loads. Remove the [InitializeOnLoad] tag to disable this.
 /// </summary>
 [InitializeOnLoad]
@@ -42,7 +42,6 @@ public class ZEDPluginInspector : EditorWindow
 
     const BuildTarget needed_BuildTarget = BuildTarget.StandaloneWindows64;
     const bool needed_ShowUnitySplashScreen = false;
-    const ResolutionDialogSetting needed_DisplayResolutionWindow = ResolutionDialogSetting.HiddenByDefault;
     const bool needed_ResizableWindow = true;
     const ColorSpace needed_ColorSpace = ColorSpace.Linear;
     const bool needed_GPUSkinning = true;
@@ -76,7 +75,7 @@ public class ZEDPluginInspector : EditorWindow
 
     /// <summary>
     /// Makes sure the project's tags are loaded, as they are used in some samples but may get deleted on import or
-    /// if shared via source control. 
+    /// if shared via source control.
     /// </summary>
 	static public void addMissingTag()
     {
@@ -94,7 +93,7 @@ public class ZEDPluginInspector : EditorWindow
             if (t.stringValue.Equals(s)) { found = true; break; }
         }
 
-        //If not found, add it since we use it in GreenScreen. 
+        //If not found, add it since we use it in GreenScreen.
         //This tag may be used anywhere, since it tags helper object that may have a specific behavior
 
         if (!found)
@@ -128,8 +127,6 @@ public class ZEDPluginInspector : EditorWindow
                 EditorUserBuildSettings.activeBuildTarget != needed_BuildTarget) ||
             (!EditorPrefs.HasKey(ignore + showUnitySplashScreen) &&
                 PlayerSettings.SplashScreen.show != needed_ShowUnitySplashScreen) ||
-            (!EditorPrefs.HasKey(ignore + displayResolutionDialog) &&
-                PlayerSettings.displayResolutionDialog != needed_DisplayResolutionWindow) ||
             (!EditorPrefs.HasKey(ignore + resizableWindow) &&
                 PlayerSettings.resizableWindow != needed_ResizableWindow) ||
             (!EditorPrefs.HasKey(ignore + colorSpace) &&
@@ -169,10 +166,24 @@ public class ZEDPluginInspector : EditorWindow
             window.Show(true);
         }
 
+<<<<<<< HEAD
+        GUILayout.Space(10);
+        if (GUILayout.Button("Close"))
+        {
+
+            if (showErrorPlugin)
+            {
+                EditorPrefs.SetBool("ZED_NoWarning_Plugin", true);
+            }
+
+            this.Close();
+        }
+=======
         EditorApplication.update -= UpdateWnd;
 
     }
 
+>>>>>>> v3.5
 
 
     void OnGUI()
@@ -239,18 +250,13 @@ public class ZEDPluginInspector : EditorWindow
 
             this.Close();
         }
-
-
-
-
-
     }
 
 
     Vector2 scrollPosition;
     /// <summary>
     /// Shows a window prompting the user to change project settings to recommended settings, with
-    /// buttons to automatically do so. 
+    /// buttons to automatically do so.
     /// </summary>
 	public void showSettingsWindow()
     {
@@ -290,7 +296,11 @@ public class ZEDPluginInspector : EditorWindow
 
             if (GUILayout.Button("Ignore"))
             {
+<<<<<<< HEAD
+                EditorPrefs.SetBool(ignore + showUnitySplashScreen, true);
+=======
                 EditorPrefs.SetBool(ignore + buildTarget, true);
+>>>>>>> v3.5
             }
 
             GUILayout.EndHorizontal();
@@ -319,31 +329,6 @@ public class ZEDPluginInspector : EditorWindow
 
             GUILayout.EndHorizontal();
         }
-
-        if (!EditorPrefs.HasKey(ignore + displayResolutionDialog) &&
-            PlayerSettings.displayResolutionDialog != needed_DisplayResolutionWindow)
-        {
-            ++numItems;
-
-            GUILayout.Label(displayResolutionDialog + string.Format(currentValue, PlayerSettings.displayResolutionDialog));
-
-            GUILayout.BeginHorizontal();
-
-            if (GUILayout.Button(string.Format(useRecommended, needed_DisplayResolutionWindow)))
-            {
-                PlayerSettings.displayResolutionDialog = needed_DisplayResolutionWindow;
-            }
-
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button("Ignore"))
-            {
-                EditorPrefs.SetBool(ignore + displayResolutionDialog, true);
-            }
-
-            GUILayout.EndHorizontal();
-        }
-
         if (!EditorPrefs.HasKey(ignore + resizableWindow) &&
             PlayerSettings.resizableWindow != needed_ResizableWindow)
         {
@@ -528,8 +513,11 @@ public class ZEDPluginInspector : EditorWindow
                     EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, needed_BuildTarget);
                 if (!EditorPrefs.HasKey(ignore + showUnitySplashScreen))
                     PlayerSettings.SplashScreen.show = needed_ShowUnitySplashScreen;
+<<<<<<< HEAD
                 if (!EditorPrefs.HasKey(ignore + displayResolutionDialog))
                     PlayerSettings.displayResolutionDialog = needed_DisplayResolutionWindow;
+=======
+>>>>>>> v3.5
                 if (!EditorPrefs.HasKey(ignore + resizableWindow))
                     PlayerSettings.resizableWindow = needed_ResizableWindow;
                 if (!EditorPrefs.HasKey(ignore + colorSpace))
@@ -556,8 +544,6 @@ public class ZEDPluginInspector : EditorWindow
                         EditorPrefs.SetBool(ignore + buildTarget, true);
                     if (PlayerSettings.SplashScreen.show != needed_ShowUnitySplashScreen)
                         EditorPrefs.SetBool(ignore + showUnitySplashScreen, true);
-                    if (PlayerSettings.displayResolutionDialog != needed_DisplayResolutionWindow)
-                        EditorPrefs.SetBool(ignore + displayResolutionDialog, true);
                     if (PlayerSettings.resizableWindow != needed_ResizableWindow)
                         EditorPrefs.SetBool(ignore + resizableWindow, true);
                     if (PlayerSettings.colorSpace != needed_ColorSpace)
@@ -583,4 +569,3 @@ public class ZEDPluginInspector : EditorWindow
         GUILayout.EndHorizontal();
     }
 }
-

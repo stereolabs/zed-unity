@@ -297,24 +297,29 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         }
     }
 
-#if UNITY_2017_OR_NEWER
-	List<UnityEngine.VR.VRNodeState> nodes = new List<UnityEngine.VR.VRNodeState>();
-
-	UnityEngine.VR.VRNodeState nodeState = new UnityEngine.VR.VRNodeState();
-#endif
-
-#if UNITY_2019_1_OR_NEWER
     List<XRNodeState> nodeStates = new List<XRNodeState>();
-#endif
 
     private bool hasXRDevice()
     {
-        return XRDevice.isPresent;
+        var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
+        SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
+        foreach (var xrDisplay in xrDisplaySubsystems)
+        {
+            if (xrDisplay.running)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private string getXRModelName()
     {
+#if UNITY_2019_1_OR_NEWER
+        return XRSettings.loadedDeviceName;
+#else
         return XRDevice.model;
+#endif
     }
 
     private void Awake()
@@ -498,15 +503,10 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
 		KeyPose k = new KeyPose();
 
-#if UNITY_2019_1_OR_NEWER
         InputTracking.GetNodeStates(nodeStates);
         XRNodeState nodeState = nodeStates.Find(node => node.nodeType == XRNode.Head);
         nodeState.TryGetRotation(out k.Orientation);
         nodeState.TryGetPosition(out k.Translation);
-#else
-        k.Orientation =  InputTracking.GetLocalRotation( XRNode.Head);
-		k.Translation = InputTracking.GetLocalPosition(XRNode.Head);
-#endif
 
         if (manager.zedCamera.IsCameraReady)
 		{
@@ -583,16 +583,11 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
 		Transform tmpHMD = transform;
 
-#if UNITY_2019_1_OR_NEWER
         InputTracking.GetNodeStates(nodeStates);
         XRNodeState nodeState = nodeStates.Find(node => node.nodeType == XRNode.Head);
         nodeState.TryGetRotation(out Quaternion rot);
         nodeState.TryGetPosition(out Vector3 pos);
         Pose hmdTransform = new Pose(pos, rot);
-#else
-        tmpHMD.position = InputTracking.GetLocalPosition(XRNode.Head);
-		tmpHMD.rotation = InputTracking.GetLocalRotation (XRNode.Head);
-#endif
 
         Quaternion r = Quaternion.identity;
 		Vector3 t = Vector3.zero;
@@ -640,15 +635,13 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	public void AdjustTrackingAR(Vector3 position, Quaternion orientation, out Quaternion r, out Vector3 t, bool setimuprior)
 	{
         hasVRDevice = hasXRDevice();
-#if UNITY_2019_1_OR_NEWER
+
         InputTracking.GetNodeStates(nodeStates);
         XRNodeState nodeState = nodeStates.Find(node => node.nodeType == XRNode.Head);
         nodeState.TryGetRotation(out Quaternion rot);
         nodeState.TryGetPosition(out Vector3 pos);
         Pose hmdTransform = new Pose(pos, rot);
-#else
-        Pose hmdTransform = new Pose(InputTracking.GetLocalPosition(XRNode.Head), InputTracking.GetLocalRotation(XRNode.Head)); //Current HMD position
-#endif
+
         trackingData.trackingState = (int)manager.ZEDTrackingState; //Whether the ZED's tracking is currently valid (not off or unable to localize).
 		trackingData.zedPathTransform = new Pose (position, orientation);
 

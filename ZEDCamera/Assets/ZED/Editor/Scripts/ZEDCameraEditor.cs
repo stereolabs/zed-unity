@@ -176,8 +176,7 @@ public class ZEDCameraEditor : Editor
     SerializedProperty gammaProperty;
     SerializedProperty ledStatus;
 
-    private bool hasLoadedSettings = false;
-
+    //private bool hasLoadedSettings = false;
     /// <summary>
     /// Whether we've set a manual value to gain and exposure or if they're in auto mode. 
     /// </summary>
@@ -772,8 +771,7 @@ public class ZEDCameraEditor : Editor
                 OD_BodyFitting.boolValue = EditorGUILayout.Toggle(BodyFittingLabel, OD_BodyFitting.boolValue);
             }
 
-            GUIContent maxRangeLabel = new GUIContent("Max Range", "Defines a upper depth range for detections." +
-            "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+            GUIContent maxRangeLabel = new GUIContent("Max Range", "Defines a upper depth range for detections.");
             OD_MaxRange.floatValue = EditorGUILayout.Slider(maxRangeLabel, OD_MaxRange.floatValue, 0, 40.0f);
 
             GUI.enabled = true;
@@ -1012,14 +1010,13 @@ public class ZEDCameraEditor : Editor
             enableImageEnhancementProperty.boolValue = EditorGUILayout.Toggle(imageenhancementlabel, manager.enableImageEnhancement);
             EditorGUI.EndDisabledGroup();
 
-                        //Whether to enable the ZED SDK's self-calibration feature. 
+            GUIContent enalbeIMUFusionLabel = new GUIContent("Visual-Inertial Tracking", "If true, and you are using a ZED2 or ZED Mini, IMU fusion uses data from the camera's IMU to improve tracking results. ");
+            enableIMUFusionProperty.boolValue = EditorGUILayout.Toggle(enalbeIMUFusionLabel, enableIMUFusionProperty.boolValue);
+
+            //Whether to enable the ZED SDK's self-calibration feature. 
             GUIContent enableselfcaliblabel = new GUIContent("Self-Calibration", "If true, the ZED SDK will subtly adjust the ZED's calibration " +
                 "during runtime to account for heat and other factors. Reasons to disable this are rare. ");
             enableSelfCalibrationProperty.boolValue = EditorGUILayout.Toggle(enableselfcaliblabel, enableSelfCalibrationProperty.boolValue);
-
-            //Fade In At Start toggle. 
-            GUIContent fadeinlabel = new GUIContent("Fade In at Start", "When enabled, makes the ZED image fade in from black when the application starts.");
-            fadeinonstart.boolValue = EditorGUILayout.Toggle(fadeinlabel, manager.fadeInOnStart);
 
             //Grey Skybox toggle.
             GUIContent greyskyboxlabel = new GUIContent("Grey Out Skybox on Start", "True to set the background to a neutral gray when the scene starts.\n\r" +
@@ -1038,7 +1035,7 @@ public class ZEDCameraEditor : Editor
 
             EditorGUI.indentLevel--;
 
-            EditorGUILayout.LabelField("AR Pass-through Settings", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("AR Passthrough Settings", EditorStyles.boldLabel);
             GUILayout.Space(5);
 
             EditorGUI.indentLevel++;
@@ -1148,8 +1145,9 @@ public class ZEDCameraEditor : Editor
                 "usually be left on. However, in some setups, like when using a custom mount, this can cause tracking errors.");
             setIMUPrior.boolValue = EditorGUILayout.Toggle(setimupriorlabel, manager.setIMUPriorInAR);
 
-            GUIContent enalbeIMUFusionLabel = new GUIContent("Visual-Inertial Tracking", "If true, and you are using a ZED2 or ZED Mini, IMU fusion uses data from the camera's IMU to improve tracking results. ");
-            enableIMUFusionProperty.boolValue = EditorGUILayout.Toggle(enalbeIMUFusionLabel, enableIMUFusionProperty.boolValue);
+            //Fade In At Start toggle. 
+            GUIContent fadeinlabel = new GUIContent("Fade In at Start", "When enabled, makes the ZED image fade in from black when the application starts.");
+            fadeinonstart.boolValue = EditorGUILayout.Toggle(fadeinlabel, manager.fadeInOnStart);
 
             GUILayout.Space(12);
 

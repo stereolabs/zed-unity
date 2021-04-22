@@ -520,7 +520,12 @@ public class ZEDControllerTracker : MonoBehaviour
                             (zedManager != null && zedManager.IsStereoRig == true && !zedManager.transform.IsChildOf(transform)))
                         {
                             //Compensate for positional drift by measuring the distance between HMD and ZED rig root (the head's center). 
+#if UNITY_2019_3_OR_NEWER
+                            InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
+                            head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 zedhmdposoffset);
+#else
                             Vector3 zedhmdposoffset = zedRigRoot.position - InputTracking.GetLocalPosition(XRNode.Head);
+#endif
                             p.translation += zedhmdposoffset;
                         }
 

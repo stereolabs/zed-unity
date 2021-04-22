@@ -4,9 +4,6 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using System.Runtime.InteropServices;
-using System.IO;
-using System.Text;
 
 
 public class SkeletonHandler : ScriptableObject
@@ -135,11 +132,14 @@ public class SkeletonHandler : ScriptableObject
     };
 
     private Color[] colors = new Color[]{
-    new Color(0.0f, 0.0f, 1.0f),
-    new Color(1.0f, 0.0f, 0.0f),
-    new Color(0.0f, 1.0f, 0.0f),
-    new Color(0.0f, 1.0f, 1.0f),
-    new Color(1.0f, 0.0f, 1.0f)
+    new Color( 232.0f / 255.0f, 176.0f / 255.0f,59.0f / 255.0f),
+    new Color(175.0f / 255.0f, 208.0f / 255.0f,25.0f / 255.0f),
+    new Color(102.0f / 255.0f / 255.0f, 205.0f / 255.0f,105.0f / 255.0f),
+    new Color(185.0f / 255.0f, 0.0f / 255.0f,255.0f / 255.0f),
+    new Color(99.0f / 255.0f, 107.0f / 255.0f,252.0f / 255.0f),
+    new Color(252.0f / 255.0f, 225.0f / 255.0f, 8.0f / 255.0f),
+    new Color(167.0f / 255.0f, 130.0f / 255.0f, 141.0f / 255.0f),
+    new Color(194.0f / 255.0f, 72.0f / 255.0f, 113.0f / 255.0f)
     };
 
     private GameObject humanoid;
@@ -156,6 +156,7 @@ public class SkeletonHandler : ScriptableObject
 
     private bool isInit = false;
 
+    public float SpineHeight = 0;
     private float smoothFactor = 0.5f;
     /// <summary>
     /// Sets the smooth factor.
@@ -170,10 +171,11 @@ public class SkeletonHandler : ScriptableObject
     /// Create the avatar control
     /// </summary>
     /// <param name="h">The height.</param>
-    public void Create(GameObject h, Vector3 spawnPosition)
+    public void Create(GameObject h)
     {
+        humanoid = (GameObject)Instantiate(h, Vector3.zero, Quaternion.identity);
+        SpineHeight =  humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips).position.y;
 
-        humanoid = (GameObject)Instantiate(h, spawnPosition, Quaternion.identity);
         var invisiblelayer = LayerMask.NameToLayer("tagInvisibleToZED");
         humanoid.layer = invisiblelayer;
 
@@ -190,7 +192,6 @@ public class SkeletonHandler : ScriptableObject
             rigBoneTarget[bone] = Quaternion.identity;
 
         }
-
 
         trackingSegment = new Dictionary<HumanBodyBones, Vector3>(targetBone.Length);
 
@@ -655,7 +656,6 @@ public class SkeletonHandler : ScriptableObject
             joint[JointType_EyesLeft] = new Vector3(-0.25f, 2.0f, 0.0f);
             joint[JointType_EyesRight] = new Vector3(0.25f, 2.0f, 0.0f);
         }
-
     }
 
     /// <summary>
@@ -701,7 +701,7 @@ public class SkeletonHandler : ScriptableObject
 
         if (Quaternion.Angle(waistrot, shoulderrot) > 45 || Quaternion.Angle(waistrot, shoulderrot) < -45)
         {
-           // shoulderrot = oldshoulderrot;
+            shoulderrot = oldshoulderrot;
         }
 
         for (int i = 0; i < targetBone.Length; i++)
