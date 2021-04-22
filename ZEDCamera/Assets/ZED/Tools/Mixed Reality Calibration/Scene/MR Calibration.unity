@@ -1540,14 +1540,11 @@ PrefabInstance:
       propertyPath: greySkybox
       value: 0
       objectReference: {fileID: 0}
-<<<<<<< HEAD
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: showarrig
       value: 1
       objectReference: {fileID: 0}
-=======
->>>>>>> v3.3
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
 --- !u!1 &1334516505 stripped
