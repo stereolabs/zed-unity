@@ -61,7 +61,7 @@ public class ZEDManager : MonoBehaviour
     /// at C:/ProgramData/stereolabs/SL_Unity_wrapper.txt. This helps find issues that may occur within
     /// the protected .dll, but can decrease performance.
     /// </summary>
-    private bool wrapperVerbose = false;
+    private bool wrapperVerbose = true;
 
     /// <summary>
     /// Current instance of the ZED Camera, which handles calls to the Unity wrapper .dll.
@@ -1133,11 +1133,13 @@ public class ZEDManager : MonoBehaviour
     /// Enables pose smoothing during drift correction. Leave it to true.
     /// </summary>
     private bool enablePoseSmoothing = true;
+
+#if UNITY_EDITOR
     /// <summary>
     /// The engine FPS, updated every frame.
     /// </summary>
     private float fps_engine = 90.0f;
-
+#endif
     /// <summary>
     /// Recording state
     /// </summary>
@@ -1358,6 +1360,7 @@ public class ZEDManager : MonoBehaviour
         return cameraRight;
     }
 
+#pragma warning disable 414
     /// <summary>
     /// Save the foldout options as it was used last time
     /// </summary>
@@ -1379,6 +1382,8 @@ public class ZEDManager : MonoBehaviour
     [SerializeField]
     [HideInInspector]
     private bool camControlFoldoutOpen = false;
+
+#pragma warning restore 414
 
     /////////////////////////////////////
     //////  Timestamps             //////
@@ -1477,9 +1482,17 @@ public class ZEDManager : MonoBehaviour
 
     private bool hasXRDevice()
     {
-        return XRDevice.isPresent;
+        var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
+        SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
+        foreach (var xrDisplay in xrDisplaySubsystems)
+        {
+            if (xrDisplay.running)
+            {
+                return true;
+            }
+        }
+        return false;
     }
-
 
     /// <summary>
     /// Checks if this GameObject is a stereo rig. Requires a child object called 'Camera_eyes' and
@@ -1554,7 +1567,7 @@ public class ZEDManager : MonoBehaviour
                 zedRigRoot = camLeftTransform.parent; //Make the camera's parent object (Camera_eyes in the ZED_Rig_Stereo prefab) the new zedRigRoot to be tracked.
             }
 
-            if (UnityEngine.XR.XRDevice.isPresent && allowARPassThrough)
+            if (hasXRDevice() && allowARPassThrough)
             {
                 isStereoRig = true;
             }
@@ -2243,9 +2256,6 @@ public class ZEDManager : MonoBehaviour
         zedRigRoot.localPosition = OriginPosition;
         zedRigRoot.localRotation = OriginRotation;
 
-#if UNITY_EDITOR
-        EditorApplication.playmodeStateChanged = HandleOnPlayModeChanged;
-#endif
     }
 
     /// <summary>
@@ -2322,22 +2332,6 @@ public class ZEDManager : MonoBehaviour
         }
     }
 #endif
-
-#if UNITY_EDITOR
-    /// <summary>
-    /// Handler for playmodeStateChanged.
-    /// </summary>
-    void HandleOnPlayModeChanged()
-    {
-
-        if (zedCamera == null) return;
-
-#if UNITY_EDITOR
-        EditorApplication.playmodeStateChanged = HandleOnPlayModeChanged;
-#endif
-    }
-#endif
-
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2915,7 +2909,13 @@ public class ZEDManager : MonoBehaviour
 
         ZEDMixedRealityPlugin.OnHmdCalibChanged += CalibrationHasChanged;
         if (hasXRDevice())
+        {
+#if UNITY_2019_1_OR_NEWER
+            HMDDevice = XRSettings.loadedDeviceName;
+#else
             HMDDevice = XRDevice.model;
+#endif
+        }
 
 
         return zedRigDisplayer;
@@ -3031,7 +3031,11 @@ public class ZEDManager : MonoBehaviour
         }
         else {
             Debug.LogWarning("Unable to reboot correctly.");
+#if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
         }
     }
 

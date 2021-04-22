@@ -1424,7 +1424,7 @@ namespace sl
             this.ipStream = "";
             this.portStream = 30000;
             this.enableImageEnhancement = true;
-            this.optionalOpencvCalibrationFile = " ";
+            this.optionalOpencvCalibrationFile = "";
         }
 
     }
@@ -1591,6 +1591,7 @@ namespace sl
         /// <remarks>
         /// To activate this option, enable must be set to true.
         /// </remarks>
+        [MarshalAs(UnmanagedType.U1)]
         public bool enable;
         /// <summary>
         /// Max retention time in seconds of a detected object. After this time, the same object will mostly have a different ID.
@@ -1645,7 +1646,7 @@ namespace sl
         /// Batching system(introduced in 3.5) performs short-term re-identification with deep learning and trajectories filtering.
         /// BatchParameters.enable need to be true to use this feature (by default disabled)
         /// </summary>
-        BatchParameters batchParameters;
+        public BatchParameters batchParameters;
     };
 
 
