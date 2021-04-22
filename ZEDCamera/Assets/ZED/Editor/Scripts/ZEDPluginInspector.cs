@@ -5,7 +5,7 @@ using UnityEditor;
 using System.Collections;
 
 /// <summary>
-/// Checks your system for the required ZED SDK version, and displays an error window with instructions if it's missing.
+/// Checks your system for the required ZED SDK version, and displays an error window with instructions if it's missing. 
 /// Runs automatically when Unity loads. Remove the [InitializeOnLoad] tag to disable this.
 /// </summary>
 [InitializeOnLoad]
@@ -75,7 +75,7 @@ public class ZEDPluginInspector : EditorWindow
 
     /// <summary>
     /// Makes sure the project's tags are loaded, as they are used in some samples but may get deleted on import or
-    /// if shared via source control.
+    /// if shared via source control. 
     /// </summary>
 	static public void addMissingTag()
     {
@@ -93,7 +93,7 @@ public class ZEDPluginInspector : EditorWindow
             if (t.stringValue.Equals(s)) { found = true; break; }
         }
 
-        //If not found, add it since we use it in GreenScreen.
+        //If not found, add it since we use it in GreenScreen. 
         //This tag may be used anywhere, since it tags helper object that may have a specific behavior
 
         if (!found)
@@ -166,24 +166,10 @@ public class ZEDPluginInspector : EditorWindow
             window.Show(true);
         }
 
-<<<<<<< HEAD
-        GUILayout.Space(10);
-        if (GUILayout.Button("Close"))
-        {
-
-            if (showErrorPlugin)
-            {
-                EditorPrefs.SetBool("ZED_NoWarning_Plugin", true);
-            }
-
-            this.Close();
-        }
-=======
         EditorApplication.update -= UpdateWnd;
 
     }
 
->>>>>>> v3.5
 
 
     void OnGUI()
@@ -256,7 +242,7 @@ public class ZEDPluginInspector : EditorWindow
     Vector2 scrollPosition;
     /// <summary>
     /// Shows a window prompting the user to change project settings to recommended settings, with
-    /// buttons to automatically do so.
+    /// buttons to automatically do so. 
     /// </summary>
 	public void showSettingsWindow()
     {
@@ -296,11 +282,7 @@ public class ZEDPluginInspector : EditorWindow
 
             if (GUILayout.Button("Ignore"))
             {
-<<<<<<< HEAD
-                EditorPrefs.SetBool(ignore + showUnitySplashScreen, true);
-=======
                 EditorPrefs.SetBool(ignore + buildTarget, true);
->>>>>>> v3.5
             }
 
             GUILayout.EndHorizontal();
@@ -513,11 +495,6 @@ public class ZEDPluginInspector : EditorWindow
                     EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, needed_BuildTarget);
                 if (!EditorPrefs.HasKey(ignore + showUnitySplashScreen))
                     PlayerSettings.SplashScreen.show = needed_ShowUnitySplashScreen;
-<<<<<<< HEAD
-                if (!EditorPrefs.HasKey(ignore + displayResolutionDialog))
-                    PlayerSettings.displayResolutionDialog = needed_DisplayResolutionWindow;
-=======
->>>>>>> v3.5
                 if (!EditorPrefs.HasKey(ignore + resizableWindow))
                     PlayerSettings.resizableWindow = needed_ResizableWindow;
                 if (!EditorPrefs.HasKey(ignore + colorSpace))
