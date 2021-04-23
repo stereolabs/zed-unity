@@ -1522,7 +1522,6 @@ public class ZEDManager : MonoBehaviour
         zedRigRoot = gameObject.transform; //The object moved by tracking. By default it's this Transform. May get changed. 
 
         bool devicePresent = hasXRDevice(); //May not need. 
-        Debug.Log(devicePresent);
         //Set first left eye
         Component[] cams = gameObject.GetComponentsInChildren<Camera>();
         //Camera firstmonocam = null;
