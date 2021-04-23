@@ -188,13 +188,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
-<<<<<<< HEAD
       propertyPath: objectDetectionModel
       value: 3
-=======
-      propertyPath: maxRange
-      value: 40
->>>>>>> 258e8bcd0c939091c70c2c37757d6bc5d9b9c7b6
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -203,13 +198,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
-<<<<<<< HEAD
       propertyPath: estimateInitialPosition
       value: 1
-=======
-      propertyPath: inputType
-      value: 0
->>>>>>> 258e8bcd0c939091c70c2c37757d6bc5d9b9c7b6
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -303,11 +293,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
-      propertyPath: objectDetectionModel
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
-        type: 3}
       propertyPath: recordingFoldoutOpen
       value: 0
       objectReference: {fileID: 0}
@@ -325,11 +310,6 @@ PrefabInstance:
         type: 3}
       propertyPath: objectDetection2DMask
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
-        type: 3}
-      propertyPath: estimateInitialPosition
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -353,7 +333,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
-<<<<<<< HEAD
       propertyPath: objectClassAnimalFilter
       value: 0
       objectReference: {fileID: 0}
@@ -366,9 +345,6 @@ PrefabInstance:
         type: 3}
       propertyPath: objectClassFruitVegetableFilter
       value: 0
-=======
-      propertyPath: objectDetectionFoldoutOpen
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -414,7 +390,6 @@ PrefabInstance:
         type: 3}
       propertyPath: SK_personDetectionConfidenceThreshold
       value: 40
->>>>>>> 258e8bcd0c939091c70c2c37757d6bc5d9b9c7b6
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -425,6 +400,16 @@ PrefabInstance:
         type: 3}
       propertyPath: fruitVegetableDetectionConfidenceThreshold
       value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: objectDetectionFoldoutOpen
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: inputType
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
@@ -627,11 +612,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-<<<<<<< HEAD
   m_Intensity: 0.33
-=======
-  m_Intensity: 0.5
->>>>>>> 258e8bcd0c939091c70c2c37757d6bc5d9b9c7b6
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -853,17 +834,10 @@ RectTransform:
   m_Father: {fileID: 354341468741943341}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-<<<<<<< HEAD
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -875, y: 125}
-  m_SizeDelta: {x: 330, y: 200}
-=======
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 160, y: 100}
   m_SizeDelta: {x: 280, y: 157}
->>>>>>> 258e8bcd0c939091c70c2c37757d6bc5d9b9c7b6
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &354341468995707469
 GameObject:

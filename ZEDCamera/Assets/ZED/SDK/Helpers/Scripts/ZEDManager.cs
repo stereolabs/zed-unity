@@ -1496,6 +1496,7 @@ public class ZEDManager : MonoBehaviour
 
     private bool hasXRDevice()
     {
+#if UNITY_2020_1_OR_NEWER
         var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
         SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
         foreach (var xrDisplay in xrDisplaySubsystems)
@@ -1506,6 +1507,9 @@ public class ZEDManager : MonoBehaviour
             }
         }
         return false;
+#else
+        return XRDevice.isPresent;
+#endif
     }
 
     /// <summary>
