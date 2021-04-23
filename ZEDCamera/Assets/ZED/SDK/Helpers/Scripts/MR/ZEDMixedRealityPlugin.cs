@@ -296,6 +296,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
     private bool hasXRDevice()
     {
+#if UNITY_2020_1_OR_NEWER
         var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
         SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
         foreach (var xrDisplay in xrDisplaySubsystems)
@@ -306,6 +307,9 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
             }
         }
         return false;
+#else
+        return XRDevice.isPresent;
+#endif
     }
 
     private string getXRModelName()
@@ -323,6 +327,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         //You can force it to work for unsupported headsets by implementing your own logic for calling 
         //dllz_latency_corrector_initialize. 
         hasVRDevice = hasXRDevice();
+
 		if (hasVRDevice)
         {
             if (getXRModelName().ToLower().Contains("vive")) //Vive or Vive Pro

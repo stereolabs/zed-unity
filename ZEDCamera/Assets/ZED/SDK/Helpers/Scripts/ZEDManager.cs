@@ -1496,6 +1496,7 @@ public class ZEDManager : MonoBehaviour
 
     private bool hasXRDevice()
     {
+#if UNITY_2020_1_OR_NEWER
         var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
         SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
         foreach (var xrDisplay in xrDisplaySubsystems)
@@ -1506,6 +1507,9 @@ public class ZEDManager : MonoBehaviour
             }
         }
         return false;
+#else
+        return XRDevice.isPresent;
+#endif
     }
 
     /// <summary>
@@ -1518,7 +1522,7 @@ public class ZEDManager : MonoBehaviour
         zedRigRoot = gameObject.transform; //The object moved by tracking. By default it's this Transform. May get changed. 
 
         bool devicePresent = hasXRDevice(); //May not need. 
-
+        Debug.Log(devicePresent);
         //Set first left eye
         Component[] cams = gameObject.GetComponentsInChildren<Camera>();
         //Camera firstmonocam = null;
