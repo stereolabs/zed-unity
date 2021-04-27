@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.XR;
+
+using UnityEditor.PackageManager.Requests;
+using UnityEditor.PackageManager;
 
 #if ZED_STEAM_VR
 using Valve.VR;
@@ -179,7 +183,6 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 #elif ZED_STEAM_VR
         return CheckSteamVRButtonState_Legacy(clickBinding_Legacy, state);
 #endif
-
 #if ZED_OCULUS
         return CheckOculusButtonState(clickButton, state);
 #endif
@@ -230,13 +233,12 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 #elif ZED_STEAM_VR
         return CheckSteamVRAxis_Legacy(navigateUIBinding_Legacy);
 #endif
-
 #if ZED_OCULUS
         return CheckOculus2DAxisState(navigateUIAxis);
 #endif
         return Vector3.zero;
     }
-
+    
     protected override void Awake()
     {
         base.Awake();
@@ -302,7 +304,6 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
             OVRInput.Update();
             ovrUpdateCalledThisFrame = true;
         }
-
         bool result = false;
         switch (state)
         {
@@ -354,17 +355,17 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     /// <param name="state">Whether to check if the button/action is just pressed, just released, or is being held down.</param>
     protected bool CheckSteamVRBoolActionState(SteamVR_Action_Boolean action, ControllerButtonState buttonstate)
     {
-        switch(buttonstate)
-        {
-            case ControllerButtonState.Down:
-                return action.GetLastStateDown(GetSteamVRInputSource());
-            case ControllerButtonState.Held:
-                return action.GetLastState(GetSteamVRInputSource());
-            case ControllerButtonState.Up:
-                return action.GetLastStateUp(GetSteamVRInputSource());
-            default:
-                return false;
-        }
+            switch (buttonstate)
+            {
+                case ControllerButtonState.Down:
+                    return action.GetLastStateDown(GetSteamVRInputSource());
+                case ControllerButtonState.Held:
+                    return action.GetLastState(GetSteamVRInputSource());
+                case ControllerButtonState.Up:
+                    return action.GetLastStateUp(GetSteamVRInputSource());
+                default:
+                    return false;
+            }
     }
 
     /// <summary>

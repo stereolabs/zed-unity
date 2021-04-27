@@ -112,7 +112,7 @@ public class LaserGun : MonoBehaviour
                     {
                         for (int i = 0; i < children; ++i)
                             transform.GetChild(i).gameObject.SetActive(false);
-
+                        
                         this.enabled = false;
                         yield break;
                     }
