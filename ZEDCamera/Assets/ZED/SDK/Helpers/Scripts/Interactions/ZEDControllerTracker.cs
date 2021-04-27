@@ -7,7 +7,6 @@ using Valve.VR;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using Valve.VR;
 /// <summary>
 /// Causes the GameObject it's attached to to position itself where a tracked VR object is, such as 
 /// a Touch controller or Vive Tracker, but compensates for the ZED's latency. This way, virtual

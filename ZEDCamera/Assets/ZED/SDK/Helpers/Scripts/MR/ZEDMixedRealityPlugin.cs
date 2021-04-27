@@ -558,6 +558,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         if (!manager.IsStereoRig)
             return; //Make sure we're in pass-through AR mode.
 
+#if UNITY_2019_3_OR_NEWER
         List<InputDevice> eyes = new List<InputDevice>();
         InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.HeadMounted, eyes);
 
@@ -574,6 +575,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
             finalRightEye.transform.localPosition = rightEyePosition;
             finalRightEye.transform.localRotation = rightEyeRotation;
         }
+#endif
 
         Quaternion r;
         //Modified code to ensure view in HMD does not play like a movie screen
