@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR;
 #if UNITY_2019_3_OR_NEWER
-using UnityEngine.XR;
 #endif
 
 #if ZED_STEAM_VR

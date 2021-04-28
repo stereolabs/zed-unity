@@ -52,9 +52,6 @@ public class LaserGun : MonoBehaviour
     /// </summary>
     private ZEDControllerTracker_DemoInputs objecttracker;
 
-#if ZED_OCULUS
-    private int fireCount = 0;
-#endif
 
     IEnumerator Start()
     {
