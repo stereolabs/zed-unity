@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR;
-
-using UnityEditor.PackageManager.Requests;
-using UnityEditor.PackageManager;
+#if UNITY_2019_3_OR_NEWER
+using UnityEngine.XR;
+#endif
 
 #if ZED_STEAM_VR
 using Valve.VR;
@@ -81,6 +81,42 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 #endif
 
 #if ZED_OCULUS
+
+    public static bool ovrUpdateCalledThisFrame = false;
+#if UNITY_2019_3_OR_NEWER
+    /// <summary>
+    /// Input Button checked to signal a Fire event when checked or subscribed to.
+    /// </summary>
+    [Header("Input Bindings")]
+    [Tooltip("Input Button checked to signal a Fire event when checked or subscribed to")]
+    public InputHelpers.Button fireButton = InputHelpers.Button.Trigger;
+    /// <summary>
+    /// Input Button checked to signal a Click event when checked or subscribed to.
+    /// </summary>
+    [Tooltip("Input Button checked to signal a Click event when checked or subscribed to")]
+    public InputHelpers.Button clickButton = InputHelpers.Button.Trigger;
+    /// <summary>
+    /// Input Button checked to signal a Back event when checked or subscribed to.
+    /// </summary>
+    [Tooltip("Input Button checked to signal a Back event when checked or subscribed to")]
+    public InputHelpers.Button backButton = InputHelpers.Button.SecondaryButton; //Y, or B if just right controller is connected. 
+    /// <summary>
+    /// Input Button checked to signal a Grab event when checked or subscribed to.
+    /// </summary>
+    [Tooltip("Input Button checked to signal a Grab event when checked or subscribed to")]
+    public InputHelpers.Button grabButton = InputHelpers.Button.Grip;
+    /// <summary>
+    /// Input Button checked to signal a Vector2 UI navigation event when checked or subscribed to.
+    /// </summary>
+    [Tooltip("Input Button checked to signal a Vector2 UI navigation event when checked or subscribed to")]
+    public InputHelpers.Button navigateUIAxis = InputHelpers.Button.Primary2DAxisTouch;
+
+    private bool fireActive = false;
+    private bool clickActive = false;
+    private bool backActive = false;
+    private bool grabActive = false;
+
+#else
     /// <summary>
     /// Oculus Button checked to signal a Fire event when checked or subscribed to.
     /// </summary>
@@ -107,10 +143,8 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     /// </summary>
     [Tooltip("Oculus Button checked to signal a Vector2 UI navigation event when checked or subscribed to")]
     public OVRInput.Axis2D navigateUIAxis = OVRInput.Axis2D.PrimaryThumbstick;
-
-    public static bool ovrUpdateCalledThisFrame = false;
 #endif
-
+#endif
     /// <summary>
     /// Events called when the Fire button/action was just pressed. 
     /// </summary>
@@ -167,7 +201,11 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 #endif
 
 #if ZED_OCULUS
+#if UNITY_2019_3_OR_NEWER
+        return CheckButtonState(fireButton, state, fireActive);
+#else
         return CheckOculusButtonState(fireButton, state);
+#endif
 #endif
         return false;
     }
@@ -184,7 +222,11 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         return CheckSteamVRButtonState_Legacy(clickBinding_Legacy, state);
 #endif
 #if ZED_OCULUS
+#if UNITY_2019_3_OR_NEWER
+        return CheckButtonState(clickButton, state, clickActive);
+#else
         return CheckOculusButtonState(clickButton, state);
+#endif
 #endif
         return false;
     }
@@ -201,7 +243,11 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         return CheckSteamVRButtonState_Legacy(backBinding_Legacy, state);
 #endif
 #if ZED_OCULUS
+#if UNITY_2019_3_OR_NEWER
+        return CheckButtonState(backButton, state, backActive);
+#else
         return CheckOculusButtonState(backButton, state);
+#endif
 #endif
         return false;
     }
@@ -218,7 +264,11 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         return CheckSteamVRButtonState_Legacy(grabBinding_Legacy, state);
 #endif
 #if ZED_OCULUS
+#if UNITY_2019_3_OR_NEWER
+        return CheckButtonState(grabButton, state, grabActive);
+#else
         return CheckOculusButtonState(grabButton, state);
+#endif
 #endif
         return false;
     }
@@ -234,7 +284,11 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         return CheckSteamVRAxis_Legacy(navigateUIBinding_Legacy);
 #endif
 #if ZED_OCULUS
+#if UNITY_2019_3_OR_NEWER
+        return Vector3.zero;
+#else
         return CheckOculus2DAxisState(navigateUIAxis);
+#endif
 #endif
         return Vector3.zero;
     }
@@ -266,6 +320,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         if (CheckBackButton(ControllerButtonState.Up)) onBackUp.Invoke();
         if (CheckGrabButton(ControllerButtonState.Down)) onGrabDown.Invoke();
         if (CheckGrabButton(ControllerButtonState.Up)) onGrabUp.Invoke();
+
     }
 
     protected void LateUpdate()
@@ -318,6 +373,57 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
                 break;
         }
         return result;
+    }
+
+    public bool CheckButtonState(InputHelpers.Button button, ControllerButtonState state, bool isActive){
+
+        bool down = false;
+        bool up = false;
+        InputDevice device;
+
+        if (deviceToTrack == Devices.LeftController)
+            device = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+        else device = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+
+        bool tempState = device.TryGetFeatureValue(CommonUsages.primaryButton, out bool primaryButtonState) // did get a value
+                && primaryButtonState;
+
+        ProcessInputDeviceButton(device, button, ref isActive,
+            () => // On Button Down
+            {
+                down = true;
+            },
+            () => // On Button Up
+            {
+                up =  true;
+        });
+
+        if (state == ControllerButtonState.Down) return down;
+        if (state == ControllerButtonState.Up) return up;
+        else return false;
+    }
+
+    private void ProcessInputDeviceButton(InputDevice inputDevice, InputHelpers.Button button, ref bool _wasPressedDownPreviousFrame, Action onButtonDown = null, Action onButtonUp = null, Action onButtonHeld = null)
+    {
+        if (inputDevice.IsPressed(button, out bool isPressed) && isPressed)
+        {
+            if (!_wasPressedDownPreviousFrame) // // this is button down
+            {
+                onButtonDown?.Invoke();
+            }
+ 
+            _wasPressedDownPreviousFrame = true;
+            onButtonHeld?.Invoke();
+        }
+        else
+        {
+            if (_wasPressedDownPreviousFrame) // this is button up
+            {
+                onButtonUp?.Invoke();
+            }
+ 
+            _wasPressedDownPreviousFrame = false;
+        }
     }
 
     /// <summary>

@@ -169,6 +169,7 @@ public class ZEDControllerTracker : MonoBehaviour
 #if ZED_STEAM_VR
         openvrsystem = OpenVR.System;
 #endif
+
         poseData.Clear(); //Reset the dictionary.
         poseData.Add(1, new List<TimedPoseData>()); //Create the list within the dictionary with its key and value.
         //Looking for the loaded device
@@ -184,7 +185,6 @@ public class ZEDControllerTracker : MonoBehaviour
                     "value wasn't set, but there are multiple ZEDManagers in the scene. Assign a reference directly to ensure no unexpected behavior.");
             }
         }
-
         if (zedManager) zedRigRoot = zedManager.GetZedRootTansform();
     }
 
@@ -197,7 +197,7 @@ public class ZEDControllerTracker : MonoBehaviour
     {
 #if ZED_OCULUS //Used only if the Oculus Integration plugin is detected. 
         //Check if the VR headset is connected.
-        if (OVRManager.isHmdPresent) // && loadeddevice.Contains("Oculus"))
+        if (OVRManager.isHmdPresent && loadeddevice.ToString().ToLower().Contains("oculus"))
         {
             if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
             {
@@ -210,7 +210,6 @@ public class ZEDControllerTracker : MonoBehaviour
                 if (deviceToTrack == Devices.Hmd) //Track the Oculus Hmd.
                     RegisterPosition(1, InputTracking.GetLocalPosition(XRNode.CenterEye), InputTracking.GetLocalRotation(XRNode.CenterEye));
 
-                Debug.Log(OVRInput.GetLocalControllerPosition(OVRInput.Controller.LTouch));
                 //Use our saved positions to apply a delay before assigning it to this object's Transform.
                 if (poseData.Count > 0)
                 {
@@ -225,6 +224,7 @@ public class ZEDControllerTracker : MonoBehaviour
         }
         //Enable updating the internal state of OVRInput.
         OVRInput.Update();
+
 #endif
 
 #if ZED_STEAM_VR

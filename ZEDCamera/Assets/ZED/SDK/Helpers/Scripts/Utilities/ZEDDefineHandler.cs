@@ -40,7 +40,7 @@ public class ZEDDefineHandler : AssetPostprocessor
 
         if (CheckPackageExists("SteamVR_Camera")) //"OpenVR" and "SteamVR" exist in script names in the Oculus plugin. 
         {
-            ActivateDefine("SteamVR", "ZED_STEAM_VR");
+            //ActivateDefine("SteamVR", "ZED_STEAM_VR");
         }
         else
         {
@@ -49,7 +49,7 @@ public class ZEDDefineHandler : AssetPostprocessor
 
         if (CheckPackageExists("SteamVR_Input_Sources"))
         {
-            ActivateDefine("SteamVR_2_0_Input", "ZED_SVR_2_0_INPUT");
+            //ActivateDefine("SteamVR_2_0_Input", "ZED_SVR_2_0_INPUT");
         }
         else
         {
