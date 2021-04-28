@@ -89,27 +89,27 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     /// </summary>
     [Header("Input Bindings")]
     [Tooltip("Input Button checked to signal a Fire event when checked or subscribed to")]
-    public InputHelpers.Button fireButton = InputHelpers.Button.Trigger;
+    public InputFeatureUsage<bool> fireButton = CommonUsages.triggerButton;
     /// <summary>
     /// Input Button checked to signal a Click event when checked or subscribed to.
     /// </summary>
     [Tooltip("Input Button checked to signal a Click event when checked or subscribed to")]
-    public InputHelpers.Button clickButton = InputHelpers.Button.Trigger;
+    public InputFeatureUsage<bool> clickButton = CommonUsages.triggerButton;
     /// <summary>
     /// Input Button checked to signal a Back event when checked or subscribed to.
     /// </summary>
     [Tooltip("Input Button checked to signal a Back event when checked or subscribed to")]
-    public InputHelpers.Button backButton = InputHelpers.Button.SecondaryButton; //Y, or B if just right controller is connected. 
+    public InputFeatureUsage<bool> backButton = CommonUsages.secondaryButton; //Y, or B if just right controller is connected. 
     /// <summary>
     /// Input Button checked to signal a Grab event when checked or subscribed to.
     /// </summary>
     [Tooltip("Input Button checked to signal a Grab event when checked or subscribed to")]
-    public InputHelpers.Button grabButton = InputHelpers.Button.Grip;
+    public InputFeatureUsage<bool> grabButton = CommonUsages.gripButton;
     /// <summary>
     /// Input Button checked to signal a Vector2 UI navigation event when checked or subscribed to.
     /// </summary>
     [Tooltip("Input Button checked to signal a Vector2 UI navigation event when checked or subscribed to")]
-    public InputHelpers.Button navigateUIAxis = InputHelpers.Button.Primary2DAxisTouch;
+    public InputFeatureUsage<Vector2> navigateUIAxis = CommonUsages.primary2DAxis;
 
     private bool fireActive = false;
     private bool clickActive = false;
@@ -285,7 +285,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 #endif
 #if ZED_OCULUS
 #if UNITY_2019_3_OR_NEWER
-        return Vector3.zero;
+        return Check2DAxisState(navigateUIAxis);
 #else
         return CheckOculus2DAxisState(navigateUIAxis);
 #endif
@@ -375,18 +375,15 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         return result;
     }
 
-    public bool CheckButtonState(InputHelpers.Button button, ControllerButtonState state, bool isActive){
+    public bool CheckButtonState(InputFeatureUsage<bool> button, ControllerButtonState state, bool isActive){
 
         bool down = false;
         bool up = false;
-        InputDevice device;
+        InputDevice device = new InputDevice();
 
         if (deviceToTrack == Devices.LeftController)
             device = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
         else device = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
-
-        bool tempState = device.TryGetFeatureValue(CommonUsages.primaryButton, out bool primaryButtonState) // did get a value
-                && primaryButtonState;
 
         ProcessInputDeviceButton(device, button, ref isActive,
             () => // On Button Down
@@ -403,9 +400,24 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         else return false;
     }
 
-    private void ProcessInputDeviceButton(InputDevice inputDevice, InputHelpers.Button button, ref bool _wasPressedDownPreviousFrame, Action onButtonDown = null, Action onButtonUp = null, Action onButtonHeld = null)
+    public Vector2 Check2DAxisState(InputFeatureUsage<Vector2> navigateUIAxis){
+
+        InputDevice device = new InputDevice();
+
+        if (deviceToTrack == Devices.LeftController)
+            device = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+        else device = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+
+        Vector2 result = Vector2.zero;
+        if (device.TryGetFeatureValue(navigateUIAxis, out Vector2 value))
+            result = value;
+            
+        return result;
+    }
+
+    private void ProcessInputDeviceButton(InputDevice inputDevice, InputFeatureUsage<bool> button, ref bool _wasPressedDownPreviousFrame, Action onButtonDown = null, Action onButtonUp = null, Action onButtonHeld = null)
     {
-        if (inputDevice.IsPressed(button, out bool isPressed) && isPressed)
+        if (inputDevice.TryGetFeatureValue(button, out bool isPressed) && isPressed)
         {
             if (!_wasPressedDownPreviousFrame) // // this is button down
             {
