@@ -292,7 +292,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 #endif
         return Vector3.zero;
     }
-    
+
     protected override void Awake()
     {
         base.Awake();
@@ -375,6 +375,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         return result;
     }
 
+#if UNITY_2019_3_OR_NEWER
     public bool CheckButtonState(InputFeatureUsage<bool> button, ControllerButtonState state, bool isActive){
 
         bool down = false;
@@ -437,6 +438,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
             _wasPressedDownPreviousFrame = false;
         }
     }
+#endif
 
     /// <summary>
     /// Returns the axis of a given Oculus axis button/joystick. 
