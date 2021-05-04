@@ -141,7 +141,7 @@ public class DetectedObject
         camPositionAtDetection = campos;
         camRotationAtDetection = camrot;
 
-        //maskMat = new ZEDMat(odata.mask);
+        maskMat = new ZEDMat(odata.mask);
         //maskTexture = ZEDMatToTexture_CPU(maskMat);
 
     }

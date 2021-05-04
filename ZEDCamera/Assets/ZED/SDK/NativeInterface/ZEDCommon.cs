@@ -222,12 +222,12 @@ namespace sl
         public ulong timestamp;
         /// <summary>
         /// Magnetic field calibrated values in uT
-        /// </summary>
+        /// </summary>     
         /// </summary>
         public Vector3 magneticField;
         /// <summary>
         /// Magnetic field raw values in uT
-        /// </summary>
+        /// </summary>        
         public Vector3 magneticFieldUncalibrated;
      };
 
@@ -391,7 +391,7 @@ namespace sl
         /// </summary>
         HERTZ,
         /// <summary>
-        ///
+        /// 
         /// </summary>
         LAST
     };
@@ -431,7 +431,7 @@ namespace sl
         /// </summary>
         public SENSORS_UNIT sensor_unit;
         /// <summary>
-        ///
+        /// 
         /// </summary>
         public bool isAvailable;
     };
@@ -471,7 +471,7 @@ namespace sl
         /// </summary>
         public SensorParameters barometer_parameters;
         /// <summary>
-        /// if a sensor type is available on the device
+        /// if a sensor type is available on the device 
         /// </summary>
         /// <param name="sensor_type"></param>
         /// <returns></returns>
@@ -772,7 +772,7 @@ namespace sl
         /// <summary>
         /// an error occur while tracking objects
         /// </summary>
-        AI_UNKNOWN_ERROR,
+        AI_UNKNOWN_ERROR, 
         /// <summary>
         /// End of ERROR_CODE
         /// </summary>
@@ -967,7 +967,7 @@ namespace sl
         /// </summary>
         EXPOSURE,
         /// <summary>
-        /// Auto-exposure and auto gain. Setting this to true switches on both. Assigning a specifc value to GAIN or EXPOSURE will set this to 0.
+        /// Auto-exposure and auto gain. Setting this to true switches on both. Assigning a specifc value to GAIN or EXPOSURE will set this to 0. 
         /// </summary>
         AEC_AGC,
         /// <summary>
@@ -1386,7 +1386,7 @@ namespace sl
         /// </summary>
         public ushort portStream = 30000;
         /// <summary>
-        /// Whether to enable improved color/gamma curves added in ZED SDK 3.0.
+        /// Whether to enable improved color/gamma curves added in ZED SDK 3.0. 
         /// </summary>
         public bool enableImageEnhancement = true;
         /// <summary>
@@ -1514,7 +1514,7 @@ namespace sl
         /// </summary>
         public int confidenceThreshold;
         /// <summary>
-        /// Defines texture confidence threshold for the depth. Based on textureness confidence.
+        /// Defines texture confidence threshold for the depth. Based on textureness confidence. 
         /// </summary>
         public int textureConfidenceThreshold;
 
@@ -1622,12 +1622,12 @@ namespace sl
         [MarshalAs(UnmanagedType.U1)]
         public bool enableObjectTracking;
         /// <summary>
-        /// Defines if the SDK will calculate 2D masks for each object. Requires more performance, so don't enable if you don't need these masks.
+        /// Defines if the SDK will calculate 2D masks for each object. Requires more performance, so don't enable if you don't need these masks. 
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool enable2DMask;
         /// <summary>
-        /// Defines the AI model used for detection
+        /// Defines the AI model used for detection 
         /// </summary>
         public sl.DETECTION_MODEL detectionModel;
         /// <summary>
@@ -1654,28 +1654,28 @@ namespace sl
     public struct dll_ObjectDetectionRuntimeParameters
     {
         /// <summary>
-        /// The detection confidence threshold between 1 and 99.
+        /// The detection confidence threshold between 1 and 99. 
         /// A confidence of 1 means a low threshold, more uncertain objects and 99 very few but very precise objects.
-        /// Ex: If set to 80, then the SDK must be at least 80% sure that a given object exists before reporting it in the list of detected objects.
+        /// Ex: If set to 80, then the SDK must be at least 80% sure that a given object exists before reporting it in the list of detected objects. 
         /// If the scene contains a lot of objects, increasing the confidence can slightly speed up the process, since every object instance is tracked.
         /// </summary>
         public float detectionConfidenceThreshold;
         /// <summary>
-        ///
+        ///  
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)sl.OBJECT_CLASS.LAST)]
         public int[] objectClassFilter;
 
         /// <summary>
-        ///
+        ///  
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)sl.OBJECT_CLASS.LAST)]
         public int[] object_confidence_threshold;
     };
 
     /// <summary>
-    /// Object data structure directly from the SDK. Represents a single object detection.
-    /// See DetectedObject for an abstracted version with helper functions that make this data easier to use in Unity.
+    /// Object data structure directly from the SDK. Represents a single object detection. 
+    /// See DetectedObject for an abstracted version with helper functions that make this data easier to use in Unity. 
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct ObjectDataSDK
@@ -1692,9 +1692,9 @@ namespace sl
 
         /// <summary>
         /// Image data.
-        /// Note that Y in these values is relative from the top of the image, whereas the opposite is true
-        /// in most related Unity functions. If using this raw value, subtract Y from the
-        /// image height to get the height relative to the bottom.
+        /// Note that Y in these values is relative from the top of the image, whereas the opposite is true 
+        /// in most related Unity functions. If using this raw value, subtract Y from the 
+        /// image height to get the height relative to the bottom. 
         /// </summary>
         ///  0 ------- 1
         ///  |   obj   |
@@ -1714,14 +1714,14 @@ namespace sl
         /// <summary>
         /// The 3D space bounding box. given as array of vertices
         /// </summary>
-        ///   1 ---------2
+        ///   1 ---------2  
         ///  /|         /|
         /// 0 |--------3 |
         /// | |        | |
         /// | 5--------|-6
         /// |/         |/
         /// 4 ---------7
-        ///
+        /// 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
         public Vector3[] worldBoundingBox; // 3D Bounding Box of object
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
@@ -1757,8 +1757,8 @@ namespace sl
 
 
     /// <summary>
-    /// Object Scene data directly from the ZED SDK. Represents all detections given during a single image frame.
-    /// See DetectionFrame for an abstracted version with helper functions that make this data easier to use in Unity.
+    /// Object Scene data directly from the ZED SDK. Represents all detections given during a single image frame. 
+    /// See DetectionFrame for an abstracted version with helper functions that make this data easier to use in Unity. 
     /// Contains the number of object in the scene and the objectData structure for each object.
     /// Since the data is transmitted from C++ to C#, the size of the structure must be constant. Therefore, there is a limitation of 200 (MAX_OBJECT constant) objects in the image.
     /// <c> This number cannot be changed.<c>
@@ -1767,7 +1767,7 @@ namespace sl
     public struct ObjectsFrameSDK
     {
         /// <summary>
-        /// How many objects were detected this frame. Use this to iterate through the top of objectData; objects with indexes greater than numObject are empty.
+        /// How many objects were detected this frame. Use this to iterate through the top of objectData; objects with indexes greater than numObject are empty. 
         /// </summary>
         public int numObject;
         /// <summary>
@@ -1787,7 +1787,7 @@ namespace sl
         /// </summary>
         public sl.DETECTION_MODEL detectionModel;
         /// <summary>
-        /// Array of objects
+        /// Array of objects 
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)(Constant.MAX_OBJECTS))]
         public ObjectDataSDK[] objectData;
@@ -1843,7 +1843,7 @@ namespace sl
     };
 
     /// <summary>
-    /// Tracking state of an individual object.
+    /// Tracking state of an individual object. 
     /// </summary>
     public enum OBJECT_TRACK_STATE
     {
@@ -1854,7 +1854,7 @@ namespace sl
     };
 
     public enum OBJECT_ACTION_STATE
-    {
+    { 
         IDLE = 0, /**< The object is staying static. */
         MOVING = 1, /**< The object is moving. */
         LAST = 2

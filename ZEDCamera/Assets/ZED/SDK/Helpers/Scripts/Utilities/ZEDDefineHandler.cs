@@ -158,6 +158,24 @@ public class ZEDDefineHandler : AssetPostprocessor
             }
         }
         PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, defines);
+
+        // FOR OCULUS QUEST
+        string defines_android = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android);
+        if (defines_android.Length != 0)
+        {
+            if (!defines_android.Contains(defineName))
+            {
+                defines_android += ";" + defineName;
+            }
+        }
+        else
+        {
+            if (!defines_android.Contains(defineName))
+            {
+                defines_android += defineName;
+            }
+        }
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, defines_android);
     }
 
     /// <summary>
