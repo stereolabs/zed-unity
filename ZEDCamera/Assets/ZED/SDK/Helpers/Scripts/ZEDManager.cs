@@ -2100,9 +2100,9 @@ public class ZEDManager : MonoBehaviour
             if (renderingPath == ZEDRenderingMode.FORWARD)
             {
                 if (leftRenderingPlane)
-                    leftRenderingPlane.ManageKeywordForwardMat(!depthOcclusion, "NO_DEPTH");
+                    leftRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH");
                 if (rightRenderingPlane)
-                    rightRenderingPlane.ManageKeywordForwardMat(!depthOcclusion, "NO_DEPTH");
+                    rightRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH");
             }
             else if (renderingPath == ZEDRenderingMode.DEFERRED)
             {

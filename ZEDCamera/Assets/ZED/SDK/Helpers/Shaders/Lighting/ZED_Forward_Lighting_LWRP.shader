@@ -30,6 +30,7 @@ Shader "ZED/ZED Forward Lighting LWRP"
 		#pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
 		#pragma shader_feature _RECEIVE_SHADOWS_OFF
 		#pragma multi_compile _ _SHADOWS_SOFT
+		#pragma multi_compile __ NO_DEPTH
 
 		#pragma vertex vert
 		#pragma fragment frag
@@ -100,9 +101,11 @@ Shader "ZED/ZED Forward Lighting LWRP"
 		void frag(Varyings input, out float4 outColor: SV_Target, out float outDepth : SV_Depth)
 		{
 			//ZED Depth
-#ifdef NO_DEPTH_OCC
+#ifdef NO_DEPTH
 			outDepth = 0;
 #else
+			outDepth = computeDepthXYZ(zed_z);
+#endif
 			float zed_z = tex2D(_DepthXYZTex, input.uv.zw).x;
 
 			//Filter out depth values beyond the max value. 
@@ -110,8 +113,6 @@ Shader "ZED/ZED Forward Lighting LWRP"
 			{
 				if (zed_z > _MaxDepth) discard;
 			}
-
-			outDepth = computeDepthXYZ(zed_z);
 
 			//ZED Color - for now ignoring everything above. 
 			half4 c;
@@ -143,7 +144,6 @@ Shader "ZED/ZED Forward Lighting LWRP"
 			c.a = 0;
 
 			outColor.rgb = c;
-#endif
 		}
 #endif
 				ENDHLSL
