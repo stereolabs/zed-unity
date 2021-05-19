@@ -287,7 +287,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(3, 5, 0);
+        public static readonly System.Version PluginVersion = new System.Version(3, 6, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -831,7 +831,6 @@ namespace sl
                 int res = dllz_check_plugin(PluginVersion.Major, PluginVersion.Minor);
                 if (res!= 0)
                 {
-                    Debug.Log("Error : " + res);
                     //0 = installed SDK is compatible with plugin. 1 otherwise.
                     Debug.LogError(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_DEPENDENCIES_ISSUE));
                     return false;
