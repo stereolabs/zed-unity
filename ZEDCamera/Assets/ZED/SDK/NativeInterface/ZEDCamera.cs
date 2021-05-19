@@ -324,8 +324,6 @@ namespace sl
         private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, System.Text.StringBuilder svoPath, System.Text.StringBuilder ipStream, int portStream, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
 
 
-
-
         /*
          * Close function.
          */
@@ -666,6 +664,13 @@ namespace sl
             [In, Out] Vector3[] position, [In, Out] float[,] positionCovariances, [In, Out] Vector3[] velocities, [In, Out] ulong[] timestamps, [In, Out] Vector2[,] boundingBoxes2D, [In, Out] Vector3[,] boundingBoxes,
             [In, Out] float[] confidences, [In, Out] OBJECT_ACTION_STATE[] actionStates, [In, Out] Vector2[,] keypoints2D, [In, Out] Vector3[,] keypoints, [In, Out] Vector2[,] headBoundingBoxes2D, [In, Out] Vector3[,] headBoundingBoxes, [In, Out] Vector3[] headPositions,
             [In, Out] float[,] keypointsConfidences);
+
+        /*
+         * Multi Cam functions (starting 3.6)
+        */
+
+        [DllImport(nameDll, EntryPoint = "dllz_init_multi_cam")]
+        private static extern int dllz_init_multi_cam()
 
         /*
         * Save utils function
@@ -1017,7 +1022,6 @@ namespace sl
                 optionalOpencvCalibrationFile = init.optionalOpencvCalibrationFile;
             }
         }
-
 
         /// <summary>
         /// Checks if the ZED camera is plugged in, opens it, and initializes the projection matix and command buffers for updating textures.

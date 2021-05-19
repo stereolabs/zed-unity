@@ -1426,8 +1426,8 @@ namespace sl
             this.enableImageEnhancement = true;
             this.optionalOpencvCalibrationFile = "";
         }
-
     }
+
     /// <summary>
     /// List of available coordinate systems. Left-Handed, Y Up is recommended to stay consistent with Unity.
     /// consistent with Unity.
@@ -1568,7 +1568,6 @@ namespace sl
         /// </summary>
 		USB_DEVICE_STEREOLABS
 	};
-
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2016,6 +2015,36 @@ namespace sl
 		/// in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
         /// </summary>
         public float[,] keypointConfidences = new float[(int)Constant.MAX_BATCH_SIZE, 18];
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////  Multi Cam ///////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CameraIdentifier
+    {
+        public int sn;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct InitMultiCameraParameters
+    {
+        public string areaFilePath;
+        public float maxInputFps;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RuntimeMultiCameraParameters
+    {
+        public bool forceGrabCall;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ObjectDetectionFusionParameters
+    {
+        public sl.DETECTION_MODEL detectionModel;
+        public string reidDatabaseFile;
     }
 
 
