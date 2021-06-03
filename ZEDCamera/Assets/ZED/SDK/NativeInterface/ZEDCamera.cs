@@ -61,7 +61,7 @@ namespace sl
         /// <summary>
         /// DLL name, used for extern calls to the wrapper.
         /// </summary>
-        const string nameDll = sl.ZEDCommon.NameDLL;
+        public const string nameDll = sl.ZEDCommon.NameDLL;
 
         /// <summary>
         /// List of all created textures, representing SDK output. Indexed by ints corresponding to its ZEDCamera.TYPE_VIEW
@@ -665,12 +665,6 @@ namespace sl
             [In, Out] float[] confidences, [In, Out] OBJECT_ACTION_STATE[] actionStates, [In, Out] Vector2[,] keypoints2D, [In, Out] Vector3[,] keypoints, [In, Out] Vector2[,] headBoundingBoxes2D, [In, Out] Vector3[,] headBoundingBoxes, [In, Out] Vector3[] headPositions,
             [In, Out] float[,] keypointsConfidences);
 
-        /*
-         * Multi Cam functions (starting 3.6)
-        */
-
-        [DllImport(nameDll, EntryPoint = "dllz_init_multi_cam")]
-        private static extern int dllz_init_multi_cam()
 
         /*
         * Save utils function
@@ -679,7 +673,7 @@ namespace sl
         private static extern int dllz_save_current_image(int cameraID, VIEW view,string filename);
 
         [DllImport(nameDll, EntryPoint = "dllz_save_current_depth")]
-        private static extern int dllz_save_current_depth(int cameraID, int side,string filename);
+        private static extern int dllz_save_current_depth(int cameraID, int side, string filename);
 
         [DllImport(nameDll, EntryPoint = "dllz_save_current_point_cloud")]
         private static extern int dllz_save_current_point_cloud(int cameraID, int side,  string filename);

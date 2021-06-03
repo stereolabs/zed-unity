@@ -1693,9 +1693,9 @@ public class ZEDManager : MonoBehaviour
         if (spatialMapping != null)
             spatialMapping.Dispose();
 
-        if (objectDetectionRunning)
+        if (IsObjectDetectionRunning)
         {
-            StopObjectDetection();
+            //StopObjectDetection();
         }
 
 #if !ZED_LWRP && !ZED_HDRP
@@ -1932,7 +1932,6 @@ public class ZEDManager : MonoBehaviour
         {
             yield return new WaitForSeconds(0.3f);
         }
-
 
 
         //ZED has initialized successfully. 

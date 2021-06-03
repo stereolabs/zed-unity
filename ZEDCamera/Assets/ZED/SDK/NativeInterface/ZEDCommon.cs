@@ -24,7 +24,7 @@ namespace sl
 		CAMERA_ID_01,
 		CAMERA_ID_02,
 		CAMERA_ID_03,
-		CAMERA_ID_04,
+		CAMERA_ID_04
 	};
 
 
@@ -2022,6 +2022,17 @@ namespace sl
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct InputType
+    {
+        public INPUT_TYPE input;
+        public int serialNumber;
+        public int id;
+        public string streamInputIp;
+        public int streamInputPort;
+        public string svoFilename;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct CameraIdentifier
     {
         public int sn;
@@ -2037,6 +2048,7 @@ namespace sl
     [StructLayout(LayoutKind.Sequential)]
     public struct RuntimeMultiCameraParameters
     {
+        [MarshalAs(UnmanagedType.U1)]
         public bool forceGrabCall;
     }
 
