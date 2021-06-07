@@ -1693,7 +1693,7 @@ public class ZEDManager : MonoBehaviour
             StopObjectDetection();
         }
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP 
         ClearRendering();
 #endif
 
