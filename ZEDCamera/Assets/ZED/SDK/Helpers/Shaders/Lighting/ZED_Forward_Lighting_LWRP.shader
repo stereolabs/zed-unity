@@ -100,19 +100,19 @@ Shader "ZED/ZED Forward Lighting LWRP"
 			}
 		void frag(Varyings input, out float4 outColor: SV_Target, out float outDepth : SV_Depth)
 		{
+
+			float zed_z = tex2D(_DepthXYZTex, input.uv.zw).x;
+			//Filter out depth values beyond the max value. 
+			if (_MaxDepth < 20.0) //Avoid clipping out FAR values when not using feature. 
+			{
+				if (zed_z > _MaxDepth) discard;
+			}
 			//ZED Depth
 #ifdef NO_DEPTH
 			outDepth = 0;
 #else
 			outDepth = computeDepthXYZ(zed_z);
 #endif
-			float zed_z = tex2D(_DepthXYZTex, input.uv.zw).x;
-
-			//Filter out depth values beyond the max value. 
-			if (_MaxDepth < 20.0) //Avoid clipping out FAR values when not using feature. 
-			{
-				if (zed_z > _MaxDepth) discard;
-			}
 
 			//ZED Color - for now ignoring everything above. 
 			half4 c;
