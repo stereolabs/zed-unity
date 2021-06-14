@@ -287,7 +287,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(4, 0, 0);
+        public static readonly System.Version PluginVersion = new System.Version(3, 6, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -654,7 +654,7 @@ namespace sl
         private static extern void dllz_pause_objects_detection(int cameraID, bool status);
 
         [DllImport(nameDll, EntryPoint = "dllz_retrieve_objects_data")]
-        private static extern int dllz_retrieve_objects_data(int cameraID, ref dll_ObjectDetectionRuntimeParameters od_params, ref ObjectsFrameSDK objFrame);
+        private static extern int dllz_retrieve_objects_data(int cameraID, ref dll_ObjectDetectionRuntimeParameters od_params, ref ObjectsFrameSDK objFrame, sl.SKELETON_FORMAT format);
 
         [DllImport(nameDll, EntryPoint = "dllz_update_objects_batch")]
         private static extern int dllz_update_objects_batch(int cameraID, out int nbBatches);
@@ -2664,7 +2664,7 @@ namespace sl
         /// <returns></returns>
         public sl.ERROR_CODE RetrieveObjectsDetectionData(ref dll_ObjectDetectionRuntimeParameters od_params, ref ObjectsFrameSDK objFrame)
         {
-            return (sl.ERROR_CODE)dllz_retrieve_objects_data(CameraID, ref od_params, ref objFrame);
+            return (sl.ERROR_CODE)dllz_retrieve_objects_data(CameraID, ref od_params, ref objFrame, sl.SKELETON_FORMAT.SKELETON_FORMAT_UNITY);
         }
 
         /// <summary>

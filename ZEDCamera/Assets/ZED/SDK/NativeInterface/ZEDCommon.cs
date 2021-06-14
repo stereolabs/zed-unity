@@ -1672,6 +1672,26 @@ namespace sl
         public int[] object_confidence_threshold;
     };
 
+    public enum SKELETON_FORMAT
+    {
+        SKELETON_FORMAT_UNITY,
+        SKELETON_FORMAT_LIVELINK,
+    };
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SkeletonFormatData
+    {
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public Vector3[] globalPositionPerJoint;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public Quaternion[] localRotationPerJoint;
+
+        public Vector3 globalRootPosition;
+
+        public Quaternion globalRootRotation;
+    }
+
     /// <summary>
     /// Object data structure directly from the SDK. Represents a single object detection. 
     /// See DetectedObject for an abstracted version with helper functions that make this data easier to use in Unity. 
@@ -1742,7 +1762,7 @@ namespace sl
         // [p1, p3, p4]
         // [p2, p4, p5]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-        public float[] position_covariance;// covariance matrix of the 3d position, represented by its upper triangular matrix value
+        public float[] positionCovariance;// covariance matrix of the 3d position, represented by its upper triangular matrix value
 
         /// <summary>
         ///  Per keypoint detection confidence, can not be lower than the ObjectDetectionRuntimeParameters.detection_confidence_threshold.
@@ -1750,7 +1770,9 @@ namespace sl
         ///  in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
-        public float[] keypoint_confidence;
+        public float[] keypointConfidence;
+
+        public SkeletonFormatData skeletonFormatData;
     };
 
 
