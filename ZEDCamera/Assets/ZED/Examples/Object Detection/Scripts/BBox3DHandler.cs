@@ -326,6 +326,11 @@ public class BBox3DHandler : MonoBehaviour
         if (!useLabelMaxDistScaling) return;
         if (cam.name.Contains("Scene")) return;
 
+        if (float.IsInfinity(thisFrameScale.x) || float.IsInfinity(thisFrameScale.y) || float.IsInfinity(thisFrameScale.z))
+        {
+            return;
+        }
+
         //float dist = Vector3.Distance(cam.transform.position, labelRoot.transform.position);
         float depth = cam.WorldToScreenPoint(labelRoot.transform.position).z;
 
