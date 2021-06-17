@@ -186,14 +186,24 @@ public class ZED3DObjectVisualizer : MonoBehaviour
             GameObject bbox = GetBBoxForObject(dobj);
 
             //Move the box into position. 
-            bbox.transform.position = dobj.Get3DWorldPosition();
-            if (floorBBoxPosition)
+            Vector3 obj_position = dobj.Get3DWorldPosition();
+
+            if (!ZEDSupportFunctions.IsVector3NaN(obj_position))
             {
-                bbox.transform.position = new Vector3(bbox.transform.position.x, 0, bbox.transform.position.z);
+                bbox.transform.position = dobj.Get3DWorldPosition();
+                if (floorBBoxPosition)
+                {
+                    bbox.transform.position = new Vector3(bbox.transform.position.x, 0, bbox.transform.position.z);
+                }
+
+                bbox.transform.rotation = dobj.Get3DWorldRotation(boxesFaceCamera); //Rotate them. 
             }
-
-            bbox.transform.rotation = dobj.Get3DWorldRotation(boxesFaceCamera); //Rotate them. 
-
+            else
+            {
+           
+                Debug.Log("OBJ POSITION IS NAN");
+                Debug.Log("POS " + bbox.transform.position);
+            }
 
             //Transform the box if desired. 
             if (transformBoxScale)

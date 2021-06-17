@@ -503,10 +503,10 @@ namespace sl
         private static extern float dllz_get_distance_value(int cameraID, uint x, uint y);
 
         [DllImport(nameDll, EntryPoint = "dllz_get_normal_value")]
-        private static extern int dllz_get_normal_value(int cameraID, uint x, uint y, out Vector4 value);
+        private static extern bool dllz_get_normal_value(int cameraID, uint x, uint y, out Vector4 value);
 
         [DllImport(nameDll, EntryPoint = "dllz_get_xyz_value")]
-        private static extern int dllz_get_xyz_value(int cameraID, uint x, uint y, out Vector4 value);
+        private static extern bool dllz_get_xyz_value(int cameraID, uint x, uint y, out Vector4 value);
 
         [DllImport(nameDll, EntryPoint = "dllz_get_depth_min_range_value")]
         private static extern float dllz_get_depth_min_range_value(int cameraID);
@@ -2129,7 +2129,7 @@ namespace sl
             float posY = ImageHeight * (1 - (float)pixel.y / (float)Screen.height);
             posX = Mathf.Clamp(posX, 0, ImageWidth);
             posY = Mathf.Clamp(posY, 0, ImageHeight);
-            bool r = dllz_get_xyz_value(CameraID, (uint)posX, (uint)posY, out xyz) != 0;
+            bool r = dllz_get_xyz_value(CameraID, (uint)posX, (uint)posY, out xyz);
             return r;
         }
 
@@ -2157,7 +2157,7 @@ namespace sl
             posX = Mathf.Clamp(posX, 0, ImageWidth);
             posY = Mathf.Clamp(posY, 0, ImageHeight);
 
-            bool r = dllz_get_normal_value(CameraID, (uint)posX, (uint)posY, out normal) != 0;
+            bool r = dllz_get_normal_value(CameraID, (uint)posX, (uint)posY, out normal);
             return r;
         }
 

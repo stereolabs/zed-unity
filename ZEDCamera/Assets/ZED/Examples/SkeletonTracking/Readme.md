@@ -41,7 +41,7 @@ In ZEDManager's Inspector, there is a section dedicated to Object Detection/Skel
 ### Initialization Parameters:
 
 - **Enable Object Tracking:** If enabled, the ZED SDK will track objects between frames, providing more accurate data and giving access to more information, such as velocity.
-- **Enable Body Fitting**
+- **Enable Body Fitting** Enable the body fitting. **Must** be enabled in order to animate 3D Models.
 
 ### Runtime Parameters:
 

@@ -1681,14 +1681,24 @@ namespace sl
     [StructLayout(LayoutKind.Sequential)]
     public struct SkeletonFormatData
     {
+        /// <summary>
+        /// Global position per joint in the coordinate frame of the requested skeleton format.
+        /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
         public Vector3[] globalPositionPerJoint;
-
+        /// <summary>
+        /// Local orientation per joint in the coordinate frame of the requested skeleton format.
+        /// The orientation is represented by a quaternion.
+        /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
         public Quaternion[] localRotationPerJoint;
-
+        /// <summary>
+        /// Global root position.
+        /// </summary>
         public Vector3 globalRootPosition;
-
+        /// <summary>
+        /// Global root orientation.
+        /// </summary>
         public Quaternion globalRootRotation;
     }
 
@@ -1771,7 +1781,9 @@ namespace sl
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
         public float[] keypointConfidence;
-
+        /// <summary>
+        /// Structure containing a converted skeleton model to the requested format.
+        /// </summary>
         public SkeletonFormatData skeletonFormatData;
     };
 
@@ -2038,48 +2050,4 @@ namespace sl
         /// </summary>
         public float[,] keypointConfidences = new float[(int)Constant.MAX_BATCH_SIZE, 18];
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////  Multi Cam ///////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct InputType
-    {
-        public INPUT_TYPE input;
-        public int serialNumber;
-        public int id;
-        public string streamInputIp;
-        public int streamInputPort;
-        public string svoFilename;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct CameraIdentifier
-    {
-        public int sn;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct InitMultiCameraParameters
-    {
-        public string areaFilePath;
-        public float maxInputFps;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RuntimeMultiCameraParameters
-    {
-        [MarshalAs(UnmanagedType.U1)]
-        public bool forceGrabCall;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct ObjectDetectionFusionParameters
-    {
-        public sl.DETECTION_MODEL detectionModel;
-        public string reidDatabaseFile;
-    }
-
-
 }// end namespace sl

@@ -169,7 +169,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
 	public void Update()
 	{
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
             useAvatar = !useAvatar;
@@ -177,9 +176,18 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
             {
                 if (zedManager.bodyFitting)
                     Debug.Log("<b><color=green> Switch to Avatar mode</color></b>");
+
             }
             else
                 Debug.Log("<b><color=blue> Switch to Skeleton mode</color></b>");
+        }
+
+        if (useAvatar)
+        {
+            foreach (var skelet in avatarControlList)
+            {
+                skelet.Value.Move();
+            }
         }
 
         UpdateViewCameraPosition();
@@ -210,11 +218,11 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         for (int i = 0; i < 32; i++)
         {
             worldJointsRot[i] = data.skeletonFormatData.localRotationPerJoint[i];
-//            Debug.Log(worldJointsRot[i]);
         }
-        Vector3 worldBodyRootPosition = zedManager.GetZedRootTansform().TransformPoint(bodyCenter);
-        if (float.IsNaN(worldJointsPos[18].y)) worldBodyRootPosition.y = 0;
-        else worldBodyRootPosition.y = worldJointsPos[18].y - handler.SpineHeight;
+        Vector3 worldBodyRootPosition = data.skeletonFormatData.globalRootPosition;//zedManager.GetZedRootTansform().TransformPoint(bodyCenter);
+       /* if (float.IsNaN(worldJointsPos[18].y)) worldBodyRootPosition.y = 0;
+        //else worldBodyRootPosition.y = worldJointsPos[18].y - handler.SpineHeight;
+        else worldBodyRootPosition.y -= handler.SpineHeight;*/
 
         handler.setControlWithJointPosition(worldJointsPos, worldBodyRootPosition, worldJointsRot, data.skeletonFormatData.globalRootRotation, useAvatar);
         //handler.setJointSpherePoint(world_joints_pos);

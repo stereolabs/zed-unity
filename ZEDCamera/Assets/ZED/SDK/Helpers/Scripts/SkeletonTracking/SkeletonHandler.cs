@@ -87,20 +87,22 @@ public class SkeletonHandler : ScriptableObject
     private static HumanBodyBones[] humanBone = new HumanBodyBones[] {
     HumanBodyBones.Hips,
     HumanBodyBones.Spine,
-    HumanBodyBones.Chest,
     HumanBodyBones.UpperChest,
+    HumanBodyBones.Neck,
     HumanBodyBones.LeftShoulder,
     HumanBodyBones.LeftUpperArm,
     HumanBodyBones.LeftLowerArm,
     HumanBodyBones.LeftHand, // Left Wrist
     HumanBodyBones.LastBone, // Left Hand
     HumanBodyBones.LastBone, // Left HandTip
+    HumanBodyBones.LeftThumbDistal,
     HumanBodyBones.RightShoulder,
     HumanBodyBones.RightUpperArm,
     HumanBodyBones.RightLowerArm,
     HumanBodyBones.RightHand, // Right Wrist
     HumanBodyBones.LastBone, // Right Hand
     HumanBodyBones.LastBone, // Right HandTip
+    HumanBodyBones.RightThumbDistal,
     HumanBodyBones.LeftUpperLeg,
     HumanBodyBones.LeftLowerLeg,
     HumanBodyBones.LeftFoot,
@@ -109,7 +111,6 @@ public class SkeletonHandler : ScriptableObject
     HumanBodyBones.RightLowerLeg,
     HumanBodyBones.RightFoot,
     HumanBodyBones.RightToes,
-    HumanBodyBones.Neck,
     HumanBodyBones.Head,
     HumanBodyBones.LastBone, // Nose
     HumanBodyBones.LastBone, // Left Eye
@@ -172,7 +173,10 @@ public class SkeletonHandler : ScriptableObject
         rigBoneTarget = new Dictionary<HumanBodyBones, Quaternion>();
         foreach (HumanBodyBones bone in humanBone)
         {
-            rigBone[bone] = new RigBone(humanoid, bone);
+            if (bone != HumanBodyBones.LastBone)
+            {
+                rigBone[bone] = new RigBone(humanoid, bone);
+            }
             rigBoneTarget[bone] = Quaternion.identity;
         }
     }
@@ -197,48 +201,46 @@ public class SkeletonHandler : ScriptableObject
             rigBoneTarget[HumanBodyBones.Hips] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.Hips)];
         if (rigBone[HumanBodyBones.Hips].transform)
             rigBoneTarget[HumanBodyBones.Spine] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.Spine)];
-        if (rigBone[HumanBodyBones.Hips].transform)
-            rigBoneTarget[HumanBodyBones.Chest] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.Chest)];
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.UpperChest].transform)
             rigBoneTarget[HumanBodyBones.UpperChest] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.UpperChest)];
 
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.RightShoulder].transform)
             rigBoneTarget[HumanBodyBones.RightShoulder] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightShoulder)];
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.RightUpperArm].transform)
             rigBoneTarget[HumanBodyBones.RightUpperArm] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightUpperArm)];
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.RightLowerArm].transform)
             rigBoneTarget[HumanBodyBones.RightLowerArm] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightLowerArm)];
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.RightHand].transform)
             rigBoneTarget[HumanBodyBones.RightHand] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightHand)];
 
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.LeftShoulder].transform)
             rigBoneTarget[HumanBodyBones.LeftShoulder] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftShoulder)];
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.LeftUpperArm].transform)
             rigBoneTarget[HumanBodyBones.LeftUpperArm] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftUpperArm)];
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.LeftLowerArm].transform)
             rigBoneTarget[HumanBodyBones.LeftLowerArm] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftLowerArm)];
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.LeftHand].transform)
             rigBoneTarget[HumanBodyBones.LeftHand] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftHand)];
 
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.Neck].transform)
             rigBoneTarget[HumanBodyBones.Neck] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.Neck)];
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.Head].transform)
             rigBoneTarget[HumanBodyBones.Head] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.Head)];
 
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.RightUpperLeg].transform)
             rigBoneTarget[HumanBodyBones.RightUpperLeg] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightUpperLeg)];
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.RightLowerLeg].transform)
             rigBoneTarget[HumanBodyBones.RightLowerLeg] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightLowerLeg)];
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.RightFoot].transform)
             rigBoneTarget[HumanBodyBones.RightFoot] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightFoot)];
 
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.LeftUpperLeg].transform)
             rigBoneTarget[HumanBodyBones.LeftUpperLeg] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftUpperLeg)];
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.LeftLowerLeg].transform)
             rigBoneTarget[HumanBodyBones.LeftLowerLeg] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftLowerLeg)];
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.LeftFoot].transform)
             rigBoneTarget[HumanBodyBones.LeftFoot] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftFoot)];
-
+        
         targetBodyOrientation = rootRotation;
         targetBodyPosition = rootPosition;
     }
@@ -331,53 +333,31 @@ public class SkeletonHandler : ScriptableObject
     }
 
     /// <summary>
-    /// For Debug only. Set the joint position as sphere.
-    /// </summary>
-    /// <param name="jt">Jt.</param>
-    public void setJointSpherePoint(Vector3[] jt)
-    {
-        if (sphere.Count != 18)
-        {
-            for (int i = 0; i < jointCount; i++)
-            {
-                sphere.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
-            }
-        }
-
-        for (int i = 0; i < jointCount; i++)
-        {
-            if (ZEDSupportFunctions.IsVector3NaN(joint[i])) continue;
-
-            joint[i] = new Vector3(jt[i].x, jt[i].y, jt[i].z);
-
-            sphere[i].transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-            sphere[i].transform.position = joint[i];
-        }
-    }
-
-    /// <summary>
     /// Set Humanoid position. Called in Update() function
     /// </summary>
     public void MoveAvatar()
     {
+        foreach (HumanBodyBones bone in humanBone)
+        {
+            if (bone != HumanBodyBones.LastBone)
+            {
+                if (smoothFactor != 0f)
+                    rigBone[bone].transform.localRotation = Quaternion.Slerp(rigBone[bone].transform.localRotation, rigBoneTarget[bone], smoothFactor);
+                else
+                    rigBone[bone].transform.localRotation = rigBoneTarget[bone];
+            }
+        }
+
         if (isInit)
         {
-            humanoid.transform.position = smoothFactor != 0f ? Vector3.Lerp(humanoid.transform.position, targetBodyPosition, smoothFactor) : targetBodyPosition;
-            humanoid.transform.rotation = smoothFactor != 0f ? Quaternion.Lerp(humanoid.transform.rotation, targetBodyOrientation, smoothFactor) : targetBodyOrientation;
+            rigBone[HumanBodyBones.Hips].transform.position = smoothFactor != 0f ? Vector3.Lerp(rigBone[HumanBodyBones.Hips].transform.position, targetBodyPosition, smoothFactor) : targetBodyPosition;
+            rigBone[HumanBodyBones.Hips].transform.localRotation = smoothFactor != 0f ? Quaternion.Lerp(rigBone[HumanBodyBones.Hips].transform.localRotation, targetBodyOrientation, smoothFactor) : targetBodyOrientation;
         }
         else
         {
-            humanoid.transform.position = targetBodyPosition;
-            humanoid.transform.localRotation = targetBodyOrientation;
+            rigBone[HumanBodyBones.Hips].transform.position = targetBodyPosition;
+            rigBone[HumanBodyBones.Hips].transform.localRotation = targetBodyOrientation;
             isInit = true;
-        }
-
-        foreach (HumanBodyBones bone in humanBone)
-        {
-            if (smoothFactor != 0f)
-                rigBone[bone].transform.localRotation = Quaternion.Slerp(rigBone[bone].transform.rotation, rigBoneTarget[bone], smoothFactor);
-            else
-                rigBone[bone].transform.localRotation = rigBoneTarget[bone];
         }
     }
 
