@@ -84,6 +84,7 @@ public class SkeletonHandler : ScriptableObject
     public GameObject[] bones;
     public GameObject[] spheres;
 
+    // Bones output by the ZED SDK (in this order)
     private static HumanBodyBones[] humanBone = new HumanBodyBones[] {
     HumanBodyBones.Hips,
     HumanBodyBones.Spine,
@@ -141,7 +142,6 @@ public class SkeletonHandler : ScriptableObject
 
     private bool isInit = false;
 
-    public float SpineHeight = 0;
     private float smoothFactor = 0.5f;
     /// <summary>
     /// Sets the smooth factor.
@@ -159,7 +159,6 @@ public class SkeletonHandler : ScriptableObject
     public void Create(GameObject h)
     {
         humanoid = (GameObject)Instantiate(h, Vector3.zero, Quaternion.identity);
-        SpineHeight =  humanoid.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.Hips).position.y;
 
         var invisiblelayer = LayerMask.NameToLayer("tagInvisibleToZED");
         humanoid.layer = invisiblelayer;
@@ -169,6 +168,7 @@ public class SkeletonHandler : ScriptableObject
             child.gameObject.layer = invisiblelayer;
         }
 
+        // Init list of bones that will be updated by the data retrieved from the ZED SDK
         rigBone = new Dictionary<HumanBodyBones, RigBone>();
         rigBoneTarget = new Dictionary<HumanBodyBones, Quaternion>();
         foreach (HumanBodyBones bone in humanBone)
@@ -197,6 +197,8 @@ public class SkeletonHandler : ScriptableObject
     /// <param name="position_center">Position center.</param>
     private void setHumanPoseControl(Vector3 rootPosition, Quaternion rootRotation, Quaternion[] jointsRotation)
     {
+        // Store any joint local rotation (if the bone exists)
+
         if (rigBone[HumanBodyBones.Hips].transform)
             rigBoneTarget[HumanBodyBones.Hips] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.Hips)];
         if (rigBone[HumanBodyBones.Hips].transform)
@@ -241,10 +243,12 @@ public class SkeletonHandler : ScriptableObject
         if (rigBone[HumanBodyBones.LeftFoot].transform)
             rigBoneTarget[HumanBodyBones.LeftFoot] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftFoot)];
         
+        // Store global transform (to be applied to the Hips joint.
         targetBodyOrientation = rootRotation;
         targetBodyPosition = rootPosition;
     }
 
+    // Init skeleton display
     public void initSkeleton(int person_id)
     {
         bones = new GameObject[bonesList.Length / 2];
@@ -272,6 +276,7 @@ public class SkeletonHandler : ScriptableObject
         }
     }
 
+    // Update skeleton display
     void updateSkeleton()
     {
         float width = 0.025f;
@@ -337,6 +342,7 @@ public class SkeletonHandler : ScriptableObject
     /// </summary>
     public void MoveAvatar()
     {
+        // Apply all the local rotations
         foreach (HumanBodyBones bone in humanBone)
         {
             if (bone != HumanBodyBones.LastBone)
@@ -348,6 +354,7 @@ public class SkeletonHandler : ScriptableObject
             }
         }
 
+        // Apply global transform
         if (isInit)
         {
             rigBone[HumanBodyBones.Hips].transform.position = smoothFactor != 0f ? Vector3.Lerp(rigBone[HumanBodyBones.Hips].transform.position, targetBodyPosition, smoothFactor) : targetBodyPosition;

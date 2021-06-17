@@ -201,15 +201,13 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// <param name="p">P.</param>
 	private void UpdateAvatarControl(SkeletonHandler handler, sl.ObjectDataSDK data, bool useAvatar)
 	{
-		Vector3 bodyCenter = data.rootWorldPosition;
-        if (bodyCenter == Vector3.zero)  return; // Object not detected
-
 		Vector3[] worldJointsPos = new Vector3[20];
         Quaternion[] worldJointsRot = new Quaternion[32];
         for (int i=0;i<18;i++)
 		{
             worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
 		}
+        
         //Create Joint with middle position :
         worldJointsPos[0] = (worldJointsPos[16] + worldJointsPos[17]) / 2;
         worldJointsPos[18] = (worldJointsPos[8] + worldJointsPos[11]) / 2;
@@ -219,13 +217,8 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         {
             worldJointsRot[i] = data.skeletonFormatData.localRotationPerJoint[i];
         }
-        Vector3 worldBodyRootPosition = data.skeletonFormatData.globalRootPosition;//zedManager.GetZedRootTansform().TransformPoint(bodyCenter);
-       /* if (float.IsNaN(worldJointsPos[18].y)) worldBodyRootPosition.y = 0;
-        //else worldBodyRootPosition.y = worldJointsPos[18].y - handler.SpineHeight;
-        else worldBodyRootPosition.y -= handler.SpineHeight;*/
-
+        Vector3 worldBodyRootPosition = data.skeletonFormatData.globalRootPosition;
         handler.setControlWithJointPosition(worldJointsPos, worldBodyRootPosition, worldJointsRot, data.skeletonFormatData.globalRootRotation, useAvatar);
-        //handler.setJointSpherePoint(world_joints_pos);
 
         handler.SetSmoothFactor(smoothFactor);
     }
