@@ -358,7 +358,7 @@ public class ZEDManager : MonoBehaviour
     ////////////////////////  Object Detection //////////////////////////////
     /////////////////////////////////////////////////////////////////////////
     /// <summary>
-    /// Sync the Object on the image on the image.
+    /// Sync the Object on the image.
     /// </summary>
     [HideInInspector]
     public bool objectDetectionImageSyncMode = false;

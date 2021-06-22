@@ -1685,7 +1685,7 @@ namespace sl
         /// Global position per joint in the coordinate frame of the requested skeleton format.
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public Vector3[] globalPositionPerJoint;
+        public Vector3[] localPositionPerJoint;
         /// <summary>
         /// Local orientation per joint in the coordinate frame of the requested skeleton format.
         /// The orientation is represented by a quaternion.

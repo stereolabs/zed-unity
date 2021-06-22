@@ -201,7 +201,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// <param name="p">P.</param>
 	private void UpdateAvatarControl(SkeletonHandler handler, sl.ObjectDataSDK data, bool useAvatar)
 	{
-		Vector3[] worldJointsPos = new Vector3[20];
+        Vector3[] worldJointsPos = new Vector3[20];
         Quaternion[] worldJointsRot = new Quaternion[32];
         for (int i=0;i<18;i++)
 		{

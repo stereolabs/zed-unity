@@ -725,7 +725,7 @@ public class ZEDCameraEditor : Editor
         /////////////////////////////////////////////////////////////
         GUILayout.Space(10);
 
-        showObjectDetection.boolValue = EditorGUILayout.Foldout(showObjectDetection.boolValue, "Object Detection / Skeleton Tracking", boldfoldout);
+        showObjectDetection.boolValue = EditorGUILayout.Foldout(showObjectDetection.boolValue, "Object Detection / Body Tracking", boldfoldout);
         if (showObjectDetection.boolValue)
         {
             bool cameraIsReady = false;
