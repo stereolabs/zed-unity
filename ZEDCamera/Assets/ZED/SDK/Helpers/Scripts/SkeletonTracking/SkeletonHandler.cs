@@ -11,34 +11,34 @@ public class SkeletonHandler : ScriptableObject
 
     private const int
     // JointType
-    JointType_Head = 0,
-    JointType_Neck = 1,
-    JointType_ShoulderRight = 2,
-    JointType_ElbowRight = 3,
-    JointType_WristRight = 4,
-    JointType_ShoulderLeft = 5,
+    JointType_Head = 26,
+    JointType_Neck = 3,
+    JointType_ShoulderRight = 11,
+    JointType_ElbowRight = 13,
+    JointType_WristRight = 14,
+    JointType_ShoulderLeft = 4,
     JointType_ElbowLeft = 6,
     JointType_WristLeft = 7,
-    JointType_HipRight = 8,
-    JointType_KneeRight = 9,
-    JointType_AnkleRight = 10,
-    JointType_HipLeft = 11,
-    JointType_KneeLeft = 12,
-    JointType_AnkleLeft = 13,
-    JointType_EyesRight = 14,
-    JointType_EyesLeft = 15,
-    JointType_HearRight = 16,
-    JointType_HearLeft = 17,
-    JointType_SpineBase = 18,  //Not in the list but created from 8 + 11
-    JointType_Nose = 19,
-    jointCount = 20;
+    JointType_HipRight = 22,
+    JointType_KneeRight = 23,
+    JointType_AnkleRight = 24,
+    JointType_HipLeft = 18,
+    JointType_KneeLeft = 19,
+    JointType_AnkleLeft = 20,
+    JointType_EyesRight = 30,
+    JointType_EyesLeft = 28,
+    JointType_EarRight = 30,
+    JointType_EarLeft = 29,
+    JointType_SpineBase = 0,  //Not in the list but created from 8 + 11
+    JointType_Nose = 27,
+    jointCount = 32;
 
 
     private static readonly int[] bonesList = new int[] {
     JointType_SpineBase, JointType_Neck,                 // Spine                     // Neck
     JointType_HipLeft, JointType_HipRight,
-    JointType_HearRight, JointType_EyesRight,
-    JointType_HearLeft, JointType_EyesLeft,
+    JointType_EarRight, JointType_EyesRight,
+    JointType_EarLeft, JointType_EyesLeft,
     JointType_EyesRight, JointType_Nose,
     JointType_EyesLeft, JointType_Nose,
     JointType_Nose, JointType_Neck,
@@ -73,8 +73,8 @@ public class SkeletonHandler : ScriptableObject
     JointType_AnkleRight,
     JointType_EyesLeft,
     JointType_EyesRight,
-    JointType_HearRight,
-    JointType_HearLeft,
+    JointType_EarRight,
+    JointType_EarLeft,
     JointType_Nose
     };
 
@@ -198,7 +198,6 @@ public class SkeletonHandler : ScriptableObject
     private void setHumanPoseControl(Vector3 rootPosition, Quaternion rootRotation, Quaternion[] jointsRotation)
     {
         // Store any joint local rotation (if the bone exists)
-
         if (rigBone[HumanBodyBones.Hips].transform)
             rigBoneTarget[HumanBodyBones.Hips] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.Hips)];
         if (rigBone[HumanBodyBones.Hips].transform)
@@ -323,7 +322,7 @@ public class SkeletonHandler : ScriptableObject
     /// </summary>
     /// <param name="jt">Jt.</param>
     /// <param name="position_center">Position center.</param>
-    public void setControlWithJointPosition(Vector3[] jointsPosition, Vector3 position_center, Quaternion[] jointsRotation, Quaternion rootRotation, bool useAvatar)
+    public void setControlWithJointPosition(Vector3[] jointsPosition, Quaternion[] jointsRotation, Quaternion rootRotation, bool useAvatar)
     {
         for (int i = 0; i < jointCount; i++)
         {
@@ -333,7 +332,7 @@ public class SkeletonHandler : ScriptableObject
         humanoid.SetActive(useAvatar);
         skeleton.SetActive(!useAvatar);
 
-        if (useAvatar) setHumanPoseControl(position_center, rootRotation, jointsRotation);
+        if (useAvatar) setHumanPoseControl(jointsPosition[0], rootRotation, jointsRotation);
         else updateSkeleton();
     }
 
@@ -345,7 +344,7 @@ public class SkeletonHandler : ScriptableObject
         // Apply all the local rotations
         foreach (HumanBodyBones bone in humanBone)
         {
-            if (bone != HumanBodyBones.LastBone)
+            if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
             {
                 if (smoothFactor != 0f)
                     rigBone[bone].transform.localRotation = Quaternion.Slerp(rigBone[bone].transform.localRotation, rigBoneTarget[bone], smoothFactor);

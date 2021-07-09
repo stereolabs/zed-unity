@@ -1569,7 +1569,6 @@ namespace sl
 		USB_DEVICE_STEREOLABS
 	};
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////  Object Detection /////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1635,6 +1634,10 @@ namespace sl
         [MarshalAs(UnmanagedType.U1)]
         public bool enableBodyFitting;
         /// <summary>
+        /// Body Format. BODY_FORMAT.POSE_32 automatically enables body fitting.
+        /// </summary>
+        public sl.BODY_FORMAT bodyFormat;
+        /// <summary>
         /// Defines a upper depth range for detections.
         /// Defined in  UNIT set at  sl.Camera.Open.
         /// Default value is set to sl.Initparameters.depthMaximumDistance (can not be higher).
@@ -1672,35 +1675,14 @@ namespace sl
         public int[] object_confidence_threshold;
     };
 
-    public enum SKELETON_FORMAT
+    /// <summary>
+    /// Lists of supported skeleton body model
+    /// </summary>
+    public enum BODY_FORMAT
     {
-        SKELETON_FORMAT_UNITY,
-        SKELETON_FORMAT_LIVELINK,
+        POSE_18,
+        POSE_32,
     };
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SkeletonFormatData
-    {
-        /// <summary>
-        /// Global position per joint in the coordinate frame of the requested skeleton format.
-        /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public Vector3[] localPositionPerJoint;
-        /// <summary>
-        /// Local orientation per joint in the coordinate frame of the requested skeleton format.
-        /// The orientation is represented by a quaternion.
-        /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public Quaternion[] localRotationPerJoint;
-        /// <summary>
-        /// Global root position.
-        /// </summary>
-        public Vector3 globalRootPosition;
-        /// <summary>
-        /// Global root orientation.
-        /// </summary>
-        public Quaternion globalRootRotation;
-    }
 
     /// <summary>
     /// Object data structure directly from the SDK. Represents a single object detection. 
@@ -1759,12 +1741,12 @@ namespace sl
         /// <summary>
         /// The 2D position of skeleton joints
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
         public Vector2[] skeletonJointPosition2D;// 2D position of the joints of the skeleton
         /// <summary>
         /// The 3D position of skeleton joints
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
         public Vector3[] skeletonJointPosition;// 3D position of the joints of the skeleton
 
         // Full covariance matrix for position (3x3). Only 6 values are necessary
@@ -1779,12 +1761,24 @@ namespace sl
         ///  Not available with DETECTION_MODEL.MULTI_CLASS_BOX.
         ///  in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
         public float[] keypointConfidence;
+
         /// <summary>
-        /// Structure containing a converted skeleton model to the requested format.
+        /// Global position per joint in the coordinate frame of the requested skeleton format.
         /// </summary>
-        public SkeletonFormatData skeletonFormatData;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public Vector3[] localPositionPerJoint;
+        /// <summary>
+        /// Local orientation per joint in the coordinate frame of the requested skeleton format.
+        /// The orientation is represented by a quaternion.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public Quaternion[] localOrientationPerJoint;
+        /// <summary>
+        /// Global root position.
+        /// </summary>
+        public Quaternion globalRootOrientation;
     };
 
 
@@ -1837,7 +1831,8 @@ namespace sl
         ANIMAL = 3,
         ELECTRONICS = 4,
         FRUIT_VEGETABLE = 5,
-        LAST = 6
+        SPORT = 6,
+        LAST = 7
     };
 
     /// <summary>

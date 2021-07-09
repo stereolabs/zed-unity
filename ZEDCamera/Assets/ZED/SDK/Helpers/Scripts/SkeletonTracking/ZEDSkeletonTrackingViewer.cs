@@ -102,9 +102,10 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
             Debug.LogWarning("MULTI_CLASS_BOX model can't be used for skeleton tracking, please use either HUMAN_BODY_FAST or HUMAN_BODY_ACCURATE");
         }
 
-        if (zedManager.bodyFitting == false)
+        if (zedManager.bodyFormat == sl.BODY_FORMAT.POSE_18)
         {
-            Debug.LogWarning(" Body Fitting must be enable to animate 3D Models !");
+            Debug.LogWarning(" BODY_FORMAT must be set to POSE_32 to animate 3D Avatars !");
+            return;
         }
     }
 
@@ -179,7 +180,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
             }
             else
-                Debug.Log("<b><color=blue> Switch to Skeleton mode</color></b>");
+                Debug.Log("<b><color=green> Switch to Skeleton mode</color></b>");
         }
 
         if (useAvatar)
@@ -201,24 +202,16 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// <param name="p">P.</param>
 	private void UpdateAvatarControl(SkeletonHandler handler, sl.ObjectDataSDK data, bool useAvatar)
 	{
-        Vector3[] worldJointsPos = new Vector3[20];
+        Vector3[] worldJointsPos = new Vector3[32];
         Quaternion[] worldJointsRot = new Quaternion[32];
-        for (int i=0;i<18;i++)
-		{
-            worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
-		}
-        
-        //Create Joint with middle position :
-        worldJointsPos[0] = (worldJointsPos[16] + worldJointsPos[17]) / 2;
-        worldJointsPos[18] = (worldJointsPos[8] + worldJointsPos[11]) / 2;
-        worldJointsPos[19] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[0]); // Add Nose Joint for skeleton vizualisation
-
+   
         for (int i = 0; i < 32; i++)
         {
-            worldJointsRot[i] = data.skeletonFormatData.localRotationPerJoint[i];
+            worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
+            worldJointsRot[i] = data.localOrientationPerJoint[i];
         }
-        Vector3 worldBodyRootPosition = data.skeletonFormatData.globalRootPosition;
-        handler.setControlWithJointPosition(worldJointsPos, worldBodyRootPosition, worldJointsRot, data.skeletonFormatData.globalRootRotation, useAvatar);
+        
+        handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, data.globalRootOrientation, useAvatar);
 
         handler.SetSmoothFactor(smoothFactor);
     }
