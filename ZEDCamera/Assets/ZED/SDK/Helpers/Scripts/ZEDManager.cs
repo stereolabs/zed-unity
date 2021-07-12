@@ -60,7 +60,7 @@ public class ZEDManager : MonoBehaviour
     /// at C:/ProgramData/stereolabs/SL_Unity_wrapper.txt. This helps find issues that may occur within
     /// the protected .dll, but can decrease performance. 
     /// </summary>
-    private bool wrapperVerbose = false;
+    private bool wrapperVerbose = true;
 
     /// <summary>
     /// Current instance of the ZED Camera, which handles calls to the Unity wrapper .dll. 
@@ -2708,7 +2708,7 @@ public class ZEDManager : MonoBehaviour
             sl.dll_ObjectDetectionParameters od_param = new sl.dll_ObjectDetectionParameters();
             od_param.imageSync = objectDetectionImageSyncMode;
             od_param.enableObjectTracking = objectDetectionTracking;
-           // od_param.enable2DMask = objectDetection2DMask;
+            od_param.enable2DMask = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
             od_param.enableBodyFitting = bodyFitting;
             od_param.maxRange = maxRange;
@@ -2830,11 +2830,11 @@ public class ZEDManager : MonoBehaviour
         if (res == sl.ERROR_CODE.SUCCESS && oframebuffer.isNew != 0)
         {
             //Release memory from masks. 
-            /*for (int i = 0; i < objectsFrameSDK.numObject; i++)
+            for (int i = 0; i < objectsFrameSDK.numObject; i++)
             {
                 sl.ZEDMat oldmat = new sl.ZEDMat(objectsFrameSDK.objectData[i].mask);
                 oldmat.Free();
-            }*/
+            }
 
             objectsFrameSDK = oframebuffer;
 
@@ -3054,7 +3054,6 @@ public class ZEDManager : MonoBehaviour
         }
 
         int sn = zedCamera.GetZEDSerialNumber();
-        Debug.Log("SN : " + sn);
         CloseManager();
 
         bool isCameraAvailable = false;
