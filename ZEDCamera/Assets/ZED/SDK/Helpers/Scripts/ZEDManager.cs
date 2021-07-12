@@ -2832,7 +2832,6 @@ public class ZEDManager : MonoBehaviour
         sl.ObjectsFrameSDK oframebuffer = new sl.ObjectsFrameSDK();
 
         sl.ERROR_CODE res = zedCamera.RetrieveObjectsDetectionData(ref od_runtime_params, ref oframebuffer);
-        Debug.Log(System.Runtime.InteropServices.Marshal.SizeOf<sl.ObjectsFrameSDK>(oframebuffer));
 
         if (res == sl.ERROR_CODE.SUCCESS && oframebuffer.isNew != 0)
         {

@@ -448,7 +448,7 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_get_image_timestamp")]
         private static extern ulong dllz_get_image_timestamp(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_current_timestamp")]
+        [DllImport(nameDll, EntryPoint = "sl_get_camera_timestamp")]
         private static extern ulong dllz_get_current_timestamp(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_frame_dropped_count")]
