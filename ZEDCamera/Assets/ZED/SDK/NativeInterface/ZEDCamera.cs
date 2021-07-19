@@ -314,7 +314,7 @@ namespace sl
           * Create functions
           */
         [DllImport(nameDll, EntryPoint = "sl_create_camera")]
-        private static extern bool dllz_create_camera(int cameraID, bool verbose);
+        private static extern bool dllz_create_camera(int cameraID);
 
 
         /*
@@ -453,6 +453,9 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_get_frame_dropped_count")]
         private static extern uint dllz_get_frame_dropped_count(int cameraID);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_frame_dropped_percent")]
+        private static extern float dllz_get_frame_dropped_percent(int cameraID);
 
         /*
          * SVO control functions.
@@ -873,7 +876,7 @@ namespace sl
             }
             CameraID = cameraID;
             //tagOneObject += cameraID;
-            return dllz_create_camera(cameraID, verbose);
+            return dllz_create_camera(cameraID);
         }
 
         /// <summary>
@@ -1691,6 +1694,15 @@ namespace sl
         public uint GetFrameDroppedCount()
         {
             return dllz_get_frame_dropped_count(CameraID);
+        }
+
+        /// <summary>
+        /// Gets the percentage of frames dropped since Grab() was called for the first time.
+        /// </summary>
+        /// <returns>Percentage of frames dropped.</returns>
+        public float GetFrameDroppedPercent()
+        {
+            return dllz_get_frame_dropped_percent(CameraID);
         }
 
         /// <summary>

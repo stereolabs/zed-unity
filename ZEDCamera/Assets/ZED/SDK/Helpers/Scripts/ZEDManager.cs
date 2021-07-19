@@ -2503,9 +2503,12 @@ public class ZEDManager : MonoBehaviour
         //Update strings used for 	di	splaying stats in the Inspector. 
         if (zedCamera != null)
         {
+            float frame_drop_count = zedCamera.GetFrameDroppedPercent();
             float CurrentTickFPS = 1.0f / Time.deltaTime;
             fps_engine = (fps_engine + CurrentTickFPS) / 2.0f;
             engineFPS = fps_engine.ToString("F0") + " FPS";
+            if (frame_drop_count > 30 && fps_engine < 45)
+                engineFPS += "WARNING: Low engine framerate detected";
 
             if (isZEDTracked)
                 trackingState = ZEDTrackingState.ToString();
