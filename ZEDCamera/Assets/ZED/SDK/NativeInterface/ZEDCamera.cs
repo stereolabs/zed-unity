@@ -508,13 +508,13 @@ namespace sl
          * Motion Tracking functions.
          */
         [DllImport(nameDll, EntryPoint = "sl_enable_positional_tracking_unity")]
-        private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, 
+        private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false,
             bool trackingIsStatic = false, bool enableIMUFusion = true, System.Text.StringBuilder aeraFilePath = null);
 
         [DllImport(nameDll, EntryPoint = "sl_disable_positional_ttracking")]
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
 
-        [DllImport(nameDll, EntryPoint = "sl_save_current_area")]
+        [DllImport(nameDll, EntryPoint = "sl_save_area_map")]
         private static extern int dllz_save_current_area(int cameraID, System.Text.StringBuilder path);
 
         [DllImport(nameDll, EntryPoint = "sl_get_position_data")]
@@ -970,7 +970,7 @@ namespace sl
             [MarshalAs(UnmanagedType.U1)]
             public bool sensorsRequired;
             /// <summary>
-            /// Whether to enable improved color/gamma curves added in ZED SDK 3.0. 
+            /// Whether to enable improved color/gamma curves added in ZED SDK 3.0.
             /// </summary>
             [MarshalAs(UnmanagedType.U1)]
             public bool enableImageEnhancement;
@@ -1226,11 +1226,11 @@ namespace sl
         /// <param name="enableSpatialMemory">  (optional) define if spatial memory is enable or not.</param>
         /// <param name="areaFilePath"> (optional) file of spatial memory file that has to be loaded to relocate in the scene.</param>
         /// <returns></returns>
-        public sl.ERROR_CODE EnableTracking(ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = true, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, bool trackingIsStatic = false, 
+        public sl.ERROR_CODE EnableTracking(ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = true, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, bool trackingIsStatic = false,
             bool enableIMUFusion = true, string areaFilePath = "")
         {
             sl.ERROR_CODE trackingStatus = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
-            trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(CameraID, ref quat, ref vec, enableSpatialMemory, enablePoseSmoothing, enableFloorAlignment, 
+            trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(CameraID, ref quat, ref vec, enableSpatialMemory, enablePoseSmoothing, enableFloorAlignment,
                 trackingIsStatic, enableIMUFusion, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
             return trackingStatus;
         }
@@ -1677,7 +1677,7 @@ namespace sl
         /// Perform a new self calibration process.
         /// In some cases, due to temperature changes or strong vibrations, the stereo calibration becomes less accurate.
         /// Use this function to update the self-calibration data and get more reliable depth values.
-        /// <remarks>The self calibration will occur at the next \ref grab() call.</remarks> 
+        /// <remarks>The self calibration will occur at the next \ref grab() call.</remarks>
         /// New values will then be available in \ref getCameraInformation(), be sure to get them to still have consistent 2D <-> 3D conversion.
         /// </summary>
         /// <param name="cameraID"></param>
@@ -1816,7 +1816,7 @@ namespace sl
             err = (sl.ERROR_CODE)dllz_get_internal_sensors_data(CameraID, ref data, (int)referenceTime);
             return err;
         }
-        
+
         /// <summary>
         /// Converts a float array to a matrix.
         /// </summary>
@@ -2536,7 +2536,7 @@ namespace sl
         ////////////////////////
         /// Save utils fct   ///
         ////////////////////////
-        
+
         /// <summary>
         /// Save current image (specified by view) in a file defined by filename
         /// Supported formats are jpeg and png. Filename must end with either .jpg or .png
@@ -2562,7 +2562,7 @@ namespace sl
 
         /// <summary>
         /// Save the current point cloud in a file defined by filename.
-        /// Supported formats are PLY,VTK,XYZ and PCD 
+        /// Supported formats are PLY,VTK,XYZ and PCD
         /// </summary>
         /// <param name="side">defines left (0) or right (1) point cloud</param>
         /// <param name="filename"> filename must end with .ply, .xyz , .vtk or .pcd </param>
@@ -2615,7 +2615,7 @@ namespace sl
         }
 
         /// <summary>
-        /// Retrieve object detection data 
+        /// Retrieve object detection data
         /// </summary>
         /// <param name="od_params"> Object detection runtime parameters</param>
         /// <param name="objFrame"> ObjectsFrameSDK that contains all the detection data</param>
@@ -2628,7 +2628,7 @@ namespace sl
         /// <summary>
         /// Update the batch trajectories and retrieve the number of batches.
         /// </summary>
-        /// <param name="nbBatches"> numbers of batches 
+        /// <param name="nbBatches"> numbers of batches
         /// <returns> returns an ERROR_CODE that indicates the type of error </returns>
         public sl.ERROR_CODE UpdateObjectsBatch(out int nbBatches)
         {
