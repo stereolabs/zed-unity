@@ -620,6 +620,16 @@ PrefabInstance:
       propertyPath: smoothFactor
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
+        type: 3}
+      propertyPath: showSEARCHING
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
+        type: 3}
+      propertyPath: showOFF
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800442, guid: ca18a88838151284380d84fc86d327e5,
         type: 3}
       propertyPath: m_Name

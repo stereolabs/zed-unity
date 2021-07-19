@@ -210,7 +210,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
             worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
             worldJointsRot[i] = data.localOrientationPerJoint[i];
         }
-        
+
         handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, data.globalRootOrientation, useAvatar);
 
         handler.SetSmoothFactor(smoothFactor);

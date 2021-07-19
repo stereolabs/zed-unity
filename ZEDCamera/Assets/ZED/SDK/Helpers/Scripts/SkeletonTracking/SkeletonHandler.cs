@@ -358,11 +358,13 @@ public class SkeletonHandler : ScriptableObject
         {
             rigBone[HumanBodyBones.Hips].transform.position = smoothFactor != 0f ? Vector3.Lerp(rigBone[HumanBodyBones.Hips].transform.position, targetBodyPosition, smoothFactor) : targetBodyPosition;
             rigBone[HumanBodyBones.Hips].transform.localRotation = smoothFactor != 0f ? Quaternion.Lerp(rigBone[HumanBodyBones.Hips].transform.localRotation, targetBodyOrientation, smoothFactor) : targetBodyOrientation;
+        
         }
         else
         {
             rigBone[HumanBodyBones.Hips].transform.position = targetBodyPosition;
             rigBone[HumanBodyBones.Hips].transform.localRotation = targetBodyOrientation;
+
             isInit = true;
         }
     }
