@@ -56,7 +56,7 @@
 				{
 					outColor = tex2D(_MainTex, i.uv.xy).bgra;
 
-	#ifdef NO_DEPTH_OCC
+	#ifdef NO_DEPTH
 					outDepth = 0;
 	#else
 					float zed_z = tex2D(_DepthXYZTex, i.uv.zw).x;

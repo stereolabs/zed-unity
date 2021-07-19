@@ -1693,7 +1693,7 @@ public class ZEDManager : MonoBehaviour
             StopObjectDetection();
         }
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
         ClearRendering();
 #endif
 
@@ -1886,12 +1886,12 @@ public class ZEDManager : MonoBehaviour
         //setLayersForMultiCamera ();
     }
 
-    #region INITIALIZATION
+#region INITIALIZATION
     //const int MAX_OPENING_TRIES = 10;
     private uint numberTriesOpening = 0;/// Counter of tries to open the ZED
-                                        /// <summary>
-                                        /// ZED opening function. Should be called in the initialization thread (threadOpening).
-                                        /// </summary>
+    /// <summary>
+    /// ZED opening function. Should be called in the initialization thread (threadOpening).
+    /// </summary>
     private void OpenZEDInBackground()
     {
         openingLaunched = true;
@@ -1911,7 +1911,6 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Initialization coroutine.
     /// </summary>
-
     private System.Collections.IEnumerator InitZED()
     {
         zedReady = false;
@@ -2100,9 +2099,9 @@ public class ZEDManager : MonoBehaviour
             if (renderingPath == ZEDRenderingMode.FORWARD)
             {
                 if (leftRenderingPlane)
-                    leftRenderingPlane.ManageKeywordForwardMat(!depthOcclusion, "NO_DEPTH");
+                    leftRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH");
                 if (rightRenderingPlane)
-                    rightRenderingPlane.ManageKeywordForwardMat(!depthOcclusion, "NO_DEPTH");
+                    rightRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH");
             }
             else if (renderingPath == ZEDRenderingMode.DEFERRED)
             {
