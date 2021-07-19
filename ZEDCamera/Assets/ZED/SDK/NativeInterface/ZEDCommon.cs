@@ -1831,8 +1831,7 @@ namespace sl
         ANIMAL = 3,
         ELECTRONICS = 4,
         FRUIT_VEGETABLE = 5,
-        SPORT = 6,
-        LAST = 7
+        LAST = 6
     };
 
     /// <summary>

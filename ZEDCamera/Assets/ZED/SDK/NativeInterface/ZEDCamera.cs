@@ -514,7 +514,7 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_disable_positional_ttracking")]
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
 
-        [DllImport(nameDll, EntryPoint = "sl_save_current_area")]
+        [DllImport(nameDll, EntryPoint = "sl_save_area_map")]
         private static extern int dllz_save_current_area(int cameraID, System.Text.StringBuilder path);
 
         [DllImport(nameDll, EntryPoint = "sl_get_position_data")]
