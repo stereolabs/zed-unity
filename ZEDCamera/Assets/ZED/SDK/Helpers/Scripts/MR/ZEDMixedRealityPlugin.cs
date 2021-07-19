@@ -23,39 +23,39 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 {
     #region DLL Calls
 	const string nameDll = sl.ZEDCommon.NameDLL;
-	[DllImport(nameDll, EntryPoint = "dllz_compute_size_plane_with_gamma")]
-	private static extern System.IntPtr dllz_compute_size_plane_with_gamma(sl.Resolution resolution, float perceptionDistance, float eyeToZedDistance, float planeDistance, float HMDFocal, float zedFocal);
+	[DllImport(nameDll, EntryPoint = "sl_compute_size_plane_with_gamma")]
+	private static extern System.IntPtr dllz_compute_size_plane_with_gamma(int width, int height, float perceptionDistance, float eyeToZedDistance, float planeDistance, float HMDFocal, float zedFocal);
 
-	[DllImport(nameDll, EntryPoint = "dllz_compute_hmd_focal")]
-	private static extern float dllz_compute_hmd_focal(sl.Resolution r, float w, float h);
+	[DllImport(nameDll, EntryPoint = "sl_compute_hmd_focal")]
+	private static extern float dllz_compute_hmd_focal(int width, int height, float w, float h);
 
 	/*****LATENCY CORRECTOR***/
-	[DllImport(nameDll, EntryPoint = "dllz_latency_corrector_add_key_pose")]
+	[DllImport(nameDll, EntryPoint = "sl_latency_corrector_add_key_pose")]
 	private static extern void dllz_latency_corrector_add_key_pose(ref Vector3 translation, ref Quaternion rotation, ulong timeStamp);
 
-	[DllImport(nameDll, EntryPoint = "dllz_latency_corrector_get_transform")]
+	[DllImport(nameDll, EntryPoint = "sl_latency_corrector_get_transform")]
 	private static extern int dllz_latency_corrector_get_transform(ulong timeStamp, bool useLatency,out Vector3 translation, out Quaternion rotation);
 
-	[DllImport(nameDll, EntryPoint = "dllz_latency_corrector_initialize")]
+	[DllImport(nameDll, EntryPoint = "sl_latency_corrector_initialize")]
 	private static extern void dllz_latency_corrector_initialize(int device);
 
-	[DllImport(nameDll, EntryPoint = "dllz_latency_corrector_shutdown")]
+	[DllImport(nameDll, EntryPoint = "sl_latency_corrector_shutdown")]
 	private static extern void dllz_latency_corrector_shutdown();
 
 	/****ANTI DRIFT ***/
-	[DllImport(nameDll, EntryPoint = "dllz_drift_corrector_initialize")]
+	[DllImport(nameDll, EntryPoint = "sl_drift_corrector_initialize")]
 	public static extern void dllz_drift_corrector_initialize();
 
-	[DllImport(nameDll, EntryPoint = "dllz_drift_corrector_shutdown")]
+	[DllImport(nameDll, EntryPoint = "sl_drift_corrector_shutdown")]
 	public static extern void dllz_drift_corrector_shutdown();
 
-	[DllImport(nameDll, EntryPoint = "dllz_drift_corrector_get_tracking_data")]
+	[DllImport(nameDll, EntryPoint = "sl_drift_corrector_get_tracking_data")]
 	public static extern void dllz_drift_corrector_get_tracking_data(ref TrackingData trackingData, ref Pose HMDTransform, ref Pose latencyCorrectorTransform, int hasValidTrackingPosition,bool checkDrift);
 
-	[DllImport(nameDll, EntryPoint = "dllz_drift_corrector_set_calibration_transform")]
+	[DllImport(nameDll, EntryPoint = "sl_drift_corrector_set_calibration_transform")]
 	public static extern void dllz_drift_corrector_set_calibration_transform(ref Pose pose);
 
-	[DllImport(nameDll, EntryPoint = "dllz_drift_corrector_set_calibration_const_offset_transform")]
+	[DllImport(nameDll, EntryPoint = "sl_drift_corrector_set_calibration_const_offset_transform")]
 	public static extern void dllz_drift_corrector_set_calibration_const_offset_transform(ref Pose pose);
     #endregion
 
@@ -299,6 +299,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
     private bool hasXRDevice()
     {
+#if UNITY_2020_1_OR_NEWER
         var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
         SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
         foreach (var xrDisplay in xrDisplaySubsystems)
@@ -309,6 +310,9 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
             }
         }
         return false;
+#else
+        return XRDevice.isPresent;
+#endif
     }
 
     private string getXRModelName()
@@ -326,6 +330,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         //You can force it to work for unsupported headsets by implementing your own logic for calling
         //dllz_latency_corrector_initialize.
         hasVRDevice = hasXRDevice();
+
 		if (hasVRDevice)
         {
             if (getXRModelName().ToLower().Contains("vive")) //Vive or Vive Pro
@@ -404,7 +409,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     /// <returns></returns>
     public Vector2 ComputeSizePlaneWithGamma(sl.Resolution resolution, float perceptionDistance, float eyeToZedDistance, float planeDistance, float HMDFocal, float zedFocal)
 	{
-		System.IntPtr p = dllz_compute_size_plane_with_gamma(resolution, perceptionDistance, eyeToZedDistance, planeDistance, HMDFocal, zedFocal);
+		System.IntPtr p = dllz_compute_size_plane_with_gamma((int)resolution.width, (int)resolution.height, perceptionDistance, eyeToZedDistance, planeDistance, HMDFocal, zedFocal);
 
 		if (p == System.IntPtr.Zero)
 		{
@@ -423,7 +428,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	public float ComputeFocal(sl.Resolution targetSize)
 	{
         //float focal_hmd = dllz_compute_hmd_focal(targetSize, finalLeftEye.projectionMatrix.m00,finalLeftEye.projectionMatrix.m11);
-        float focal_hmd = dllz_compute_hmd_focal(targetSize, finalCenterEye.projectionMatrix.m00, finalCenterEye.projectionMatrix.m11);
+        float focal_hmd = dllz_compute_hmd_focal((int)targetSize.width, (int)targetSize.height, finalCenterEye.projectionMatrix.m00, finalCenterEye.projectionMatrix.m11);
         return focal_hmd;
 	}
 
@@ -443,7 +448,6 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
 		if (hasVRDevice) {
 			sl.CalibrationParameters parameters = zedCamera.CalibrationParametersRectified;
-
 			scaleFromZED = ComputeSizePlaneWithGamma (new sl.Resolution ((uint)zedCamera.ImageWidth, (uint)zedCamera.ImageHeight),
 				perception_distance, zed2eye_distance, offset.z,
 				ComputeFocal (new sl.Resolution ((uint)XRSettings.eyeTextureWidth, (uint)XRSettings.eyeTextureHeight)),

@@ -438,7 +438,7 @@ PrefabInstance:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: showarrig
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
@@ -598,6 +598,21 @@ MonoBehaviour:
   correctControllerDrift: 1
   SNHolder:
   zedManager: {fileID: 139748563}
+  fireBinding:
+    actionPath: /actions/default/in/Teleport
+    needsReinit: 0
+  clickBinding:
+    actionPath: /actions/default/in/GrabGrip
+    needsReinit: 0
+  backBinding:
+    actionPath: /actions/default/in/GrabPinch
+    needsReinit: 0
+  grabBinding:
+    actionPath: /actions/default/in/GrabPinch
+    needsReinit: 0
+  navigateUIBinding:
+    actionPath: /actions/platformer/in/Move
+    needsReinit: 0
   onFireDown:
     m_PersistentCalls:
       m_Calls: []
@@ -670,6 +685,21 @@ MonoBehaviour:
   correctControllerDrift: 1
   SNHolder:
   zedManager: {fileID: 139748563}
+  fireBinding:
+    actionPath: /actions/default/in/Teleport
+    needsReinit: 0
+  clickBinding:
+    actionPath: /actions/default/in/GrabGrip
+    needsReinit: 0
+  backBinding:
+    actionPath: /actions/default/in/GrabPinch
+    needsReinit: 0
+  grabBinding:
+    actionPath: /actions/default/in/GrabPinch
+    needsReinit: 0
+  navigateUIBinding:
+    actionPath: /actions/platformer/in/Move
+    needsReinit: 0
   onFireDown:
     m_PersistentCalls:
       m_Calls: []

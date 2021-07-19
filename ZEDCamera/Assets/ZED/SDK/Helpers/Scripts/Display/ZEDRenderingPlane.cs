@@ -530,7 +530,6 @@ public class ZEDRenderingPlane : MonoBehaviour
         else if (side == 1)
             canvas.transform.localPosition = new Vector3(opticalCenters.z, -1.0f * opticalCenters.w, plane_distance);
 
-
         //Set the camera's parameters based on the ZED's, and scale the screen based on its distance.
         if (zedCamera.IsCameraReady)
         {

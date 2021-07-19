@@ -346,7 +346,7 @@ public class ZEDManager : MonoBehaviour
     ////////////////////////  Object Detection //////////////////////////////
     /////////////////////////////////////////////////////////////////////////
     /// <summary>
-    /// Sync the Object on the image on the image.
+    /// Sync the Object on the image.
     /// </summary>
     [HideInInspector]
     public bool objectDetectionImageSyncMode = false;
@@ -382,6 +382,9 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public float maxRange = 40.0f;
+
+    [HideInInspector]
+    public sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.POSE_32;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
@@ -1482,6 +1485,7 @@ public class ZEDManager : MonoBehaviour
 
     private bool hasXRDevice()
     {
+#if UNITY_2020_1_OR_NEWER
         var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
         SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
         foreach (var xrDisplay in xrDisplaySubsystems)
@@ -1492,6 +1496,9 @@ public class ZEDManager : MonoBehaviour
             }
         }
         return false;
+#else
+        return XRDevice.isPresent;
+#endif
     }
 
     /// <summary>
@@ -1504,7 +1511,6 @@ public class ZEDManager : MonoBehaviour
         zedRigRoot = gameObject.transform; //The object moved by tracking. By default it's this Transform. May get changed.
 
         bool devicePresent = hasXRDevice(); //May not need.
-
         //Set first left eye
         Component[] cams = gameObject.GetComponentsInChildren<Camera>();
         //Camera firstmonocam = null;
@@ -1677,12 +1683,12 @@ public class ZEDManager : MonoBehaviour
         if (spatialMapping != null)
             spatialMapping.Dispose();
 
-        if (objectDetectionRunning)
+        if (IsObjectDetectionRunning)
         {
-            StopObjectDetection();
+            //StopObjectDetection();
         }
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
         ClearRendering();
 #endif
 
@@ -1917,7 +1923,6 @@ public class ZEDManager : MonoBehaviour
         }
 
 
-
         //ZED has initialized successfully.
         if (lastInitStatus == sl.ERROR_CODE.SUCCESS)
         {
@@ -1977,13 +1982,11 @@ public class ZEDManager : MonoBehaviour
             //If not already launched, launch the image grabbing thread.
             if (!running)
             {
-
                 running = true;
                 requestNewFrame = true;
 
                 threadGrab = new Thread(new ThreadStart(ThreadedZEDGrab));
                 threadGrab.Start();
-
             }
 
             zedReady = true;
@@ -2227,8 +2230,9 @@ public class ZEDManager : MonoBehaviour
         }
         else if (estimateInitialPosition)
         {
+            Debug.Log("TOTO");
             sl.ERROR_CODE err = zedCamera.EstimateInitialPosition(ref initialRotation, ref initialPosition);
-            if (zedCamera.GetCameraModel() == sl.MODEL.ZED_M)
+            if (zedCamera.GetCameraModel() != sl.MODEL.ZED)
                 zedCamera.GetInternalIMUOrientation(ref initialRotation, sl.TIME_REFERENCE.IMAGE);
 
             if (err != sl.ERROR_CODE.SUCCESS)
@@ -2686,8 +2690,15 @@ public class ZEDManager : MonoBehaviour
             od_param.enableObjectTracking = objectDetectionTracking;
             od_param.enable2DMask = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
-            od_param.enableBodyFitting = bodyFitting;
             od_param.maxRange = maxRange;
+            if (bodyFormat == sl.BODY_FORMAT.POSE_32 && bodyFitting == false)
+            {
+                Debug.LogWarning("sl.BODY_FORMAT.POSE_32 is chosen, Skeleton Tracking will automatically enable body fitting");
+                bodyFitting = true;
+            }
+            od_param.bodyFormat = bodyFormat;
+            od_param.enableBodyFitting = bodyFitting;
+
             od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM) ? SK_personDetectionConfidenceThreshold : OD_personDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehicleDetectionConfidenceThreshold;
@@ -2802,14 +2813,19 @@ public class ZEDManager : MonoBehaviour
     private void RetrieveObjectDetectionFrame()
     {
         sl.ObjectsFrameSDK oframebuffer = new sl.ObjectsFrameSDK();
+
         sl.ERROR_CODE res = zedCamera.RetrieveObjectsDetectionData(ref od_runtime_params, ref oframebuffer);
+
         if (res == sl.ERROR_CODE.SUCCESS && oframebuffer.isNew != 0)
         {
-            //Release memory from masks.
-            for (int i = 0; i < objectsFrameSDK.numObject; i++)
+            if (objectDetection2DMask)
             {
-                sl.ZEDMat oldmat = new sl.ZEDMat(objectsFrameSDK.objectData[i].mask);
-                oldmat.Free();
+                //Release memory from masks.
+                for (int i = 0; i < objectsFrameSDK.numObject; i++)
+                {
+                    sl.ZEDMat oldmat = new sl.ZEDMat(objectsFrameSDK.objectData[i].mask);
+                    oldmat.Free();
+                }
             }
 
             objectsFrameSDK = oframebuffer;
