@@ -429,7 +429,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	/// <returns></returns>
 	public float ComputeFocal(sl.Resolution targetSize)
 	{
-		float focal_hmd = dllz_compute_hmd_focal((int)targetSize.width, (int)targetSize.height, finalLeftEye.projectionMatrix.m00,finalLeftEye.projectionMatrix.m11);
+		float focal_hmd = dllz_compute_hmd_focal((int)targetSize.width, (int)targetSize.height, finalCenterEye.projectionMatrix.m00, finalCenterEye.projectionMatrix.m11);
 		return focal_hmd;
 	}
 
