@@ -38,12 +38,12 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 11
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: c1f5c3d27813a6345b4dbedb0e67365a, type: 2}
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -118,8 +118,6 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
-    maxJobWorkers: 0
-    preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
@@ -390,7 +388,6 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -618,12 +615,14 @@ Camera:
     m_RotationOrder: 4
 --- !u!4 &741507345 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 4138687653623062, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4138687653623062, guid: e13ee7e0790c7d243b7aa67fe604acac,
+    type: 3}
   m_PrefabInstance: {fileID: 213410664}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &822331332 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1222075980241000, guid: 558a4b76067e3e44089fbed55a2687e6, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1222075980241000, guid: 558a4b76067e3e44089fbed55a2687e6,
+    type: 3}
   m_PrefabInstance: {fileID: 1663354463}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &822331333
@@ -676,6 +675,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1222075980241000, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4937924797587290, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -721,15 +724,23 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114228649437443144, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 3}
-      propertyPath: zedManager
-      value:
-      objectReference: {fileID: 1344833222}
-    - target: {fileID: 114575857264643554, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 3}
+    - target: {fileID: 114228649437443144, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
+        type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114575857264643554, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 3}
+    - target: {fileID: 114228649437443144, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
+        type: 3}
+      propertyPath: zedManager
+      value:
+      objectReference: {fileID: 1344833222}
+    - target: {fileID: 114575857264643554, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114575857264643554, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
+        type: 3}
       propertyPath: zedManager
       value:
       objectReference: {fileID: 1344833222}
@@ -959,7 +970,6 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -984,7 +994,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1124290462
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1084,7 +1093,6 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
-  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!4 &1320592377
@@ -1103,7 +1111,8 @@ Transform:
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &1344833222 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+  m_CorrespondingSourceObject: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+    type: 3}
   m_PrefabInstance: {fileID: 213410664}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -1287,6 +1296,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1222075980241000, guid: 558a4b76067e3e44089fbed55a2687e6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4937924797587290, guid: 558a4b76067e3e44089fbed55a2687e6, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -1332,11 +1345,13 @@ PrefabInstance:
       propertyPath: zedManager
       value:
       objectReference: {fileID: 1344833222}
-    - target: {fileID: 114191359626448276, guid: 558a4b76067e3e44089fbed55a2687e6, type: 3}
+    - target: {fileID: 114191359626448276, guid: 558a4b76067e3e44089fbed55a2687e6,
+        type: 3}
       propertyPath: useLegacySteamVRInput
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114506010654110848, guid: 558a4b76067e3e44089fbed55a2687e6, type: 3}
+    - target: {fileID: 114506010654110848, guid: 558a4b76067e3e44089fbed55a2687e6,
+        type: 3}
       propertyPath: zedManager
       value:
       objectReference: {fileID: 1344833222}
@@ -1345,7 +1360,8 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 558a4b76067e3e44089fbed55a2687e6, type: 3}
 --- !u!1 &1698928816 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1222075980241000, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1222075980241000, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
+    type: 3}
   m_PrefabInstance: {fileID: 942191712}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1698928817

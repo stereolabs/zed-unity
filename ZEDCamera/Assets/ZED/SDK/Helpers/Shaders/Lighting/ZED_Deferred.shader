@@ -11,10 +11,10 @@ Properties
 	}
 	SubShader
 	{
-		
+
 		Pass
 		{
-		// Stencil is 2^8 bits, Unity uses 4 first bits 
+		// Stencil is 2^8 bits, Unity uses 4 first bits
 		// 1 0 0 0 0 0 0 0 enables all lights
 		// 1 1 0 0 0 0 0 0 enables all except the light may be not rendered if too far way
 		// 1 1 1 0 0 0 0 0 enables all lights
@@ -22,10 +22,10 @@ Properties
 
 
 		Stencil {
-                Ref 128 
+                Ref 128
                 Comp always
                 Pass replace
-		
+
             }
 
 
@@ -36,7 +36,7 @@ Properties
 			#pragma target 4.0
 			#pragma vertex vert
 			#pragma fragment frag
-			
+
 			#include "UnityCG.cginc"
 			#include "../ZED_Utils.cginc"
 			#include "Lighting.cginc"
@@ -83,10 +83,10 @@ Properties
 			float _ZEDFactorAffectReal;
 			float _MaxDepth;
 
-			void frag(v2f i, 
-					  out half4 outColor : SV_Target0, 
-					  out half4 outSpecRoughness : SV_Target1, 
-					  out half4 outNormal : SV_Target2, 
+			void frag(v2f i,
+					  out half4 outColor : SV_Target0,
+					  out half4 outSpecRoughness : SV_Target1,
+					  out half4 outNormal : SV_Target2,
 					  out half4 outEmission : SV_Target3,
 					  out float outDepth:DEPTH)
 			{
@@ -98,8 +98,8 @@ Properties
 #else
 				float4 dxyz = tex2D(_DepthXYZTex, i.depthUV).xxxx;
 
-				//Filter out depth values beyond the max value. 
-				if (_MaxDepth < 20.0) //Avoid clipping out FAR values when not using feature. 
+				//Filter out depth values beyond the max value.
+				if (_MaxDepth < 20.0) //Avoid clipping out FAR values when not using feature.
 				{
 					//if (dxyz.z > _MaxDepth) discard;
 					if (dxyz.z > _MaxDepth) discard;
@@ -112,18 +112,22 @@ Properties
 
 				outSpecRoughness = half4(0,0,0,0);
 
-				
+
 				float3 normals = tex2D(_NormalsTex, i.depthUV).rgb;
 				outColor = saturate(tex2D (_MainTex, i.depthUV).bgra);
 				outColor *= _ZEDFactorAffectReal;
 
-				#ifdef NO_DEPTH
-					    outDepth = 0;
+				#ifdef NO_DEPTH_OCC
+					#if SHADER_API_D3D11
+									outDepth = 0;
+					#elif SHADER_API_GLCORE
+									outDepth = 1000;//fake infinite depth
+					#endif
 				#else
 						outDepth = saturate(d);
 				#endif
 
-								
+
 
 				if (ZEDGreenScreenActivated == 1) {
 					float a = (tex2D(ZEDMaskTexGreenScreen, float2(i.depthUV.x, 1 - i.depthUV.y)).a);
@@ -139,7 +143,7 @@ Properties
 
 				#endif
 				outColor.a = 0;
-				
+
 				//Normal to world pos
 				normals.rgb = mul((float3x3)unity_CameraToWorld, float3(normals)).rgb;
 				normals = normalize(normals);

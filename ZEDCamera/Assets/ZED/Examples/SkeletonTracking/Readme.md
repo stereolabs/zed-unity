@@ -20,6 +20,9 @@ Each detection holds the following info:
 - 3D Velocity - Direction and speed that the object is moving.
 - 3D Bounding Box - 3D coordinates of the eight corners that make up a box that encapsulates the object.
 - 3D Skeleton joints - 3D coordinates of the joints.
+- A structure (SkeletonFormatData) containing all the skeleton data already converted in the Unity coordinate frame.
+
+This sample is using the joints orientation sent by the ZED SDK and apply them to the corresponding bones of a 3D Model. This way, it can be animated in real-time.
 
 ## Setting Up Body tracking:
 
@@ -34,6 +37,17 @@ To make your own scene without doing any scripting, do the following:
 - Make an object with a ZEDSkeletonTrackingViewer component attached, and fill its Avatar values with the appropriate prefab in ZED -> Examples -> SkeletonTracking -> Ressources -> Prefabs. You can also disable the **Use Avatar** paramater
 to change the visualization mode and only see the skeleton. Pressing the **Space** key of your keyboard allows you to switch between Avatar and 3D skeleton mode.
 
+## Using your own 3D Model
+
+You can as well use your own 3D model in the Body tracking sample scene.
+
+  - Import your model inside Unity. Note that it **must** be rigged, otherwise you won't be able to use it.
+  - In the Import settings, set its **Animation type** to **Humanoid**.
+  - Create a prefab and add a **Animator** component on it.
+  - In the ZEDSkeletonTrackingViewer script, change the **Avatar** with the prefab you just created.
+
+
+
 ## Configuration
 
 In ZEDManager's Inspector, there is a section dedicated to Object Detection/Skeleton tracking. In it are two categories of parameters: Init and Runtime. Init parameters must be set before Object Detection is started. Runtime parameters can be adjusted whenever you want, and will be applied instantly.
@@ -41,7 +55,7 @@ In ZEDManager's Inspector, there is a section dedicated to Object Detection/Skel
 ### Initialization Parameters:
 
 - **Enable Object Tracking:** If enabled, the ZED SDK will track objects between frames, providing more accurate data and giving access to more information, such as velocity.
-- **Enable Body Fitting**
+- **Enable Body Fitting** Enable the body fitting. **Must** be enabled in order to animate 3D Models.
 
 ### Runtime Parameters:
 

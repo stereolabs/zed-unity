@@ -24,7 +24,7 @@ namespace sl
 		CAMERA_ID_01,
 		CAMERA_ID_02,
 		CAMERA_ID_03,
-		CAMERA_ID_04,
+		CAMERA_ID_04
 	};
 
 
@@ -1426,8 +1426,8 @@ namespace sl
             this.enableImageEnhancement = true;
             this.optionalOpencvCalibrationFile = "";
         }
-
     }
+
     /// <summary>
     /// List of available coordinate systems. Left-Handed, Y Up is recommended to stay consistent with Unity.
     /// consistent with Unity.
@@ -1569,8 +1569,6 @@ namespace sl
 		USB_DEVICE_STEREOLABS
 	};
 
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////  Object Detection /////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1636,6 +1634,10 @@ namespace sl
         [MarshalAs(UnmanagedType.U1)]
         public bool enableBodyFitting;
         /// <summary>
+        /// Body Format. BODY_FORMAT.POSE_32 automatically enables body fitting.
+        /// </summary>
+        public sl.BODY_FORMAT bodyFormat;
+        /// <summary>
         /// Defines a upper depth range for detections.
         /// Defined in  UNIT set at  sl.Camera.Open.
         /// Default value is set to sl.Initparameters.depthMaximumDistance (can not be higher).
@@ -1671,6 +1673,15 @@ namespace sl
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)sl.OBJECT_CLASS.LAST)]
         public int[] object_confidence_threshold;
+    };
+
+    /// <summary>
+    /// Lists of supported skeleton body model
+    /// </summary>
+    public enum BODY_FORMAT
+    {
+        POSE_18,
+        POSE_32,
     };
 
     /// <summary>
@@ -1730,12 +1741,12 @@ namespace sl
         /// <summary>
         /// The 2D position of skeleton joints
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
         public Vector2[] skeletonJointPosition2D;// 2D position of the joints of the skeleton
         /// <summary>
         /// The 3D position of skeleton joints
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
         public Vector3[] skeletonJointPosition;// 3D position of the joints of the skeleton
 
         // Full covariance matrix for position (3x3). Only 6 values are necessary
@@ -1743,15 +1754,31 @@ namespace sl
         // [p1, p3, p4]
         // [p2, p4, p5]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-        public float[] position_covariance;// covariance matrix of the 3d position, represented by its upper triangular matrix value
+        public float[] positionCovariance;// covariance matrix of the 3d position, represented by its upper triangular matrix value
 
         /// <summary>
         ///  Per keypoint detection confidence, can not be lower than the ObjectDetectionRuntimeParameters.detection_confidence_threshold.
         ///  Not available with DETECTION_MODEL.MULTI_CLASS_BOX.
         ///  in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
-        public float[] keypoint_confidence;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public float[] keypointConfidence;
+
+        /// <summary>
+        /// Global position per joint in the coordinate frame of the requested skeleton format.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public Vector3[] localPositionPerJoint;
+        /// <summary>
+        /// Local orientation per joint in the coordinate frame of the requested skeleton format.
+        /// The orientation is represented by a quaternion.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public Quaternion[] localOrientationPerJoint;
+        /// <summary>
+        /// Global root position.
+        /// </summary>
+        public Quaternion globalRootOrientation;
     };
 
 
@@ -1804,7 +1831,8 @@ namespace sl
         ANIMAL = 3,
         ELECTRONICS = 4,
         FRUIT_VEGETABLE = 5,
-        LAST = 6
+        SPORT = 6,
+        LAST = 7
     };
 
     /// <summary>
@@ -2017,6 +2045,4 @@ namespace sl
         /// </summary>
         public float[,] keypointConfidences = new float[(int)Constant.MAX_BATCH_SIZE, 18];
     }
-
-
 }// end namespace sl
