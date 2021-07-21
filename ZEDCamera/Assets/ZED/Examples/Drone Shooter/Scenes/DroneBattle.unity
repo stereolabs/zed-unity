@@ -507,7 +507,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 607298962}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e14eefa25813a3489cc8b38d2027ac8, type: 3}
   m_Name:
@@ -644,6 +644,11 @@ MonoBehaviour:
   correctControllerDrift: 1
   SNHolder:
   zedManager: {fileID: 1344833222}
+  fireButton: 2
+  clickButton: 2
+  backButton: 8
+  grabButton: 3
+  navigateUIAxis: 10
   onFireDown:
     m_PersistentCalls:
       m_Calls: []
@@ -1102,13 +1107,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1320592374}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0.40821788, y: 0.23456976, z: -0.10938167, w: 0.8754261}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 50, y: 30, z: 0}
 --- !u!114 &1344833222 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
@@ -1383,6 +1388,11 @@ MonoBehaviour:
   correctControllerDrift: 1
   SNHolder:
   zedManager: {fileID: 1344833222}
+  fireButton: 2
+  clickButton: 2
+  backButton: 8
+  grabButton: 3
+  navigateUIAxis: 10
   onFireDown:
     m_PersistentCalls:
       m_Calls: []
@@ -1573,6 +1583,10 @@ PrefabInstance:
     - target: {fileID: 4723432349376882, guid: 7a5f9c3559310d741bc7b70ccea08ada, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114844496607303746, guid: 7a5f9c3559310d741bc7b70ccea08ada, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7a5f9c3559310d741bc7b70ccea08ada, type: 3}
