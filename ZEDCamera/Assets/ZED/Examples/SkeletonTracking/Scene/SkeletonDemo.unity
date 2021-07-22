@@ -298,7 +298,7 @@ PrefabInstance:
     - target: {fileID: 20287226139793380, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: m_TargetTexture
-      value: 
+      value:
       objectReference: {fileID: 8400000, guid: e0e43b005e1a1f347b4924d258914f0b, type: 2}
     - target: {fileID: 20287226139793380, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -328,7 +328,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: inputType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -388,7 +388,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: svoInputFileName
-      value: D:/SVO/lotsofmoves.svo
+      value:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -597,7 +597,7 @@ PrefabInstance:
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
         type: 3}
       propertyPath: Avatar
-      value: 
+      value:
       objectReference: {fileID: 6726762613959325157, guid: 33f647073f764014ea539028af802721,
         type: 3}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
@@ -608,12 +608,12 @@ PrefabInstance:
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
         type: 3}
       propertyPath: viewCamera
-      value: 
+      value:
       objectReference: {fileID: 1394870590}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
         type: 3}
       propertyPath: zedManager
-      value: 
+      value:
       objectReference: {fileID: 1786428179}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
         type: 3}
@@ -654,8 +654,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 441482e8936e35048a1dffac814e3ef8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_Profile: {fileID: 0}
   m_StaticLightingSkyUniqueID: 0
   m_SkySettings: {fileID: 0}
@@ -851,8 +851,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1001 &6360354422455212558
 PrefabInstance:
   m_ObjectHideFlags: 0

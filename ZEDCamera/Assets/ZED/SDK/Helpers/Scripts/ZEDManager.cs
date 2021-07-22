@@ -3010,7 +3010,6 @@ public class ZEDManager : MonoBehaviour
         }
 
         int sn = zedCamera.GetZEDSerialNumber();
-        Debug.Log("SN : " + sn);
         CloseManager();
 
         bool isCameraAvailable = false;

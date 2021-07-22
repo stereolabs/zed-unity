@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_2019_3_OR_NEWER
+using UnityEngine.XR;
+#endif
 
 /// <summary>
 /// Fires a laser when the user issues a command. 
@@ -49,9 +52,6 @@ public class LaserGun : MonoBehaviour
     /// </summary>
     private ZEDControllerTracker_DemoInputs objecttracker;
 
-#if ZED_OCULUS
-    private int fireCount = 0;
-#endif
 
     IEnumerator Start()
     {
@@ -90,6 +90,7 @@ public class LaserGun : MonoBehaviour
 #if ZED_OCULUS
             if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
                 yield break;
+
 #endif
             // If it got here then there's no VR Controller connected
             int children = transform.childCount;
@@ -112,7 +113,7 @@ public class LaserGun : MonoBehaviour
                     {
                         for (int i = 0; i < children; ++i)
                             transform.GetChild(i).gameObject.SetActive(false);
-
+                        
                         this.enabled = false;
                         yield break;
                     }
