@@ -563,19 +563,14 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         if (eyes.Count > 0) // if a headset is detected
         {
             var eye = eyes[0];
-            eye.TryGetFeatureValue(CommonUsages.leftEyePosition, out Vector3 leftEyePosition);
-            eye.TryGetFeatureValue(CommonUsages.leftEyeRotation, out Quaternion leftEyeRotation);
-            eye.TryGetFeatureValue(CommonUsages.rightEyePosition, out Vector3 rightEyePosition);
-            eye.TryGetFeatureValue(CommonUsages.rightEyeRotation, out Quaternion rightEyeRotation);
+            eye.TryGetFeatureValue(CommonUsages.centerEyePosition, out Vector3 centerEyePosition);
+            eye.TryGetFeatureValue(CommonUsages.centerEyeRotation, out Quaternion centerEyeRotation);
 
-            finalLeftEye.transform.localPosition = leftEyePosition;
-            finalLeftEye.transform.localRotation = leftEyeRotation;
-            finalRightEye.transform.localPosition = rightEyePosition;
-            finalRightEye.transform.localRotation = rightEyeRotation;
+            finalCenterEye.transform.localPosition = centerEyePosition;
+            finalCenterEye.transform.localRotation = centerEyeRotation;
         }
 #endif
-
-        Quaternion r;
+        
         //Modified code to ensure view in HMD does not play like a movie screen
         if (manager.inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO || manager.inputType == sl.INPUT_TYPE.INPUT_TYPE_STREAM)
         {
