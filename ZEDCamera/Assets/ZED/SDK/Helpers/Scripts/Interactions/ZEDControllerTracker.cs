@@ -167,6 +167,9 @@ public class ZEDControllerTracker : MonoBehaviour
     /// </summary>
     protected virtual void Awake()
     {
+#if ZED_STEAM_VR
+        openvrsystem = OpenVR.System;
+#endif
         poseData.Clear(); //Reset the dictionary.
         poseData.Add(1, new List<TimedPoseData>()); //Create the list within the dictionary with its key and value.
         //Looking for the loaded device
@@ -196,7 +199,7 @@ public class ZEDControllerTracker : MonoBehaviour
     {
 #if ZED_OCULUS //Used only if the Oculus Integration plugin is detected. 
         //Check if the VR headset is connected.
-        if (OVRManager.isHmdPresent && loadeddevice == "Oculus")
+        if (OVRManager.isHmdPresent && loadeddevice.ToString().ToLower().Contains("oculus"))
         {
             if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
             {
@@ -237,7 +240,7 @@ public class ZEDControllerTracker : MonoBehaviour
         timerSteamVR = 0f;
 
         //Checks if a device has been assigned
-        if (index == EIndex.None && loadeddevice == "OpenVR")
+        if (index == EIndex.None && loadeddevice.Contains("OpenVR"))
         {
             //We look for any device that has "tracker" in its 3D model mesh name.
             //We're doing this since the device ID changes based on how many devices are connected to SteamVR.
@@ -384,11 +387,14 @@ public class ZEDControllerTracker : MonoBehaviour
         //Update position. 
         if (index > EIndex.Hmd)
         {
-            ETrackingUniverseOrigin tracktype = OpenVR.Compositor.GetTrackingSpace();
-            TrackedDevicePose_t[] absoluteposes = new TrackedDevicePose_t[16];
-            openvrsystem.GetDeviceToAbsoluteTrackingPose(tracktype, 0, absoluteposes);
-            TrackedDevicePose_t newposes = absoluteposes[(int)index];
-            OnNewPoses(newposes);
+            if (OpenVR.Compositor != null){
+                ETrackingUniverseOrigin tracktype = OpenVR.Compositor.GetTrackingSpace();
+                TrackedDevicePose_t[] absoluteposes = new TrackedDevicePose_t[16];
+                openvrsystem.GetDeviceToAbsoluteTrackingPose(tracktype, 0, absoluteposes);
+                TrackedDevicePose_t newposes = absoluteposes[(int)index];
+
+                OnNewPoses(newposes);
+            }
         }
 
         //We need to check for this always in case the user uses the deprecated GetVRButton methods. 
@@ -522,7 +528,8 @@ public class ZEDControllerTracker : MonoBehaviour
                             //Compensate for positional drift by measuring the distance between HMD and ZED rig root (the head's center). 
 #if UNITY_2019_3_OR_NEWER
                             InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
-                            head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 zedhmdposoffset);
+                            head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 headPosition);
+                            Vector3 zedhmdposoffset = zedRigRoot.position - headPosition;
 #else
                             Vector3 zedhmdposoffset = zedRigRoot.position - InputTracking.GetLocalPosition(XRNode.Head);
 #endif

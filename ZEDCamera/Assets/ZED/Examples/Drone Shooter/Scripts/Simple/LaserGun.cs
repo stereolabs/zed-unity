@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_2019_3_OR_NEWER
+using UnityEngine.XR;
+#endif
 
 /// <summary>
 /// Fires a laser when the user issues a command. 
@@ -48,10 +51,6 @@ public class LaserGun : MonoBehaviour
     /// The gameobject's controller for tracking and input.
     /// </summary>
     private ZEDControllerTracker_DemoInputs objecttracker;
-
-#if ZED_OCULUS
-    private int fireCount = 0;
-#endif
 
     IEnumerator Start()
     {

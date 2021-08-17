@@ -816,7 +816,7 @@ namespace sl
         /// </summary>
         public static bool CheckPlugin()
         {
-            /*try
+            try
             {
                 int res = dllz_check_plugin(PluginVersion.Major, PluginVersion.Minor);
                 if (res!= 0)
@@ -832,7 +832,7 @@ namespace sl
                 Debug.LogError(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_DEPENDENCIES_ISSUE));
                 return false;
             }
-            */
+            
             pluginIsReady = true;
             return true;
         }

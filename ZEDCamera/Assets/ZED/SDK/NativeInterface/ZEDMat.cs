@@ -1,6 +1,7 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 using System;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 /// <summary>
 /// This file holds the ZEDMat class along with low-level structures used for passing data between 

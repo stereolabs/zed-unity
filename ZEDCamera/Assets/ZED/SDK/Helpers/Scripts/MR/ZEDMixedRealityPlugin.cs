@@ -553,7 +553,26 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 		if (!manager.IsStereoRig) 
 			return; //Make sure we're in pass-through AR mode. 
 
-		Quaternion r;
+#if UNITY_2019_3_OR_NEWER
+        List<InputDevice> eyes = new List<InputDevice>();
+        InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.HeadMounted, eyes);
+
+        if (eyes.Count > 0) // if a headset is detected
+        {
+            var eye = eyes[0];
+            eye.TryGetFeatureValue(CommonUsages.leftEyePosition, out Vector3 leftEyePosition);
+            eye.TryGetFeatureValue(CommonUsages.leftEyeRotation, out Quaternion leftEyeRotation);
+            eye.TryGetFeatureValue(CommonUsages.rightEyePosition, out Vector3 rightEyePosition);
+            eye.TryGetFeatureValue(CommonUsages.rightEyeRotation, out Quaternion rightEyeRotation);
+
+            finalLeftEye.transform.localPosition = leftEyePosition;
+            finalLeftEye.transform.localRotation = leftEyeRotation;
+            finalRightEye.transform.localPosition = rightEyePosition;
+            finalRightEye.transform.localRotation = rightEyeRotation;
+        }
+#endif
+
+        Quaternion r;
         //r = latencyPose.rotation;
 
         if (manager.inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO || manager.inputType == sl.INPUT_TYPE.INPUT_TYPE_STREAM)
