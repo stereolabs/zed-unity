@@ -98,14 +98,13 @@ public class ZEDToOpenCVRetriever : MonoBehaviour
 
     private void Awake()
     {
-        _instance = this; //Singleton implementation. 
+        _instance = this; //Singleton implementation.
+        if (!zedManager) zedManager = FindObjectOfType<ZEDManager>();
     }
 
     // Use this for initialization
     void Start ()
     {
-        if (!zedManager) zedManager = FindObjectOfType<ZEDManager>();
-
         //We can't call initialize() now, because it needs the ZED's projection matrix to build an OpenCV Mat of it. 
         //So we wait until OnZEDReady is called. Then we can get the ZED's calibration parameters. 
         zedManager.OnZEDReady += Initialize;

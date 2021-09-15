@@ -208,6 +208,29 @@ namespace sl
         public float relativeAltitude;
     };
 
+    public enum HEADING_STATE
+    {
+        /// <summary>
+        /// The heading is reliable and not affected by iron interferences.
+        /// </summary>
+        GOOD,
+        /// <summary>
+        /// The heading is reliable, but affected by slight iron interferences.
+        /// </summary>
+        OK,
+        /// <summary>
+        /// The heading is not reliable because affected by strong iron interferences.
+        /// </summary>
+        NOT_GOOD,
+        /// <summary>
+        /// The magnetometer has not been calibrated.
+        /// </summary>
+        NOT_CALIBRATED,
+        /// <summary>
+        /// The magnetomer sensor is not available.
+        /// </summary>
+        MAG_NOT_AVAILABLE
+    };
 
     [StructLayout(LayoutKind.Sequential)]
     public struct MagnetometerData
@@ -229,7 +252,24 @@ namespace sl
         /// Magnetic field raw values in uT
         /// </summary>        
         public Vector3 magneticFieldUncalibrated;
-     };
+        /// <summary>
+        /// The camera heading in degrees relative to the magnetic North Pole.
+        /// note: The magnetic North Pole has an offset with respect to the geographic North Pole, depending on the
+        /// geographic position of the camera.
+        /// To get a correct magnetic heading the magnetometer sensor must be calibrated using the ZED Sensor Viewer tool
+        /// </summary>
+        public float magneticHeading;
+        /// <summary>
+        /// The state of the /ref magnetic_heading value
+        /// </summary>
+        public HEADING_STATE magnetic_heading_state;
+        /// <summary>
+        /// The accuracy of the magnetic heading measure in the range [0.0,1.0].
+        /// A negative value means that the magnetometer must be calibrated using the ZED Sensor Viewer tool
+        /// </summary>
+        public float magnetic_heading_accuracy;
+
+    };
 
 
     [StructLayout(LayoutKind.Sequential)]
@@ -454,6 +494,14 @@ namespace sl
         /// contains translation between IMU frame and camera frame.
         /// </summary>
         public float3 camera_imu_translation;
+        /// <summary>
+        /// Magnetometer to IMU rotation. contains rotation between IMU frame and magnetometer frame.
+        /// </summary>
+        public float4 imu_magnometer_rotation;
+        /// <summary>
+        /// Magnetometer to IMU translation. contains translation between IMU frame and magnetometer frame.
+        /// </summary>
+        public float3 imu_magnometer_translation;
         /// <summary>
         /// Configuration of the accelerometer device.
         /// </summary>
@@ -1691,8 +1739,22 @@ namespace sl
     [StructLayout(LayoutKind.Sequential)]
     public struct ObjectDataSDK
     {
-        //public int valid; //is Data Valid
-        public int id; //person ID
+        /// <summary>
+        /// Object identification number, used as a reference when tracking the object through the frames.
+        /// </summary>
+        public int id; 
+        /// <summary>
+        ///Unique ID to help identify and track AI detections. Can be either generated externally, or using \ref ZEDCamera.generateUniqueId() or left empty
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 37)]
+        public string uniqueObjectId;
+        /// <summary>
+        ///  Object label, forwarded from \ref CustomBoxObjects when using DETECTION_MODEL.CUSTOM_BOX_OBJECTS
+        /// </summary>
+        public int rawLabel;
+        /// <summary>
+        /// Object category. Identify the object type.
+        /// </summary>
         public sl.OBJECT_CLASS objectClass;
         public sl.OBJECT_SUBCLASS objectSubClass;
         public sl.OBJECT_TRACK_STATE objectTrackingState;
@@ -1781,7 +1843,34 @@ namespace sl
         public Quaternion globalRootOrientation;
     };
 
-
+    /// <summary>
+    /// Container to store the externally detected objects. The objects can be ingested using IngestCustomBoxObjects() function to extract 3D information and tracking over time.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CustomBoxObjectData
+    {
+        /// <summary>
+        ///Unique ID to help identify and track AI detections. Can be either generated externally, or using \ref ZEDCamera.generateUniqueId() or left empty
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 37)]
+        public string uniqueObjectID;
+        /// <summary>
+        /// 2D bounding box represented as four 2D points starting at the top left corner and rotation clockwise.
+        /// </summary>
+        ///  0 ------- 1
+        ///  |   obj   |
+        ///  3-------- 2
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public Vector2[] boundingBox2D;
+        /// <summary>
+        /// Object label, this information is passed-through and can be used to improve object tracking
+        /// </summary>
+        public int label;
+        /// <summary>
+        /// Detection confidence. Should be [0-1]. It can be used to improve the object tracking
+        /// </summary>
+        public float probability;
+    }
 
     /// <summary>
     /// Object Scene data directly from the ZED SDK. Represents all detections given during a single image frame. 
@@ -1866,7 +1955,9 @@ namespace sl
         APPLE = 19,
         ORANGE = 20,
         CARROT = 21,
-        LAST = 22
+        PERSON_HEAD = 22,
+        SPORTSBALL = 23,
+        LAST = 24
     };
 
     /// <summary>
@@ -1915,6 +2006,14 @@ namespace sl
         /// Keypoints based, specific to human skeleton, real time performance even on Jetson or low end GPU cards.
         /// </summary>
         HUMAN_BODY_MEDIUM,
+        /// <summary>
+        ///  Bounding Box detector specialized in person heads, particulary well suited for crowded environement, the person localization is also improved
+        /// </summary>
+        PERSON_HEAD_BOX,
+        /// <summary>
+        /// For external inference, using your own custom model and/or frameworks. This mode disable the internal inference engine, the 2D bounding box detection must be provided
+        /// </summary>
+        CUSTOM_BOX_OBJECTS
     };
 
 

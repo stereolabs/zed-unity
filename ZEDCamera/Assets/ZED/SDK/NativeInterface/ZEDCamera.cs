@@ -310,6 +310,9 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_find_usb_device")]
         private static extern bool dllz_find_usb_device(USB_DEVICE dev);
 
+        [DllImport(nameDll, EntryPoint = "sl_generate_unique_id")]
+        private static extern int dllz_generate_unique_id([In, Out] byte[] id);
+
         /*
           * Create functions
           */
@@ -445,10 +448,10 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_get_camera_imu_transform")]
         private static extern void dllz_get_camera_imu_transform(int cameraID, out Vector3 translation, out Quaternion rotation);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_image_timestamp")]
+        [DllImport(nameDll, EntryPoint = "sl_get_camera_timestamp")]
         private static extern ulong dllz_get_image_timestamp(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_camera_timestamp")]
+        [DllImport(nameDll, EntryPoint = "sl_get_current_Timestamp")]
         private static extern ulong dllz_get_current_timestamp(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_frame_dropped_count")]
@@ -528,7 +531,7 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_transform_pose")]
         private static extern void dllz_transform_pose(ref Quaternion quaternion, ref Vector3 translation, ref Quaternion targetQuaternion, ref Vector3 targetTranslation);
 
-        [DllImport(nameDll, EntryPoint = "sl_reset_tracking")]
+        [DllImport(nameDll, EntryPoint = "sl_reset_positional_tracking")]
         private static extern int dllz_reset_tracking(int cameraID, Quaternion rotation, Vector3 translation);
 
         [DllImport(nameDll, EntryPoint = "sl_reset_tracking_with_offset")]
@@ -643,6 +646,9 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_pause_objects_detection")]
         private static extern void dllz_pause_objects_detection(int cameraID, bool status);
+
+        [DllImport(nameDll, EntryPoint = "sl_ingest_custom_box_objects")]
+        private static extern int dllz_ingest_custom_box_objects(int cameraID, int nb_objects, CustomBoxObjectData[] objects_in);
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_objects")]
         private static extern int dllz_retrieve_objects_data(int cameraID, ref dll_ObjectDetectionRuntimeParameters od_params, ref ObjectsFrameSDK objFrame);
@@ -809,6 +815,14 @@ namespace sl
         public static void TransformPose(ref Quaternion quaternion, ref Vector3 translation, ref Quaternion targetQuaternion, ref Vector3 targetTranslation)
         {
             dllz_transform_pose(ref quaternion, ref translation, ref targetQuaternion, ref targetTranslation);
+        }
+
+        public static string GenerateUniqueID()
+        {
+            byte[] array = new byte[37];
+            int size = dllz_generate_unique_id(array);
+
+            return new string(System.Text.Encoding.ASCII.GetChars(array));
         }
 
         /// <summary>
@@ -2612,6 +2626,13 @@ namespace sl
                 dllz_pause_objects_detection(CameraID, status);
             }
         }
+
+
+        public sl.ERROR_CODE IngestCustomBoxObjects(List<CustomBoxObjectData> objects_in)
+        {
+            return (sl.ERROR_CODE)dllz_ingest_custom_box_objects(CameraID, objects_in.Count, objects_in.ToArray());
+        }
+
 
         /// <summary>
         /// Retrieve object detection data 

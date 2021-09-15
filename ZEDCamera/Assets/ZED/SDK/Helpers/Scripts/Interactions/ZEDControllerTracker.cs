@@ -8,6 +8,7 @@ using Valve.VR;
 using UnityEditor;
 #endif
 
+
 /// <summary>
 /// Causes the GameObject it's attached to to position itself where a tracked VR object is, such as 
 /// a Touch controller or Vive Tracker, but compensates for the ZED's latency. This way, virtual
@@ -104,10 +105,7 @@ public class ZEDControllerTracker : MonoBehaviour
     {
         RightController,
         LeftController,
-
-#if ZED_STEAM_VR
         ViveTracker,
-#endif
         Hmd,
     };
 
@@ -252,6 +250,7 @@ public class ZEDControllerTracker : MonoBehaviour
                 {
                     var result = new System.Text.StringBuilder((int)64);
                     OpenVR.System.GetStringTrackedDeviceProperty(i, ETrackedDeviceProperty.Prop_RenderModelName_String, result, 64, ref error);
+
                     if (result.ToString().Contains("tracker"))
                     {
                         index = (EIndex)i;
@@ -296,7 +295,14 @@ public class ZEDControllerTracker : MonoBehaviour
                     {
                         //If a device with the same Serial Number is found, then change the device to track of this script.
                         var chsnresult = new System.Text.StringBuilder((int)64);
-                        OpenVR.System.GetStringTrackedDeviceProperty((uint)i, ETrackedDeviceProperty.Prop_SerialNumber_String, chsnresult, 64, ref snerror);
+                        OpenVR.System.GetStringTrackedDeviceProperty((uint)i, ETrackedDeviceProperty.Prop_RenderModelName_String, snresult, 64, ref snerror);
+
+                        if (snresult.ToString().Contains("tracker"))
+                        {
+                            index = (EIndex)i;
+                            OpenVR.System.GetStringTrackedDeviceProperty((uint)i, ETrackedDeviceProperty.Prop_SerialNumber_String, snresult, 64, ref snerror);
+                        }
+
                         if (snresult.ToString().Contains(SNHolder))
                         {
                             index = (EIndex)i;
@@ -522,7 +528,7 @@ public class ZEDControllerTracker : MonoBehaviour
 
                         //Add drift correction, but only if the user hasn't disabled it, it's on an actual controller, and the zedRigRoot position won't be affected.
                         if (correctControllerDrift == true &&
-                            (deviceToTrack == Devices.LeftController || deviceToTrack == Devices.RightController) &&
+                            (deviceToTrack == Devices.LeftController || deviceToTrack == Devices.RightController || deviceToTrack == Devices.ViveTracker) &&
                             (zedManager != null && zedManager.IsStereoRig == true && !zedManager.transform.IsChildOf(transform)))
                         {
                             //Compensate for positional drift by measuring the distance between HMD and ZED rig root (the head's center). 

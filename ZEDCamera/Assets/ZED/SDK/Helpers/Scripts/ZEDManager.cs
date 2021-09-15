@@ -1701,7 +1701,7 @@ public class ZEDManager : MonoBehaviour
             //StopObjectDetection();
         }
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
         ClearRendering();
 #endif
 
@@ -1733,7 +1733,7 @@ public class ZEDManager : MonoBehaviour
         sl.ZEDCamera.UnloadInstance((int)cameraID);
     }
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
     private void ClearRendering()
     {
         if (camLeftTransform != null)
@@ -1754,7 +1754,6 @@ public class ZEDManager : MonoBehaviour
 
     }
 #endif
-
 
     /// <summary>
     /// Sets up starting properties and starts the ZED initialization co-routine. 
@@ -1886,7 +1885,6 @@ public class ZEDManager : MonoBehaviour
         //Create Module Object
         //Create the spatial mapping module object (even if not used necessarly)
         spatialMapping = new ZEDSpatialMapping(transform, this);
-
     }
 
     void Start()
@@ -2250,7 +2248,6 @@ public class ZEDManager : MonoBehaviour
         }
         else if (estimateInitialPosition)
         {
-            Debug.Log("TOTO");
             sl.ERROR_CODE err = zedCamera.EstimateInitialPosition(ref initialRotation, ref initialPosition);
             if (zedCamera.GetCameraModel() != sl.MODEL.ZED)
                 zedCamera.GetInternalIMUOrientation(ref initialRotation, sl.TIME_REFERENCE.IMAGE);
@@ -2481,6 +2478,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
 	void Update()
     {
+
         //Check if ZED is disconnected; invoke event and call function if so. 
         if (isDisconnected)
         {
@@ -2711,7 +2709,8 @@ public class ZEDManager : MonoBehaviour
             od_param.enable2DMask = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
             od_param.maxRange = maxRange;
-            if (bodyFormat == sl.BODY_FORMAT.POSE_32 && bodyFitting == false)
+            if (bodyFormat == sl.BODY_FORMAT.POSE_32 && bodyFitting == false && (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
+                                                                                || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST))
             {
                 Debug.LogWarning("sl.BODY_FORMAT.POSE_32 is chosen, Skeleton Tracking will automatically enable body fitting");
                 bodyFitting = true;
@@ -2833,9 +2832,7 @@ public class ZEDManager : MonoBehaviour
     private void RetrieveObjectDetectionFrame()
     {
         sl.ObjectsFrameSDK oframebuffer = new sl.ObjectsFrameSDK();
-
         sl.ERROR_CODE res = zedCamera.RetrieveObjectsDetectionData(ref od_runtime_params, ref oframebuffer);
-
         if (res == sl.ERROR_CODE.SUCCESS && oframebuffer.isNew != 0)
         {
             if (objectDetection2DMask)
@@ -2844,7 +2841,15 @@ public class ZEDManager : MonoBehaviour
                 for (int i = 0; i < objectsFrameSDK.numObject; i++)
                 {
                     sl.ZEDMat oldmat = new sl.ZEDMat(objectsFrameSDK.objectData[i].mask);
-                    oldmat.Free();
+                    //oldmat.Free();
+                }
+                for (int i = 0; i < oframebuffer.numObject; i++)
+                {
+                    sl.ZEDMat maskMat = new sl.ZEDMat(oframebuffer.objectData[i].mask);
+                    int width = maskMat.GetWidth(); //Shorthand. 
+                    int height = maskMat.GetHeight();
+
+                    Debug.Log("width " + width + " / height : " + height);
                 }
             }
 

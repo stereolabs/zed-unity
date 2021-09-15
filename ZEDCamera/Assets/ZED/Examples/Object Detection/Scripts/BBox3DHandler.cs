@@ -96,7 +96,7 @@ public class BBox3DHandler : MonoBehaviour
     /// <summary>
     /// ID of the object that this instance is currently representing.
     /// </summary>
-    private int currentID = -1;
+    private string currentID = "";
     /// <summary>
     /// Distance from this object to the ZED camera that detected it.
     /// </summary>
@@ -164,7 +164,7 @@ public class BBox3DHandler : MonoBehaviour
     /// Sets the ID value that will be displayed on the box's label. 
     /// Usually set when the box first starts representing a detected object. 
     /// </summary>
-    public void SetID(int id)
+    public void SetID(string id)
     {
         currentID = id;
         UpdateText(currentID, currentDistance);
@@ -260,7 +260,7 @@ public class BBox3DHandler : MonoBehaviour
     /// <summary>
     /// Updates the text in the label based on the given ID and distance values. 
     /// </summary>
-    private void UpdateText(int id, float dist)
+    private void UpdateText(string id, float dist)
     {
         string newtext = "";
         if (showID) newtext += "ID: " + id.ToString();

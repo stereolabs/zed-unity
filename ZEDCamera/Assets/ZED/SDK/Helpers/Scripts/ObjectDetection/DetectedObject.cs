@@ -278,7 +278,6 @@ public class DetectedObject
         float xsize = Mathf.Abs(righttopfront.x - leftbottomback.x);
         float ysize = Mathf.Abs(righttopfront.y - leftbottomback.y);
         float zsize = Mathf.Abs(righttopfront.z - leftbottomback.z);
-
         return new Bounds(Vector3.zero, new Vector3(xsize, ysize, zsize));
     }
 
@@ -391,9 +390,9 @@ public class DetectedObject
         int width = zedmat.GetWidth(); //Shorthand. 
         int height = zedmat.GetHeight();
 
-
+        Debug.Log("width " + width + " / height : " + height);
         IntPtr maskpointer = zedmat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
-        if (maskpointer != IntPtr.Zero && zedmat.IsInit())
+        if (maskpointer != IntPtr.Zero && zedmat.IsInit() && width > 0 && height > 0)
         {
             byte[] texbytes = new byte[zedmat.GetStepBytes() * height];
 
