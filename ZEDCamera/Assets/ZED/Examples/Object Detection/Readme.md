@@ -83,8 +83,9 @@ For that, we are using the Yolov4-tiny model as an external detector.
 Note that the custom object detection sample requires the OpenCV package, you can find it [here](https://assetstore.unity.com/packages/tools/integration/opencv-for-unity-21088).
 A free version is available, but you won’t be able to build a standalone app.
 
+Note : To download dnn models from OpenCV, take a look at the **setup_dnn.pdf** documentation in OpenCVForUnity/StreamingAssets/dnn/.
+
 The **ZEDCustomObjDetection.Cs** contains all the code necessary for the processing of the data.
-Regarding the display part of the sample, we are using the same code as the 3D object Detection sample.
 
 ### Parameters:
 
@@ -94,3 +95,5 @@ Regarding the display part of the sample, we are using the same code as the 3D o
 - **classesList**: Optional : Filter out all other classes. Only keep displayed this list of classes.
 - **confThreshold**: Confidence threshold.
 - **nmsThreshold**: Non-maximum suppression threshold."
+
+
