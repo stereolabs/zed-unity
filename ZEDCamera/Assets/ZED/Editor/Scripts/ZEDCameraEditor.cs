@@ -780,12 +780,14 @@ public class ZEDCameraEditor : Editor
 
             EditorGUI.indentLevel--;
             GUILayout.Space(10);
-            EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
-            GUILayout.Space(5);
-            EditorGUI.indentLevel++;
+
 
             if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
             {
+
+                EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
+                GUILayout.Space(5);
+                EditorGUI.indentLevel++;
 
                 GUIContent OD_personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
@@ -835,14 +837,23 @@ public class ZEDCameraEditor : Editor
             }
             else if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.PERSON_HEAD_BOX)
             {
+
+                EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
+                GUILayout.Space(5);
+                EditorGUI.indentLevel++;
+
                 GUIContent OD_personDetectionConfidenceThresholdLabel = new GUIContent("Person head Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
                 OD_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(OD_personDetectionConfidenceThresholdLabel, OD_PersonDetectionConfidence.intValue, 1, 99);
             }
             else if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.CUSTOM_BOX_OBJECTS) { 
             }
-            else
+            else //SKELETON
             {
+                EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
+                GUILayout.Space(5);
+                EditorGUI.indentLevel++;
+
                 GUIContent SK_personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
                 SK_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(SK_personDetectionConfidenceThresholdLabel, SK_PersonDetectionConfidence.intValue, 1, 99);

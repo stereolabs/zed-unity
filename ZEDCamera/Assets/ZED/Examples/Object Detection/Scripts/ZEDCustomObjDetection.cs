@@ -103,7 +103,7 @@ public class ZEDCustomObjDetection : MonoBehaviour
             classNames = readClassNames(classes);
             if (classNames == null)
             {
-                Debug.LogError(classes + " is not loaded. Please see \"StreamingAssets/dnn/setup_dnn_module.pdf\". ");
+                Debug.LogError("Classes file is not loaded. Please see \"StreamingAssets/dnn/setup_dnn_module.pdf\". ");
             }
         }
         else if (classesFilter.Count > 0)
@@ -113,7 +113,11 @@ public class ZEDCustomObjDetection : MonoBehaviour
 
         if (string.IsNullOrEmpty(model))
         {
-            Debug.LogError(model + " is not loaded. Please see \"StreamingAssets/dnn/setup_dnn_module.pdf\". ");
+            Debug.LogError("Model file is not loaded. Please see \"StreamingAssets/dnn/setup_dnn_module.pdf\". ");
+        }
+        else if (string.IsNullOrEmpty(config))
+        {
+            Debug.LogError("Config file is not loaded. Please see \"StreamingAssets/dnn/setup_dnn_module.pdf\". ");
         }
         else
         {

@@ -390,13 +390,13 @@ public class DetectedObject
         int width = zedmat.GetWidth(); //Shorthand. 
         int height = zedmat.GetHeight();
 
-        Debug.Log("width " + width + " / height : " + height);
         IntPtr maskpointer = zedmat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
         if (maskpointer != IntPtr.Zero && zedmat.IsInit() && width > 0 && height > 0)
         {
             byte[] texbytes = new byte[zedmat.GetStepBytes() * height];
+            //Debug.Log(zedmat.GetStepBytes()+ " infos : " + zedmat.GetInfos());
+            System.Runtime.InteropServices.Marshal.Copy(maskpointer, texbytes, 0, texbytes.Length);
 
-            System.Runtime.InteropServices.Marshal.Copy(zedmat.GetPtr(sl.ZEDMat.MEM.MEM_CPU), texbytes, 0, texbytes.Length);
 
             if (flipYcoords)
             {

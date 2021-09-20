@@ -1682,7 +1682,7 @@ namespace sl
         [MarshalAs(UnmanagedType.U1)]
         public bool enableBodyFitting;
         /// <summary>
-        /// Body Format. BODY_FORMAT.POSE_32 automatically enables body fitting.
+        /// Body Format. BODY_FORMAT.POSE_34 automatically enables body fitting.
         /// </summary>
         public sl.BODY_FORMAT bodyFormat;
         /// <summary>
@@ -1729,7 +1729,7 @@ namespace sl
     public enum BODY_FORMAT
     {
         POSE_18,
-        POSE_32,
+        POSE_34,
     };
 
     /// <summary>
@@ -1803,12 +1803,12 @@ namespace sl
         /// <summary>
         /// The 2D position of skeleton joints
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 34)]
         public Vector2[] skeletonJointPosition2D;// 2D position of the joints of the skeleton
         /// <summary>
         /// The 3D position of skeleton joints
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 34)]
         public Vector3[] skeletonJointPosition;// 3D position of the joints of the skeleton
 
         // Full covariance matrix for position (3x3). Only 6 values are necessary
@@ -1823,19 +1823,19 @@ namespace sl
         ///  Not available with DETECTION_MODEL.MULTI_CLASS_BOX.
         ///  in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 34)]
         public float[] keypointConfidence;
 
         /// <summary>
         /// Global position per joint in the coordinate frame of the requested skeleton format.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 34)]
         public Vector3[] localPositionPerJoint;
         /// <summary>
         /// Local orientation per joint in the coordinate frame of the requested skeleton format.
         /// The orientation is represented by a quaternion.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 34)]
         public Quaternion[] localOrientationPerJoint;
         /// <summary>
         /// Global root position.
@@ -1870,6 +1870,13 @@ namespace sl
         /// Detection confidence. Should be [0-1]. It can be used to improve the object tracking
         /// </summary>
         public float probability;
+        /// <summary>
+        /// Provide hypothesis about the object movements(degrees of freedom) to improve the object tracking
+        /// true: means 2 DoF projected alongside the floor plane, the default for object standing on the ground such as person, vehicle, etc
+        /// false : 6 DoF full 3D movements are allowed
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool isGrounded;
     }
 
     /// <summary>

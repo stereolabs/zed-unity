@@ -396,7 +396,7 @@ public class ZEDManager : MonoBehaviour
     public float maxRange = 40.0f;
 
     [HideInInspector]
-    public sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.POSE_32;
+    public sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.POSE_34;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
@@ -2709,7 +2709,7 @@ public class ZEDManager : MonoBehaviour
             od_param.enable2DMask = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
             od_param.maxRange = maxRange;
-            if (bodyFormat == sl.BODY_FORMAT.POSE_32 && bodyFitting == false && (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
+            if (bodyFormat == sl.BODY_FORMAT.POSE_34 && bodyFitting == false && (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
                                                                                 || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST))
             {
                 Debug.LogWarning("sl.BODY_FORMAT.POSE_32 is chosen, Skeleton Tracking will automatically enable body fitting");
@@ -2832,6 +2832,7 @@ public class ZEDManager : MonoBehaviour
     private void RetrieveObjectDetectionFrame()
     {
         sl.ObjectsFrameSDK oframebuffer = new sl.ObjectsFrameSDK();
+
         sl.ERROR_CODE res = zedCamera.RetrieveObjectsDetectionData(ref od_runtime_params, ref oframebuffer);
         if (res == sl.ERROR_CODE.SUCCESS && oframebuffer.isNew != 0)
         {
@@ -2841,15 +2842,7 @@ public class ZEDManager : MonoBehaviour
                 for (int i = 0; i < objectsFrameSDK.numObject; i++)
                 {
                     sl.ZEDMat oldmat = new sl.ZEDMat(objectsFrameSDK.objectData[i].mask);
-                    //oldmat.Free();
-                }
-                for (int i = 0; i < oframebuffer.numObject; i++)
-                {
-                    sl.ZEDMat maskMat = new sl.ZEDMat(oframebuffer.objectData[i].mask);
-                    int width = maskMat.GetWidth(); //Shorthand. 
-                    int height = maskMat.GetHeight();
-
-                    Debug.Log("width " + width + " / height : " + height);
+                    if (oldmat.IsInit()) oldmat.Free();
                 }
             }
 

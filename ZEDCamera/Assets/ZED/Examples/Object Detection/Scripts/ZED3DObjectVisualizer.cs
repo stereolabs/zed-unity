@@ -76,7 +76,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
     /// bottom is at floor level (Y = 0) while keeping the other corners at the same place. 
     /// </summary>
     [Tooltip("If true, and transformBoxScale is also true, modifies the center and Y bounds of each detected bounding box so that its " +
-        "bottom is at floor level (Y = 0) while keeping the other corners at the same place. ")]
+        "bottom is at floor level (Y = 0) while keeping the other corners at the same place. WARNING: Estimate Initial position must be set to true.")]
     public bool transformBoxToTouchFloor = true;
     /// <summary>
     /// If true, sets the Y value of the center of the bounding box to 0. Use for bounding box prefabs meant to be centered at the user's feet. 
@@ -147,7 +147,11 @@ public class ZED3DObjectVisualizer : MonoBehaviour
         zedManager.OnObjectDetection += Visualize3DBoundingBoxes;
         zedManager.OnZEDReady += OnZEDReady;
 
-
+        if (zedManager.estimateInitialPosition == false && transformBoxToTouchFloor == true)
+        {
+            Debug.Log("Estimate initial position is set to false. Then, transformBoxToTouchFloor is disable.");
+            transformBoxToTouchFloor = false;
+        }
     }
 
     private void OnZEDReady()

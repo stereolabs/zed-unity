@@ -179,7 +179,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: inputType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -224,7 +224,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: svoInputFileName
-      value: D:/SVO/skeleton.svo
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -512,10 +512,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 476f190cf5e4a3b42af5473614db052f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: Assets/OpenCVForUnity/StreamingAssets/dnn/yolov4-tiny.weights
-  config: Assets/OpenCVForUnity/StreamingAssets/dnn/yolov4-tiny.cfg
-  classes: Assets/OpenCVForUnity/StreamingAssets/dnn/coco.names
-  classesList: []
+  model: 
+  config: 
+  classes: 
+  classesFilter: []
   confThreshold: 0.25
   nmsThreshold: 0.25
   inferenceWidth: 416
