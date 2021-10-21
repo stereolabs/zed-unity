@@ -1,5 +1,4 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
-//#define FAKEMODE
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -74,10 +73,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     [Tooltip("Smooth factor used for avatar movements and joint rotations.")]
     public float smoothFactor = 0.5f;
 
-#if FAKEMODE
-    int indexFakeTest = 0;
-#endif
-
 	public Dictionary<int,SkeletonHandler> avatarControlList;
 
     private Vector3 initialPosition;
@@ -102,9 +97,15 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         zedManager.OnObjectDetection += updateSkeletonData;
 		}
 
-        if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM)
+        if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM )
         {
             Debug.LogWarning("MULTI_CLASS_BOX model can't be used for skeleton tracking, please use either HUMAN_BODY_FAST or HUMAN_BODY_ACCURATE");
+        }
+
+        if (zedManager.bodyFormat == sl.BODY_FORMAT.POSE_18)
+        {
+            Debug.LogWarning(" BODY_FORMAT must be set to POSE_34 to animate 3D Avatars !");
+            return;
         }
     }
 
@@ -132,32 +133,8 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// </summary>
     private void updateSkeletonData(DetectionFrame dframe)
     {
-
-#if FAKEMODE
-
-        if (avatarControlList.ContainsKey(0))
-        {
-            SkeletonHandler handler = avatarControlList[0];
-            handler.setFakeTest(indexFakeTest);
-        }
-        else
-        {
-            SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
-            handler.Create(Avatar, Vector3.zero);
-            avatarControlList.Add(0, handler);
-        }
-
-
-#else
 		List<int> remainingKeyList = new List<int>(avatarControlList.Keys);
 		List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showON, showSEARCHING, showOFF);
-
-		/*if (dframe.rawObjectsFrame.detectionModel!= sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE &&
-			dframe.rawObjectsFrame.detectionModel!= sl.DETECTION_MODEL.HUMAN_BODY_FAST)
-		{
-			Debug.Log("Wrong model selected : " + dframe.rawObjectsFrame.detectionModel);
-		return;
-		}*/
 
  		foreach (DetectedObject dobj in newobjects)
         {
@@ -189,8 +166,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 			handler.Destroy();
 			avatarControlList.Remove(index);
 		}
-
-#endif
     }
 
 	public void Update()
@@ -198,6 +173,14 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             useAvatar = !useAvatar;
+            if (useAvatar)
+            {
+                if (zedManager.bodyFitting)
+                    Debug.Log("<b><color=green> Switch to Avatar mode</color></b>");
+
+            }
+            else
+                Debug.Log("<b><color=green> Switch to Skeleton mode</color></b>");
         }
 
         if (useAvatar)
@@ -209,15 +192,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         }
 
         UpdateViewCameraPosition();
-
-#if FAKEMODE
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            indexFakeTest++;
-            if (indexFakeTest == 15) indexFakeTest = 1;
-            Debug.Log(indexFakeTest);
-        }
-#endif
     }
 
 
@@ -228,31 +202,16 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// <param name="p">P.</param>
 	private void UpdateAvatarControl(SkeletonHandler handler, sl.ObjectDataSDK data, bool useAvatar)
 	{
-		Vector3 bodyCenter = data.rootWorldPosition;
+        Vector3[] worldJointsPos = new Vector3[34];
+        Quaternion[] worldJointsRot = new Quaternion[34];
 
-        if (bodyCenter == Vector3.zero)  return; // Object not detected
+        for (int i = 0; i < 34; i++)
+        {
+            worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
+            worldJointsRot[i] = data.localOrientationPerJoint[i];
+        }
 
-		Vector3[] world_joints_pos = new Vector3[20];
-		for (int i=0;i<18;i++)
-		{
-			world_joints_pos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
-		}
-
-        //Create Joint with middle position :
-        world_joints_pos[0] = (world_joints_pos[16] + world_joints_pos[17]) / 2;
-        world_joints_pos[18] = (world_joints_pos[8] + world_joints_pos[11]) / 2;
-        world_joints_pos[19] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[0]); // Add Nose Joint for skeleton vizualisation
-
-        /*
-		for (int i=0;i<19;i++)
-		Debug.Log(" jt "+i+" : "+world_joints_pos[i]);*/
-
-        Vector3 worldbodyRootPosition = zedManager.GetZedRootTansform().TransformPoint(bodyCenter);
-        if (float.IsNaN(world_joints_pos[18].y)) worldbodyRootPosition.y = 0;
-        else worldbodyRootPosition.y =  world_joints_pos[18].y - handler.SpineHeight;
-
-        handler.setControlWithJointPosition(world_joints_pos, worldbodyRootPosition, useAvatar);
-        //handler.setJointSpherePoint(world_joints_pos);
+        handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, zedManager.GetZedRootTansform().rotation * data.globalRootOrientation, useAvatar);
 
         handler.SetSmoothFactor(smoothFactor);
     }
