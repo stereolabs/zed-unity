@@ -568,14 +568,11 @@ MonoBehaviour:
   correctControllerDrift: 1
   SNHolder:
   zedManager: {fileID: 1344833222}
-<<<<<<< HEAD
   fireButton: 2
   clickButton: 2
   backButton: 8
   grabButton: 3
   navigateUIAxis: 10
-=======
->>>>>>> 6097bdfb0c1170d387b739a3a8db94da0c28fefd
   onFireDown:
     m_PersistentCalls:
       m_Calls: []
@@ -647,17 +644,7 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0
       objectReference: {fileID: 0}
-<<<<<<< HEAD
     - target: {fileID: 114228649437443144, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 3}
-=======
-    - target: {fileID: 82186411301053428, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114228649437443144, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
-        type: 3}
->>>>>>> 6097bdfb0c1170d387b739a3a8db94da0c28fefd
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
@@ -848,10 +835,6 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
-<<<<<<< HEAD
-  m_RayTraceProcedural: 0
-=======
->>>>>>> 6097bdfb0c1170d387b739a3a8db94da0c28fefd
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -876,10 +859,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-<<<<<<< HEAD
-  m_AdditionalVertexStreams: {fileID: 0}
-=======
->>>>>>> 6097bdfb0c1170d387b739a3a8db94da0c28fefd
 --- !u!33 &1124290462
 MeshFilter:
   m_ObjectHideFlags: 0
