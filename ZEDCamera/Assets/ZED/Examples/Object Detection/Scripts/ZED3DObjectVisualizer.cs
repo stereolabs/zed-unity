@@ -175,7 +175,6 @@ public class ZED3DObjectVisualizer : MonoBehaviour
         List<int> activeids = liveBBoxes.Keys.ToList();
 
         List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showONTracked, showSEARCHINGTracked, showOFFTracked);
-
         foreach (DetectedObject dobj in newobjects)
         {
             Bounds objbounds = dobj.Get3DWorldBounds();

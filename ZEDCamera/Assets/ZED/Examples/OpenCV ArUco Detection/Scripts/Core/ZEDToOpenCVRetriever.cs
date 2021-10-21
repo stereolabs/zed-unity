@@ -3,6 +3,7 @@
 using OpenCVForUnity.CoreModule;
 using OpenCVForUnity.ImgprocModule;
 using OpenCVForUnity.UnityUtils;
+using OpenCVForUnity.UtilsModule;
 using sl;
 using System.Collections.Generic;
 using UnityEngine;
@@ -214,11 +215,10 @@ public class ZEDToOpenCVRetriever : MonoBehaviour
 
             //copyToMat(zedmat.GetPtr(), cvMat);
             Utils.copyToMat(zedmat.GetPtr(), buffermat);
-            
+
             ConvertColorSpace(buffermat, ref cvMat, conversionatend); 
             //Mat convertedmat = ConvertColorSpace(buffermat, conversionatend); 
-
-            //updateevent.Invoke(cam, camMat, cvMat);
+            
             updateevent.Invoke(cam, camMat, cvMat);
         }
     }

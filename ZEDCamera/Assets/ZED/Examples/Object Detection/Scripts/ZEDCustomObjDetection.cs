@@ -61,6 +61,10 @@ public class ZEDCustomObjDetection : MonoBehaviour
     /// </summary>
     public ZEDToOpenCVRetriever imageRetriever;
 
+    public delegate void onNewIngestCustomODDelegate();
+
+    public event onNewIngestCustomODDelegate OnIngestCustomOD;
+
     public void Start()
     {
         if (!zedManager) zedManager = FindObjectOfType<ZEDManager>();
@@ -93,7 +97,12 @@ public class ZEDCustomObjDetection : MonoBehaviour
 
     public void OnValidate()
     {
-        Init();
+        if (classesFilter.Count > 0)
+        {
+            classNames = classesFilter;
+        }
+        else
+            classNames = readClassNames(classes);
     }
 
     public void Init()
@@ -122,11 +131,13 @@ public class ZEDCustomObjDetection : MonoBehaviour
         else
         {
             net = Dnn.readNet(model, config);
+            if (net == null) Debug.LogWarning("network is null");
 
             outBlobNames = getOutputsNames(net);
 
             outBlobTypes = getOutputsTypes(net);
         }
+
     }
 
     public void Run(Camera cam, Mat camera_matrix, Mat rgbaMat)
@@ -137,8 +148,7 @@ public class ZEDCustomObjDetection : MonoBehaviour
         Mat bgrMat = new Mat(rgbaMat.rows(), rgbaMat.cols(), CvType.CV_8UC3);
 
         Imgproc.cvtColor(rgbaMat, bgrMat, Imgproc.COLOR_RGBA2BGR);
-
-
+        
         // Create a 4D blob from a frame.
         Size infSize = new Size(inferenceWidth > 0 ? inferenceWidth : bgrMat.cols(),
                            inferenceHeight > 0 ? inferenceHeight : bgrMat.rows());
@@ -146,7 +156,7 @@ public class ZEDCustomObjDetection : MonoBehaviour
 
         // Run a model.
         net.setInput(blob);
-
+        
         if (net.getLayer(new DictValue(0)).outputNameToIndex("im_info") != -1)
         {  // Faster-RCNN or R-FCN
             Imgproc.resize(bgrMat, bgrMat, infSize);
@@ -264,14 +274,13 @@ public class ZEDCustomObjDetection : MonoBehaviour
         boxesList = nmsBoxesList;
         classIdsList = nmsClassIdsList;
         confidencesList = nmsConfidencesList;
-
+        
         ingestCustomData(boxesList, confidencesList, classIdsList);
     }
 
     private void ingestCustomData(List<Rect2d> boxesList, List<float> confidencesList, List<int> classIdsList)
     {
         List<CustomBoxObjectData> objects_in = new List<CustomBoxObjectData>();
-
         for (int idx = 0; idx < boxesList.Count; ++idx)
         {
             if (classNames != null && classNames.Count != 0)
@@ -297,6 +306,8 @@ public class ZEDCustomObjDetection : MonoBehaviour
         }
 
         zedManager.zedCamera.IngestCustomBoxObjects(objects_in);
+        if (OnIngestCustomOD != null)
+            OnIngestCustomOD();
     }
 
     /// <summary>
@@ -360,7 +371,6 @@ public class ZEDCustomObjDetection : MonoBehaviour
     protected virtual List<string> getOutputsTypes(Net net)
     {
         List<string> types = new List<string>();
-
 
         MatOfInt outLayers = net.getUnconnectedOutLayers();
         for (int i = 0; i < outLayers.total(); ++i)

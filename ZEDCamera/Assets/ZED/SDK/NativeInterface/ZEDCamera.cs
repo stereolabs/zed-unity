@@ -351,7 +351,7 @@ namespace sl
         * Reboot function.
         */
         [DllImport(nameDll, EntryPoint = "sl_reboot")]
-        private static extern int dllz_reboot(int serialNumber);
+        private static extern int dllz_reboot(int serialNumber, bool fullReboot);
 
         /*
         * Recording functions.
@@ -975,8 +975,7 @@ namespace sl
             /// <summary>
             /// True for the SDK to provide text feedback.
             /// </summary>
-            [MarshalAs(UnmanagedType.U1)]
-            public bool sdkVerbose;
+            public int sdkVerbose;
             /// <summary>
             /// True if sensors are required, false will not trigger an error if sensors are missing.
             /// </summary>
@@ -993,6 +992,13 @@ namespace sl
             /// <warning> Erroneous calibration values can lead to poor SDK modules accuracy. </warning>
             /// </summary>
             public string optionalOpencvCalibrationFile;
+            /// <summary>
+            /// Define a timeout in seconds after which an error is reported if the \ref open() command fails.
+            /// Set to '-1' to try to open the camera endlessly without returning error in case of failure.
+            /// Set to '0' to return error in case of failure at the first attempt.
+            /// This parameter only impacts the LIVE mode.
+            /// </summary>
+            public float openTimeoutSec;
 
             /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
@@ -1019,6 +1025,7 @@ namespace sl
                 sensorsRequired = init.sensorsRequired;
                 enableImageEnhancement = init.enableImageEnhancement;
                 optionalOpencvCalibrationFile = init.optionalOpencvCalibrationFile;
+                openTimeoutSec = init.openTimeoutSec;
             }
         }
 
@@ -2004,12 +2011,14 @@ namespace sl
         }
 
         /// <summary>
-        /// Performs an hardware reset of the ZED 2. This function only works for ZED 2 cameras.
+        /// Performs an hardware reset of the ZED 2/ZED 2i.
         /// </summary>
-        /// <returns>SUCCESS if everything went fine, CAMERA_NOT_DETECTED if no camera was detected, FAILURE otherwise..</returns>
-        public static sl.ERROR_CODE Reboot(int serialNumber)
+        /// <param name="serialNumber">Serial number of the camera</param>
+        /// <param name="fullReboot"> Perform a full reboot (Sensors and Video modules)</param>
+        /// <returns>ZED SDK version as a string in the format MAJOR.MINOR.PATCH.</returns>
+        public static sl.ERROR_CODE Reboot(int serialNumber, bool fullReboot = true)
         {
-            return (sl.ERROR_CODE)dllz_reboot(serialNumber);
+            return (sl.ERROR_CODE)dllz_reboot(serialNumber, fullReboot);
         }
 
         /// <summary>

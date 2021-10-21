@@ -449,6 +449,13 @@ public class ZEDManager : MonoBehaviour
     public int fruitVegetableDetectionConfidenceThreshold = 60;
 
     /// <summary>
+    /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
+    /// where the SDK is 80% sure or greater will appear in the list of detected objects. 
+    /// </summary>
+    [HideInInspector]
+    public int sportDetectionConfidenceThreshold = 60;
+
+    /// <summary>
     /// Whether to detect people during object detection. 
     /// </summary>
     [HideInInspector]
@@ -483,6 +490,12 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public bool objectClassFruitVegetableFilter = true;
+
+    /// <summary>
+    /// Whether to detect sport related objects during object detection. 
+    /// </summary>
+    [HideInInspector]
+    public bool objectClassSportFilter = true;
 
     /// <summary>
     /// Whether the object detection module has been activated successfully. 
@@ -1698,7 +1711,7 @@ public class ZEDManager : MonoBehaviour
 
         if (IsObjectDetectionRunning)
         {
-            //StopObjectDetection();
+            StopObjectDetection();
         }
 
 #if !ZED_LWRP && !ZED_HDRP && !ZED_URP
@@ -2471,14 +2484,13 @@ public class ZEDManager : MonoBehaviour
         if (IsStereoRig && hasXRDevice())
             arRig.CollectPose(); //Save headset pose with current timestamp. 
     }
-
+    
     /// <summary>
     /// Updates images, collects HMD poses for latency correction, and applies tracking. 
     /// Called by Unity each frame. 
     /// </summary>
 	void Update()
     {
-
         //Check if ZED is disconnected; invoke event and call function if so. 
         if (isDisconnected)
         {
@@ -2725,6 +2737,7 @@ public class ZEDManager : MonoBehaviour
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ANIMAL] = animalDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ELECTRONICS] = electronicsDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = fruitVegetableDetectionConfidenceThreshold;
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.SPORT] = sportDetectionConfidenceThreshold;
             od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
 
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
@@ -2733,6 +2746,7 @@ public class ZEDManager : MonoBehaviour
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
+            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.SPORT] = Convert.ToInt32(objectClassSportFilter);
 
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user. 
             watch.Start();
@@ -2811,7 +2825,6 @@ public class ZEDManager : MonoBehaviour
                 if (OnObjectDetection != null)
                 {
                     DetectionFrame oldoframe = detectionFrame; //Cache so we can clean it up once we're done setting up the new one. 
-
                     //DetectionFrame oframe = new DetectionFrame(objectsFrame, this);
                     detectionFrame = new DetectionFrame(objectsFrameSDK, this);
                     OnObjectDetection(detectionFrame);
@@ -2842,7 +2855,7 @@ public class ZEDManager : MonoBehaviour
                 for (int i = 0; i < objectsFrameSDK.numObject; i++)
                 {
                     sl.ZEDMat oldmat = new sl.ZEDMat(objectsFrameSDK.objectData[i].mask);
-                    if (oldmat.IsInit()) oldmat.Free();
+                    oldmat.Free();
                 }
             }
 
@@ -3064,17 +3077,24 @@ public class ZEDManager : MonoBehaviour
         }
 
         int sn = zedCamera.GetZEDSerialNumber();
-        Debug.Log("SN : " + sn);
         CloseManager();
 
+        openingLaunched = false;
+        running = false;
+        numberTriesOpening = 0;
+        forceCloseInit = false;
+
         bool isCameraAvailable = false;
+        Thread.Sleep(1000);
         sl.ERROR_CODE err = sl.ZEDCamera.Reboot(sn);
+
         if (err == sl.ERROR_CODE.SUCCESS)
         {
             int count = 0;
             // Check if the camera is available before trying to re open it
-            while (!isCameraAvailable && count < 15)
+            while (!isCameraAvailable && count < 30)
             {
+                count++;
                 sl.DeviceProperties[] devices = sl.ZEDCamera.GetDeviceList(out int nbDevices);
                 for (int i = 0; i < nbDevices; i++)
                 {
@@ -3083,17 +3103,10 @@ public class ZEDManager : MonoBehaviour
                         isCameraAvailable = true;
                         break;
                     }
-
                 }
                 Thread.Sleep(500);
-                count++;
             }
         }
-
-        openingLaunched = false;
-        running = false;
-        numberTriesOpening = 0;
-        forceCloseInit = false;
 
         if (isCameraAvailable) {
             Debug.LogWarning("Reboot successful.");
