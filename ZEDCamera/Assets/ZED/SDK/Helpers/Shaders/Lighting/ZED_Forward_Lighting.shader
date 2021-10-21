@@ -112,12 +112,14 @@
 					}
 
 				#ifdef NO_DEPTH_OCC
-					outDepth = 0;
+					#if SHADER_API_D3D11
+						outDepth = 0;
+					#elif SHADER_API_GLCORE
+						outDepth = 1000;//fake infinite depth
+					#endif
 				#else
 					outDepth = computeDepthXYZ(zed_xyz.z);
 				#endif
-
-
 					fixed4 c = 0;
 					float4 color = tex2D(_MainTex, uv.xy).bgra;
 					float3 normals = tex2D(_NormalsTex, uv.zw).rgb;

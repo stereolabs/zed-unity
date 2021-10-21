@@ -4,19 +4,19 @@ using UnityEditor;
 
 /// <summary>
 /// Custom editor used by ZEDManager to extend the default panel shown in the Inspector.
-/// Adds the camera status boxes, the button on the bottom to open camera settings, and a button to restart the camera when 
-/// a settings has changed that requires it. 
+/// Adds the camera status boxes, the button on the bottom to open camera settings, and a button to restart the camera when
+/// a settings has changed that requires it.
 /// </summary>
 [CustomEditor(typeof(ZEDManager)), CanEditMultipleObjects]
 public class ZEDCameraEditor : Editor
 {
     /// <summary>
-    /// Reference to the ZEDManager instance we're editing. 
+    /// Reference to the ZEDManager instance we're editing.
     /// </summary>
     ZEDManager manager;
 
     //Store copies of ZEDManager's fields to detect changes later with CheckChange().
-    //These do not need to be SerializedProperties because they're only used for checking recent changes. 
+    //These do not need to be SerializedProperties because they're only used for checking recent changes.
     sl.RESOLUTION resolution;
     sl.DEPTH_MODE depthmode;
     bool usespatialmemory;
@@ -62,7 +62,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty svoOutputBitrateProperty;
     private SerializedProperty svoOutputTargetFPSProperty;
     private SerializedProperty svoOutputTranscodeProperty;
-    
+
 
     //Streaming Prop
     private SerializedProperty streamingOutProperty;
@@ -78,36 +78,36 @@ public class ZEDCameraEditor : Editor
     //Spatial mapping prop
     private string displayText = "Hide Mesh";
     /// <summary>
-    /// Serialized version of ZEDSpatialMappingManager's range_preset property. 
+    /// Serialized version of ZEDSpatialMappingManager's range_preset property.
     /// </summary>
     private SerializedProperty range;
     /// <summary>
-    /// Serialized version of ZEDSpatialMappingManager's resolution_preset property. 
+    /// Serialized version of ZEDSpatialMappingManager's resolution_preset property.
     /// </summary>
     private SerializedProperty mappingResolution;
     /// <summary>
-    /// Serialized version of ZEDSpatialMappingManager's isFilteringEnable property. 
+    /// Serialized version of ZEDSpatialMappingManager's isFilteringEnable property.
     /// </summary>
     private SerializedProperty isFilteringEnable;
     /// <summary>
-    /// Serialized version of ZEDSpatialMappingManager's filterParameters property. 
+    /// Serialized version of ZEDSpatialMappingManager's filterParameters property.
     /// </summary>
     private SerializedProperty filterParameters;
     /// <summary>
-    /// Serialized version of ZEDSpatialMappingManager's isTextured property. 
+    /// Serialized version of ZEDSpatialMappingManager's isTextured property.
     /// </summary>
     private SerializedProperty saveWhenOver;
     /// <summary>
-    /// Serialized version of ZEDSpatialMappingManager's saveWhenOver property. 
+    /// Serialized version of ZEDSpatialMappingManager's saveWhenOver property.
     /// </summary>
     private SerializedProperty isTextured;
 
     /// <summary>
-    /// Layout option used to draw the '...' button for opening a File Explorer window to find a mesh file. 
+    /// Layout option used to draw the '...' button for opening a File Explorer window to find a mesh file.
     /// </summary>
     private SerializedProperty meshPath;
 
-    //Object Detection Prop 
+    //Object Detection Prop
     private SerializedProperty OD_ImageSyncMode;
     private SerializedProperty OD_ObjectTracking;
     private SerializedProperty OD_BodyFitting;
@@ -122,15 +122,17 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty OD_AnimalDetectionConfidence;
     private SerializedProperty OD_ElectronicsDetectionConfidence;
     private SerializedProperty OD_FruitVegetableDetectionConfidence;
+    private SerializedProperty OD_SportDetectionConfidence;
     private SerializedProperty OD_PersonFilter;
     private SerializedProperty OD_VehicleFilter;
     private SerializedProperty OD_BagFilter;
     private SerializedProperty OD_AnimalFilter;
     private SerializedProperty OD_ElectronicsFilter;
     private SerializedProperty OD_FruitVegetableFilter;
+    private SerializedProperty OD_SportFilter;
 
     /// <summary>
-    /// Layout option used to draw the '...' button for opening a File Explorer window to find a mesh file. 
+    /// Layout option used to draw the '...' button for opening a File Explorer window to find a mesh file.
     /// </summary>
     private GUILayoutOption[] optionsButtonBrowse = { GUILayout.MaxWidth(30) };
     private GUILayoutOption[] optionsButtonStandard = { /*GUILayout.(EditorGUIUtility.labelWidth)*/};
@@ -154,12 +156,12 @@ public class ZEDCameraEditor : Editor
     SerializedProperty allowPassThroughProperty;
     SerializedProperty greyskybox;
 
-    SerializedProperty showadvanced; //Show advanced settings or not. 
-    SerializedProperty showSpatialMapping;  //Show spatial mapping or not. 
+    SerializedProperty showadvanced; //Show advanced settings or not.
+    SerializedProperty showSpatialMapping;  //Show spatial mapping or not.
     SerializedProperty showObjectDetection; //show object detection settings or not
-    SerializedProperty showRecording;  //Show recording settings or not. 
-    SerializedProperty showStreamingOut;  //Show streaming out settings or not 
-    SerializedProperty showcamcontrol; //Show cam control settings or not. 
+    SerializedProperty showRecording;  //Show recording settings or not.
+    SerializedProperty showStreamingOut;  //Show streaming out settings or not
+    SerializedProperty showcamcontrol; //Show cam control settings or not.
 
     // Current value for camera controls
     SerializedProperty videoSettingsInitModeProperty;
@@ -178,18 +180,18 @@ public class ZEDCameraEditor : Editor
 
     //private bool hasLoadedSettings = false;
     /// <summary>
-    /// Whether we've set a manual value to gain and exposure or if they're in auto mode. 
+    /// Whether we've set a manual value to gain and exposure or if they're in auto mode.
     /// </summary>
     //private bool setManualValue = true;
     /// <summary>
-    /// Whether we've set a manual value to white balance or if it's in auto mode. 
+    /// Whether we've set a manual value to white balance or if it's in auto mode.
     /// </summary>
     //private bool setManualWhiteBalance = true;
 
     private string[] toolbarStrings = new string[] { "USB", "SVO", "Stream" };
     private string pauseText = "Pause";
     private string pauseTooltip = " SVO playback or recording."; //Appended to the pause Text to make tooltip text.
-    private string[] filters = { "Svo files", "svo" }; //Filters used for browsing for an SVO. 
+    private string[] filters = { "Svo files", "svo" }; //Filters used for browsing for an SVO.
 
     private void OnEnable()
     {
@@ -268,12 +270,14 @@ public class ZEDCameraEditor : Editor
         OD_AnimalDetectionConfidence = serializedObject.FindProperty("animalDetectionConfidenceThreshold");
         OD_ElectronicsDetectionConfidence = serializedObject.FindProperty("electronicsDetectionConfidenceThreshold");
         OD_FruitVegetableDetectionConfidence = serializedObject.FindProperty("fruitVegetableDetectionConfidenceThreshold");
+        OD_SportDetectionConfidence = serializedObject.FindProperty("sportDetectionConfidenceThreshold");
         OD_PersonFilter = serializedObject.FindProperty("objectClassPersonFilter");
         OD_VehicleFilter = serializedObject.FindProperty("objectClassVehicleFilter");
         OD_BagFilter = serializedObject.FindProperty("objectClassBagFilter");
         OD_AnimalFilter = serializedObject.FindProperty("objectClassAnimalFilter");
         OD_ElectronicsFilter = serializedObject.FindProperty("objectClassElectronicsFilter");
         OD_FruitVegetableFilter = serializedObject.FindProperty("objectClassFruitVegetableFilter");
+        OD_SportFilter = serializedObject.FindProperty("objectClassSportFilter");
 
         //Recording Serialized Properties
         svoOutputFileNameProperty = serializedObject.FindProperty("svoOutputFileName");
@@ -281,7 +285,7 @@ public class ZEDCameraEditor : Editor
         svoOutputBitrateProperty = serializedObject.FindProperty("svoOutputBitrate");
         svoOutputTargetFPSProperty = serializedObject.FindProperty("svoOutputTargetFPS");
         svoOutputTranscodeProperty = serializedObject.FindProperty("svoOutputTranscodeStreaming");
-      
+
 
         streamingOutProperty = serializedObject.FindProperty("enableStreaming");
         streamingOutCodecProperty = serializedObject.FindProperty("streamingCodec");
@@ -291,7 +295,7 @@ public class ZEDCameraEditor : Editor
         streamingOutAdaptBitrateProperty = serializedObject.FindProperty("adaptativeBitrate");
         streamingOutChunkSizeProperty = serializedObject.FindProperty("chunkSize");
         streamingOutTargetFPSProperty = serializedObject.FindProperty("streamingTargetFramerate");
-        
+
 
 
         ///Advanced Settings Serialized Properties
@@ -334,7 +338,7 @@ public class ZEDCameraEditor : Editor
     {
         GUIStyle boldfoldout = new GUIStyle(EditorStyles.foldout);
         boldfoldout.fontStyle = FontStyle.Bold;
-        //DrawDefaultInspector(); //Draws what you'd normally see in the inspector in absence of a custom inspector. 
+        //DrawDefaultInspector(); //Draws what you'd normally see in the inspector in absence of a custom inspector.
 
         EditorGUIUtility.labelWidth = EditorGUIUtility.currentViewWidth * 0.4f;
         ///////////////////////////////////////////////////////////////
@@ -374,7 +378,7 @@ public class ZEDCameraEditor : Editor
                 GUI.enabled = true;
                 serializedObject.ApplyModifiedProperties();
 
-                //Check if we need to restart the camera, and create a button for the user to do so. 
+                //Check if we need to restart the camera, and create a button for the user to do so.
                 if (Application.isPlaying && manager.IsZEDReady && CheckChange())
                 {
                     GUILayout.Space(10);
@@ -518,7 +522,7 @@ public class ZEDCameraEditor : Editor
         }
 
         EditorGUI.indentLevel--;
-#endif 
+#endif
 
         ///////////////////////////////////////////////////////////////
         ///  Motion Tracking layout  /////////////////////////////////
@@ -589,7 +593,7 @@ public class ZEDCameraEditor : Editor
 
             EditorGUILayout.EndHorizontal();
 
-            
+
             GUIContent resolutionlabel = new GUIContent("Resolution", "Resolution setting for the scan. " +
                                          "A higher resolution creates more submeshes and uses more memory, but is more accurate.");
             ZEDSpatialMapping.RESOLUTION newResolution = (ZEDSpatialMapping.RESOLUTION)EditorGUILayout.EnumPopup(resolutionlabel, manager.mappingResolutionPreset);
@@ -616,13 +620,13 @@ public class ZEDCameraEditor : Editor
 
             EditorGUILayout.EndHorizontal();
 
-            GUI.enabled = !manager.IsMappingRunning; //Don't allow changing the texturing setting while the scan is running. 
+            GUI.enabled = !manager.IsMappingRunning; //Don't allow changing the texturing setting while the scan is running.
 
             GUIContent texturedlabel = new GUIContent("Texturing", "Whether surface textures will be scanned and applied. " +
                                        "Note that texturing will add further delay to the post-scan finalizing period.");
             isTextured.boolValue = EditorGUILayout.Toggle(texturedlabel, isTextured.boolValue);
 
-            GUI.enabled = cameraIsReady; //Gray out below elements if the ZED hasn't been initialized as you can't yet start a scan. 
+            GUI.enabled = cameraIsReady; //Gray out below elements if the ZED hasn't been initialized as you can't yet start a scan.
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(EditorGUIUtility.labelWidth);
@@ -725,7 +729,7 @@ public class ZEDCameraEditor : Editor
         /////////////////////////////////////////////////////////////
         GUILayout.Space(10);
 
-        showObjectDetection.boolValue = EditorGUILayout.Foldout(showObjectDetection.boolValue, "Object Detection / Skeleton Tracking", boldfoldout);
+        showObjectDetection.boolValue = EditorGUILayout.Foldout(showObjectDetection.boolValue, "Object Detection / Body Tracking", boldfoldout);
         if (showObjectDetection.boolValue)
         {
             bool cameraIsReady = false;
@@ -759,7 +763,8 @@ public class ZEDCameraEditor : Editor
                 "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
             OD_ObjectTracking.boolValue = EditorGUILayout.Toggle(ObjectTrackingLabel, OD_ObjectTracking.boolValue);
 
-            if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
+            if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE ||
+                OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.CUSTOM_BOX_OBJECTS || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.PERSON_HEAD_BOX)
             {
                 GUIContent Object2DMaskLabel = new GUIContent("Enable 2D Mask", "Whether to calculate 2D masks for each object, showing exactly which pixels within the 2D bounding box are the object.\r\n\n" +
                 "Must be on when Object Detection starts. Requires more performance, so do not enable unless needed.");
@@ -779,12 +784,14 @@ public class ZEDCameraEditor : Editor
 
             EditorGUI.indentLevel--;
             GUILayout.Space(10);
-            EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
-            GUILayout.Space(5);
-            EditorGUI.indentLevel++;
+
 
             if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
             {
+
+                EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
+                GUILayout.Space(5);
+                EditorGUI.indentLevel++;
 
                 GUIContent OD_personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
@@ -810,6 +817,10 @@ public class ZEDCameraEditor : Editor
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
                 OD_FruitVegetableDetectionConfidence.intValue = EditorGUILayout.IntSlider(fruitVegetableDetectionConfidenceThresholdLabel, OD_FruitVegetableDetectionConfidence.intValue, 1, 99);
 
+                GUIContent sportDetectionConfidenceThresholdLabel = new GUIContent("Sport Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_SportDetectionConfidence.intValue = EditorGUILayout.IntSlider(sportDetectionConfidenceThresholdLabel, OD_SportDetectionConfidence.intValue, 1, 99);
+
                 GUILayout.Space(5);
 
                 GUIContent PersonFilterLabel = new GUIContent("Person Filter", "Whether to detect people during object detection.");
@@ -830,10 +841,30 @@ public class ZEDCameraEditor : Editor
                 GUIContent FruitVegetableFilterLabel = new GUIContent("Fruit and Vegetable Filter", "Whether to detect fruits and vegetablesduring object detection.");
                 OD_FruitVegetableFilter.boolValue = EditorGUILayout.Toggle(FruitVegetableFilterLabel, OD_FruitVegetableFilter.boolValue);
 
+                GUIContent SportFilterLabel = new GUIContent("Sport Filter", "Whether to detect sport related objects during object detection.");
+                OD_SportFilter.boolValue = EditorGUILayout.Toggle(SportFilterLabel, OD_SportFilter.boolValue);
+
                 EditorGUI.indentLevel--;
             }
-            else
+            else if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.PERSON_HEAD_BOX)
             {
+
+                EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
+                GUILayout.Space(5);
+                EditorGUI.indentLevel++;
+
+                GUIContent OD_personDetectionConfidenceThresholdLabel = new GUIContent("Person head Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(OD_personDetectionConfidenceThresholdLabel, OD_PersonDetectionConfidence.intValue, 1, 99);
+            }
+            else if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.CUSTOM_BOX_OBJECTS) {
+            }
+            else //SKELETON
+            {
+                EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
+                GUILayout.Space(5);
+                EditorGUI.indentLevel++;
+
                 GUIContent SK_personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
                 SK_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(SK_personDetectionConfidenceThresholdLabel, SK_PersonDetectionConfidence.intValue, 1, 99);
@@ -1014,7 +1045,7 @@ public class ZEDCameraEditor : Editor
             GUIContent enalbeIMUFusionLabel = new GUIContent("Visual-Inertial Tracking", "If true, and you are using a ZED2 or ZED Mini, IMU fusion uses data from the camera's IMU to improve tracking results. ");
             enableIMUFusionProperty.boolValue = EditorGUILayout.Toggle(enalbeIMUFusionLabel, enableIMUFusionProperty.boolValue);
 
-            //Whether to enable the ZED SDK's self-calibration feature. 
+            //Whether to enable the ZED SDK's self-calibration feature.
             GUIContent enableselfcaliblabel = new GUIContent("Self-Calibration", "If true, the ZED SDK will subtly adjust the ZED's calibration " +
                 "during runtime to account for heat and other factors. Reasons to disable this are rare. ");
             enableSelfCalibrationProperty.boolValue = EditorGUILayout.Toggle(enableselfcaliblabel, enableSelfCalibrationProperty.boolValue);
@@ -1024,7 +1055,7 @@ public class ZEDCameraEditor : Editor
                 "Recommended for AR so that lighting on virtual objects better matches the real world.");
             greyskybox.boolValue = EditorGUILayout.Toggle(greyskyboxlabel, manager.greySkybox);
 
-            //Don't Destroy On Load toggle. 
+            //Don't Destroy On Load toggle.
             GUIContent dontdestroylabel = new GUIContent("Don't Destroy on Load", "When enabled, applies DontDestroyOnLoad() on the ZED rig in Awake(), " +
                 "preserving it between scene transitions.");
             dontdestroyonload.boolValue = EditorGUILayout.Toggle(dontdestroylabel, manager.dontDestroyOnLoad);
@@ -1041,17 +1072,17 @@ public class ZEDCameraEditor : Editor
 
             EditorGUI.indentLevel++;
 
-            //Style for the AR layer box. 
+            //Style for the AR layer box.
             GUIStyle layerboxstyle = new GUIStyle(EditorStyles.numberField);
             layerboxstyle.fixedWidth = 30;
             layerboxstyle.stretchWidth = false;
             layerboxstyle.alignment = TextAnchor.MiddleCenter;
 
             GUIStyle layerboxstylewarning = new GUIStyle(layerboxstyle);
-            layerboxstylewarning.normal.textColor = new Color(.9f, .9f, 0); //Red color if layer number is invalid. 
+            layerboxstylewarning.normal.textColor = new Color(.9f, .9f, 0); //Red color if layer number is invalid.
 
             GUIStyle layerboxstyleerror = new GUIStyle(layerboxstyle);
-            layerboxstyleerror.normal.textColor = new Color(.8f, 0, 0); //Red color if layer number is invalid. 
+            layerboxstyleerror.normal.textColor = new Color(.8f, 0, 0); //Red color if layer number is invalid.
 
             GUIContent arlayerlabel = new GUIContent("AR Layer", "Layer that a final, normally-hidden AR rig sees. Used to confine it from the rest of the scene.\r\n " +
                 "You can assign this to any empty layer, and multiple ZEDs can share the same layer.");
@@ -1063,7 +1094,7 @@ public class ZEDCameraEditor : Editor
             errormessagestyle.wordWrap = true;
             errormessagestyle.fontSize = 10;
 
-            //Show small error message if user set layer to below zero. 
+            //Show small error message if user set layer to below zero.
             if (arlayer < 0)
             {
                 string errortext = "Unity layers must be above zero to be visible.";
@@ -1071,7 +1102,7 @@ public class ZEDCameraEditor : Editor
                 EditorGUI.LabelField(labelrect, errortext, errormessagestyle);
             }
 
-            //Show small error message if user set layer higher than 31, which is invalid because Unity layers only go up to 31. 
+            //Show small error message if user set layer higher than 31, which is invalid because Unity layers only go up to 31.
             if (arlayer > 31)
             {
                 string errortext = "Unity doesn't support layers above 31.";
@@ -1079,13 +1110,13 @@ public class ZEDCameraEditor : Editor
                 EditorGUI.LabelField(labelrect, errortext, errormessagestyle);
             }
 
-            //Show warnings if the layer is valid but not recommended. 
+            //Show warnings if the layer is valid but not recommended.
             GUIStyle warningmessagestyle = new GUIStyle(EditorStyles.label);
             warningmessagestyle.normal.textColor = layerboxstylewarning.normal.textColor;
             warningmessagestyle.wordWrap = true;
             warningmessagestyle.fontSize = 10;
 
-            //Show small warning message if user set layer to 31, which is technically valid but Unity reserves it for other uses. 
+            //Show small warning message if user set layer to 31, which is technically valid but Unity reserves it for other uses.
             if (arlayer == 31)
             {
                 string warningext = "Warning: Unity reserves layer 31 for previews in the editor. Assigning to layer 31 can cause conflicts.";
@@ -1104,7 +1135,7 @@ public class ZEDCameraEditor : Editor
             ZEDLayersManager.ClearLayer(ZEDLayers.ID_arlayer);
             ZEDLayersManager.CreateLayer(ZEDLayers.ID_arlayer, arlayer);
 
-            //Show AR Rig toggle. 
+            //Show AR Rig toggle.
             GUIContent showarlabel = new GUIContent("Show Final AR Rig", "Whether to show the hidden camera rig used in stereo AR mode to " +
                 "prepare images for HMD output. You normally shouldn't tamper with this rig, but seeing it can be useful for " +
                 "understanding how the ZED output works.");
@@ -1142,13 +1173,13 @@ public class ZEDCameraEditor : Editor
                 "two cameras as children with ZEDRenderingPlane components, each with a different eye) - and a VR headset is connected. If false, it will never enter pass-through mode.");
             allowPassThroughProperty.boolValue = EditorGUILayout.Toggle(allowPassThroughLabel, allowPassThroughProperty.boolValue);
 
-            //Whether to set the IMU prior in AR passthrough mode. 
+            //Whether to set the IMU prior in AR passthrough mode.
             GUIContent setimupriorlabel = new GUIContent("Set IMU Prior in AR", "In AR pass-through mode, whether to compare the " +
                 "ZED's IMU data against the reported position of the VR headset. This helps compensate for drift and should " +
                 "usually be left on. However, in some setups, like when using a custom mount, this can cause tracking errors.");
             setIMUPrior.boolValue = EditorGUILayout.Toggle(setimupriorlabel, manager.setIMUPriorInAR);
 
-            //Fade In At Start toggle. 
+            //Fade In At Start toggle.
             GUIContent fadeinlabel = new GUIContent("Fade In at Start", "When enabled, makes the ZED image fade in from black when the application starts.");
             fadeinonstart.boolValue = EditorGUILayout.Toggle(fadeinlabel, manager.fadeInOnStart);
 
@@ -1177,7 +1208,7 @@ public class ZEDCameraEditor : Editor
         ///  Camera control layout ///////////////////////////////////
         /////////////////////////////////////////////////////////////
 
-        /*//TEST: Try loading starting settings. 
+        /*//TEST: Try loading starting settings.
         if (Application.isPlaying && manager.zedCamera.IsCameraReady)
         {
             if (!hasLoadedSettings)
@@ -1291,7 +1322,7 @@ public class ZEDCameraEditor : Editor
                         gainProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAIN);
                         exposureProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE);
 
-                        manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, gainProperty.intValue); //Apply last settings immediately. 
+                        manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, gainProperty.intValue); //Apply last settings immediately.
                         manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, exposureProperty.intValue);
 
                     }
@@ -1452,7 +1483,7 @@ public class ZEDCameraEditor : Editor
 
     /// <summary>
     /// Check if something has changed that requires restarting the camera.
-    /// Used to know if the Restart Camera button and a prompt to press it should be visible. 
+    /// Used to know if the Restart Camera button and a prompt to press it should be visible.
     /// </summary>
     /// <returns>True if a setting was changed that won't go into effect until a restart. </returns>
     private bool CheckChange()
@@ -1466,14 +1497,14 @@ public class ZEDCameraEditor : Editor
     }
 
     /// <summary>
-    /// If the given layer name is equal to the provided string, it clears it. 
-    /// Used when a ZED layer is moved to a different layer. 
+    /// If the given layer name is equal to the provided string, it clears it.
+    /// Used when a ZED layer is moved to a different layer.
     /// </summary>
     /// <param name="layer"></param>
     /// <param name="constname"></param>
     private void ClearLayerNameIfNeeded(int layer, string constname)
     {
-        if (layer < 0 || layer > 31) return; //Invalid ID. 
+        if (layer < 0 || layer > 31) return; //Invalid ID.
         SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
         SerializedProperty layerNames = tagManager.FindProperty("layers");
         if (layerNames.GetArrayElementAtIndex(layer).stringValue == constname)
@@ -1486,7 +1517,7 @@ public class ZEDCameraEditor : Editor
     }
 
     /// <summary>
-    /// Loads all current camera video settings from the ZED SDK into the buffer values (brightness, contrast, etc.) 
+    /// Loads all current camera video settings from the ZED SDK into the buffer values (brightness, contrast, etc.)
     /// </summary>
     private void LoadCurrentVideoSettings()
     {
@@ -1506,5 +1537,3 @@ public class ZEDCameraEditor : Editor
     }
 
 }
-
-

@@ -121,7 +121,7 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// </summary>
     Texture2D normals;
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
     /// <summary>
     /// CommandBuffer to integrate the depth into Unity's forward or deferred  pipeline. 
     /// </summary>
@@ -519,7 +519,6 @@ public class ZEDRenderingPlane : MonoBehaviour
         else if (side == 1)
             canvas.transform.localPosition = new Vector3(opticalCenters.z, -1.0f * opticalCenters.w, plane_distance);
 
-
         //Set the camera's parameters based on the ZED's, and scale the screen based on its distance.
         if (zedCamera.IsCameraReady)
         {
@@ -638,7 +637,7 @@ public class ZEDRenderingPlane : MonoBehaviour
         }
     }
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
     /// <summary>
     /// Clear the depth buffer used. 
     /// Called when configuring this script for the given rendering path (forward or deferred). 
@@ -692,7 +691,7 @@ public class ZEDRenderingPlane : MonoBehaviour
         matRGB.SetTexture("_DepthXYZTex", depth);
         matRGB.SetTexture("_NormalsTex", normals);
 
-#if ZED_LWRP || ZED_HDRP //Need FoV to calculate world space positions accurately. 
+#if ZED_LWRP || ZED_HDRP && !ZED_URP//Need FoV to calculate world space positions accurately. 
         matRGB.SetFloat("_ZEDHFoVRad", zedCamera.GetCalibrationParameters().leftCam.hFOV * Mathf.Deg2Rad);
         matRGB.SetFloat("_ZEDVFoVRad", zedCamera.GetCalibrationParameters().leftCam.vFOV * Mathf.Deg2Rad);
 #endif
@@ -700,7 +699,7 @@ public class ZEDRenderingPlane : MonoBehaviour
         forwardMat.SetTexture("_MainTex", textureEye);
         forwardMat.SetTexture("_DepthXYZTex", depth);
 
-#if !ZED_LWRP  && !ZED_HDRP
+#if !ZED_LWRP  && !ZED_HDRP  && !ZED_URP
         //Clear the buffers.
         if (buffer[(int)ZED_RENDERING_MODE.FORWARD] != null)
             cam.RemoveCommandBuffer(CameraEvent.BeforeDepthTexture, buffer[(int)ZED_RENDERING_MODE.FORWARD]);
@@ -735,7 +734,7 @@ public class ZEDRenderingPlane : MonoBehaviour
         postprocessMaterial.SetTexture("ZEDMaskPostProcess", mask);
         postprocessMaterial.SetTexture("ZEDTex", textureEye);
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
 
         postProcessBuffer[(int)ZED_RENDERING_MODE.FORWARD] = new CommandBuffer();
         postProcessBuffer[(int)ZED_RENDERING_MODE.FORWARD].name = "ZED_FORWARD_POSTPROCESS";
@@ -795,7 +794,7 @@ public class ZEDRenderingPlane : MonoBehaviour
 
 
         //Clear the buffers.
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
         if (buffer[(int)ZED_RENDERING_MODE.FORWARD] != null)
             cam.RemoveCommandBuffer(CameraEvent.BeforeDepthTexture, buffer[(int)ZED_RENDERING_MODE.FORWARD]);
 
@@ -1160,7 +1159,7 @@ public class ZEDRenderingPlane : MonoBehaviour
             matRGB.SetInt(numberPointLightsID, pointLightIndex);
             matRGB.SetInt(numberSpotLightsID, spotLightIndex);
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
             //Add the command buffer to get shadows only if a directional light creates shadows.
             if (hasShadows != ghasShadows)
             {
@@ -1217,7 +1216,7 @@ public class ZEDRenderingPlane : MonoBehaviour
         screen.transform.localScale = new Vector3(width, height, 1);
     }
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
     /// <summary>
     /// Clears all command buffers on the camera. 
     /// </summary>

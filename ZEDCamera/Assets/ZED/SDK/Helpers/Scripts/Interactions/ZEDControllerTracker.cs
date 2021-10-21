@@ -7,13 +7,15 @@ using Valve.VR;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+
+
 /// <summary>
-/// Causes the GameObject it's attached to to position itself where a tracked VR object is, such as 
+/// Causes the GameObject it's attached to to position itself where a tracked VR object is, such as
 /// a Touch controller or Vive Tracker, but compensates for the ZED's latency. This way, virtual
-/// controllers don't move ahead of its real-world image. 
+/// controllers don't move ahead of its real-world image.
 /// This is done by logging position data from the VR SDK in use (Oculus or OpenVR/SteamVR) each frame, but only
-/// applying that position data to this transform after the delay in the latencyCompensation field. 
-/// Used in the ZED GreenScreen, Drone Shooter, Movie Screen, Planetarium and VR Plane Detection example scenes. 
+/// applying that position data to this transform after the delay in the latencyCompensation field.
+/// Used in the ZED GreenScreen, Drone Shooter, Movie Screen, Planetarium and VR Plane Detection example scenes.
 /// </summary>
 public class ZEDControllerTracker : MonoBehaviour
 {
@@ -22,28 +24,28 @@ public class ZEDControllerTracker : MonoBehaviour
     /// </summary>
 	private string loadeddevice = "";
 
-#if ZED_STEAM_VR //Only enabled if the SteamVR Unity plugin is detected. 
+#if ZED_STEAM_VR //Only enabled if the SteamVR Unity plugin is detected.
 
     /// <summary>
     /// OpenVR System class that lets us get inputs straight from the API, bypassing SteamVR.
-    /// This is necessary because different versions of SteamVR use completely different input systems. 
+    /// This is necessary because different versions of SteamVR use completely different input systems.
     /// </summary>
     protected CVRSystem openvrsystem = OpenVR.System;
     /// <summary>
-    /// State of the controller's buttons and axes. Used to check inputs. 
+    /// State of the controller's buttons and axes. Used to check inputs.
     /// </summary>
     protected VRControllerState_t controllerstate;
     /// <summary>
-    /// State of the controller's buttons and axes last frame. Used to check if buttons just went down or up. 
+    /// State of the controller's buttons and axes last frame. Used to check if buttons just went down or up.
     /// </summary>
     protected VRControllerState_t lastcontrollerstate;
     /// <summary>
-    /// Size of VRControllerState_t class in bytes. Used to call GetControllerState from the OpenVR API. 
+    /// Size of VRControllerState_t class in bytes. Used to call GetControllerState from the OpenVR API.
     /// </summary>
     protected const uint controllerstatesize = 64;
     /// <summary>
-    /// Enumerated version of the uint index SteamVR assigns to each device. 
-    /// Converted from OpenVR.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole). 
+    /// Enumerated version of the uint index SteamVR assigns to each device.
+    /// Converted from OpenVR.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole).
     /// </summary>
     public enum EIndex
     {
@@ -69,21 +71,21 @@ public class ZEDControllerTracker : MonoBehaviour
     public EIndex index = EIndex.None;
 
     /// <summary>
-    /// How long since we've last checked OpenVR for the specified device. 
-    /// Incremented by Time.deltaTime each frame and reset when it reached timerMaxSteamVR. 
+    /// How long since we've last checked OpenVR for the specified device.
+    /// Incremented by Time.deltaTime each frame and reset when it reached timerMaxSteamVR.
     /// </summary>
     private float timerSteamVR = 0.0f;
 
     /// <summary>
     /// How many seconds to wait between checking if the specified device is present in OpenVR.
-    /// The check is performed when timerSteamVR reaches this number, unless we've already retrieved the device index. 
+    /// The check is performed when timerSteamVR reaches this number, unless we've already retrieved the device index.
     /// </summary>
     private float timerMaxSteamVR = 0.25f;
     private Devices oldDevice;
 
     /// <summary>
-    /// If true, will use a direct API check to OpenVR's API to check if a button is down. 
-    /// Does not work if using the SteamVR plugin 2.0 or higher as well as the action system it includes. 
+    /// If true, will use a direct API check to OpenVR's API to check if a button is down.
+    /// Does not work if using the SteamVR plugin 2.0 or higher as well as the action system it includes.
     /// </summary>
     [Tooltip("If true, will use a direct API check to OpenVR's API to check if a button is down.\r\n" +
         "Does not work if using the SteamVR plugin 2.0 or higher as well as the action system it includes. ")]
@@ -92,21 +94,18 @@ public class ZEDControllerTracker : MonoBehaviour
 
     /// <summary>
     /// Per each tracked object ID, contains a list of their recent positions.
-    /// Used to look up where OpenVR says a tracked object was in the past, for latency compensation. 
+    /// Used to look up where OpenVR says a tracked object was in the past, for latency compensation.
     /// </summary>
     public Dictionary<int, List<TimedPoseData>> poseData = new Dictionary<int, List<TimedPoseData>>();
 
     /// <summary>
-    /// Types of tracked devices. 
+    /// Types of tracked devices.
     /// </summary>
     public enum Devices
     {
         RightController,
         LeftController,
-
-#if ZED_STEAM_VR
         ViveTracker,
-#endif
         Hmd,
     };
 
@@ -127,8 +126,8 @@ public class ZEDControllerTracker : MonoBehaviour
     public int latencyCompensation = 78;
 
     /// <summary>
-    /// If true, and this is a controller, will offset controller's position by the difference between 
-    /// the VR headset and the ZED's tracked position. This keeps controller's position relative to the ZED. 
+    /// If true, and this is a controller, will offset controller's position by the difference between
+    /// the VR headset and the ZED's tracked position. This keeps controller's position relative to the ZED.
     /// </summary>
     [Tooltip("If true, and this is a controller, will offset controller's position by the difference between " +
         "the VR headset and the ZED's tracked position. This keeps controller's position relative to the ZED. ")]
@@ -136,40 +135,39 @@ public class ZEDControllerTracker : MonoBehaviour
     public bool correctControllerDrift = true;
 
     /// <summary>
-    /// The Serial number of the controller/tracker to be tracked. 
-    /// If specified, it will override the device returned using the 'Device to Track' selection. 
+    /// The Serial number of the controller/tracker to be tracked.
+    /// If specified, it will override the device returned using the 'Device to Track' selection.
     /// Useful for forcing a specific device to be tracked, instead of the first left/right/Tracker object found.
     /// If Null, then there's no calibration to be applied to this script.
     /// If NONE, the ZEDControllerOffset failed to find any calibration file.
     /// If S/N is present, then this script will calibrate itself to track the correct device, if that's not the case already.
-    /// Note that ZEDOffsetController will load this number from a GreenScreen calibration file, if present. 
+    /// Note that ZEDOffsetController will load this number from a GreenScreen calibration file, if present.
     /// </summary>
     [Tooltip("The Serial number of the controller/tracker to be tracked." +
         " If specified, overrides the 'Device to Track' selection.")]
     public string SNHolder = "";
 
     /// <summary>
-    /// Cached transform that represents the ZED's head, retrieved from ZEDManager.GetZedRootTransform(). 
-    /// Used to find the offset between the HMD and tracked transform to compensate for drift. 
+    /// Cached transform that represents the ZED's head, retrieved from ZEDManager.GetZedRootTransform().
+    /// Used to find the offset between the HMD and tracked transform to compensate for drift.
     /// </summary>
     protected Transform zedRigRoot;
 
     /// <summary>
-    /// Reference to the scene's ZEDManager component. Used for compensating for headset drift when this is on a controller. 
+    /// Reference to the scene's ZEDManager component. Used for compensating for headset drift when this is on a controller.
     /// </summary>
     [Tooltip("Reference to the scene's ZEDManager component. Used for compensating for headset drift when this is on a controller. " +
         "If left blank, will be set to the first available ZEDManager.")]
     public ZEDManager zedManager = null;
 
     /// <summary>
-    /// Sets up the timed pose dictionary and identifies the VR SDK being used. 
+    /// Sets up the timed pose dictionary and identifies the VR SDK being used.
     /// </summary>
     protected virtual void Awake()
     {
 #if ZED_STEAM_VR
         openvrsystem = OpenVR.System;
 #endif
-
         poseData.Clear(); //Reset the dictionary.
         poseData.Add(1, new List<TimedPoseData>()); //Create the list within the dictionary with its key and value.
         //Looking for the loaded device
@@ -177,10 +175,10 @@ public class ZEDControllerTracker : MonoBehaviour
         if (!zedManager)
         {
             zedManager = FindObjectOfType<ZEDManager>();
-            //If there are multiple cameras in a scene, this arbitrary assignment could be bad. Warn the user. 
+            //If there are multiple cameras in a scene, this arbitrary assignment could be bad. Warn the user.
             if (ZEDManager.GetInstances().Count > 1)
             {
-                //Using Log instead of LogWarning because most users don't enable warnings but this is actually important. 
+                //Using Log instead of LogWarning because most users don't enable warnings but this is actually important.
                 Debug.Log("Warning: ZEDController automatically set itself to first available ZED (" + zedManager.cameraID + ") because zedManager " +
                     "value wasn't set, but there are multiple ZEDManagers in the scene. Assign a reference directly to ensure no unexpected behavior.");
             }
@@ -195,7 +193,7 @@ public class ZEDControllerTracker : MonoBehaviour
     /// </summary>
     protected virtual void Update()
     {
-#if ZED_OCULUS //Used only if the Oculus Integration plugin is detected. 
+#if ZED_OCULUS //Used only if the Oculus Integration plugin is detected.
         //Check if the VR headset is connected.
         if (OVRManager.isHmdPresent && loadeddevice.ToString().ToLower().Contains("oculus"))
         {
@@ -229,7 +227,7 @@ public class ZEDControllerTracker : MonoBehaviour
 
 #if ZED_STEAM_VR
 
-        UpdateControllerState(); //Get the button states so we can check if buttons are down or not. 
+        UpdateControllerState(); //Get the button states so we can check if buttons are down or not.
 
         timerSteamVR += Time.deltaTime; //Increment timer for checking on devices
         if (timerSteamVR <= timerMaxSteamVR)
@@ -250,6 +248,7 @@ public class ZEDControllerTracker : MonoBehaviour
                 {
                     var result = new System.Text.StringBuilder((int)64);
                     OpenVR.System.GetStringTrackedDeviceProperty(i, ETrackedDeviceProperty.Prop_RenderModelName_String, result, 64, ref error);
+
                     if (result.ToString().Contains("tracker"))
                     {
                         index = (EIndex)i;
@@ -294,7 +293,14 @@ public class ZEDControllerTracker : MonoBehaviour
                     {
                         //If a device with the same Serial Number is found, then change the device to track of this script.
                         var chsnresult = new System.Text.StringBuilder((int)64);
-                        OpenVR.System.GetStringTrackedDeviceProperty((uint)i, ETrackedDeviceProperty.Prop_SerialNumber_String, chsnresult, 64, ref snerror);
+                        OpenVR.System.GetStringTrackedDeviceProperty((uint)i, ETrackedDeviceProperty.Prop_RenderModelName_String, snresult, 64, ref snerror);
+
+                        if (snresult.ToString().Contains("tracker"))
+                        {
+                            index = (EIndex)i;
+                            OpenVR.System.GetStringTrackedDeviceProperty((uint)i, ETrackedDeviceProperty.Prop_SerialNumber_String, snresult, 64, ref snerror);
+                        }
+
                         if (snresult.ToString().Contains(SNHolder))
                         {
                             index = (EIndex)i;
@@ -328,7 +334,7 @@ public class ZEDControllerTracker : MonoBehaviour
 
 #if ZED_STEAM_VR
     /// <summary>
-    /// Whether a given set of poses is currently valid - contains at least one pose and attached to an actual device. 
+    /// Whether a given set of poses is currently valid - contains at least one pose and attached to an actual device.
     /// </summary>
     public bool isValid { get; private set; }
 
@@ -380,7 +386,7 @@ public class ZEDControllerTracker : MonoBehaviour
     protected virtual void UpdateControllerState()
     {
         lastcontrollerstate = controllerstate;
-        //Update position. 
+        //Update position.
         if (index > EIndex.Hmd)
         {
             if (OpenVR.Compositor != null){
@@ -393,7 +399,7 @@ public class ZEDControllerTracker : MonoBehaviour
             }
         }
 
-        //We need to check for this always in case the user uses the deprecated GetVRButton methods. 
+        //We need to check for this always in case the user uses the deprecated GetVRButton methods.
         if (useLegacySteamVRInput)
         {
             openvrsystem.GetControllerState((uint)index, ref controllerstate, controllerstatesize);
@@ -402,64 +408,64 @@ public class ZEDControllerTracker : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns if the VR controller button with the given ID was pressed for the first time this frame. 
+    /// Returns if the VR controller button with the given ID was pressed for the first time this frame.
     /// </summary>
     /// <param name="buttonid">EVR ID of the button as listed in OpenVR.</param>
     [System.ObsoleteAttribute("ZEDControllerTracker's GetVRButton methods are deprecated.\r\n " +
         "Use ZEDControllerTracker_DemoInputs.GetVRButtonDown_Legacy instead., false")]
     public bool GetVRButtonDown(EVRButtonId buttonid)
     {
-        if (openvrsystem == null) return false; //If VR isn't running, we can't check. 
+        if (openvrsystem == null) return false; //If VR isn't running, we can't check.
 
         bool washeldlastupdate = (lastcontrollerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
-        if (washeldlastupdate == true) return false; //If the key was held last check, it can't be pressed for the first time now. 
+        if (washeldlastupdate == true) return false; //If the key was held last check, it can't be pressed for the first time now.
 
         bool isheld = (controllerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
-        return isheld; //If we got here, we know it was not down last frame. 
+        return isheld; //If we got here, we know it was not down last frame.
 
     }
 
     /// <summary>
-    /// Returns if the VR controller button with the given ID is currently held. 
+    /// Returns if the VR controller button with the given ID is currently held.
     /// </summary>
     /// <param name="buttonid">EVR ID of the button as listed in OpenVR.</param>
     [System.ObsoleteAttribute("ZEDControllerTracker's GetVRButton methods are deprecated.\r\n " +
     "Use ZEDControllerTracker_DemoInputs.GetVRButtonHeld_Legacy instead.", false)]
     public bool GetVRButtonHeld(EVRButtonId buttonid)
     {
-        if (openvrsystem == null) return false; //If VR isn't running, we can't check. 
+        if (openvrsystem == null) return false; //If VR isn't running, we can't check.
 
         bool isheld = (controllerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
         return isheld;
     }
 
     /// <summary>
-    /// Returns if the VR controller button with the given ID was held last frame, but released this frame. 
+    /// Returns if the VR controller button with the given ID was held last frame, but released this frame.
     /// </summary>
     /// <param name="buttonid">EVR ID of the button as listed in OpenVR.</param>
     [System.ObsoleteAttribute("ZEDControllerTracker's GetVRButton methods are deprecated.\r\n " +
     "Use ZEDControllerTracker_DemoInputs.GetVRButtonReleased_Legacy instead.", false)]
     public bool GetVRButtonReleased(EVRButtonId buttonid)
     {
-        if (openvrsystem == null) return false; //If VR isn't running, we can't check. 
+        if (openvrsystem == null) return false; //If VR isn't running, we can't check.
 
         bool washeldlastupdate = (lastcontrollerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
-        if (washeldlastupdate == false) return false; //If the key was held last check, it can't be released now. 
+        if (washeldlastupdate == false) return false; //If the key was held last check, it can't be released now.
 
         bool isheld = (controllerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
-        return !isheld; //If we got here, we know it was not up last frame. 
+        return !isheld; //If we got here, we know it was not up last frame.
     }
 
     /// <summary>
-    /// Returns the value of an axis with the provided ID. 
-    /// Note that for single-value axes, the relevant value will be the X in the returned Vector2 (the Y is unused). 
+    /// Returns the value of an axis with the provided ID.
+    /// Note that for single-value axes, the relevant value will be the X in the returned Vector2 (the Y is unused).
     /// </summary>
     /// <param name="buttonid"></param>
     [System.ObsoleteAttribute("ZEDControllerTracker.GetAxis is deprecated.\r\n " +
         "Use ZEDControllerTracker_DemoInputs.GetVRAxis_Legacy instead.", false)]
     public Vector2 GetAxis(EVRButtonId buttonid)
     {
-        //Convert the EVRButtonID enum to the axis number and check if it's not an axis. 
+        //Convert the EVRButtonID enum to the axis number and check if it's not an axis.
         uint axis = (uint)buttonid - (uint)EVRButtonId.k_EButton_Axis0;
         if (axis < 0 || axis > 4)
         {
@@ -518,10 +524,10 @@ public class ZEDControllerTracker : MonoBehaviour
 
                         //Add drift correction, but only if the user hasn't disabled it, it's on an actual controller, and the zedRigRoot position won't be affected.
                         if (correctControllerDrift == true &&
-                            (deviceToTrack == Devices.LeftController || deviceToTrack == Devices.RightController) &&
+                            (deviceToTrack == Devices.LeftController || deviceToTrack == Devices.RightController || deviceToTrack == Devices.ViveTracker) &&
                             (zedManager != null && zedManager.IsStereoRig == true && !zedManager.transform.IsChildOf(transform)))
                         {
-                            //Compensate for positional drift by measuring the distance between HMD and ZED rig root (the head's center). 
+                            //Compensate for positional drift by measuring the distance between HMD and ZED rig root (the head's center).
 #if UNITY_2019_3_OR_NEWER
                             InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
                             head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 headPosition);
@@ -562,12 +568,12 @@ public class ZEDControllerTracker : MonoBehaviour
     /// <summary>
     /// Structure used to hold the pose of a controller at a given timestamp.
     /// This is stored in poseData with RegisterPosition() each time the VR SDK makes poses available.
-    /// It's retrieved with GetValuePosition() in Update() each frame. 
+    /// It's retrieved with GetValuePosition() in Update() each frame.
     /// </summary>
     public struct TimedPoseData
     {
         /// <summary>
-        /// Value from Time.time when the pose was collected. 
+        /// Value from Time.time when the pose was collected.
         /// </summary>
         public float timestamp;
 
@@ -577,7 +583,7 @@ public class ZEDControllerTracker : MonoBehaviour
         public Quaternion rotation;
 
         /// <summary>
-        /// Position of the tracked object as provided by the VR SDK. 
+        /// Position of the tracked object as provided by the VR SDK.
         /// </summary>
         public Vector3 position;
     }
@@ -585,11 +591,11 @@ public class ZEDControllerTracker : MonoBehaviour
 
 #if UNITY_EDITOR
 /// <summary>
-/// Custom editor for ZEDControllerTracker. 
-/// If no VR Unity plugin (Oculus Integration or SteamVR plugin) has been loaded by the ZED plugin but one is found, 
+/// Custom editor for ZEDControllerTracker.
+/// If no VR Unity plugin (Oculus Integration or SteamVR plugin) has been loaded by the ZED plugin but one is found,
 /// presents a button to create project defines that tell ZED scripts that this plugin is loaded.
-/// These defines (ZED_STEAM_VR and ZED_OCULUS) are used to allow compiling parts of ZED scripts that depend on scripts in these VR plugins. 
-/// Note that this detection will also be attempted any time an asset has been imported. See nested class AssetPostProcessZEDVR. 
+/// These defines (ZED_STEAM_VR and ZED_OCULUS) are used to allow compiling parts of ZED scripts that depend on scripts in these VR plugins.
+/// Note that this detection will also be attempted any time an asset has been imported. See nested class AssetPostProcessZEDVR.
 /// </summary>
 [CustomEditor(typeof(ZEDControllerTracker)), CanEditMultipleObjects]
 public class ZEDVRDependencies : Editor
@@ -598,7 +604,7 @@ public class ZEDVRDependencies : Editor
     static string defineName;
     static string packageName;
 
-    public override void OnInspectorGUI() //Called when the Inspector is visible. 
+    public override void OnInspectorGUI() //Called when the Inspector is visible.
     {
         //if (CheckPackageExists("OpenVR"))
         if (CheckPackageExists("SteamVR_Camera.cs"))
@@ -613,11 +619,11 @@ public class ZEDVRDependencies : Editor
             packageName = "Oculus";
         }
 
-        if (EditorPrefs.GetBool(packageName)) //Has it been set? 
+        if (EditorPrefs.GetBool(packageName)) //Has it been set?
         {
             DrawDefaultInspector();
         }
-        else //No package loaded, but one has been detected. Present a button to load it. 
+        else //No package loaded, but one has been detected. Present a button to load it.
         {
             GUILayout.Space(20);
             if (GUILayout.Button("Load " + packageName + " data"))
@@ -635,9 +641,9 @@ public class ZEDVRDependencies : Editor
     }
 
     /// <summary>
-    /// Finds if a folder in the project exists with the specified name. 
+    /// Finds if a folder in the project exists with the specified name.
     /// Used to check if a plugin has been imported, as the relevant plugins are placed
-    /// in a folder named after the package. Example: "Assets/Oculus". 
+    /// in a folder named after the package. Example: "Assets/Oculus".
     /// </summary>
     /// <param name="name">Package name.</param>
     /// <returns></returns>
@@ -649,8 +655,8 @@ public class ZEDVRDependencies : Editor
 
 
     /// <summary>
-    /// Activates a define tag in the project. Used to enable compiling sections of scripts with that tag enabled. 
-    /// For instance, parts of this script under a #if ZED_STEAM_VR statement will be ignored by the compiler unless ZED_STEAM_VR is enabled. 
+    /// Activates a define tag in the project. Used to enable compiling sections of scripts with that tag enabled.
+    /// For instance, parts of this script under a #if ZED_STEAM_VR statement will be ignored by the compiler unless ZED_STEAM_VR is enabled.
     /// </summary>
     public static void ActivateDefine()
     {
@@ -674,8 +680,8 @@ public class ZEDVRDependencies : Editor
     }
 
     /// <summary>
-    /// Removes a define tag from the project. 
-    /// Called whenever a package is checked for but not found. 
+    /// Removes a define tag from the project.
+    /// Called whenever a package is checked for but not found.
     /// Removing the define tags will prevent compilation of code marked with that tag, like #if ZED_OCULUS.
     /// </summary>
     public static void DeactivateDefine(string packagename)

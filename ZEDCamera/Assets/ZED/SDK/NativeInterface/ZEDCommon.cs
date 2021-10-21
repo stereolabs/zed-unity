@@ -24,7 +24,7 @@ namespace sl
 		CAMERA_ID_01,
 		CAMERA_ID_02,
 		CAMERA_ID_03,
-		CAMERA_ID_04,
+		CAMERA_ID_04
 	};
 
 
@@ -208,6 +208,29 @@ namespace sl
         public float relativeAltitude;
     };
 
+    public enum HEADING_STATE
+    {
+        /// <summary>
+        /// The heading is reliable and not affected by iron interferences.
+        /// </summary>
+        GOOD,
+        /// <summary>
+        /// The heading is reliable, but affected by slight iron interferences.
+        /// </summary>
+        OK,
+        /// <summary>
+        /// The heading is not reliable because affected by strong iron interferences.
+        /// </summary>
+        NOT_GOOD,
+        /// <summary>
+        /// The magnetometer has not been calibrated.
+        /// </summary>
+        NOT_CALIBRATED,
+        /// <summary>
+        /// The magnetomer sensor is not available.
+        /// </summary>
+        MAG_NOT_AVAILABLE
+    };
 
     [StructLayout(LayoutKind.Sequential)]
     public struct MagnetometerData
@@ -222,14 +245,31 @@ namespace sl
         public ulong timestamp;
         /// <summary>
         /// Magnetic field calibrated values in uT
-        /// </summary>     
+        /// </summary>
         /// </summary>
         public Vector3 magneticField;
         /// <summary>
         /// Magnetic field raw values in uT
-        /// </summary>        
+        /// </summary>
         public Vector3 magneticFieldUncalibrated;
-     };
+        /// <summary>
+        /// The camera heading in degrees relative to the magnetic North Pole.
+        /// note: The magnetic North Pole has an offset with respect to the geographic North Pole, depending on the
+        /// geographic position of the camera.
+        /// To get a correct magnetic heading the magnetometer sensor must be calibrated using the ZED Sensor Viewer tool
+        /// </summary>
+        public float magneticHeading;
+        /// <summary>
+        /// The state of the /ref magnetic_heading value
+        /// </summary>
+        public HEADING_STATE magnetic_heading_state;
+        /// <summary>
+        /// The accuracy of the magnetic heading measure in the range [0.0,1.0].
+        /// A negative value means that the magnetometer must be calibrated using the ZED Sensor Viewer tool
+        /// </summary>
+        public float magnetic_heading_accuracy;
+
+    };
 
 
     [StructLayout(LayoutKind.Sequential)]
@@ -391,7 +431,7 @@ namespace sl
         /// </summary>
         HERTZ,
         /// <summary>
-        /// 
+        ///
         /// </summary>
         LAST
     };
@@ -431,7 +471,7 @@ namespace sl
         /// </summary>
         public SENSORS_UNIT sensor_unit;
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public bool isAvailable;
     };
@@ -455,6 +495,14 @@ namespace sl
         /// </summary>
         public float3 camera_imu_translation;
         /// <summary>
+        /// Magnetometer to IMU rotation. contains rotation between IMU frame and magnetometer frame.
+        /// </summary>
+        public float4 imu_magnometer_rotation;
+        /// <summary>
+        /// Magnetometer to IMU translation. contains translation between IMU frame and magnetometer frame.
+        /// </summary>
+        public float3 imu_magnometer_translation;
+        /// <summary>
         /// Configuration of the accelerometer device.
         /// </summary>
         public SensorParameters accelerometer_parameters;
@@ -471,7 +519,7 @@ namespace sl
         /// </summary>
         public SensorParameters barometer_parameters;
         /// <summary>
-        /// if a sensor type is available on the device 
+        /// if a sensor type is available on the device
         /// </summary>
         /// <param name="sensor_type"></param>
         /// <returns></returns>
@@ -633,146 +681,145 @@ namespace sl
     /// </remarks>
     public enum ERROR_CODE
     {
-		/// <summary>
-		/// Operation was successful.
-		/// </summary>
-		SUCCESS,
-		/// <summary>
-		/// Standard, generic code for unsuccessful behavior when no other code is more appropriate.
-		/// </summary>
-		FAILURE,
-		/// <summary>
-		/// No GPU found, or CUDA capability of the device is not supported.
-		/// </summary>
-		NO_GPU_COMPATIBLE,
-		/// <summary>
-		/// Not enough GPU memory for this depth mode. Try a different mode (such as PERFORMANCE).
-		/// </summary>
-		NOT_ENOUGH_GPUMEM,
-		/// <summary>
-		/// The ZED camera is not plugged in or detected.
-		/// </summary>
-		CAMERA_NOT_DETECTED,
-		/// <summary>
-		/// a ZED Mini is detected but the inertial sensor cannot be opened. (Never called for original ZED)
-		/// </summary>
-		SENSOR_NOT_DETECTED,
-		/// <summary>
-		/// For Nvidia Jetson X1 only - resolution not yet supported (USB3.0 bandwidth).
-		/// </summary>
-		INVALID_RESOLUTION,
-		/// <summary>
-		/// USB communication issues. Occurs when the camera FPS cannot be reached, due to a lot of corrupted frames.
+        /// <summary>
+        /// Operation was successful.
+        /// </summary>
+        SUCCESS,
+        /// <summary>
+        /// Standard, generic code for unsuccessful behavior when no other code is more appropriate.
+        /// </summary>
+        FAILURE,
+        /// <summary>
+        /// No GPU found, or CUDA capability of the device is not supported.
+        /// </summary>
+        NO_GPU_COMPATIBLE,
+        /// <summary>
+        /// Not enough GPU memory for this depth mode. Try a different mode (such as PERFORMANCE).
+        /// </summary>
+        NOT_ENOUGH_GPUMEM,
+        /// <summary>
+        /// The ZED camera is not plugged in or detected.
+        /// </summary>
+        CAMERA_NOT_DETECTED,
+        /// <summary>
+        /// The MCU that controls the sensors module has an invalid Serial Number. You can try to recover it launching the 'ZED Diagnostic' tool from the command line with the option '-r'.
+        /// </summary>
+        SENSORS_NOT_INITIALIZED,
+        /// <summary>
+        /// a ZED Mini is detected but the inertial sensor cannot be opened. (Never called for original ZED)
+        /// </summary>
+        SENSOR_NOT_DETECTED,
+        /// <summary>
+        /// For Nvidia Jetson X1 only - resolution not yet supported (USB3.0 bandwidth).
+        /// </summary>
+        INVALID_RESOLUTION,
+        /// <summary>
+        /// USB communication issues. Occurs when the camera FPS cannot be reached, due to a lot of corrupted frames.
         /// Try changing the USB port.
-		/// </summary>
-		LOW_USB_BANDWIDTH,
-		/// <summary>
-		/// ZED calibration file is not found on the host machine. Use ZED Explorer or ZED Calibration to get one.
-		/// </summary>
-		CALIBRATION_FILE_NOT_AVAILABLE,
-		/// <summary>
-		/// ZED calibration file is not valid. Try downloading the factory one or recalibrating using the ZED Calibration tool.
-		/// </summary>
-		INVALID_CALIBRATION_FILE,
-		/// <summary>
-		/// The provided SVO file is not valid.
-		/// </summary>
-		INVALID_SVO_FILE,
-		/// <summary>
-		/// An SVO recorder-related error occurred (such as not enough free storage or an invalid file path).
-		/// </summary>
-		SVO_RECORDING_ERROR,
-		/// <summary>
-		/// An SVO related error when NVIDIA based compression cannot be loaded
-		/// </summary>
-		SVO_UNSUPPORTED_COMPRESSION,
-		/// <summary>
-		/// The requested coordinate system is not available.
-		/// </summary>
-		INVALID_COORDINATE_SYSTEM,
-		/// <summary>
-		/// The firmware of the ZED is out of date. Update to the latest version.
-		/// </summary>
-		INVALID_FIRMWARE,
-		/// <summary>
-		///  An invalid parameter has been set for the function.
-		/// </summary>
-		INVALID_FUNCTION_PARAMETERS,
-		/// <summary>
-		/// In grab() only, the current call return the same frame as last call. Not a new frame.
-		/// </summary>
-		NOT_A_NEW_FRAME,
-		/// <summary>
-		/// In grab() only, a CUDA error has been detected in the process. Activate wrapperVerbose in ZEDManager.cs for more info.
-		/// </summary>
-		CUDA_ERROR,
-		/// <summary>
-		/// In grab() only, ZED SDK is not initialized. Probably a missing call to sl::Camera::open.
-		/// </summary>
-		CAMERA_NOT_INITIALIZED,
-		/// <summary>
-		/// Your NVIDIA driver is too old and not compatible with your current CUDA version.
-		/// </summary>
-		NVIDIA_DRIVER_OUT_OF_DATE,
-		/// <summary>
-		/// The function call is not valid in the current context. Could be a missing a call to sl::Camera::open.
-		/// </summary>
-		INVALID_FUNCTION_CALL,
-		/// <summary>
-		///  The SDK wasn't able to load its dependencies, the installer should be launched.
-		/// </summary>
-		CORRUPTED_SDK_INSTALLATION,
-		/// <summary>
-		/// The installed SDK is not the SDK used to compile the program.
-		/// </summary>
-		INCOMPATIBLE_SDK_VERSION,
-		/// <summary>
-		/// The given area file does not exist. Check the file path.
-		/// </summary>
-		INVALID_AREA_FILE,
-		/// <summary>
-		/// The area file does not contain enough data to be used ,or the sl::DEPTH_MODE used during the creation of the
+        /// </summary>
+        LOW_USB_BANDWIDTH,
+        /// <summary>
+        /// ZED calibration file is not found on the host machine. Use ZED Explorer or ZED Calibration to get one.
+        /// </summary>
+        CALIBRATION_FILE_NOT_AVAILABLE,
+        /// <summary>
+        /// ZED calibration file is not valid. Try downloading the factory one or recalibrating using the ZED Calibration tool.
+        /// </summary>
+        INVALID_CALIBRATION_FILE,
+        /// <summary>
+        /// The provided SVO file is not valid.
+        /// </summary>
+        INVALID_SVO_FILE,
+        /// <summary>
+        /// An SVO recorder-related error occurred (such as not enough free storage or an invalid file path).
+        /// </summary>
+        SVO_RECORDING_ERROR,
+        /// <summary>
+        /// An SVO related error when NVIDIA based compression cannot be loaded
+        /// </summary>
+        SVO_UNSUPPORTED_COMPRESSION,
+        /// <summary>
+        /// The requested coordinate system is not available.
+        /// </summary>
+        INVALID_COORDINATE_SYSTEM,
+        /// <summary>
+        /// The firmware of the ZED is out of date. Update to the latest version.
+        /// </summary>
+        INVALID_FIRMWARE,
+        /// <summary>
+        ///  An invalid parameter has been set for the function.
+        /// </summary>
+        INVALID_FUNCTION_PARAMETERS,
+        /// <summary>
+        /// In grab() only, the current call return the same frame as last call. Not a new frame.
+        /// </summary>
+        NOT_A_NEW_FRAME,
+        /// <summary>
+        /// In grab() only, a CUDA error has been detected in the process. Activate wrapperVerbose in ZEDManager.cs for more info.
+        /// </summary>
+        CUDA_ERROR,
+        /// <summary>
+        /// In grab() only, ZED SDK is not initialized. Probably a missing call to sl::Camera::open.
+        /// </summary>
+        CAMERA_NOT_INITIALIZED,
+        /// <summary>
+        /// Your NVIDIA driver is too old and not compatible with your current CUDA version.
+        /// </summary>
+        NVIDIA_DRIVER_OUT_OF_DATE,
+        /// <summary>
+        /// The function call is not valid in the current context. Could be a missing a call to sl::Camera::open.
+        /// </summary>
+        INVALID_FUNCTION_CALL,
+        /// <summary>
+        ///  The SDK wasn't able to load its dependencies, the installer should be launched.
+        /// </summary>
+        CORRUPTED_SDK_INSTALLATION,
+        /// <summary>
+        /// The installed SDK is not the SDK used to compile the program.
+        /// </summary>
+        INCOMPATIBLE_SDK_VERSION,
+        /// <summary>
+        /// The given area file does not exist. Check the file path.
+        /// </summary>
+        INVALID_AREA_FILE,
+        /// <summary>
+        /// The area file does not contain enough data to be used ,or the sl::DEPTH_MODE used during the creation of the
         /// area file is different from the one currently set.
-		/// </summary>
-		INCOMPATIBLE_AREA_FILE,
-		/// <summary>
-		/// Camera failed to set up.
-		/// </summary>
-		CAMERA_FAILED_TO_SETUP,
-		/// <summary>
-		/// Your ZED cannot be opened. Try replugging it to another USB port or flipping the USB-C connector (if using ZED Mini).
-		/// </summary>
-		CAMERA_DETECTION_ISSUE,
-		/// <summary>
-		/// The Camera is already in use by another process.
-		/// </summary>
-		CAMERA_ALREADY_IN_USE,
-		/// <summary>
-		/// No GPU found or CUDA is unable to list it. Can be a driver/reboot issue.
-		/// </summary>
-		NO_GPU_DETECTED,
-		/// <summary>
-		/// Plane not found. Either no plane is detected in the scene, at the location or corresponding to the floor,
+        /// </summary>
+        INCOMPATIBLE_AREA_FILE,
+        /// <summary>
+        /// Camera failed to set up.
+        /// </summary>
+        CAMERA_FAILED_TO_SETUP,
+        /// <summary>
+        /// Your ZED cannot be opened. Try replugging it to another USB port or flipping the USB-C connector (if using ZED Mini).
+        /// </summary>
+        CAMERA_DETECTION_ISSUE,
+        /// <summary>
+        /// The Camera is already in use by another process.
+        /// </summary>
+        CAMERA_ALREADY_IN_USE,
+        /// <summary>
+        /// No GPU found or CUDA is unable to list it. Can be a driver/reboot issue.
+        /// </summary>
+        NO_GPU_DETECTED,
+        /// <summary>
+        /// Plane not found. Either no plane is detected in the scene, at the location or corresponding to the floor,
         /// or the floor plane doesn't match the prior given.
-		/// </summary>
-		PLANE_NOT_FOUND,
-		/// <summary>
-		/// Missing or corrupted AI module ressources.
-		/// Please reinstall the ZED SDK with the AI (object detection) module to fix this issue
-		/// </summary>
-		AI_MODULE_NOT_AVAILABLE,
-		/// <summary>
-		/// The cuDNN library cannot be loaded, or is not compatible with this version of the ZED SDK
-		/// </summary>
-		INCOMPATIBLE_CUDNN_VERSION,
-        /// <summary>
-        /// internal sdk timestamp is not valid
         /// </summary>
-        AI_INVALID_TIMESTAMP,
+        PLANE_NOT_FOUND,
         /// <summary>
-        /// an error occur while tracking objects
+        /// The Object detection module is only compatible with the ZED 2
         /// </summary>
-        AI_UNKNOWN_ERROR, 
+        MODULE_NOT_COMPATIBLE_WITH_CAMERA,
+        /// <summary>
+        /// The module needs the sensors to be enabled (see InitParameters::sensors_required)
+        /// </summary>
+        MOTION_SENSORS_REQUIRED,
+        /// <summary>
+        /// The module needs a newer version of CUDA
+        /// </summary>
+        MODULE_NOT_COMPATIBLE_WITH_CUDA_VERSION,
         /// <summary>
         /// End of ERROR_CODE
         /// </summary>
@@ -967,7 +1014,7 @@ namespace sl
         /// </summary>
         EXPOSURE,
         /// <summary>
-        /// Auto-exposure and auto gain. Setting this to true switches on both. Assigning a specifc value to GAIN or EXPOSURE will set this to 0. 
+        /// Auto-exposure and auto gain. Setting this to true switches on both. Assigning a specifc value to GAIN or EXPOSURE will set this to 0.
         /// </summary>
         AEC_AGC,
         /// <summary>
@@ -1356,7 +1403,7 @@ namespace sl
         /// <summary>
         /// True for the SDK to provide text feedback.
         /// </summary>
-        public bool sdkVerbose;
+        public int sdkVerbose;
         /// <summary>
         /// ID of the graphics card on which the ZED's computations will be performed.
         /// </summary>
@@ -1386,7 +1433,7 @@ namespace sl
         /// </summary>
         public ushort portStream = 30000;
         /// <summary>
-        /// Whether to enable improved color/gamma curves added in ZED SDK 3.0. 
+        /// Whether to enable improved color/gamma curves added in ZED SDK 3.0.
         /// </summary>
         public bool enableImageEnhancement = true;
         /// <summary>
@@ -1395,6 +1442,13 @@ namespace sl
         /// <warning> Erroneous calibration values can lead to poor SDK modules accuracy. </warning>
         /// </summary>
         public string optionalOpencvCalibrationFile = "";
+        /// <summary>
+        /// Define a timeout in seconds after which an error is reported if the \ref open() command fails.
+        /// Set to '-1' to try to open the camera endlessly without returning error in case of failure.
+        /// Set to '0' to return error in case of failure at the first attempt.
+        /// This parameter only impacts the LIVE mode.
+        /// </summary>
+        public float openTimeoutSec;
 
         /// <summary>
         /// Constructor. Sets default initialization parameters recommended for Unity.
@@ -1414,7 +1468,7 @@ namespace sl
             this.depthMaximumDistance = -1;
             this.cameraImageFlip = 2;
             this.cameraDisableSelfCalib = false;
-            this.sdkVerbose = false;
+            this.sdkVerbose = 0;
             this.sdkGPUId = -1;
             this.sdkVerboseLogFile = "";
             this.enableRightSideMeasure = false;
@@ -1425,9 +1479,10 @@ namespace sl
             this.portStream = 30000;
             this.enableImageEnhancement = true;
             this.optionalOpencvCalibrationFile = "";
+            this.openTimeoutSec = 5.0f;
         }
-
     }
+
     /// <summary>
     /// List of available coordinate systems. Left-Handed, Y Up is recommended to stay consistent with Unity.
     /// consistent with Unity.
@@ -1514,7 +1569,7 @@ namespace sl
         /// </summary>
         public int confidenceThreshold;
         /// <summary>
-        /// Defines texture confidence threshold for the depth. Based on textureness confidence. 
+        /// Defines texture confidence threshold for the depth. Based on textureness confidence.
         /// </summary>
         public int textureConfidenceThreshold;
 
@@ -1569,8 +1624,6 @@ namespace sl
 		USB_DEVICE_STEREOLABS
 	};
 
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////  Object Detection /////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1622,12 +1675,12 @@ namespace sl
         [MarshalAs(UnmanagedType.U1)]
         public bool enableObjectTracking;
         /// <summary>
-        /// Defines if the SDK will calculate 2D masks for each object. Requires more performance, so don't enable if you don't need these masks. 
+        /// Defines if the SDK will calculate 2D masks for each object. Requires more performance, so don't enable if you don't need these masks.
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool enable2DMask;
         /// <summary>
-        /// Defines the AI model used for detection 
+        /// Defines the AI model used for detection
         /// </summary>
         public sl.DETECTION_MODEL detectionModel;
         /// <summary>
@@ -1635,6 +1688,10 @@ namespace sl
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool enableBodyFitting;
+        /// <summary>
+        /// Body Format. BODY_FORMAT.POSE_34 automatically enables body fitting.
+        /// </summary>
+        public sl.BODY_FORMAT bodyFormat;
         /// <summary>
         /// Defines a upper depth range for detections.
         /// Defined in  UNIT set at  sl.Camera.Open.
@@ -1654,34 +1711,57 @@ namespace sl
     public struct dll_ObjectDetectionRuntimeParameters
     {
         /// <summary>
-        /// The detection confidence threshold between 1 and 99. 
+        /// The detection confidence threshold between 1 and 99.
         /// A confidence of 1 means a low threshold, more uncertain objects and 99 very few but very precise objects.
-        /// Ex: If set to 80, then the SDK must be at least 80% sure that a given object exists before reporting it in the list of detected objects. 
+        /// Ex: If set to 80, then the SDK must be at least 80% sure that a given object exists before reporting it in the list of detected objects.
         /// If the scene contains a lot of objects, increasing the confidence can slightly speed up the process, since every object instance is tracked.
         /// </summary>
         public float detectionConfidenceThreshold;
         /// <summary>
-        ///  
+        ///
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)sl.OBJECT_CLASS.LAST)]
         public int[] objectClassFilter;
 
         /// <summary>
-        ///  
+        ///
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)sl.OBJECT_CLASS.LAST)]
         public int[] object_confidence_threshold;
     };
 
     /// <summary>
-    /// Object data structure directly from the SDK. Represents a single object detection. 
-    /// See DetectedObject for an abstracted version with helper functions that make this data easier to use in Unity. 
+    /// Lists of supported skeleton body model
+    /// </summary>
+    public enum BODY_FORMAT
+    {
+        POSE_18,
+        POSE_34,
+    };
+
+    /// <summary>
+    /// Object data structure directly from the SDK. Represents a single object detection.
+    /// See DetectedObject for an abstracted version with helper functions that make this data easier to use in Unity.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct ObjectDataSDK
     {
-        //public int valid; //is Data Valid
-        public int id; //person ID
+        /// <summary>
+        /// Object identification number, used as a reference when tracking the object through the frames.
+        /// </summary>
+        public int id;
+        /// <summary>
+        ///Unique ID to help identify and track AI detections. Can be either generated externally, or using \ref ZEDCamera.generateUniqueId() or left empty
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 37)]
+        public string uniqueObjectId;
+        /// <summary>
+        ///  Object label, forwarded from \ref CustomBoxObjects when using DETECTION_MODEL.CUSTOM_BOX_OBJECTS
+        /// </summary>
+        public int rawLabel;
+        /// <summary>
+        /// Object category. Identify the object type.
+        /// </summary>
         public sl.OBJECT_CLASS objectClass;
         public sl.OBJECT_SUBCLASS objectSubClass;
         public sl.OBJECT_TRACK_STATE objectTrackingState;
@@ -1692,9 +1772,9 @@ namespace sl
 
         /// <summary>
         /// Image data.
-        /// Note that Y in these values is relative from the top of the image, whereas the opposite is true 
-        /// in most related Unity functions. If using this raw value, subtract Y from the 
-        /// image height to get the height relative to the bottom. 
+        /// Note that Y in these values is relative from the top of the image, whereas the opposite is true
+        /// in most related Unity functions. If using this raw value, subtract Y from the
+        /// image height to get the height relative to the bottom.
         /// </summary>
         ///  0 ------- 1
         ///  |   obj   |
@@ -1714,14 +1794,14 @@ namespace sl
         /// <summary>
         /// The 3D space bounding box. given as array of vertices
         /// </summary>
-        ///   1 ---------2  
+        ///   1 ---------2
         ///  /|         /|
         /// 0 |--------3 |
         /// | |        | |
         /// | 5--------|-6
         /// |/         |/
         /// 4 ---------7
-        /// 
+        ///
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
         public Vector3[] worldBoundingBox; // 3D Bounding Box of object
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
@@ -1730,12 +1810,12 @@ namespace sl
         /// <summary>
         /// The 2D position of skeleton joints
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 34)]
         public Vector2[] skeletonJointPosition2D;// 2D position of the joints of the skeleton
         /// <summary>
         /// The 3D position of skeleton joints
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 34)]
         public Vector3[] skeletonJointPosition;// 3D position of the joints of the skeleton
 
         // Full covariance matrix for position (3x3). Only 6 values are necessary
@@ -1743,22 +1823,72 @@ namespace sl
         // [p1, p3, p4]
         // [p2, p4, p5]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-        public float[] position_covariance;// covariance matrix of the 3d position, represented by its upper triangular matrix value
+        public float[] positionCovariance;// covariance matrix of the 3d position, represented by its upper triangular matrix value
 
         /// <summary>
         ///  Per keypoint detection confidence, can not be lower than the ObjectDetectionRuntimeParameters.detection_confidence_threshold.
         ///  Not available with DETECTION_MODEL.MULTI_CLASS_BOX.
         ///  in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18)]
-        public float[] keypoint_confidence;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 34)]
+        public float[] keypointConfidence;
+
+        /// <summary>
+        /// Global position per joint in the coordinate frame of the requested skeleton format.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 34)]
+        public Vector3[] localPositionPerJoint;
+        /// <summary>
+        /// Local orientation per joint in the coordinate frame of the requested skeleton format.
+        /// The orientation is represented by a quaternion.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 34)]
+        public Quaternion[] localOrientationPerJoint;
+        /// <summary>
+        /// Global root position.
+        /// </summary>
+        public Quaternion globalRootOrientation;
     };
 
-
+    /// <summary>
+    /// Container to store the externally detected objects. The objects can be ingested using IngestCustomBoxObjects() function to extract 3D information and tracking over time.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CustomBoxObjectData
+    {
+        /// <summary>
+        ///Unique ID to help identify and track AI detections. Can be either generated externally, or using \ref ZEDCamera.generateUniqueId() or left empty
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 37)]
+        public string uniqueObjectID;
+        /// <summary>
+        /// 2D bounding box represented as four 2D points starting at the top left corner and rotation clockwise.
+        /// </summary>
+        ///  0 ------- 1
+        ///  |   obj   |
+        ///  3-------- 2
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public Vector2[] boundingBox2D;
+        /// <summary>
+        /// Object label, this information is passed-through and can be used to improve object tracking
+        /// </summary>
+        public int label;
+        /// <summary>
+        /// Detection confidence. Should be [0-1]. It can be used to improve the object tracking
+        /// </summary>
+        public float probability;
+        /// <summary>
+        /// Provide hypothesis about the object movements(degrees of freedom) to improve the object tracking
+        /// true: means 2 DoF projected alongside the floor plane, the default for object standing on the ground such as person, vehicle, etc
+        /// false : 6 DoF full 3D movements are allowed
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool isGrounded;
+    }
 
     /// <summary>
-    /// Object Scene data directly from the ZED SDK. Represents all detections given during a single image frame. 
-    /// See DetectionFrame for an abstracted version with helper functions that make this data easier to use in Unity. 
+    /// Object Scene data directly from the ZED SDK. Represents all detections given during a single image frame.
+    /// See DetectionFrame for an abstracted version with helper functions that make this data easier to use in Unity.
     /// Contains the number of object in the scene and the objectData structure for each object.
     /// Since the data is transmitted from C++ to C#, the size of the structure must be constant. Therefore, there is a limitation of 200 (MAX_OBJECT constant) objects in the image.
     /// <c> This number cannot be changed.<c>
@@ -1767,7 +1897,7 @@ namespace sl
     public struct ObjectsFrameSDK
     {
         /// <summary>
-        /// How many objects were detected this frame. Use this to iterate through the top of objectData; objects with indexes greater than numObject are empty. 
+        /// How many objects were detected this frame. Use this to iterate through the top of objectData; objects with indexes greater than numObject are empty.
         /// </summary>
         public int numObject;
         /// <summary>
@@ -1787,7 +1917,7 @@ namespace sl
         /// </summary>
         public sl.DETECTION_MODEL detectionModel;
         /// <summary>
-        /// Array of objects 
+        /// Array of objects
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)(Constant.MAX_OBJECTS))]
         public ObjectDataSDK[] objectData;
@@ -1804,7 +1934,8 @@ namespace sl
         ANIMAL = 3,
         ELECTRONICS = 4,
         FRUIT_VEGETABLE = 5,
-        LAST = 6
+        SPORT = 6,
+        LAST = 7
     };
 
     /// <summary>
@@ -1839,11 +1970,13 @@ namespace sl
         APPLE = 19,
         ORANGE = 20,
         CARROT = 21,
-        LAST = 22
+        PERSON_HEAD = 22,
+        SPORTSBALL = 23,
+        LAST = 24
     };
 
     /// <summary>
-    /// Tracking state of an individual object. 
+    /// Tracking state of an individual object.
     /// </summary>
     public enum OBJECT_TRACK_STATE
     {
@@ -1854,7 +1987,7 @@ namespace sl
     };
 
     public enum OBJECT_ACTION_STATE
-    { 
+    {
         IDLE = 0, /**< The object is staying static. */
         MOVING = 1, /**< The object is moving. */
         LAST = 2
@@ -1888,6 +2021,14 @@ namespace sl
         /// Keypoints based, specific to human skeleton, real time performance even on Jetson or low end GPU cards.
         /// </summary>
         HUMAN_BODY_MEDIUM,
+        /// <summary>
+        ///  Bounding Box detector specialized in person heads, particulary well suited for crowded environement, the person localization is also improved
+        /// </summary>
+        PERSON_HEAD_BOX,
+        /// <summary>
+        /// For external inference, using your own custom model and/or frameworks. This mode disable the internal inference engine, the 2D bounding box detection must be provided
+        /// </summary>
+        CUSTOM_BOX_OBJECTS
     };
 
 
@@ -2017,6 +2158,4 @@ namespace sl
         /// </summary>
         public float[,] keypointConfidences = new float[(int)Constant.MAX_BATCH_SIZE, 18];
     }
-
-
 }// end namespace sl

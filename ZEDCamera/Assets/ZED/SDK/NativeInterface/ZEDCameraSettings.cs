@@ -14,10 +14,10 @@ public class ZEDCameraSettings
 {
     #region DLL Calls
     const string nameDll = sl.ZEDCommon.NameDLL;
-    [DllImport(nameDll, EntryPoint = "dllz_set_video_settings")]
+    [DllImport(nameDll, EntryPoint = "sl_set_video_settings")]
     private static extern void dllz_set_video_settings(int id, int mode, int value, int usedefault);
 
-    [DllImport(nameDll, EntryPoint = "dllz_get_video_settings")]
+    [DllImport(nameDll, EntryPoint = "sl_get_video_settings")]
     private static extern int dllz_get_video_settings(int id, int mode);
 
     #endregion

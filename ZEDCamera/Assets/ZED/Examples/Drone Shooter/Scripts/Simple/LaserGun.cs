@@ -6,9 +6,9 @@ using UnityEngine.XR;
 #endif
 
 /// <summary>
-/// Fires a laser when the user issues a command. 
-/// If there is a ZEDControllerTracker in the same object, and the Oculus Integration or SteamVR plugins are installed, 
-/// it'll automatically check them for inputs. 
+/// Fires a laser when the user issues a command.
+/// If there is a ZEDControllerTracker in the same object, and the Oculus Integration or SteamVR plugins are installed,
+/// it'll automatically check them for inputs.
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
 public class LaserGun : MonoBehaviour
@@ -32,7 +32,7 @@ public class LaserGun : MonoBehaviour
     public Transform laserSpawnLocation;
 
     /// <summary>
-    /// Reference to the scene's primary ZEDManager component. Used for placing the crosshair. 
+    /// Reference to the scene's primary ZEDManager component. Used for placing the crosshair.
     /// </summary>
     [Tooltip("Reference to the scene's primary ZEDManager component. Used for placing the crosshair.")]
     public ZEDManager zedManager = null;
@@ -52,7 +52,6 @@ public class LaserGun : MonoBehaviour
     /// </summary>
     private ZEDControllerTracker_DemoInputs objecttracker;
 
-
     IEnumerator Start()
     {
         audiosource = GetComponent<AudioSource>();
@@ -71,7 +70,7 @@ public class LaserGun : MonoBehaviour
         {
             //Get the laser bead from the parent/achor object.
             pointerbead = laserPointerBeadHolder.transform.GetChild(0).gameObject;
-            //Disable the laser bead to wait for the ZED to initialize. 
+            //Disable the laser bead to wait for the ZED to initialize.
             pointerbead.SetActive(false);
         }
 
@@ -113,7 +112,7 @@ public class LaserGun : MonoBehaviour
                     {
                         for (int i = 0; i < children; ++i)
                             transform.GetChild(i).gameObject.SetActive(false);
-                        
+
                         this.enabled = false;
                         yield break;
                     }
@@ -144,31 +143,31 @@ public class LaserGun : MonoBehaviour
         {
             Vector3 crosshairpoint;
             Vector3 crosshairnormal;
-            //Point the bead at the closest thing in front of the camera. 
+            //Point the bead at the closest thing in front of the camera.
             if (FindCrosshairPosition(out crosshairpoint, out crosshairnormal))
             {
                 //We hit something. Make sure the bead is active.
                 pointerbead.SetActive(true);
 
-                //Position the bead a the collision point, and make it face you. 
+                //Position the bead a the collision point, and make it face you.
                 pointerbead.transform.position = crosshairpoint;
                 if (crosshairnormal.magnitude > 0.0001f)
                     pointerbead.transform.rotation = Quaternion.LookRotation(crosshairnormal);
             }
             else
             {
-                //We didn't hit anything. Disable the bead object. 
+                //We didn't hit anything. Disable the bead object.
                 pointerbead.SetActive(false);
             }
         }
 
-        //Check to see if any valid fire keys are triggered. 
-        //This is more complex than often necessary so as to work out-of-the-box for a variety of configurations. 
-        //If using/extending this script for your own project, it's recommended to use Input.GetButtonDown() with a custom Input, use Unity.XR, or interface with a VR SDK. 
+        //Check to see if any valid fire keys are triggered.
+        //This is more complex than often necessary so as to work out-of-the-box for a variety of configurations.
+        //If using/extending this script for your own project, it's recommended to use Input.GetButtonDown() with a custom Input, use Unity.XR, or interface with a VR SDK.
         bool buttondown = false;
 
-        //Check for keys present on all systems 
-        //Use objecttracker to know if this controller was intended to be on a VR controller. 
+        //Check for keys present on all systems
+        //Use objecttracker to know if this controller was intended to be on a VR controller.
         if (objecttracker == null && (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Space)))
         {
             buttondown = true;
@@ -176,7 +175,7 @@ public class LaserGun : MonoBehaviour
 
 #if ZED_OCULUS
 
-        //Update whether the Touch controllers are active. 
+        //Update whether the Touch controllers are active.
         int children = transform.childCount;
         if (OVRManager.isHmdPresent)
         {
@@ -220,16 +219,16 @@ public class LaserGun : MonoBehaviour
 
 
     /// <summary>
-    /// Tests the depth of both the real and virtual in the center of the screen, and returns the world position of the closest one. 
+    /// Tests the depth of both the real and virtual in the center of the screen, and returns the world position of the closest one.
     /// </summary>
     /// <param name="crosshairpoint">Where the crosshair should be rendered.</param>
     /// <param name="collisionnormal">The normal vector of the surface aimed at, for rotating the crosshair accordingly if desired.</param>
     /// <returns>False if there is no valid object, real or virtual, on which to place the crosshair. </returns>
     private bool FindCrosshairPosition(out Vector3 crosshairpoint, out Vector3 collisionnormal)
     {
-        //Find the distance to the real world. The bool will be false if there is an error reading the depth at the center of the screen. 
+        //Find the distance to the real world. The bool will be false if there is an error reading the depth at the center of the screen.
         Vector3 realpoint = Vector3.zero;
-        float realdistance = 20f; //Arbitrary distance to put the crosshair if it hits nothing at all. Chosen by ZED's max range. 
+        float realdistance = 20f; //Arbitrary distance to put the crosshair if it hits nothing at all. Chosen by ZED's max range.
         bool foundrealdistance = false;
 
         if (ZEDSupportFunctions.HitTestOnRay(zedManager.zedCamera, zedManager.GetMainCamera(), laserPointerBeadHolder.transform.position,
@@ -240,11 +239,11 @@ public class LaserGun : MonoBehaviour
         }
 
 
-        //Find the distance to the virtual. The bool will be false if there are no colliders ahead of you. 
+        //Find the distance to the virtual. The bool will be false if there are no colliders ahead of you.
         RaycastHit hitinfo;
         bool foundvirtualdistance = Physics.Raycast(laserPointerBeadHolder.transform.position, laserPointerBeadHolder.transform.rotation * Vector3.forward, out hitinfo);
 
-        //If we didn't find either, return false so the laser and bead can be disabled. 
+        //If we didn't find either, return false so the laser and bead can be disabled.
         if (!foundrealdistance && !foundvirtualdistance)
         {
             crosshairpoint = Vector3.zero;
@@ -255,14 +254,14 @@ public class LaserGun : MonoBehaviour
         //Decide if we use the real or virtual distance
         if (!foundvirtualdistance || realdistance < hitinfo.distance)
         {
-            //The real world is closer. Give the position of the real world pixel and return true. 
+            //The real world is closer. Give the position of the real world pixel and return true.
             crosshairpoint = realpoint;
             ZEDSupportFunctions.GetNormalAtWorldLocation(zedManager.zedCamera, realpoint, sl.REFERENCE_FRAME.WORLD, zedManager.GetMainCamera(), out collisionnormal);
             return true;
         }
         else
         {
-            //The virtual world is closer, or they're tied. Return the world posiiton where the raycast hit the virtual collider. 
+            //The virtual world is closer, or they're tied. Return the world posiiton where the raycast hit the virtual collider.
             crosshairpoint = hitinfo.point;
             collisionnormal = hitinfo.normal;
             return true;
@@ -271,11 +270,11 @@ public class LaserGun : MonoBehaviour
 
 
     /// <summary>
-    /// Spawns the laser prefab at the spawn anchor. 
+    /// Spawns the laser prefab at the spawn anchor.
     /// </summary>
     void Fire()
     {
-        //Create the shot and position/rotate it accordingly. 
+        //Create the shot and position/rotate it accordingly.
         GameObject blastershot = Instantiate(laserShotPrefab);
         blastershot.transform.position = laserSpawnLocation != null ? laserSpawnLocation.transform.position : transform.position;
         blastershot.transform.rotation = laserSpawnLocation != null ? laserSpawnLocation.transform.rotation : transform.rotation;
@@ -294,22 +293,22 @@ public class LaserGun : MonoBehaviour
 
 #if ZED_OCULUS
     /// <summary>
-    /// Returns if this script is bound to an Oculus Touch controller that is currently not connected. 
-    /// For example, if it's a Right Controller but only the left is connected, it returns false. 
-    /// If not bound to a controller, returns true. 
+    /// Returns if this script is bound to an Oculus Touch controller that is currently not connected.
+    /// For example, if it's a Right Controller but only the left is connected, it returns false.
+    /// If not bound to a controller, returns true.
     /// </summary>
     /// <returns></returns>
     private bool IsConnectedController()
     {
-        if (!objecttracker) return true; //Not attached to a tracker. Return true since it doesn't depend on a controller to be alive. 
+        if (!objecttracker) return true; //Not attached to a tracker. Return true since it doesn't depend on a controller to be alive.
         if (objecttracker.deviceToTrack != ZEDControllerTracker.Devices.LeftController && objecttracker.deviceToTrack != ZEDControllerTracker.Devices.RightController)
-            return true; //Not bound to a left or right controller, so let it live. 
+            return true; //Not bound to a left or right controller, so let it live.
 
 
         string connectedcontrollers = OVRInput.GetConnectedControllers().ToString().ToLower();
-        if (connectedcontrollers == "touch") return true; //Both controllers are connected, so 
+        if (connectedcontrollers == "touch") return true; //Both controllers are connected, so
         if (objecttracker.deviceToTrack == ZEDControllerTracker.Devices.LeftController && connectedcontrollers == "ltouch") return true; //Left controller only.
-        if (objecttracker.deviceToTrack == ZEDControllerTracker.Devices.RightController && connectedcontrollers == "rtouch") return true; //Right controller only. 
+        if (objecttracker.deviceToTrack == ZEDControllerTracker.Devices.RightController && connectedcontrollers == "rtouch") return true; //Right controller only.
 
         return false;
     }
