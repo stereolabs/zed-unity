@@ -706,7 +706,11 @@ public class ZEDRenderingPlane : MonoBehaviour
         matRGB.SetTexture("_DepthXYZTex", depth);
         matRGB.SetTexture("_NormalsTex", normals);
 
+<<<<<<< HEAD
 #if ZED_LWRP || ZED_HDRP || ZED_URP //Need FoV to calculate world space positions accurately. 
+=======
+#if ZED_LWRP || ZED_HDRP && !ZED_URP//Need FoV to calculate world space positions accurately. 
+>>>>>>> v3.6.0_new_c_wrapper
         matRGB.SetFloat("_ZEDHFoVRad", zedCamera.GetCalibrationParameters().leftCam.hFOV * Mathf.Deg2Rad);
         matRGB.SetFloat("_ZEDVFoVRad", zedCamera.GetCalibrationParameters().leftCam.vFOV * Mathf.Deg2Rad);
         matRGB.SetFloat("_cx", zedCamera.GetCalibrationParameters().leftCam.cx / zedCamera.ImageWidth);
@@ -716,7 +720,11 @@ public class ZEDRenderingPlane : MonoBehaviour
         forwardMat.SetTexture("_MainTex", textureEye);
         forwardMat.SetTexture("_DepthXYZTex", depth);
 
+<<<<<<< HEAD
 #if !ZED_LWRP && !ZED_HDRP && !ZED_URP
+=======
+#if !ZED_LWRP  && !ZED_HDRP  && !ZED_URP
+>>>>>>> v3.6.0_new_c_wrapper
         //Clear the buffers.
         if (buffer[(int)ZED_RENDERING_MODE.FORWARD] != null)
             cam.RemoveCommandBuffer(CameraEvent.BeforeDepthTexture, buffer[(int)ZED_RENDERING_MODE.FORWARD]);

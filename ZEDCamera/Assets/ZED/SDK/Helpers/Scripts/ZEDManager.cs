@@ -351,7 +351,7 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Gets a boolean value indicating whether the spatial mapping has chunks
     /// </summary>
-    public bool SpatialMappingHasChunks{ get { return spatialMapping != null ? spatialMapping.Chunks.Count>0 : false; } }
+    public bool SpatialMappingHasChunks { get { return spatialMapping != null ? spatialMapping.Chunks.Count > 0 : false; } }
 
     /////////////////////////////////////////////////////////////////////////
     ////////////////////////  Object Detection //////////////////////////////
@@ -395,7 +395,7 @@ public class ZEDManager : MonoBehaviour
     public float maxRange = 40.0f;
 
     [HideInInspector]
-    public sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.POSE_32;
+    public sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.POSE_34;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
@@ -448,6 +448,13 @@ public class ZEDManager : MonoBehaviour
     public int fruitVegetableDetectionConfidenceThreshold = 60;
 
     /// <summary>
+    /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
+    /// where the SDK is 80% sure or greater will appear in the list of detected objects.
+    /// </summary>
+    [HideInInspector]
+    public int sportDetectionConfidenceThreshold = 60;
+
+    /// <summary>
     /// Whether to detect people during object detection.
     /// </summary>
     [HideInInspector]
@@ -482,6 +489,12 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public bool objectClassFruitVegetableFilter = true;
+
+    /// <summary>
+    /// Whether to detect sport related objects during object detection.
+    /// </summary>
+    [HideInInspector]
+    public bool objectClassSportFilter = true;
 
     /// <summary>
     /// Whether the object detection module has been activated successfully.
@@ -1148,6 +1161,9 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     private bool enablePoseSmoothing = true;
 
+    [HideInInspector]
+    public sl.ERROR_CODE ZEDGrabError = sl.ERROR_CODE.FAILURE;
+
 #if UNITY_EDITOR
     /// <summary>
     /// The engine FPS, updated every frame.
@@ -1696,7 +1712,7 @@ public class ZEDManager : MonoBehaviour
 
         if (IsObjectDetectionRunning)
         {
-            //StopObjectDetection();
+            StopObjectDetection();
         }
 
 #if !ZED_LWRP && !ZED_HDRP && !ZED_URP
@@ -1752,7 +1768,6 @@ public class ZEDManager : MonoBehaviour
 
     }
 #endif
-
 
     /// <summary>
     /// Sets up starting properties and starts the ZED initialization co-routine.
@@ -1842,7 +1857,7 @@ public class ZEDManager : MonoBehaviour
         }
 
         //Determine if we should enable the right depth measurement, which costs performance but is needed for pass-through AR.
-        switch(enableRightDepthMeasure)
+        switch (enableRightDepthMeasure)
         {
             case RightDepthEnabledMode.AUTO:
             default:
@@ -1976,7 +1991,7 @@ public class ZEDManager : MonoBehaviour
             {
                 lock (zedCamera.grabLock)
                 {
-                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize,streamingTargetFramerate);
+                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize, streamingTargetFramerate);
                     if (err == sl.ERROR_CODE.SUCCESS)
                     {
                         isStreamingEnable = true;
@@ -2116,9 +2131,9 @@ public class ZEDManager : MonoBehaviour
         }
 
     }
-#endregion
+    #endregion
 
-#region IMAGE_ACQUIZ
+    #region IMAGE_ACQUIZ
     /// <summary>
     /// Continuously grabs images from the ZED. Runs on its own thread.
     /// </summary>
@@ -2153,36 +2168,37 @@ public class ZEDManager : MonoBehaviour
     {
         if (requestNewFrame && zedReady)
         {
-            sl.ERROR_CODE e = sl.ERROR_CODE.FAILURE;
+            ZEDGrabError = sl.ERROR_CODE.FAILURE;
+
             if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO)
             {
                 //handle pause
                 if (NeedNewFrameGrab && pauseSVOReading)
                 {
-                    e = zedCamera.Grab(ref runtimeParameters);
+                    ZEDGrabError = zedCamera.Grab(ref runtimeParameters);
                     NeedNewFrameGrab = false;
                 }
                 else if (!pauseSVOReading)
-                    e = zedCamera.Grab(ref runtimeParameters);
+                    ZEDGrabError = zedCamera.Grab(ref runtimeParameters);
 
                 currentFrame = zedCamera.GetSVOPosition();
             }
             else if (!pauseLiveReading)
             {
-                e = zedCamera.Grab(ref runtimeParameters);
+                ZEDGrabError = zedCamera.Grab(ref runtimeParameters);
             }
 
 
             lock (zedCamera.grabLock)
             {
-                if (e == sl.ERROR_CODE.CAMERA_NOT_DETECTED)
+                if (ZEDGrabError == sl.ERROR_CODE.CAMERA_NOT_DETECTED)
                 {
                     Debug.Log("Camera not detected or disconnected.");
                     isDisconnected = true;
                     Thread.Sleep(10);
                     requestNewFrame = false;
                 }
-                else if (e == sl.ERROR_CODE.SUCCESS)
+                else if (ZEDGrabError == sl.ERROR_CODE.SUCCESS)
                 {
 #if UNITY_EDITOR
                     float camera_fps = zedCamera.GetCameraFPS();
@@ -2226,7 +2242,7 @@ public class ZEDManager : MonoBehaviour
             Thread.Sleep(1);
         }
     }
-#endregion
+    #endregion
 
     /// <summary>
     /// Initialize the SVO, and launch the thread to initialize tracking. Called once the ZED
@@ -2245,7 +2261,6 @@ public class ZEDManager : MonoBehaviour
         }
         else if (estimateInitialPosition)
         {
-            Debug.Log("TOTO");
             sl.ERROR_CODE err = zedCamera.EstimateInitialPosition(ref initialRotation, ref initialPosition);
             if (zedCamera.GetCameraModel() != sl.MODEL.ZED)
                 zedCamera.GetInternalIMUOrientation(ref initialRotation, sl.TIME_REFERENCE.IMAGE);
@@ -2356,7 +2371,7 @@ public class ZEDManager : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////// ENGINE UPDATE REGION   /////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#region ENGINE_UPDATE
+    #region ENGINE_UPDATE
     /// <summary>
     /// If a new frame is available, this function retrieves the images and updates the Unity textures. Called in Update().
     /// </summary>
@@ -2522,7 +2537,7 @@ public class ZEDManager : MonoBehaviour
             arRig.LateUpdateHmdRendering(); //Update textures on final AR rig for output to the headset.
         }
     }
-#endregion
+    #endregion
 
     /// <summary>
     /// Event called when camera is disconnected
@@ -2548,7 +2563,7 @@ public class ZEDManager : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////// SPATIAL MAPPING REGION   /////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#region MAPPING_MODULE
+    #region MAPPING_MODULE
     /// <summary>
     /// Tells ZEDSpatialMapping to begin a new scan. This clears the previous scan from the scene if there is one.
     /// </summary>
@@ -2645,7 +2660,7 @@ public class ZEDManager : MonoBehaviour
         saveMeshWhenOver = oldSaveWhenOver; //Restoring old setting.
         return loadresult;
     }
-#endregion
+    #endregion
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2683,7 +2698,7 @@ public class ZEDManager : MonoBehaviour
             Debug.LogError("Tried to start Object Detection while it was already starting. Do you have two scripts trying to start it?");
             yield break;
         }
-        if(objectDetectionRunning)
+        if (objectDetectionRunning)
         {
             Debug.LogWarning("Tried to start Object Detection while it was already running.");
         }
@@ -2706,7 +2721,8 @@ public class ZEDManager : MonoBehaviour
             od_param.enable2DMask = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
             od_param.maxRange = maxRange;
-            if (bodyFormat == sl.BODY_FORMAT.POSE_32 && bodyFitting == false)
+            if (bodyFormat == sl.BODY_FORMAT.POSE_34 && bodyFitting == false && (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
+                                                                                || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST))
             {
                 Debug.LogWarning("sl.BODY_FORMAT.POSE_32 is chosen, Skeleton Tracking will automatically enable body fitting");
                 bodyFitting = true;
@@ -2721,6 +2737,7 @@ public class ZEDManager : MonoBehaviour
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ANIMAL] = animalDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ELECTRONICS] = electronicsDetectionConfidenceThreshold;
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = fruitVegetableDetectionConfidenceThreshold;
+            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.SPORT] = sportDetectionConfidenceThreshold;
             od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
 
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
@@ -2729,6 +2746,7 @@ public class ZEDManager : MonoBehaviour
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
+            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.SPORT] = Convert.ToInt32(objectClassSportFilter);
 
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
             watch.Start();
@@ -2807,7 +2825,6 @@ public class ZEDManager : MonoBehaviour
                 if (OnObjectDetection != null)
                 {
                     DetectionFrame oldoframe = detectionFrame; //Cache so we can clean it up once we're done setting up the new one.
-
                     //DetectionFrame oframe = new DetectionFrame(objectsFrame, this);
                     detectionFrame = new DetectionFrame(objectsFrameSDK, this);
                     OnObjectDetection(detectionFrame);
@@ -2830,7 +2847,6 @@ public class ZEDManager : MonoBehaviour
         sl.ObjectsFrameSDK oframebuffer = new sl.ObjectsFrameSDK();
 
         sl.ERROR_CODE res = zedCamera.RetrieveObjectsDetectionData(ref od_runtime_params, ref oframebuffer);
-
         if (res == sl.ERROR_CODE.SUCCESS && oframebuffer.isNew != 0)
         {
             if (objectDetection2DMask)
@@ -2862,7 +2878,7 @@ public class ZEDManager : MonoBehaviour
                 zedCamera.PauseObjectsDetection(state);
         }
     }
-#endregion
+    #endregion
 
 
 
@@ -2870,7 +2886,7 @@ public class ZEDManager : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////// AR REGION //////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#region AR_CAMERAS
+    #region AR_CAMERAS
     /// <summary>
     /// Stereo rig that adjusts images from ZED_Rig_Stereo to look correct in the HMD.
     /// <para>Hidden by default as it rarely needs to be changed.</para>
@@ -2952,9 +2968,9 @@ public class ZEDManager : MonoBehaviour
         return zedRigDisplayer;
     }
 
-#endregion
+    #endregion
 
-#region MIRROR
+    #region MIRROR
     private ZEDMirror mirror = null;
     private GameObject mirrorContainer = null;
     void CreateMirror()
@@ -2990,7 +3006,7 @@ public class ZEDManager : MonoBehaviour
 
         camL.depth = cameraLeft.GetComponent<Camera>().depth; //Make sure it renders after the left cam so we can copy texture from latest frame.
     }
-#endregion
+    #endregion
 
     /// <summary>
     /// Closes out the current stream, then starts it up again while maintaining tracking data.
@@ -3027,14 +3043,22 @@ public class ZEDManager : MonoBehaviour
         int sn = zedCamera.GetZEDSerialNumber();
         CloseManager();
 
+        openingLaunched = false;
+        running = false;
+        numberTriesOpening = 0;
+        forceCloseInit = false;
+
         bool isCameraAvailable = false;
+        Thread.Sleep(1000);
         sl.ERROR_CODE err = sl.ZEDCamera.Reboot(sn);
+
         if (err == sl.ERROR_CODE.SUCCESS)
         {
             int count = 0;
             // Check if the camera is available before trying to re open it
-            while (!isCameraAvailable && count < 15)
+            while (!isCameraAvailable && count < 30)
             {
+                count++;
                 sl.DeviceProperties[] devices = sl.ZEDCamera.GetDeviceList(out int nbDevices);
                 for (int i = 0; i < nbDevices; i++)
                 {
@@ -3043,23 +3067,18 @@ public class ZEDManager : MonoBehaviour
                         isCameraAvailable = true;
                         break;
                     }
-
                 }
                 Thread.Sleep(500);
-                count++;
             }
         }
 
-        openingLaunched = false;
-        running = false;
-        numberTriesOpening = 0;
-        forceCloseInit = false;
-
-        if (isCameraAvailable) {
+        if (isCameraAvailable)
+        {
             Debug.LogWarning("Reboot successful.");
             Awake();
         }
-        else {
+        else
+        {
             Debug.LogWarning("Unable to reboot correctly.");
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
@@ -3071,12 +3090,12 @@ public class ZEDManager : MonoBehaviour
 
     public void InitVideoSettings(VideoSettingsInitMode mode)
     {
-        if(!zedCamera.IsCameraReady)
+        if (!zedCamera.IsCameraReady)
         {
             Debug.LogError("Tried to apply camera settings before ZED camera was ready.");
             return;
         }
-        switch(mode)
+        switch (mode)
         {
             case VideoSettingsInitMode.Custom:
                 ApplyLocalVideoSettingsToZED();
@@ -3143,7 +3162,7 @@ public class ZEDManager : MonoBehaviour
 
         zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, 1);
     }
-#region EventHandler
+    #region EventHandler
     /// <summary>
     /// Changes the real-world brightness by setting the brightness value in the shaders.
     /// </summary>
@@ -3227,7 +3246,7 @@ public class ZEDManager : MonoBehaviour
     {
         calibrationHasChanged = true;
     }
-#endregion
+    #endregion
 
 
 
@@ -3273,7 +3292,7 @@ public class ZEDManager : MonoBehaviour
             {
                 lock (zedCamera.grabLock)
                 {
-                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize,streamingTargetFramerate);
+                    sl.ERROR_CODE err = zedCamera.EnableStreaming(streamingCodec, (uint)bitrate, (ushort)streamingPort, gopSize, adaptativeBitrate, chunkSize, streamingTargetFramerate);
                     if (err == sl.ERROR_CODE.SUCCESS)
                     {
                         isStreamingEnable = true;

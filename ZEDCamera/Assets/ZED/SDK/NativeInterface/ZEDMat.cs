@@ -1,6 +1,7 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 using System;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 /// <summary>
 /// This file holds the ZEDMat class along with low-level structures used for passing data between 
@@ -166,7 +167,9 @@ namespace sl
             /// <summary>
             /// Store on memory accessible by the GPU. 
             /// </summary>
-            MEM_GPU = 1 
+            MEM_GPU = 1 ,
+
+            LAST = 2
         };
 
         #region DLL Calls
@@ -374,7 +377,7 @@ namespace sl
         /// Frees the memory of the Mat.
         /// </summary>
         /// <param name="mem">Whether the Mat is on CPU or GPU memory.</param>
-        public void Free(MEM mem = (MEM.MEM_GPU | MEM.MEM_CPU))
+        public void Free(MEM mem = MEM.LAST)
         {
             dllz_mat_free(_matInternalPtr, (int)mem);
             _matInternalPtr = IntPtr.Zero;
@@ -592,7 +595,7 @@ namespace sl
         /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out float value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_get_value_float(_matInternalPtr, y, x, out value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_get_value_float(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
         /// Returns the value of a specific point in the matrix. (MAT_32F_C2)
@@ -604,7 +607,7 @@ namespace sl
         /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out float2 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_get_value_float2(_matInternalPtr, y, x, out value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_get_value_float2(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
         /// Returns the value of a specific point in the matrix. (MAT_32F_C3)
@@ -616,7 +619,7 @@ namespace sl
         /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out float3 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_get_value_float3(_matInternalPtr, y, x, out value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_get_value_float3(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
         /// Returns the value of a specific point in the matrix. (MAT_32F_C4)
@@ -628,7 +631,7 @@ namespace sl
         /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out float4 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_get_value_float4(_matInternalPtr, y, x, out value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_get_value_float4(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
         /// Returns the value of a specific point in the matrix. (MAT_TYPE_8U_C1)
@@ -640,7 +643,7 @@ namespace sl
         /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out byte value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_get_value_uchar(_matInternalPtr, y, x, out value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_get_value_uchar(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
         /// Returns the value of a specific point in the matrix. (MAT_TYPE_8U_C2)
@@ -652,7 +655,7 @@ namespace sl
         /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out char2 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_get_value_uchar2(_matInternalPtr, y, x, out value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_get_value_uchar2(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
         /// Returns the value of a specific point in the matrix. (MAT_TYPE_8U_C3)
@@ -664,7 +667,7 @@ namespace sl
         /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out char3 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_get_value_uchar3(_matInternalPtr, y, x, out value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_get_value_uchar3(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /// <summary>
         /// Returns the value of a specific point in the matrix. (MAT_TYPE_8U_C4)
@@ -676,7 +679,7 @@ namespace sl
         /// <returns>Error code indicating if the get was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE GetValue(int x, int y, out char4 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_get_value_uchar4(_matInternalPtr, y, x, out value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_get_value_uchar4(_matInternalPtr, x, y, out value, (int)(mem)));
         }
         /***************************************************************************************/
 
@@ -694,7 +697,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref float value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_float(_matInternalPtr, y, x, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_float(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_32F_C2)
@@ -706,7 +709,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref float2 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_float2(_matInternalPtr, y, x, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_float2(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_32F_C3)
@@ -718,7 +721,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref float3 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_float3(_matInternalPtr, y, x, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_float3(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_32F_C4)
@@ -730,7 +733,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, float4 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_float4(_matInternalPtr, y, x, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_float4(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_TYPE_8U_C1)
@@ -742,7 +745,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref byte value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar(_matInternalPtr, y, x, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_TYPE_8U_C2)
@@ -754,7 +757,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref char2 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar2(_matInternalPtr, y, x, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar2(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_TYPE_8U_C3)
@@ -766,7 +769,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref char3 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar3(_matInternalPtr, y, x, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar3(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_TYPE_8U_C4)
@@ -778,7 +781,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref char4 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar4(_matInternalPtr, y, x, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar4(_matInternalPtr, x, y, ref value, (int)(mem)));
         }
         /***************************************************************************************/
 

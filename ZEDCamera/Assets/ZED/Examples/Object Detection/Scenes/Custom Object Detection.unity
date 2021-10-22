@@ -244,7 +244,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: objectDetectionModel
-      value: 1
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -289,7 +289,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: objectDetectionImageSyncMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -448,6 +448,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1609167224}
   - component: {fileID: 1609167225}
+  - component: {fileID: 1609167226}
   m_Layer: 0
   m_Name: 3D Object Visualizer
   m_TagString: Untagged
@@ -497,8 +498,37 @@ MonoBehaviour:
   floorBBoxPosition: 0
   showONTracked: 1
   showSEARCHINGTracked: 0
-  showOFFTracked: 0
+  showOFFTracked: 1
   minimumWidthToDisplay: 0
+--- !u!114 &1609167226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1609167223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 476f190cf5e4a3b42af5473614db052f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  model: Assets/OpenCVForUnity/StreamingAssets/dnn/yolov4-tiny.weights
+  config: Assets/OpenCVForUnity/StreamingAssets/dnn/yolov4-tiny.cfg
+  classes: Assets/OpenCVForUnity/StreamingAssets/dnn/coco.names
+  classesFilter: []
+  confThreshold: 0.25
+  nmsThreshold: 0.25
+  inferenceWidth: 416
+  inferenceHeight: 416
+  scale: 0.003921569
+  mean:
+    val:
+    - 0
+    - 0
+    - 0
+    - 0
+  zedManager: {fileID: 56380649}
+  imageRetriever: {fileID: 0}
 --- !u!850595691 &1937375697
 LightingSettings:
   m_ObjectHideFlags: 0

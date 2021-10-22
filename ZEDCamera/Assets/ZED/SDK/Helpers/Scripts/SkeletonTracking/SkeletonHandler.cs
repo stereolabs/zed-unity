@@ -31,7 +31,7 @@ public class SkeletonHandler : ScriptableObject
     JointType_EarLeft = 29,
     JointType_SpineBase = 0,  //Not in the list but created from 8 + 11
     JointType_Nose = 27,
-    jointCount = 32;
+    jointCount = 34;
 
 
     private static readonly int[] bonesList = new int[] {
@@ -78,7 +78,7 @@ public class SkeletonHandler : ScriptableObject
     JointType_Nose
     };
 
-    public Vector3[] joint = new Vector3[jointCount];
+    public Vector3[] joints = new Vector3[jointCount];
     
     GameObject skeleton;
     public GameObject[] bones;
@@ -118,6 +118,8 @@ public class SkeletonHandler : ScriptableObject
     HumanBodyBones.LastBone, // Left Ear
     HumanBodyBones.LastBone, // Right Eye
     HumanBodyBones.LastBone, // Right Ear
+    HumanBodyBones.LastBone, // Left Heel
+    HumanBodyBones.LastBone, // Right Heel
     };
 
     private Color[] colors = new Color[]{
@@ -161,7 +163,7 @@ public class SkeletonHandler : ScriptableObject
         humanoid = (GameObject)Instantiate(h, Vector3.zero, Quaternion.identity);
 
         var invisiblelayer = LayerMask.NameToLayer("tagInvisibleToZED");
-        humanoid.layer = invisiblelayer;
+        //humanoid.layer = invisiblelayer;
 
         foreach (Transform child in humanoid.transform)
         {
@@ -282,14 +284,14 @@ public class SkeletonHandler : ScriptableObject
 
         for (int j = 0; j < spheres.Length; j++)
         {
-            if (ZEDSupportFunctions.IsVector3NaN(joint[sphereList[j]]))
+            if (ZEDSupportFunctions.IsVector3NaN(joints[sphereList[j]]))
             {
                 spheres[j].transform.position = Vector3.zero;
                 spheres[j].SetActive(false);
             }
             else
             {
-                spheres[j].transform.position = joint[sphereList[j]];
+                spheres[j].transform.position = joints[sphereList[j]];
                 spheres[j].SetActive(true);
             }
         }
@@ -324,10 +326,7 @@ public class SkeletonHandler : ScriptableObject
     /// <param name="position_center">Position center.</param>
     public void setControlWithJointPosition(Vector3[] jointsPosition, Quaternion[] jointsRotation, Quaternion rootRotation, bool useAvatar)
     {
-        for (int i = 0; i < jointCount; i++)
-        {
-            joint[i] = new Vector3(jointsPosition[i].x, jointsPosition[i].y, jointsPosition[i].z);
-        }
+        joints = jointsPosition;
 
         humanoid.SetActive(useAvatar);
         skeleton.SetActive(!useAvatar);
@@ -347,22 +346,29 @@ public class SkeletonHandler : ScriptableObject
             if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
             {
                 if (smoothFactor != 0f)
-                    rigBone[bone].transform.localRotation = Quaternion.Slerp(rigBone[bone].transform.localRotation, rigBoneTarget[bone], smoothFactor);
+                {
+                    if (rigBone[bone].transform) rigBone[bone].transform.localRotation = Quaternion.Slerp(rigBone[bone].transform.localRotation, rigBoneTarget[bone], smoothFactor);
+                }
                 else
-                    rigBone[bone].transform.localRotation = rigBoneTarget[bone];
+                {
+                    if (rigBone[bone].transform) rigBone[bone].transform.localRotation = rigBoneTarget[bone];
+                }
+
             }
         }
 
         // Apply global transform
         if (isInit)
         {
-            rigBone[HumanBodyBones.Hips].transform.position = smoothFactor != 0f ? Vector3.Lerp(rigBone[HumanBodyBones.Hips].transform.position, targetBodyPosition, smoothFactor) : targetBodyPosition;
-            rigBone[HumanBodyBones.Hips].transform.localRotation = smoothFactor != 0f ? Quaternion.Lerp(rigBone[HumanBodyBones.Hips].transform.localRotation, targetBodyOrientation, smoothFactor) : targetBodyOrientation;
+            if (rigBone[HumanBodyBones.Hips].transform) rigBone[HumanBodyBones.Hips].transform.position = smoothFactor != 0f ? Vector3.Lerp(rigBone[HumanBodyBones.Hips].transform.position, targetBodyPosition, smoothFactor) : targetBodyPosition;
+            if (rigBone[HumanBodyBones.Hips].transform) rigBone[HumanBodyBones.Hips].transform.localRotation = smoothFactor != 0f ? Quaternion.Lerp(rigBone[HumanBodyBones.Hips].transform.localRotation, targetBodyOrientation, smoothFactor) : targetBodyOrientation;
+        
         }
         else
         {
-            rigBone[HumanBodyBones.Hips].transform.position = targetBodyPosition;
-            rigBone[HumanBodyBones.Hips].transform.localRotation = targetBodyOrientation;
+            if (rigBone[HumanBodyBones.Hips].transform) rigBone[HumanBodyBones.Hips].transform.position = targetBodyPosition;
+            if (rigBone[HumanBodyBones.Hips].transform) rigBone[HumanBodyBones.Hips].transform.localRotation = targetBodyOrientation;
+
             isInit = true;
         }
     }
