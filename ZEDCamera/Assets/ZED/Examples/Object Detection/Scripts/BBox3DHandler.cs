@@ -9,7 +9,7 @@ using UnityEngine.Rendering;
 
 /// <summary>
 /// For the ZED 3D Object Detection sample. Handles the cube objects that are moved and resized
-/// to represent objects detected in 3D. 
+/// to represent objects detected in 3D.
 /// This was designed specifically for the 3D Bounding Box prefab, and expects it to use the default
 /// Unity cube model, the TopBottomBBoxMat, and a label object that floats adjacently.
 /// </summary>
@@ -21,12 +21,12 @@ public class BBox3DHandler : MonoBehaviour
     [Header("Label")]
     public Transform labelRoot;
     /// <summary>
-    /// Text component that displays the object's ID and distance from the camera. 
+    /// Text component that displays the object's ID and distance from the camera.
     /// </summary>
     [Tooltip("Text component that displays the object's ID and distance from the camera. ")]
     public Text text2D;
     /// <summary>
-    /// Background image on the label. 
+    /// Background image on the label.
     /// </summary>
     [Tooltip("Background image on the label.")]
     public Image backgroundImage;
@@ -36,8 +36,8 @@ public class BBox3DHandler : MonoBehaviour
     [Tooltip("Outline component around the background image on the label. Should reference the same object as backgroundImage.")]
     public Outline backgroundOutline;
     /// <summary>
-    /// The Y difference between the center of the label and the top of the bounding box. 
-    /// This is used to keep the box at a consistent position, even as the box itself changes in scale. 
+    /// The Y difference between the center of the label and the top of the bounding box.
+    /// This is used to keep the box at a consistent position, even as the box itself changes in scale.
     /// </summary>
     [Tooltip("The Y difference between the center of the label and the top of the bounding box. " +
         "This is used to keep the box at a consistent position, even as the box itself changes in scale.")]
@@ -61,35 +61,35 @@ public class BBox3DHandler : MonoBehaviour
     public bool applyColorToBackgroundOutline = true;
 
     /// <summary>
-    /// If true, the object's ID will be displayed in text2D, assuming it's been updated. 
+    /// If true, the object's ID will be displayed in text2D, assuming it's been updated.
     /// </summary>
     [Space(5)]
     [Tooltip("If true, the object's ID will be displayed in text2D, assuming it's been updated.")]
     public bool showID = true;
     /// <summary>
-    /// If true, the object's distance from the detecting camera will be diplayed in text2D, assuming it's been updated. 
+    /// If true, the object's distance from the detecting camera will be diplayed in text2D, assuming it's been updated.
     /// </summary>
     [Tooltip("If true, the object's distance from the detecting camera will be diplayed in text2D, assuming it's been updated.")]
     public bool showDistance = true;
 
     /// <summary>
-    /// If true, the label will increase size when further than maxDistBeforeScaling from each rendering camera so it's never too small. 
+    /// If true, the label will increase size when further than maxDistBeforeScaling from each rendering camera so it's never too small.
     /// </summary>
     [Space(5)]
     [Tooltip("If true, the label will increase size when further than maxDistBeforeScaling from each rendering camera so it's never too small.")]
     public bool useLabelMaxDistScaling = true;
     /// <summary>
-    /// If useLabelMaxDistScaling is true, this defines how far the label must be from a rendering camera to scale up. 
+    /// If useLabelMaxDistScaling is true, this defines how far the label must be from a rendering camera to scale up.
     /// </summary>
     [Tooltip("If useLabelMaxDistScaling is true, this defines how far the label must be from a rendering camera to scale up.")]
     public float maxDistBeforeScaling = 12f;
     /// <summary>
-    /// Cache for the label's calculated scale. If useLabelMaxDistScaling is enabled, this holds the scale until Camera.onPreRender where the scale is applied. 
+    /// Cache for the label's calculated scale. If useLabelMaxDistScaling is enabled, this holds the scale until Camera.onPreRender where the scale is applied.
     /// </summary>
     private Vector3 thisFrameScale;
 
     /// <summary>
-    /// Lossy (world) scale of the label on start. Used to offset changes in the parent bounding box transform each frame. 
+    /// Lossy (world) scale of the label on start. Used to offset changes in the parent bounding box transform each frame.
     /// </summary>
     private Vector3 labelStartLossyScale;
 
@@ -103,20 +103,20 @@ public class BBox3DHandler : MonoBehaviour
     private float currentDistance = -1f;
 
     /// <summary>
-    /// MeshRenderer attached to this bounding box. 
+    /// MeshRenderer attached to this bounding box.
     /// </summary>
     private MeshRenderer rend;
 
 #if ZED_HDRP
     /// <summary>
-    /// If using HDRP, you can't move or modify objects on a per-camera basis: all "beginCameraRendering" behavior appears to run before the first camera starts rendering, 
-    /// so the object state during the last camera to render is how it appears in all cameras. 
-    /// As such, we just pick one single camera (by default the left camera of the first ZEDManager we find) and make labels face that one. 
+    /// If using HDRP, you can't move or modify objects on a per-camera basis: all "beginCameraRendering" behavior appears to run before the first camera starts rendering,
+    /// so the object state during the last camera to render is how it appears in all cameras.
+    /// As such, we just pick one single camera (by default the left camera of the first ZEDManager we find) and make labels face that one.
     /// </summary>
     private Camera labelFacingCamera;
 #endif
     #region Shader ID caches
-    //We look up the IDs of shader properties once, to save a lookup (and performance) each time we access them. 
+    //We look up the IDs of shader properties once, to save a lookup (and performance) each time we access them.
 
     private static int boxBGColorIndex;
     private static int boxTexColorIndex;
@@ -155,14 +155,14 @@ public class BBox3DHandler : MonoBehaviour
 
     private void Update()
     {
-        //Position the label so that it stays at a consistent place relative to the box's scale. 
+        //Position the label so that it stays at a consistent place relative to the box's scale.
         UpdateLabelScaleAndPosition();
         UpdateBoxUVScales();
     }
 
     /// <summary>
-    /// Sets the ID value that will be displayed on the box's label. 
-    /// Usually set when the box first starts representing a detected object. 
+    /// Sets the ID value that will be displayed on the box's label.
+    /// Usually set when the box first starts representing a detected object.
     /// </summary>
     public void SetID(int id)
     {
@@ -171,9 +171,9 @@ public class BBox3DHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the distance value that will be displayed on the box's label. 
-    /// Designed to indicate the distance from the camera that saw the object. 
-    /// Value is expected in meters. Should be updated with each new detection. 
+    /// Sets the distance value that will be displayed on the box's label.
+    /// Designed to indicate the distance from the camera that saw the object.
+    /// Value is expected in meters. Should be updated with each new detection.
     /// </summary>
     public void SetDistance(float dist)
     {
@@ -182,9 +182,9 @@ public class BBox3DHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the color of the box and label elements. 
+    /// Sets the color of the box and label elements.
     /// Use this to alternate between several colors if you have multiple detected objects, and
-    /// keep them distinguished from one another. Or use to easily customize the visuals however you'd like. 
+    /// keep them distinguished from one another. Or use to easily customize the visuals however you'd like.
     /// </summary>
     public void SetColor(Color col)
     {
@@ -205,10 +205,10 @@ public class BBox3DHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// Tells the TopBottomBBoxMat material attached to the box what the transform's current scale is, 
-    /// so that the UVs can be scaled appropriately and avoid stretching. 
+    /// Tells the TopBottomBBoxMat material attached to the box what the transform's current scale is,
+    /// so that the UVs can be scaled appropriately and avoid stretching.
     /// </summary>
-    public void UpdateBoxUVScales() //TODO: Cache shader IDs. 
+    public void UpdateBoxUVScales() //TODO: Cache shader IDs.
     {
         MeshRenderer rend = GetComponentInChildren<MeshRenderer>();
         if (rend)
@@ -237,7 +237,7 @@ public class BBox3DHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// Adjusts the label's scale and position to compensate for any changes in the bounding box's scale. 
+    /// Adjusts the label's scale and position to compensate for any changes in the bounding box's scale.
     /// </summary>
     public void UpdateLabelScaleAndPosition()
     {
@@ -251,14 +251,14 @@ public class BBox3DHandler : MonoBehaviour
 
         labelRoot.localPosition = new Vector3(labelRoot.localPosition.x, 0.5f + heightFromBoxCeiling / transform.localScale.y, labelRoot.localPosition.z);
 
-        if(!useLabelMaxDistScaling) //If we're using this, we don't apply the scale until the OnPreRender event to add additional scaling effects. 
+        if(!useLabelMaxDistScaling) //If we're using this, we don't apply the scale until the OnPreRender event to add additional scaling effects.
         {
             labelRoot.localScale = thisFrameScale;
-        }       
+        }
     }
 
     /// <summary>
-    /// Updates the text in the label based on the given ID and distance values. 
+    /// Updates the text in the label based on the given ID and distance values.
     /// </summary>
     private void UpdateText(int id, float dist)
     {
@@ -271,7 +271,7 @@ public class BBox3DHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the colors of the 3D box materials to the given color. 
+    /// Updates the colors of the 3D box materials to the given color.
     /// </summary>
     private void ApplyColorToBoxMats(Color col)
     {
@@ -330,7 +330,7 @@ public class BBox3DHandler : MonoBehaviour
         {
             return;
         }
-		
+
         //float dist = Vector3.Distance(cam.transform.position, labelRoot.transform.position);
         float depth = cam.WorldToScreenPoint(labelRoot.transform.position).z;
 
@@ -345,9 +345,9 @@ public class BBox3DHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// Finds and sets the static shader indexes for the properties that we'll set. 
+    /// Finds and sets the static shader indexes for the properties that we'll set.
     /// Used so we can call those indexes when we set the properties, which avoids a lookup
-    /// and increases performance. 
+    /// and increases performance.
     /// </summary>
     private static void FindShaderIndexes()
     {

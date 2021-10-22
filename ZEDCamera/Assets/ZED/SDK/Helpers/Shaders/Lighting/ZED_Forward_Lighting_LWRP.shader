@@ -7,8 +7,8 @@ Shader "ZED/ZED Forward Lighting LWRP"
 		[MaterialToggle] directionalLightEffect("Directional light affects image", Int) = 0
 		_MaxDepth("Max Depth Range", Range(1,40)) = 40
 	}
-		
-	SubShader //LWRP-only shader. 
+
+	SubShader //LWRP-only shader.
 	{
 		Tags{"RenderPipeline"="LightweightPipeline" "RenderType"="Opaque"}
 
@@ -16,7 +16,7 @@ Shader "ZED/ZED Forward Lighting LWRP"
 		{
 		Name "StandardLit"
 
-		Tags{"LightMode" = "LightweightForward"} 
+		Tags{"LightMode" = "LightweightForward"}
 
 		HLSLPROGRAM
 		//#define ZEDLWRP
@@ -38,7 +38,7 @@ Shader "ZED/ZED Forward Lighting LWRP"
 		#include "Packages/com.unity.render-pipelines.lightweight/ShaderLibrary/Core.hlsl"
 		#include "Packages/com.unity.render-pipelines.lightweight/ShaderLibrary/Lighting.hlsl"
 
-		//For ZED CG functions, namely depth conversion. 
+		//For ZED CG functions, namely depth conversion.
 		#include "../ZED_Utils.cginc"
 		#define ZED_SPOT_LIGHT_DECLARATION
 		#define ZED_POINT_LIGHT_DECLARATION
@@ -63,14 +63,14 @@ Shader "ZED/ZED Forward Lighting LWRP"
 			};
 
 
-		//ZED textures. 
+		//ZED textures.
 		sampler2D _MainTex;
 		float4 _MainTex_ST;
 		sampler2D _DepthXYZTex;
 		float4 _DepthXYZTex_ST;
 
-		//Horizontal and vertical fields of view, assigned from ZEDRenderingPlane. 
-		//Needs to be assigned, not derived from projection matrix, because otherwise goofy things happen because of the Scene view camera. 
+		//Horizontal and vertical fields of view, assigned from ZEDRenderingPlane.
+		//Needs to be assigned, not derived from projection matrix, because otherwise goofy things happen because of the Scene view camera.
 		float _ZEDHFoVRad;
 		float _ZEDVFoVRad;
 
@@ -100,10 +100,9 @@ Shader "ZED/ZED Forward Lighting LWRP"
 			}
 		void frag(Varyings input, out float4 outColor: SV_Target, out float outDepth : SV_Depth)
 		{
-
 			float zed_z = tex2D(_DepthXYZTex, input.uv.zw).x;
-			//Filter out depth values beyond the max value. 
-			if (_MaxDepth < 20.0) //Avoid clipping out FAR values when not using feature. 
+			//Filter out depth values beyond the max value.
+			if (_MaxDepth < 20.0) //Avoid clipping out FAR values when not using feature.
 			{
 				if (zed_z > _MaxDepth) discard;
 			}
@@ -114,7 +113,7 @@ Shader "ZED/ZED Forward Lighting LWRP"
 			outDepth = computeDepthXYZ(zed_z);
 #endif
 
-			//ZED Color - for now ignoring everything above. 
+			//ZED Color - for now ignoring everything above.
 			half4 c;
 			float4 color = tex2D(_MainTex, input.uv.xy).bgra;
 			float4 normals = float4(tex2D(_NormalsTex, input.uv.zw).bgr, 0);
@@ -126,9 +125,9 @@ Shader "ZED/ZED Forward Lighting LWRP"
 
 			//Compute world normals.
 			//normals = float4(normals.x, 0 - normals.y, normals.z, 0);
-			float4 worldnormals = mul(unity_ObjectToWorld, normals); //TODO: This erroneously applies object scale to the normals. The canvas object is scaled to fill the frame. Fix. 
+			float4 worldnormals = mul(unity_ObjectToWorld, normals); //TODO: This erroneously applies object scale to the normals. The canvas object is scaled to fill the frame. Fix.
 
-			//Compute world position of the pixel. 
+			//Compute world position of the pixel.
 			float xfovpartial = (input.uv.x - _cx) * _ZEDHFoVRad;
 			float yfovpartial = (1 - input.uv.y - _cy) * _ZEDVFoVRad;
 
@@ -152,7 +151,7 @@ Shader "ZED/ZED Forward Lighting LWRP"
 		UsePass "Lightweight Render Pipeline/Lit/ShadowCaster"
 
 		// Used for depth prepass
-		// If shadows cascade are enabled we need to perform a depth prepass. 
+		// If shadows cascade are enabled we need to perform a depth prepass.
 		// We also need to use a depth prepass in some cases camera require depth texture
 		// (e.g, MSAA is enabled and we can't resolve with Texture2DMS
 		UsePass "Lightweight Render Pipeline/Lit/DepthOnly"

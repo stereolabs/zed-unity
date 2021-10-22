@@ -4,9 +4,9 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// For the ZED 3D Object Detection sample. 
+/// For the ZED 3D Object Detection sample.
 /// Listens for new object detections (via the ZEDManager.OnObjectDetection event) and moves + resizes cube prefabs
-/// to represent them. 
+/// to represent them.
 /// <para>Works by instantiating a pool of prefabs, and each frame going through the DetectedFrame received from the event
 /// to make sure each detected object has a representative GameObject. Also disables GameObjects whose objects are no
 /// longer visible and returns them to the pool.</para>
@@ -14,25 +14,25 @@ using UnityEngine;
 public class ZED3DObjectVisualizer : MonoBehaviour
 {
     /// <summary>
-    /// The scene's ZEDManager. 
-    /// If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DObjectVisualizer commponents in the scene. 
+    /// The scene's ZEDManager.
+    /// If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DObjectVisualizer commponents in the scene.
     /// </summary>
     [Tooltip("The scene's ZEDManager.\r\n" +
         "If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DObjectVisualizer commponents in the scene. ")]
     public ZEDManager zedManager;
 
     /// <summary>
-    /// If true, the ZED Object Detection manual will be started as soon as the ZED is initiated. 
-    /// This avoids having to press the Start Object Detection button in ZEDManager's Inspector. 
+    /// If true, the ZED Object Detection manual will be started as soon as the ZED is initiated.
+    /// This avoids having to press the Start Object Detection button in ZEDManager's Inspector.
     /// </summary>
     [Tooltip("If true, the ZED Object Detection manual will be started as soon as the ZED is initiated. " +
         "This avoids having to press the Start Object Detection button in ZEDManager's Inspector.")]
     public bool startObjectDetectionAutomatically = true;
 
     /// <summary>
-    /// Prefab object that's instantiated to represent detected objects. 
-    /// This class expects the object to have the default Unity cube as a mesh - otherwise, it may be scaled incorrectly. 
-    /// It also expects a BBox3DHandler component in the root object, but you won't have errors if it lacks one. 
+    /// Prefab object that's instantiated to represent detected objects.
+    /// This class expects the object to have the default Unity cube as a mesh - otherwise, it may be scaled incorrectly.
+    /// It also expects a BBox3DHandler component in the root object, but you won't have errors if it lacks one.
     /// </summary>
     [Space(5)]
     [Header("Box Appearance")]
@@ -43,10 +43,10 @@ public class ZED3DObjectVisualizer : MonoBehaviour
 
 
     /// <summary>
-    /// The colors that will be cycled through when assigning colors to new bounding boxes. 
+    /// The colors that will be cycled through when assigning colors to new bounding boxes.
     /// </summary>
     [Tooltip("The colors that will be cycled through when assigning colors to new bounding boxes. ")]
-    //[ColorUsage(true, true)] //Uncomment to enable HDR colors in versions of Unity that support it. 
+    //[ColorUsage(true, true)] //Uncomment to enable HDR colors in versions of Unity that support it.
     public List<Color> boxColors = new List<Color>()
     {
         new Color(.231f, .909f, .69f, 1),
@@ -58,8 +58,8 @@ public class ZED3DObjectVisualizer : MonoBehaviour
 
 
     /// <summary>
-    /// If true, bounding boxes are rotated to face the camera that detected them. This has more parity with the SDK and will generally result in more accurate boxes. 
-    /// If false, the boxes are calculated from known bounds to face Z = 1. 
+    /// If true, bounding boxes are rotated to face the camera that detected them. This has more parity with the SDK and will generally result in more accurate boxes.
+    /// If false, the boxes are calculated from known bounds to face Z = 1.
     /// </summary>
     [Space(5)]
     [Header("Box Transform")]
@@ -67,26 +67,26 @@ public class ZED3DObjectVisualizer : MonoBehaviour
         "'False' has more parity with the SDK and will generally result in more accurate boxes.")]
     public bool boxesFaceCamera = false;
     /// <summary>
-    /// If true, transforms the localScale of the root bounding box transform to match the detected 3D bounding box. 
+    /// If true, transforms the localScale of the root bounding box transform to match the detected 3D bounding box.
     /// </summary>
     [Tooltip("If true, transforms the localScale of the root bounding box transform to match the detected 3D bounding box. ")]
     public bool transformBoxScale = true;
     /// <summary>
     /// If true, and transformBoxScale is also true, modifies the center and Y bounds of each detected bounding box so that its
-    /// bottom is at floor level (Y = 0) while keeping the other corners at the same place. 
+    /// bottom is at floor level (Y = 0) while keeping the other corners at the same place.
     /// </summary>
     [Tooltip("If true, and transformBoxScale is also true, modifies the center and Y bounds of each detected bounding box so that its " +
         "bottom is at floor level (Y = 0) while keeping the other corners at the same place. ")]
     public bool transformBoxToTouchFloor = true;
     /// <summary>
-    /// If true, sets the Y value of the center of the bounding box to 0. Use for bounding box prefabs meant to be centered at the user's feet. 
+    /// If true, sets the Y value of the center of the bounding box to 0. Use for bounding box prefabs meant to be centered at the user's feet.
     /// </summary>
     [Tooltip("If true, sets the Y value of the center of the bounding box to 0. Use for bounding box prefabs meant to be centered at the user's feet. ")]
     [LabelOverride("Box Center Always On Floor")]
     public bool floorBBoxPosition = false;
 
     /// <summary>
-    /// Display bounding boxes of objects that are actively being tracked by object tracking, where valid positions are known. 
+    /// Display bounding boxes of objects that are actively being tracked by object tracking, where valid positions are known.
     /// </summary>
     [Space(5)]
     [Header("Filters")]
@@ -104,7 +104,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
     public bool showOFFTracked = false;
 
     /// <summary>
-    /// How wide a bounding box has to be in order to be displayed. Use this to remove tiny bounding boxes from partially-occluded objects. 
+    /// How wide a bounding box has to be in order to be displayed. Use this to remove tiny bounding boxes from partially-occluded objects.
     /// (If you have this issue, it can also be helpful to set showSEARCHINGTracked to OFF.)
     /// </summary>
     [Tooltip("How wide a bounding box has to be in order to be displayed. Use this to remove tiny bounding boxes from partially-occluded objects.\r\n" +
@@ -114,25 +114,25 @@ public class ZED3DObjectVisualizer : MonoBehaviour
 
     /// <summary>
     /// When a detected object is first given a box and assigned a color, we store it so that if the object
-    /// disappears and appears again later, it's assigned the same color. 
+    /// disappears and appears again later, it's assigned the same color.
     /// This is also solvable by making the color a function of the ID number itself, but then you can get
-    /// repeat colors under certain conditions. 
+    /// repeat colors under certain conditions.
     /// </summary>
     private Dictionary<int, Color> idColorDict = new Dictionary<int, Color>();
 
     /// <summary>
-    /// Pre-instantiated bbox prefabs currently not in use. 
+    /// Pre-instantiated bbox prefabs currently not in use.
     /// </summary>
     private Stack<GameObject> bboxPool = new Stack<GameObject>();
 
     /// <summary>
-    /// All active GameObjects that were instantiated to the prefab and that currently represent a detected object. 
-    /// Key is the object's objectID. 
+    /// All active GameObjects that were instantiated to the prefab and that currently represent a detected object.
+    /// Key is the object's objectID.
     /// </summary>
     private Dictionary<int, GameObject> liveBBoxes = new Dictionary<int, GameObject>();
 
     /// <summary>
-    /// Used to know which of the available colors will be assigned to the next bounding box to be used. 
+    /// Used to know which of the available colors will be assigned to the next bounding box to be used.
     /// </summary>
     private int nextColorIndex = 0;
 
@@ -161,13 +161,13 @@ public class ZED3DObjectVisualizer : MonoBehaviour
 
     /// <summary>
     /// Given a frame of object detections, positions a GameObject to represent every visible object
-    /// in that object's actual 3D location within the world. 
-    /// <para>Called from ZEDManager.OnObjectDetection each time there's a new detection frame available.</para> 
+    /// in that object's actual 3D location within the world.
+    /// <para>Called from ZEDManager.OnObjectDetection each time there's a new detection frame available.</para>
     /// </summary>
     private void Visualize3DBoundingBoxes(DetectionFrame dframe)
     {
-        //Get a list of all active IDs from last frame, and we'll remove each box that's visible this frame. 
-        //At the end, we'll clear the remaining boxes, as those are objects no longer visible to the ZED. 
+        //Get a list of all active IDs from last frame, and we'll remove each box that's visible this frame.
+        //At the end, we'll clear the remaining boxes, as those are objects no longer visible to the ZED.
         List<int> activeids = liveBBoxes.Keys.ToList();
 
         List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showONTracked, showSEARCHINGTracked, showOFFTracked);
@@ -176,13 +176,13 @@ public class ZED3DObjectVisualizer : MonoBehaviour
         {
             Bounds objbounds = dobj.Get3DWorldBounds();
 
-            //Make sure the object is big enough to count. We filter out very small boxes. 
+            //Make sure the object is big enough to count. We filter out very small boxes.
             if (objbounds.size.x < minimumWidthToDisplay) continue;
 
-            //Remove the ID from the list we'll use to clear no-longer-visible boxes. 
+            //Remove the ID from the list we'll use to clear no-longer-visible boxes.
             if (activeids.Contains(dobj.id)) activeids.Remove(dobj.id);
 
-            //Get the box and update its distance value. 
+            //Get the box and update its distance value.
             GameObject bbox = GetBBoxForObject(dobj);
 
             Vector3 dobj_position = dobj.Get3DWorldPosition();
@@ -195,16 +195,24 @@ public class ZED3DObjectVisualizer : MonoBehaviour
                     bbox.transform.position = new Vector3(bbox.transform.position.x, 0, bbox.transform.position.z);
                 }
 
-                bbox.transform.rotation = dobj.Get3DWorldRotation(boxesFaceCamera); //Rotate them. 
+                bbox.transform.rotation = dobj.Get3DWorldRotation(boxesFaceCamera); //Rotate them.
             }
 
-            bbox.transform.rotation = dobj.Get3DWorldRotation(boxesFaceCamera); //Rotate them. 
+            if (!ZEDSupportFunctions.IsVector3NaN(obj_position))
+            {
+                bbox.transform.position = dobj.Get3DWorldPosition();
+                if (floorBBoxPosition)
+                {
+                    bbox.transform.position = new Vector3(bbox.transform.position.x, 0, bbox.transform.position.z);
+                }
 
+                bbox.transform.rotation = dobj.Get3DWorldRotation(boxesFaceCamera); //Rotate them.
+            }
 
-            //Transform the box if desired. 
+            //Transform the box if desired.
             if (transformBoxScale)
             {
-                //We'll scale the object assuming that it's mesh is the default Unity cube, or something sized equally. 
+                //We'll scale the object assuming that it's mesh is the default Unity cube, or something sized equally.
                 if (transformBoxToTouchFloor)
                 {
                     Vector3 startscale = objbounds.size;
@@ -223,7 +231,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
                 }
             }
 
-            //Now that we've adjusted position, tell the handler on the prefab to adjust distance display.. 
+            //Now that we've adjusted position, tell the handler on the prefab to adjust distance display..
             BBox3DHandler boxhandler = bbox.GetComponent<BBox3DHandler>();
             if (boxhandler)
             {
@@ -237,7 +245,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
             //DrawDebugBox(dobj);
         }
 
-        //Remove boxes for objects that the ZED can no longer see. 
+        //Remove boxes for objects that the ZED can no longer see.
         foreach (int id in activeids)
         {
             ReturnBoxToPool(id, liveBBoxes[id]);
@@ -247,8 +255,8 @@ public class ZED3DObjectVisualizer : MonoBehaviour
 
     /// <summary>
     /// Returs the GameObject (instantiated from boundingBoxPrefab) that represents the provided DetectedObject.
-    /// If none exists, it retrieves one from the pool (or instantiates a new one if none is available) and 
-    /// sets it up with the proper ID and colors. 
+    /// If none exists, it retrieves one from the pool (or instantiates a new one if none is available) and
+    /// sets it up with the proper ID and colors.
     /// </summary>
     private GameObject GetBBoxForObject(DetectedObject dobj)
     {
@@ -283,8 +291,8 @@ public class ZED3DObjectVisualizer : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets an available GameObject (instantiated from boundingBoxPrefab) from the pool, 
-    /// or instantiates a new one if none are available. 
+    /// Gets an available GameObject (instantiated from boundingBoxPrefab) from the pool,
+    /// or instantiates a new one if none are available.
     /// </summary>
     /// <returns></returns>
     private GameObject GetAvailableBBox()
@@ -304,7 +312,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
 
     /// <summary>
     /// Disables a GameObject that was being used to represent an object (of the given id) and puts it back
-    /// into the pool for later use. 
+    /// into the pool for later use.
     /// </summary>
     private void ReturnBoxToPool(int id, GameObject bbox)
     {
@@ -324,8 +332,8 @@ public class ZED3DObjectVisualizer : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns a color from the boxColors list. 
-    /// Colors are returned sequentially in order of their appearance in that list. 
+    /// Returns a color from the boxColors list.
+    /// Colors are returned sequentially in order of their appearance in that list.
     /// </summary>
     /// <returns></returns>
     private Color GetNextColor()
@@ -358,7 +366,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
     }
 
     /// <summary>
-    /// Draws a bounding box in the Scene window. Useful for debugging a 3D bbox's position relative to it. 
+    /// Draws a bounding box in the Scene window. Useful for debugging a 3D bbox's position relative to it.
     /// </summary>
     private void DrawDebugBox(DetectedObject dobj)
     {
