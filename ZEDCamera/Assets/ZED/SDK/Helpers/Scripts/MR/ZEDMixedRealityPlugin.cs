@@ -6,8 +6,6 @@ using UnityEngine.XR;
 using System.IO;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
-using System.Linq;
-
 
 /// <summary>
 /// In pass-through AR mode, handles the final output to the VR headset, positioning the final images
@@ -388,6 +386,8 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         centerMaterial = quadCenter.GetComponent<Renderer>().material;
         finalCenterEye.SetReplacementShader(centerMaterial.shader, "");
 
+        finalCenterEye.depth = 0;
+
 		float plane_dist = (float)sl.Constant.PLANE_DISTANCE;
         scale(quadCenter.gameObject, new Vector2(1.78f * plane_dist, 1.0f * plane_dist));
 
@@ -556,7 +556,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 		if (!manager.IsStereoRig)
 			return; //Make sure we're in pass-through AR mode.
 
-		Quaternion r;
+        Quaternion r;
         //r = latencyPose.rotation;
 
 #if UNITY_2019_3_OR_NEWER

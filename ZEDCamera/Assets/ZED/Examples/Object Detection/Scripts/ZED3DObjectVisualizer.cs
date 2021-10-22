@@ -76,7 +76,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
     /// bottom is at floor level (Y = 0) while keeping the other corners at the same place.
     /// </summary>
     [Tooltip("If true, and transformBoxScale is also true, modifies the center and Y bounds of each detected bounding box so that its " +
-        "bottom is at floor level (Y = 0) while keeping the other corners at the same place. ")]
+        "bottom is at floor level (Y = 0) while keeping the other corners at the same place. WARNING: Estimate Initial position must be set to true.")]
     public bool transformBoxToTouchFloor = true;
     /// <summary>
     /// If true, sets the Y value of the center of the bounding box to 0. Use for bounding box prefabs meant to be centered at the user's feet.
@@ -147,7 +147,11 @@ public class ZED3DObjectVisualizer : MonoBehaviour
         zedManager.OnObjectDetection += Visualize3DBoundingBoxes;
         zedManager.OnZEDReady += OnZEDReady;
 
-
+        if (zedManager.estimateInitialPosition == false && transformBoxToTouchFloor == true)
+        {
+            Debug.Log("Estimate initial position is set to false. Then, transformBoxToTouchFloor is disable.");
+            transformBoxToTouchFloor = false;
+        }
     }
 
     private void OnZEDReady()
@@ -171,13 +175,11 @@ public class ZED3DObjectVisualizer : MonoBehaviour
         List<int> activeids = liveBBoxes.Keys.ToList();
 
         List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showONTracked, showSEARCHINGTracked, showOFFTracked);
-
         foreach (DetectedObject dobj in newobjects)
         {
             Bounds objbounds = dobj.Get3DWorldBounds();
-
             //Make sure the object is big enough to count. We filter out very small boxes.
-            if (objbounds.size.x < minimumWidthToDisplay) continue;
+            if (objbounds.size.x < minimumWidthToDisplay || objbounds.size == Vector3.zero) continue;
 
             //Remove the ID from the list we'll use to clear no-longer-visible boxes.
             if (activeids.Contains(dobj.id)) activeids.Remove(dobj.id);
@@ -200,7 +202,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
 
             if (!ZEDSupportFunctions.IsVector3NaN(obj_position))
             {
-                bbox.transform.position = dobj.Get3DWorldPosition();
+                bbox.transform.position = obj_position;
                 if (floorBBoxPosition)
                 {
                     bbox.transform.position = new Vector3(bbox.transform.position.x, 0, bbox.transform.position.z);
@@ -218,7 +220,6 @@ public class ZED3DObjectVisualizer : MonoBehaviour
                     Vector3 startscale = objbounds.size;
                     float distfromfloor = bbox.transform.position.y - (objbounds.size.y / 2f);
                     bbox.transform.localScale = new Vector3(objbounds.size.x, objbounds.size.y + distfromfloor, objbounds.size.z);
-
                     Vector3 newpos = bbox.transform.position;
                     newpos.y -= (distfromfloor / 2f);
 
@@ -281,7 +282,16 @@ public class ZED3DObjectVisualizer : MonoBehaviour
             if (boxhandler)
             {
                 boxhandler.SetColor(col);
-                boxhandler.SetID(dobj.id);
+                if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
+                {
+                    //boxhandler.SetID(dobj.rawObjectData.rawLabel.ToString());
+                    boxhandler.SetID(dobj.id.ToString());
+                }
+                else
+                {
+                    boxhandler.SetID(dobj.id.ToString());
+                }
+
             }
 
             liveBBoxes[dobj.id] = newbox;

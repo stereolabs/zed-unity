@@ -311,6 +311,9 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_find_usb_device")]
         private static extern bool dllz_find_usb_device(USB_DEVICE dev);
 
+        [DllImport(nameDll, EntryPoint = "sl_generate_unique_id")]
+        private static extern int dllz_generate_unique_id([In, Out] byte[] id);
+
         /*
           * Create functions
           */
@@ -349,7 +352,7 @@ namespace sl
         * Reboot function.
         */
         [DllImport(nameDll, EntryPoint = "sl_reboot")]
-        private static extern int dllz_reboot(int serialNumber);
+        private static extern int dllz_reboot(int serialNumber, bool fullReboot);
 
         /*
         * Recording functions.
@@ -446,10 +449,10 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_get_camera_imu_transform")]
         private static extern void dllz_get_camera_imu_transform(int cameraID, out Vector3 translation, out Quaternion rotation);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_image_timestamp")]
+        [DllImport(nameDll, EntryPoint = "sl_get_camera_timestamp")]
         private static extern ulong dllz_get_image_timestamp(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_camera_timestamp")]
+        [DllImport(nameDll, EntryPoint = "sl_get_current_Timestamp")]
         private static extern ulong dllz_get_current_timestamp(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_frame_dropped_count")]
@@ -529,7 +532,7 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_transform_pose")]
         private static extern void dllz_transform_pose(ref Quaternion quaternion, ref Vector3 translation, ref Quaternion targetQuaternion, ref Vector3 targetTranslation);
 
-        [DllImport(nameDll, EntryPoint = "sl_reset_tracking")]
+        [DllImport(nameDll, EntryPoint = "sl_reset_positional_tracking")]
         private static extern int dllz_reset_tracking(int cameraID, Quaternion rotation, Vector3 translation);
 
         [DllImport(nameDll, EntryPoint = "sl_reset_tracking_with_offset")]
@@ -644,6 +647,9 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_pause_objects_detection")]
         private static extern void dllz_pause_objects_detection(int cameraID, bool status);
+
+        [DllImport(nameDll, EntryPoint = "sl_ingest_custom_box_objects")]
+        private static extern int dllz_ingest_custom_box_objects(int cameraID, int nb_objects, CustomBoxObjectData[] objects_in);
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_objects")]
         private static extern int dllz_retrieve_objects_data(int cameraID, ref dll_ObjectDetectionRuntimeParameters od_params, ref ObjectsFrameSDK objFrame);
@@ -812,12 +818,20 @@ namespace sl
             dllz_transform_pose(ref quaternion, ref translation, ref targetQuaternion, ref targetTranslation);
         }
 
+        public static string GenerateUniqueID()
+        {
+            byte[] array = new byte[37];
+            int size = dllz_generate_unique_id(array);
+
+            return new string(System.Text.Encoding.ASCII.GetChars(array));
+        }
+
         /// <summary>
         /// Checks that the ZED plugin's dependencies are installed.
         /// </summary>
         public static bool CheckPlugin()
         {
-            /*try
+            try
             {
                 int res = dllz_check_plugin(PluginVersion.Major, PluginVersion.Minor);
                 if (res!= 0)
@@ -833,7 +847,7 @@ namespace sl
                 Debug.LogError(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_DEPENDENCIES_ISSUE));
                 return false;
             }
-            */
+            
             pluginIsReady = true;
             return true;
         }
@@ -962,8 +976,7 @@ namespace sl
             /// <summary>
             /// True for the SDK to provide text feedback.
             /// </summary>
-            [MarshalAs(UnmanagedType.U1)]
-            public bool sdkVerbose;
+            public int sdkVerbose;
             /// <summary>
             /// True if sensors are required, false will not trigger an error if sensors are missing.
             /// </summary>
@@ -980,6 +993,13 @@ namespace sl
             /// <warning> Erroneous calibration values can lead to poor SDK modules accuracy. </warning>
             /// </summary>
             public string optionalOpencvCalibrationFile;
+            /// <summary>
+            /// Define a timeout in seconds after which an error is reported if the \ref open() command fails.
+            /// Set to '-1' to try to open the camera endlessly without returning error in case of failure.
+            /// Set to '0' to return error in case of failure at the first attempt.
+            /// This parameter only impacts the LIVE mode.
+            /// </summary>
+            public float openTimeoutSec;
 
             /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
@@ -1006,6 +1026,7 @@ namespace sl
                 sensorsRequired = init.sensorsRequired;
                 enableImageEnhancement = init.enableImageEnhancement;
                 optionalOpencvCalibrationFile = init.optionalOpencvCalibrationFile;
+                openTimeoutSec = init.openTimeoutSec;
             }
         }
 
@@ -1991,12 +2012,14 @@ namespace sl
         }
 
         /// <summary>
-        /// Performs an hardware reset of the ZED 2. This function only works for ZED 2 cameras.
+        /// Performs an hardware reset of the ZED 2/ZED 2i.
         /// </summary>
-        /// <returns>SUCCESS if everything went fine, CAMERA_NOT_DETECTED if no camera was detected, FAILURE otherwise..</returns>
-        public static sl.ERROR_CODE Reboot(int serialNumber)
+        /// <param name="serialNumber">Serial number of the camera</param>
+        /// <param name="fullReboot"> Perform a full reboot (Sensors and Video modules)</param>
+        /// <returns>ZED SDK version as a string in the format MAJOR.MINOR.PATCH.</returns>
+        public static sl.ERROR_CODE Reboot(int serialNumber, bool fullReboot = true)
         {
-            return (sl.ERROR_CODE)dllz_reboot(serialNumber);
+            return (sl.ERROR_CODE)dllz_reboot(serialNumber, fullReboot);
         }
 
         /// <summary>
@@ -2613,6 +2636,13 @@ namespace sl
                 dllz_pause_objects_detection(CameraID, status);
             }
         }
+
+
+        public sl.ERROR_CODE IngestCustomBoxObjects(List<CustomBoxObjectData> objects_in)
+        {
+            return (sl.ERROR_CODE)dllz_ingest_custom_box_objects(CameraID, objects_in.Count, objects_in.ToArray());
+        }
+
 
         /// <summary>
         /// Retrieve object detection data
