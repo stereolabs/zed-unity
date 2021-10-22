@@ -52,7 +52,10 @@ public class LaserGun : MonoBehaviour
     /// </summary>
     private ZEDControllerTracker_DemoInputs objecttracker;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> v3.6.0_new_c_wrapper
     IEnumerator Start()
     {
         audiosource = GetComponent<AudioSource>();

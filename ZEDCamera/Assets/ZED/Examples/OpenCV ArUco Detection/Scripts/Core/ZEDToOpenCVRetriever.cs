@@ -3,6 +3,7 @@
 using OpenCVForUnity.CoreModule;
 using OpenCVForUnity.ImgprocModule;
 using OpenCVForUnity.UnityUtils;
+using OpenCVForUnity.UtilsModule;
 using sl;
 using System.Collections.Generic;
 using UnityEngine;
@@ -98,14 +99,13 @@ public class ZEDToOpenCVRetriever : MonoBehaviour
 
     private void Awake()
     {
-        _instance = this; //Singleton implementation. 
+        _instance = this; //Singleton implementation.
+        if (!zedManager) zedManager = FindObjectOfType<ZEDManager>();
     }
 
     // Use this for initialization
     void Start ()
     {
-        if (!zedManager) zedManager = FindObjectOfType<ZEDManager>();
-
         //We can't call initialize() now, because it needs the ZED's projection matrix to build an OpenCV Mat of it. 
         //So we wait until OnZEDReady is called. Then we can get the ZED's calibration parameters. 
         zedManager.OnZEDReady += Initialize;
@@ -218,11 +218,10 @@ public class ZEDToOpenCVRetriever : MonoBehaviour
 
             //copyToMat(zedmat.GetPtr(), cvMat);
             Utils.copyToMat(zedmat.GetPtr(), buffermat);
-            
+
             ConvertColorSpace(buffermat, ref cvMat, conversionatend); 
             //Mat convertedmat = ConvertColorSpace(buffermat, conversionatend); 
-
-            //updateevent.Invoke(cam, camMat, cvMat);
+            
             updateevent.Invoke(cam, camMat, cvMat);
         }
     }

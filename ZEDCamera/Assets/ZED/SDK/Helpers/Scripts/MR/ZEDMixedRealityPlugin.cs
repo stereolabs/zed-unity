@@ -102,13 +102,13 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     /// <summary>
     /// Gameobject holding the left camera in the final ZEDRigDisplayer rig, which captures the final image sent to the left HMD screen.
     /// </summary>
-    [Tooltip("")]
-    public GameObject finalCameraLeft;
+    //[Tooltip("")]
+    //public GameObject finalCameraLeft;
     /// <summary>
     /// GameObject holding the right camera in the final ZEDRigDisplayer rig, which captures the final image sent to the right HMD screen.
     /// </summary>
-   // [Tooltip("")]
-   // public GameObject finalCameraRight;
+    // [Tooltip("")]
+    // public GameObject finalCameraRight;
 
     /// <summary>
     /// Gameobject holding the camera in the final ZEDRigDisplayer rig, which captures the final images sent to both HMD screens.
@@ -384,7 +384,9 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         centerMaterial = quadCenter.GetComponent<Renderer>().material;
         finalCenterEye.SetReplacementShader(centerMaterial.shader, "");
 
-		float plane_dist = (float)sl.Constant.PLANE_DISTANCE;
+        finalCenterEye.depth = 0;
+
+        float plane_dist = (float)sl.Constant.PLANE_DISTANCE;
         scale(quadCenter.gameObject, new Vector2(1.78f * plane_dist, 1.0f * plane_dist));
 
 		zedReady = false;
@@ -553,7 +555,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 		if (!manager.IsStereoRig)
 			return; //Make sure we're in pass-through AR mode.
 
-		Quaternion r;
+        Quaternion r;
         //r = latencyPose.rotation;
 
 #if UNITY_2019_3_OR_NEWER

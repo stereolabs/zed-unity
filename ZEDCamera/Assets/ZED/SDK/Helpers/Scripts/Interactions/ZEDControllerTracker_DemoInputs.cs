@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.XR;
 #if UNITY_2019_3_OR_NEWER
+using UnityEngine.XR;
 #endif
 
 #if ZED_STEAM_VR
@@ -12,16 +12,16 @@ using Valve.VR;
 #endif
 
 /// <summary>
-/// Extended version of ZEDControllerTracker that also checks for several inputs in a generic way. 
-/// You can check a state with 
+/// Extended version of ZEDControllerTracker that also checks for several inputs in a generic way.
+/// You can check a state with
 /// Used because input methods vary a lot between controllers and between SteamVR (new and old) and Oculus.
-/// See base class ZEDControllerTracker for any code that don't directly relate to inputs. 
+/// See base class ZEDControllerTracker for any code that don't directly relate to inputs.
 /// </summary>
 public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 {
     //#if ZED_STEAM_VR
 #if ZED_SVR_2_0_INPUT
-    /// !! On v2.0, Steam VR action bindings must be done in the inspector ro once steam.initialize(true) has been called !! 
+    /// !! On v2.0, Steam VR action bindings must be done in the inspector ro once steam.initialize(true) has been called !!
     /// <summary>
     /// SteamVR action to cause a Fire event when checked or subscribed to.
     /// </summary>
@@ -98,7 +98,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     /// Input Button checked to signal a Back event when checked or subscribed to.
     /// </summary>
     [Tooltip("Input Button checked to signal a Back event when checked or subscribed to")]
-    public InputFeatureUsage<bool> backButton = CommonUsages.secondaryButton; //Y, or B if just right controller is connected. 
+    public InputFeatureUsage<bool> backButton = CommonUsages.secondaryButton; //Y, or B if just right controller is connected.
     /// <summary>
     /// Input Button checked to signal a Grab event when checked or subscribed to.
     /// </summary>
@@ -131,12 +131,12 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     /// Oculus Button checked to signal a Back event when checked or subscribed to.
     /// </summary>
     [Tooltip("Oculus Button checked to signal a Back event when checked or subscribed to")]
-    public OVRInput.Button backButton = OVRInput.Button.Two; //Y, or B if just right controller is connected. 
+    public OVRInput.Button backButton = OVRInput.Button.Two; //Y, or B if just right controller is connected.
     /// <summary>
     /// Oculus Button checked to signal a Grab event when checked or subscribed to.
     /// </summary>
     [Tooltip("Oculus Button checked to signal a Grab event when checked or subscribed to")]
-    public OVRInput.Button grabButton = OVRInput.Button.PrimaryHandTrigger; 
+    public OVRInput.Button grabButton = OVRInput.Button.PrimaryHandTrigger;
     /// <summary>
     /// Oculus Button checked to signal a Vector2 UI navigation event when checked or subscribed to.
     /// </summary>
@@ -145,7 +145,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 #endif
 #endif
     /// <summary>
-    /// Events called when the Fire button/action was just pressed. 
+    /// Events called when the Fire button/action was just pressed.
     /// </summary>
     [Header("Events")]
     [Space(5)]
@@ -293,7 +293,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     }
 
     /// <summary>
-    /// Returns the current 2D axis value of the NavigateUIAxis button/action. 
+    /// Returns the current 2D axis value of the NavigateUIAxis button/action.
     /// </summary>
     public Vector2 CheckNavigateUIAxis()
     {
@@ -324,7 +324,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 #if ZED_SVR_2_0_INPUT
         if (!useLegacySteamVRInput)
         {
-            if(!SteamVR.active) SteamVR.Initialize(true); //Force SteamVR to activate, so we can use the input system. 
+            if(!SteamVR.active) SteamVR.Initialize(true); //Force SteamVR to activate, so we can use the input system.
 
             //script binding example
             //fireBinding = SteamVR_Input._default.inActions.GrabGrip; //...
@@ -359,13 +359,13 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     {
         base.UpdateControllerState();
 
-        //If using legacy SteamVR input, we check buttons directly from the OpenVR API. 
-#if ZED_SVR_2_0_INPUT //If using SteamVR plugin 2.0 or higher, give the option to use legacy input. 
+        //If using legacy SteamVR input, we check buttons directly from the OpenVR API.
+#if ZED_SVR_2_0_INPUT //If using SteamVR plugin 2.0 or higher, give the option to use legacy input.
         if (useLegacySteamVRInput)
         {
             openvrsystem.GetControllerState((uint)index, ref controllerstate, controllerstatesize);
         }
-#else //We're using an older SteamVR plugin, so we need to use the legacy input. 
+#else //We're using an older SteamVR plugin, so we need to use the legacy input.
         openvrsystem.GetControllerState((uint)index, ref controllerstate, controllerstatesize);
 #endif
     }
@@ -436,7 +436,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         Vector2 result = Vector2.zero;
         if (device.TryGetFeatureValue(navigateUIAxis, out Vector2 value))
             result = value;
-            
+
         return result;
     }
 
@@ -448,7 +448,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
             {
                 onButtonDown?.Invoke();
             }
- 
+
             _wasPressedDownPreviousFrame = true;
             onButtonHeld?.Invoke();
         }
@@ -458,14 +458,14 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
             {
                 onButtonUp?.Invoke();
             }
- 
+
             _wasPressedDownPreviousFrame = false;
         }
     }
 #endif
 
     /// <summary>
-    /// Returns the axis of a given Oculus axis button/joystick. 
+    /// Returns the axis of a given Oculus axis button/joystick.
     /// </summary>
     public Vector3 CheckOculus2DAxisState(OVRInput.Axis2D axis)
     {
@@ -479,7 +479,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     }
 
     /// <summary>
-    /// Returns the Oculus controller script of the controller currently attached to this object. 
+    /// Returns the Oculus controller script of the controller currently attached to this object.
     /// </summary>
     public OVRInput.Controller GetOculusController()
     {
@@ -513,7 +513,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     }
 
     /// <summary>
-    /// Returns the axis of a given SteamVR 2D action. 
+    /// Returns the axis of a given SteamVR 2D action.
     /// </summary>
     protected Vector2 CheckSteamVR2DAxis(SteamVR_Action_Vector2 action)
     {
@@ -541,56 +541,56 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     }
 
     /// <summary>
-    /// Returns if the VR controller button with the given ID was pressed for the first time this frame. 
+    /// Returns if the VR controller button with the given ID was pressed for the first time this frame.
     /// </summary>
     /// <param name="buttonid">EVR ID of the button as listed in OpenVR.</param>
     public bool GetVRButtonDown_Legacy(EVRButtonId buttonid)
     {
-        if (openvrsystem == null) return false; //If VR isn't running, we can't check. 
+        if (openvrsystem == null) return false; //If VR isn't running, we can't check.
 
         bool washeldlastupdate = (lastcontrollerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
-        if (washeldlastupdate == true) return false; //If the key was held last check, it can't be pressed for the first time now. 
+        if (washeldlastupdate == true) return false; //If the key was held last check, it can't be pressed for the first time now.
 
         bool isheld = (controllerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
-        return isheld; //If we got here, we know it was not down last frame. 
+        return isheld; //If we got here, we know it was not down last frame.
 
     }
 
     /// <summary>
-    /// Returns if the VR controller button with the given ID is currently held. 
+    /// Returns if the VR controller button with the given ID is currently held.
     /// </summary>
     /// <param name="buttonid">EVR ID of the button as listed in OpenVR.</param>
     public bool GetVRButtonHeld_Legacy(EVRButtonId buttonid)
     {
-        if (openvrsystem == null) return false; //If VR isn't running, we can't check. 
+        if (openvrsystem == null) return false; //If VR isn't running, we can't check.
 
         bool isheld = (controllerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
         return isheld;
     }
 
     /// <summary>
-    /// Returns if the VR controller button with the given ID was held last frame, but released this frame. 
+    /// Returns if the VR controller button with the given ID was held last frame, but released this frame.
     /// </summary>
     /// <param name="buttonid">EVR ID of the button as listed in OpenVR.</param>
     public bool GetVRButtonReleased_Legacy(EVRButtonId buttonid)
     {
-        if (openvrsystem == null) return false; //If VR isn't running, we can't check. 
+        if (openvrsystem == null) return false; //If VR isn't running, we can't check.
 
         bool washeldlastupdate = (lastcontrollerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
-        if (washeldlastupdate == false) return false; //If the key was held last check, it can't be released now. 
+        if (washeldlastupdate == false) return false; //If the key was held last check, it can't be released now.
 
         bool isheld = (controllerstate.ulButtonPressed & (1UL << (int)buttonid)) > 0L;
-        return !isheld; //If we got here, we know it was not up last frame. 
+        return !isheld; //If we got here, we know it was not up last frame.
     }
 
     /// <summary>
-    /// Returns the value of an axis with the provided ID. 
-    /// Note that for single-value axes, the relevant value will be the X in the returned Vector2 (the Y is unused). 
+    /// Returns the value of an axis with the provided ID.
+    /// Note that for single-value axes, the relevant value will be the X in the returned Vector2 (the Y is unused).
     /// </summary>
     /// <param name="buttonid"></param>
     public Vector2 CheckSteamVRAxis_Legacy(EVRButtonId buttonid)
     {
-        //Convert the EVRButtonID enum to the axis number and check if it's not an axis. 
+        //Convert the EVRButtonID enum to the axis number and check if it's not an axis.
         uint axis = (uint)buttonid - (uint)EVRButtonId.k_EButton_Axis0;
         if (axis < 0 || axis > 4)
         {
@@ -613,20 +613,20 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 }
 
 /// <summary>
-/// List of possible button states, used to check inputs. 
+/// List of possible button states, used to check inputs.
 /// </summary>
 public enum ControllerButtonState
 {
     /// <summary>
-    /// The button was pressed this frame. 
+    /// The button was pressed this frame.
     /// </summary>
     Down,
     /// <summary>
-    /// The button is being held down - it doesn't matter which frame it started being held. 
+    /// The button is being held down - it doesn't matter which frame it started being held.
     /// </summary>
     Held,
     /// <summary>
-    /// The button was released this frame. 
+    /// The button was released this frame.
     /// </summary>
     Up
 }

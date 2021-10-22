@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 0}
+  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -96,6 +96,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
   m_LightingSettings: {fileID: 1937375697}
 --- !u!196 &4
@@ -187,8 +188,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
-      propertyPath: svoInputFileName
-      value:
+      propertyPath: sensingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -223,7 +224,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: svoInputFileName
-      value:
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -243,7 +244,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: objectDetectionModel
-      value: 1
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -288,7 +289,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: objectDetectionImageSyncMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -342,8 +343,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1103816800
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,7 +370,7 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1103816800}
   m_Enabled: 1
-  serializedVersion: 9
+  serializedVersion: 10
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
@@ -437,103 +438,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1001 &1391565106
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1438017172825460, guid: 2d803190bc4738d4daf5932468a5495e, type: 3}
-      propertyPath: m_Name
-      value: 3D Bounding Box
-      objectReference: {fileID: 0}
-    - target: {fileID: 4047903173329720, guid: 2d803190bc4738d4daf5932468a5495e, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 3.455
-      objectReference: {fileID: 0}
-    - target: {fileID: 4047903173329720, guid: 2d803190bc4738d4daf5932468a5495e, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 4047903173329720, guid: 2d803190bc4738d4daf5932468a5495e, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 3.49
-      objectReference: {fileID: 0}
-    - target: {fileID: 4047903173329720, guid: 2d803190bc4738d4daf5932468a5495e, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4047903173329720, guid: 2d803190bc4738d4daf5932468a5495e, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4047903173329720, guid: 2d803190bc4738d4daf5932468a5495e, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4047903173329720, guid: 2d803190bc4738d4daf5932468a5495e, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4047903173329720, guid: 2d803190bc4738d4daf5932468a5495e, type: 3}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4047903173329720, guid: 2d803190bc4738d4daf5932468a5495e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4047903173329720, guid: 2d803190bc4738d4daf5932468a5495e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4047903173329720, guid: 2d803190bc4738d4daf5932468a5495e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224514642641173696, guid: 2d803190bc4738d4daf5932468a5495e,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224514642641173696, guid: 2d803190bc4738d4daf5932468a5495e,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224514642641173696, guid: 2d803190bc4738d4daf5932468a5495e,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224514642641173696, guid: 2d803190bc4738d4daf5932468a5495e,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224514642641173696, guid: 2d803190bc4738d4daf5932468a5495e,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224514642641173696, guid: 2d803190bc4738d4daf5932468a5495e,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224064677370622154, guid: 2d803190bc4738d4daf5932468a5495e,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224064677370622154, guid: 2d803190bc4738d4daf5932468a5495e,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2d803190bc4738d4daf5932468a5495e, type: 3}
 --- !u!1 &1609167223
 GameObject:
   m_ObjectHideFlags: 0
@@ -544,6 +448,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1609167224}
   - component: {fileID: 1609167225}
+  - component: {fileID: 1609167226}
   m_Layer: 0
   m_Name: 3D Object Visualizer
   m_TagString: Untagged
@@ -575,8 +480,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 050df1fa7a5de6f40a3677d766ed3063, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   zedManager: {fileID: 56380649}
   startObjectDetectionAutomatically: 1
   boundingBoxPrefab: {fileID: 1438017172825460, guid: 2d803190bc4738d4daf5932468a5495e,
@@ -593,8 +498,37 @@ MonoBehaviour:
   floorBBoxPosition: 0
   showONTracked: 1
   showSEARCHINGTracked: 0
-  showOFFTracked: 0
+  showOFFTracked: 1
   minimumWidthToDisplay: 0
+--- !u!114 &1609167226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1609167223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 476f190cf5e4a3b42af5473614db052f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  model: Assets/OpenCVForUnity/StreamingAssets/dnn/yolov4-tiny.weights
+  config: Assets/OpenCVForUnity/StreamingAssets/dnn/yolov4-tiny.cfg
+  classes: Assets/OpenCVForUnity/StreamingAssets/dnn/coco.names
+  classesFilter: []
+  confThreshold: 0.25
+  nmsThreshold: 0.25
+  inferenceWidth: 416
+  inferenceHeight: 416
+  scale: 0.003921569
+  mean:
+    val:
+    - 0
+    - 0
+    - 0
+    - 0
+  zedManager: {fileID: 56380649}
+  imageRetriever: {fileID: 0}
 --- !u!850595691 &1937375697
 LightingSettings:
   m_ObjectHideFlags: 0

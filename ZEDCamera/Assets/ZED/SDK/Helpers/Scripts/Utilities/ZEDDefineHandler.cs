@@ -28,7 +28,7 @@ public class ZEDDefineHandler : AssetPostprocessor
 
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
     {
-        #region VR Plugins
+#region VR Plugins
         if (CheckPackageExists("OVRManager"))
         {
             ActivateDefine("Oculus", "ZED_OCULUS");
@@ -55,9 +55,9 @@ public class ZEDDefineHandler : AssetPostprocessor
         {
             DeactivateDefine("SteamVR_2_0_Input", "ZED_SVR_2_0_INPUT");
         }
-        #endregion
+#endregion
 
-        #region OpenCV
+#region OpenCV
         string opencvfilename = "opencvforunity.dll";
         opencvfilename = "opencvforunity";
 
@@ -71,7 +71,7 @@ public class ZEDDefineHandler : AssetPostprocessor
             DeactivateDefine("ZEDOpenCV", "ZED_OPENCV_FOR_UNITY");
         }
 
-        #endregion
+#endregion
 
 
     }

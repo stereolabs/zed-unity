@@ -120,12 +120,14 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty OD_AnimalDetectionConfidence;
     private SerializedProperty OD_ElectronicsDetectionConfidence;
     private SerializedProperty OD_FruitVegetableDetectionConfidence;
+    private SerializedProperty OD_SportDetectionConfidence;
     private SerializedProperty OD_PersonFilter;
     private SerializedProperty OD_VehicleFilter;
     private SerializedProperty OD_BagFilter;
     private SerializedProperty OD_AnimalFilter;
     private SerializedProperty OD_ElectronicsFilter;
     private SerializedProperty OD_FruitVegetableFilter;
+    private SerializedProperty OD_SportFilter;
 
     /// <summary>
     /// Layout option used to draw the '...' button for opening a File Explorer window to find a mesh file. 
@@ -264,12 +266,14 @@ public class ZEDCameraEditor : Editor
         OD_AnimalDetectionConfidence = serializedObject.FindProperty("animalDetectionConfidenceThreshold");
         OD_ElectronicsDetectionConfidence = serializedObject.FindProperty("electronicsDetectionConfidenceThreshold");
         OD_FruitVegetableDetectionConfidence = serializedObject.FindProperty("fruitVegetableDetectionConfidenceThreshold");
+        OD_SportDetectionConfidence = serializedObject.FindProperty("sportDetectionConfidenceThreshold");
         OD_PersonFilter = serializedObject.FindProperty("objectClassPersonFilter");
         OD_VehicleFilter = serializedObject.FindProperty("objectClassVehicleFilter");
         OD_BagFilter = serializedObject.FindProperty("objectClassBagFilter");
         OD_AnimalFilter = serializedObject.FindProperty("objectClassAnimalFilter");
         OD_ElectronicsFilter = serializedObject.FindProperty("objectClassElectronicsFilter");
         OD_FruitVegetableFilter = serializedObject.FindProperty("objectClassFruitVegetableFilter");
+        OD_SportFilter = serializedObject.FindProperty("objectClassSportFilter");
 
         //Recording Serialized Properties
         svoOutputFileNameProperty = serializedObject.FindProperty("svoOutputFileName");
@@ -742,7 +746,8 @@ public class ZEDCameraEditor : Editor
                 "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
             OD_ObjectTracking.boolValue = EditorGUILayout.Toggle(ObjectTrackingLabel, OD_ObjectTracking.boolValue);
 
-            if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
+            if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE ||
+                OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.CUSTOM_BOX_OBJECTS || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.PERSON_HEAD_BOX)
             {
                 GUIContent Object2DMaskLabel = new GUIContent("Enable 2D Mask", "Whether to calculate 2D masks for each object, showing exactly which pixels within the 2D bounding box are the object.\r\n\n" +
                 "Must be on when Object Detection starts. Requires more performance, so do not enable unless needed.");
@@ -762,12 +767,14 @@ public class ZEDCameraEditor : Editor
 
             EditorGUI.indentLevel--;
             GUILayout.Space(10);
-            EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
-            GUILayout.Space(5);
-            EditorGUI.indentLevel++;
+
 
             if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
             {
+
+                EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
+                GUILayout.Space(5);
+                EditorGUI.indentLevel++;
 
                 GUIContent OD_personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
@@ -793,6 +800,10 @@ public class ZEDCameraEditor : Editor
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
                 OD_FruitVegetableDetectionConfidence.intValue = EditorGUILayout.IntSlider(fruitVegetableDetectionConfidenceThresholdLabel, OD_FruitVegetableDetectionConfidence.intValue, 1, 99);
 
+                GUIContent sportDetectionConfidenceThresholdLabel = new GUIContent("Sport Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_SportDetectionConfidence.intValue = EditorGUILayout.IntSlider(sportDetectionConfidenceThresholdLabel, OD_SportDetectionConfidence.intValue, 1, 99);
+
                 GUILayout.Space(5);
 
                 GUIContent PersonFilterLabel = new GUIContent("Person Filter", "Whether to detect people during object detection.");
@@ -813,10 +824,30 @@ public class ZEDCameraEditor : Editor
                 GUIContent FruitVegetableFilterLabel = new GUIContent("Fruit and Vegetable Filter", "Whether to detect fruits and vegetablesduring object detection.");
                 OD_FruitVegetableFilter.boolValue = EditorGUILayout.Toggle(FruitVegetableFilterLabel, OD_FruitVegetableFilter.boolValue);
 
+                GUIContent SportFilterLabel = new GUIContent("Sport Filter", "Whether to detect sport related objects during object detection.");
+                OD_SportFilter.boolValue = EditorGUILayout.Toggle(SportFilterLabel, OD_SportFilter.boolValue);
+
                 EditorGUI.indentLevel--;
             }
-            else
+            else if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.PERSON_HEAD_BOX)
             {
+
+                EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
+                GUILayout.Space(5);
+                EditorGUI.indentLevel++;
+
+                GUIContent OD_personDetectionConfidenceThresholdLabel = new GUIContent("Person head Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(OD_personDetectionConfidenceThresholdLabel, OD_PersonDetectionConfidence.intValue, 1, 99);
+            }
+            else if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.CUSTOM_BOX_OBJECTS) { 
+            }
+            else //SKELETON
+            {
+                EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
+                GUILayout.Space(5);
+                EditorGUI.indentLevel++;
+
                 GUIContent SK_personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
                 SK_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(SK_personDetectionConfidenceThresholdLabel, SK_PersonDetectionConfidence.intValue, 1, 99);

@@ -104,7 +104,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
         if (zedManager.bodyFormat == sl.BODY_FORMAT.POSE_18)
         {
-            Debug.LogWarning(" BODY_FORMAT must be set to POSE_32 to animate 3D Avatars !");
+            Debug.LogWarning(" BODY_FORMAT must be set to POSE_34 to animate 3D Avatars !");
             return;
         }
     }
@@ -202,16 +202,16 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// <param name="p">P.</param>
 	private void UpdateAvatarControl(SkeletonHandler handler, sl.ObjectDataSDK data, bool useAvatar)
 	{
-        Vector3[] worldJointsPos = new Vector3[32];
-        Quaternion[] worldJointsRot = new Quaternion[32];
+        Vector3[] worldJointsPos = new Vector3[34];
+        Quaternion[] worldJointsRot = new Quaternion[34];
    
-        for (int i = 0; i < 32; i++)
+        for (int i = 0; i < 34; i++)
         {
             worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
             worldJointsRot[i] = data.localOrientationPerJoint[i];
         }
-        
-        handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, data.globalRootOrientation, useAvatar);
+
+        handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, zedManager.GetZedRootTansform().rotation * data.globalRootOrientation, useAvatar);
 
         handler.SetSmoothFactor(smoothFactor);
     }
