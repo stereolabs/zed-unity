@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4795017531386668}
   - component: {fileID: 20426257081025226}
   - component: {fileID: 114025688240506870}
+  - component: {fileID: 89627669762223261}
   m_Layer: 0
   m_Name: Right_eye
   m_TagString: Untagged
@@ -93,6 +94,38 @@ MonoBehaviour:
   viewMode: 0
   numberPointLights: 0
   numberSpotLights: 0
+--- !u!114 &89627669762223261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1082135366421468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_RenderPostProcessing: 1
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 0
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1 &1175467483869550
 GameObject:
   m_ObjectHideFlags: 0
@@ -104,6 +137,7 @@ GameObject:
   - component: {fileID: 4327115905062700}
   - component: {fileID: 20846656237544980}
   - component: {fileID: 114495480594432558}
+  - component: {fileID: 4445275476383924994}
   m_Layer: 0
   m_Name: Left_eye
   m_TagString: Untagged
@@ -186,6 +220,38 @@ MonoBehaviour:
   viewMode: 0
   numberPointLights: 0
   numberSpotLights: 0
+--- !u!114 &4445275476383924994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175467483869550}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_RenderPostProcessing: 1
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 0
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1 &1352114948813630
 GameObject:
   m_ObjectHideFlags: 0
@@ -381,10 +447,11 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 851b6eeee88b1e04c8a22454a27421a1, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -405,6 +472,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114833973883948664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -474,10 +542,11 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 851b6eeee88b1e04c8a22454a27421a1, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -498,6 +567,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114346753093240460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -602,6 +672,7 @@ MonoBehaviour:
   objectDetectionModel: 0
   bodyFitting: 0
   maxRange: 40
+  bodyFormat: 1
   SK_personDetectionConfidenceThreshold: 50
   OD_personDetectionConfidenceThreshold: 60
   vehicleDetectionConfidenceThreshold: 60
@@ -609,12 +680,14 @@ MonoBehaviour:
   animalDetectionConfidenceThreshold: 60
   electronicsDetectionConfidenceThreshold: 60
   fruitVegetableDetectionConfidenceThreshold: 60
+  sportDetectionConfidenceThreshold: 60
   objectClassPersonFilter: 1
   objectClassVehicleFilter: 1
   objectClassBagFilter: 1
   objectClassAnimalFilter: 1
   objectClassElectronicsFilter: 1
   objectClassFruitVegetableFilter: 1
+  objectClassSportFilter: 1
   depthOcclusion: 1
   postProcessing: 1
   m_cameraBrightness: 100
@@ -666,6 +739,7 @@ MonoBehaviour:
   trackingState: '-'
   objectDetectionFPS: '-'
   sensingMode: 1
+  ZEDGrabError: 1
   setIMUPriorInAR: 1
   allowARPassThrough: 1
   gravityRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -749,6 +823,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -773,3 +848,4 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}

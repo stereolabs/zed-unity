@@ -200,17 +200,6 @@ public class ZED3DObjectVisualizer : MonoBehaviour
                 bbox.transform.rotation = dobj.Get3DWorldRotation(boxesFaceCamera); //Rotate them.
             }
 
-            if (!ZEDSupportFunctions.IsVector3NaN(obj_position))
-            {
-                bbox.transform.position = obj_position;
-                if (floorBBoxPosition)
-                {
-                    bbox.transform.position = new Vector3(bbox.transform.position.x, 0, bbox.transform.position.z);
-                }
-
-                bbox.transform.rotation = dobj.Get3DWorldRotation(boxesFaceCamera); //Rotate them.
-            }
-
             //Transform the box if desired.
             if (transformBoxScale)
             {
