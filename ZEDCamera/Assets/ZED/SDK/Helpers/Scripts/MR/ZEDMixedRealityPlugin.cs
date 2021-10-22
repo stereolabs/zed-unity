@@ -6,8 +6,6 @@ using UnityEngine.XR;
 using System.IO;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
-using System.Linq;
-
 
 /// <summary>
 /// In pass-through AR mode, handles the final output to the VR headset, positioning the final images
@@ -388,6 +386,8 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         centerMaterial = quadCenter.GetComponent<Renderer>().material;
         finalCenterEye.SetReplacementShader(centerMaterial.shader, "");
 
+        finalCenterEye.depth = 0;
+
 		float plane_dist = (float)sl.Constant.PLANE_DISTANCE;
         scale(quadCenter.gameObject, new Vector2(1.78f * plane_dist, 1.0f * plane_dist));
 
@@ -555,25 +555,6 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
 		if (!manager.IsStereoRig)
 			return; //Make sure we're in pass-through AR mode.
-
-#if UNITY_2019_3_OR_NEWER
-        List<InputDevice> eyes = new List<InputDevice>();
-        InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.HeadMounted, eyes);
-
-        if (eyes.Count > 0) // if a headset is detected
-        {
-            var eye = eyes[0];
-            eye.TryGetFeatureValue(CommonUsages.leftEyePosition, out Vector3 leftEyePosition);
-            eye.TryGetFeatureValue(CommonUsages.leftEyeRotation, out Quaternion leftEyeRotation);
-            eye.TryGetFeatureValue(CommonUsages.rightEyePosition, out Vector3 rightEyePosition);
-            eye.TryGetFeatureValue(CommonUsages.rightEyeRotation, out Quaternion rightEyeRotation);
-
-            finalLeftEye.transform.localPosition = leftEyePosition;
-            finalLeftEye.transform.localRotation = leftEyeRotation;
-            finalRightEye.transform.localPosition = rightEyePosition;
-            finalRightEye.transform.localRotation = rightEyeRotation;
-        }
-#endif
 
         Quaternion r;
         //r = latencyPose.rotation;
