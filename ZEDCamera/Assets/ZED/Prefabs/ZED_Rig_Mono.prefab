@@ -62,6 +62,8 @@ MonoBehaviour:
   streamInputIP: 127.0.0.1
   streamInputPort: 30000
   srpShaderType: 0
+  selfIllumination: 0.5
+  applyZEDNormals: 0
   enableTracking: 1
   enableSpatialMemory: 1
   pathSpatialMemory: 
@@ -88,12 +90,14 @@ MonoBehaviour:
   animalDetectionConfidenceThreshold: 60
   electronicsDetectionConfidenceThreshold: 60
   fruitVegetableDetectionConfidenceThreshold: 60
+  sportDetectionConfidenceThreshold: 60
   objectClassPersonFilter: 1
   objectClassVehicleFilter: 1
   objectClassBagFilter: 1
   objectClassAnimalFilter: 1
   objectClassElectronicsFilter: 1
   objectClassFruitVegetableFilter: 1
+  objectClassSportFilter: 1
   depthOcclusion: 1
   postProcessing: 1
   m_cameraBrightness: 100
@@ -145,6 +149,7 @@ MonoBehaviour:
   trackingState: '-'
   objectDetectionFPS: '-'
   sensingMode: 1
+  ZEDGrabError: 1
   setIMUPriorInAR: 1
   allowARPassThrough: 1
   gravityRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -227,6 +232,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -251,6 +257,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114589286496521468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,6 +436,11 @@ MonoBehaviour:
   dithering: 0
   stopNaNs: 0
   taaSharpenStrength: 0.6
+  TAAQuality: 1
+  taaHistorySharpening: 0.35
+  taaAntiFlicker: 0.5
+  taaMotionVectorRejection: 0
+  taaAntiHistoryRinging: 0
   physicalParameters:
     m_Iso: 200
     m_ShutterSpeed: 0.005
@@ -438,6 +450,7 @@ MonoBehaviour:
     m_BarrelClipping: 0.25
     m_Anamorphism: 0
   flipYMode: 0
+  xrRendering: 0
   fullscreenPassthrough: 0
   allowDynamicResolution: 0
   customRenderingSettings: 0
@@ -446,6 +459,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   hasPersistentHistory: 0
+  exposureTarget: {fileID: 0}
   m_RenderingPathCustomFrameSettings:
     bitDatas:
       data1: 70297877217101
@@ -456,6 +470,9 @@ MonoBehaviour:
     maximumLODLevel: 0
     maximumLODLevelMode: 0
     maximumLODLevelQualityLevel: 0
+    sssQualityMode: 0
+    sssQualityLevel: 0
+    sssCustomSampleBudget: 20
     materialQuality: 0
   renderingPathCustomFrameSettingsOverrideMask:
     mask:
