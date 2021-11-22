@@ -152,8 +152,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_IgnoreReversedGraphics: 1
   m_BlockingObjects: 0
   m_BlockingMask:
@@ -169,8 +169,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
@@ -357,8 +357,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6797e7683a7af834484d666ec79e9909, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   zedManager: {fileID: 1078485266}
   canvas: {fileID: 65360501}
   startObjectDetectionAutomatically: 1
@@ -589,7 +589,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: svoInputFileName
-      value:
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -736,36 +736,6 @@ PrefabInstance:
       propertyPath: fruitVegetableDetectionConfidenceThreshold
       value: 60
       objectReference: {fileID: 0}
-    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
-        type: 3}
-      propertyPath: OD_personDetectionConfidenceThreshold
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
-        type: 3}
-      propertyPath: vehicleDetectionConfidenceThreshold
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
-        type: 3}
-      propertyPath: animalDetectionConfidenceThreshold
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
-        type: 3}
-      propertyPath: electronicsDetectionConfidenceThreshold
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
-        type: 3}
-      propertyPath: fruitVegetableDetectionConfidenceThreshold
-      value: 60
-      objectReference: {fileID: 0}
-    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
-        type: 3}
-      propertyPath: bagDetectionConfidenceThreshold
-      value: 60
-      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114589286496521468, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
@@ -785,8 +755,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1123750126 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224477321843734534, guid: a71fe20b5d673e34fb3fef09b4bb6ee3,
@@ -821,8 +791,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
@@ -840,8 +810,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10

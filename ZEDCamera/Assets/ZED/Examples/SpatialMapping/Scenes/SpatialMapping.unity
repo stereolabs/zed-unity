@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0.17276844, g: 0.21589246, b: 0.2978263, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -98,7 +98,8 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: 8689a59f7ed4e7d428f19dc7eb86aec2, type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 8689a59f7ed4e7d428f19dc7eb86aec2,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -126,14 +127,14 @@ NavMeshSettings:
 --- !u!1 &237737847
 GameObject:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 1066507924608964, guid: 78c3e7155ac644d4faf82f285accb534, type: 2}
+  m_CorrespondingSourceObject: {fileID: 1066507924608964, guid: 78c3e7155ac644d4faf82f285accb534,
+    type: 2}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
   - component: {fileID: 237737851}
   - component: {fileID: 237737848}
-  - component: {fileID: 237737849}
   m_Layer: 0
   m_Name: Navigation
   m_TagString: Untagged
@@ -157,134 +158,11 @@ MonoBehaviour:
   agentTypeID: 0
   hideFlag: 0
   isOver: 0
---- !u!114 &237737849
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 237737847}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraID: 0
-  depthMode: 1
-  inputType: 0
-  resolution: 2
-  FPS: 60
-  svoInputFileName: 
-  opencvCalibFile: 
-  svoLoopBack: 1
-  svoRealTimeMode: 0
-  currentFrame: 0
-  numberFrameMax: 0
-  pauseSVOReading: 0
-  pauseLiveReading: 0
-  NeedNewFrameGrab: 0
-  streamInputIP: 127.0.0.1
-  streamInputPort: 30000
-  enableTracking: 1
-  enableSpatialMemory: 1
-  pathSpatialMemory: 
-  estimateInitialPosition: 1
-  trackingIsStatic: 0
-  mappingResolutionPreset: 1
-  mappingRangePreset: 1
-  isMappingFilteringEnable: 0
-  isMappingTextured: 0
-  saveMeshWhenOver: 0
-  meshPath: Assets/ZEDMesh.obj
-  meshFilterParameters: 0
-  objectDetectionImageSyncMode: 0
-  objectDetectionTracking: 1
-  objectDetection2DMask: 0
-  objectDetectionModel: 0
-  bodyFitting: 0
-  maxRange: 40
-  SK_personDetectionConfidenceThreshold: 50
-  OD_personDetectionConfidenceThreshold: 60
-  vehicleDetectionConfidenceThreshold: 60
-  bagDetectionConfidenceThreshold: 60
-  animalDetectionConfidenceThreshold: 60
-  electronicsDetectionConfidenceThreshold: 60
-  fruitVegetableDetectionConfidenceThreshold: 60
-  objectClassPersonFilter: 1
-  objectClassVehicleFilter: 1
-  objectClassBagFilter: 1
-  objectClassAnimalFilter: 1
-  objectClassElectronicsFilter: 1
-  objectClassFruitVegetableFilter: 1
-  depthOcclusion: 1
-  postProcessing: 1
-  m_cameraBrightness: 100
-  enableImageEnhancement: 1
-  m_maxDepthRange: 40
-  svoOutputFileName: Assets/Recording.svo
-  svoOutputCompressionMode: 1
-  svoOutputBitrate: 0
-  svoOutputTargetFPS: 0
-  svoOutputTranscodeStreaming: 0
-  needRecordFrame: 0
-  enableStreaming: 0
-  streamingCodec: 0
-  streamingPort: 30000
-  bitrate: 8000
-  gopSize: -1
-  adaptativeBitrate: 0
-  chunkSize: 8096
-  streamingTargetFramerate: 0
-  fadeInOnStart: 1
-  dontDestroyOnLoad: 0
-  greySkybox: 1
-  m_confidenceThreshold: 100
-  m_textureConfidenceThreshold: 100
-  enableRightDepthMeasure: 0
-  showarrig: 0
-  enableIMUFusion: 1
-  enableSelfCalibration: 1
-  videoSettingsInitMode: 0
-  videoBrightness: 4
-  videoContrast: 4
-  videoHue: 0
-  videoSaturation: 4
-  videoAutoGainExposure: 1
-  videoGain: 10
-  videoExposure: 100
-  videoAutoWhiteBalance: 1
-  videoWhiteBalance: 3200
-  videoSharpness: 3
-  videoGamma: 5
-  videoLEDStatus: 1
-  cameraModel: '-'
-  cameraSerialNumber: '-'
-  cameraFirmware: '-'
-  versionZED: '[SDK]: 3.5.0 [Plugin]: 3.5.0'
-  engineFPS: '-'
-  cameraFPS: '-'
-  HMDDevice: '-'
-  trackingState: '-'
-  objectDetectionFPS: '-'
-  sensingMode: 1
-  setIMUPriorInAR: 1
-  allowARPassThrough: 1
-  gravityRotation: {x: 0, y: 0, z: 0, w: 1}
-  ZEDSyncPosition: {x: 0, y: 0, z: 0}
-  HMDSyncPosition: {x: 0, y: 0, z: 0}
-  ZEDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
-  HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
-  advancedPanelOpen: 0
-  spatialMappingFoldoutOpen: 0
-  objectDetectionFoldoutOpen: 0
-  recordingFoldoutOpen: 0
-  streamingOutFoldoutOpen: 0
-  camControlFoldoutOpen: 0
-  zedRigDisplayer: {fileID: 0}
 --- !u!4 &237737851
 Transform:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 4695795446731942, guid: 78c3e7155ac644d4faf82f285accb534, type: 2}
+  m_CorrespondingSourceObject: {fileID: 4695795446731942, guid: 78c3e7155ac644d4faf82f285accb534,
+    type: 2}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 237737847}
@@ -297,7 +175,8 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &495703836 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+  m_CorrespondingSourceObject: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+    type: 3}
   m_PrefabInstance: {fileID: 1098063099}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -453,63 +332,78 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: depthMode
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: inputType
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: m_maxDepthRange
       value: 40
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: svoRealTimeMode
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: saveMeshWhenOver
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: svoInputFileName
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: trackingIsStatic
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: advancedPanelOpen
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: isMappingTextured
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: pathSpatialMemory
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: recordingFoldoutOpen
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: camControlFoldoutOpen
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: estimateInitialPosition
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: isMappingFilteringEnable
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: spatialMappingFoldoutOpen
       value: 0
       objectReference: {fileID: 0}
@@ -544,7 +438,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4df52383ce9e884e8c1f5e574b47f8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 1598928279411462, guid: c5d994fffa25d764a8ab3f9828f3e507, type: 3}
+  enemyPrefab: {fileID: 1598928279411462, guid: c5d994fffa25d764a8ab3f9828f3e507,
+    type: 3}
 --- !u!4 &1729039479
 Transform:
   m_ObjectHideFlags: 0
