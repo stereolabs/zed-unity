@@ -513,7 +513,7 @@ namespace sl
         private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false,
             bool trackingIsStatic = false, bool enableIMUFusion = true, System.Text.StringBuilder aeraFilePath = null);
 
-        [DllImport(nameDll, EntryPoint = "sl_disable_positional_ttracking")]
+        [DllImport(nameDll, EntryPoint = "sl_disable_positional_tracking")]
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
 
         [DllImport(nameDll, EntryPoint = "sl_save_area_map")]
