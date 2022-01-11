@@ -13,7 +13,7 @@ using UnityEditor;
 /// If this script is present, the process will happen automatically when a scan is completed. 
 /// See the ZED spatial mapping tutorial for more info: https://docs.stereolabs.com/mixed-reality/unity/spatial-mapping-unity/
 /// </summary>
-[RequireComponent(typeof(ZEDManager))]
+//[RequireComponent(typeof(ZEDManager))]
 public class NavMeshSurface: MonoBehaviour
 {
 #if UNITY_5_6_OR_NEWER

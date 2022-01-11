@@ -2042,6 +2042,7 @@ public class ZEDManager : MonoBehaviour
             //If values are wrong, tweak calibration file created in ZEDMixedRealityPlugin.
             camLeftTransform.localPosition = arRig.HmdToZEDCalibration.translation;
             camLeftTransform.localRotation = arRig.HmdToZEDCalibration.rotation;
+
             if (camRightTransform) camRightTransform.localPosition = camLeftTransform.localPosition + new Vector3(zedCamera.Baseline, 0.0f, 0.0f); //Space the eyes apart.
             if (camRightTransform) camRightTransform.localRotation = camLeftTransform.localRotation;
         }
@@ -2322,7 +2323,6 @@ public class ZEDManager : MonoBehaviour
             {
                 isTrackingEnable = true;
             }
-
         }
     }
 
@@ -2728,7 +2728,7 @@ public class ZEDManager : MonoBehaviour
             if (bodyFormat == sl.BODY_FORMAT.POSE_34 && bodyFitting == false && (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
                                                                                 || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST))
             {
-                Debug.LogWarning("sl.BODY_FORMAT.POSE_32 is chosen, Skeleton Tracking will automatically enable body fitting");
+                Debug.LogWarning("sl.BODY_FORMAT.POSE_34 is chosen, Skeleton Tracking will automatically enable body fitting");
                 bodyFitting = true;
             }
             od_param.bodyFormat = bodyFormat;
@@ -2793,7 +2793,6 @@ public class ZEDManager : MonoBehaviour
         if (!objectDetectionRunning) return;
 
         //Update the runtime parameters in case the user made changes.
-        //od_runtime_params.detectionConfidenceThreshold = objectDetectionConfidenceThreshold;
         od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
         od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST) ? SK_personDetectionConfidenceThreshold : OD_personDetectionConfidenceThreshold;
         od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehicleDetectionConfidenceThreshold;

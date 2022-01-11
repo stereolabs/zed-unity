@@ -38,12 +38,12 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.17276844, g: 0.21589246, b: 0.2978263, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 12
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -98,7 +98,8 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_LightingSettings: {fileID: 4890085278179872738, guid: c1f5c3d27813a6345b4dbedb0e67365a,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -118,6 +119,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
@@ -167,6 +170,7 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -316,6 +320,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
+      propertyPath: advancedPanelOpen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: enableSpatialMemory
       value: 0
       objectReference: {fileID: 0}
@@ -353,11 +362,6 @@ PrefabInstance:
         type: 3}
       propertyPath: fruitVegetableDetectionConfidenceThreshold
       value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
-        type: 3}
-      propertyPath: advancedPanelOpen
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
@@ -562,11 +566,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  index: -1
+  useLegacySteamVRInput: 0
   deviceToTrack: 0
   latencyCompensation: 78
   correctControllerDrift: 1
   SNHolder: 
   zedManager: {fileID: 1344833222}
+  fireBinding:
+    actionPath: /actions/default/in/GrabPinch
+    needsReinit: 0
+  clickBinding:
+    actionPath: /actions/default/in/GrabPinch
+    needsReinit: 0
+  backBinding:
+    actionPath: /actions/default/in/GrabPinch
+    needsReinit: 0
+  grabBinding:
+    actionPath: /actions/default/in/GrabPinch
+    needsReinit: 0
+  navigateUIBinding:
+    actionPath: /actions/platformer/in/Move
+    needsReinit: 0
   onFireDown:
     m_PersistentCalls:
       m_Calls: []
@@ -834,6 +855,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -858,6 +880,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1124290462
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -957,6 +980,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!4 &1320592377
@@ -1100,11 +1124,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  index: -1
+  useLegacySteamVRInput: 0
   deviceToTrack: 1
   latencyCompensation: 78
   correctControllerDrift: 1
   SNHolder: 
   zedManager: {fileID: 1344833222}
+  fireBinding:
+    actionPath: /actions/default/in/GrabPinch
+    needsReinit: 0
+  clickBinding:
+    actionPath: /actions/default/in/GrabPinch
+    needsReinit: 0
+  backBinding:
+    actionPath: /actions/default/in/GrabPinch
+    needsReinit: 0
+  grabBinding:
+    actionPath: /actions/default/in/GrabPinch
+    needsReinit: 0
+  navigateUIBinding:
+    actionPath: /actions/platformer/in/Move
+    needsReinit: 0
   onFireDown:
     m_PersistentCalls:
       m_Calls: []

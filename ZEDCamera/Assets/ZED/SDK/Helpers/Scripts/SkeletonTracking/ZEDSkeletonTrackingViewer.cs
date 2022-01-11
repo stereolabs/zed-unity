@@ -93,8 +93,8 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
 		if (zedManager)
         {
-        zedManager.OnZEDReady += OnZEDReady;
-        zedManager.OnObjectDetection += updateSkeletonData;
+            zedManager.OnZEDReady += OnZEDReady;
+            zedManager.OnObjectDetection += updateSkeletonData;
 		}
 
         if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM )
@@ -208,7 +208,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         for (int i = 0; i < 34; i++)
         {
             worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
-            worldJointsRot[i] = data.localOrientationPerJoint[i];
+            worldJointsRot[i] = data.localOrientationPerJoint[i].normalized;
         }
 
         handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, zedManager.GetZedRootTansform().rotation * data.globalRootOrientation, useAvatar);

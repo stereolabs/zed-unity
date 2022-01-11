@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-#if ZED_LWRP || ZED_HDRP
-using UnityEngine.Experimental.Rendering;
+#if ZED_LWRP || ZED_HDRP || ZED_URP
+using UnityEngine.Rendering;
 #endif 
 
 /// <summary>
@@ -32,7 +32,7 @@ public class LookAtCameraPartialAxis : MonoBehaviour
     private void Start()
     {
         //Camera.onPreRender += LookAtCamera;
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
         RenderPipeline.beginCameraRendering += LookAtCamera;
 #else
         Camera.onPreRender += LookAtCamera;
@@ -42,7 +42,7 @@ public class LookAtCameraPartialAxis : MonoBehaviour
     private void OnDestroy()
     {
         //Camera.onPreRender -= LookAtCamera;
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP ||ZED_URP
         RenderPipeline.beginCameraRendering -= LookAtCamera;
 #else
         Camera.onPreRender -= LookAtCamera;

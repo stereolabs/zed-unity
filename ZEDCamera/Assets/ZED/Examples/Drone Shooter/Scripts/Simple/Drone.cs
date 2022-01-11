@@ -162,7 +162,7 @@ public class Drone : MonoBehaviour, ILaserable
 
     private float damageFlashAmount
     {
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP || !ZED_URP
         get
         {
             return meshrenderer.material.GetFloat("_Blend");
@@ -182,7 +182,7 @@ public class Drone : MonoBehaviour, ILaserable
             newcol.a = value;
             meshrenderer.material.SetColor("_UnlitColor", newcol);
         }
-#elif ZED_LWRP
+#elif ZED_LWRP || ZED_URP
         get
         {
             return meshrenderer.material.GetColor("_BaseColor").a;
@@ -194,7 +194,7 @@ public class Drone : MonoBehaviour, ILaserable
             meshrenderer.material.SetColor("_BaseColor", newcol);
         }
 #endif
-}
+    }
 
 
     // Use this for initialization

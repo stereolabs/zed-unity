@@ -1845,7 +1845,7 @@ namespace sl
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 34)]
         public Quaternion[] localOrientationPerJoint;
         /// <summary>
-        /// Global root position.
+        /// Global root rotation.
         /// </summary>
         public Quaternion globalRootOrientation;
     };

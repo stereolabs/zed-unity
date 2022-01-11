@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
 using UnityEngine.Rendering;
 #endif
 
@@ -142,9 +142,9 @@ public class BBox3DHandler : MonoBehaviour
             FindShaderIndexes();
         }
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
         Camera.onPreCull += OnCameraPreRender;
-#elif ZED_LWRP
+#elif ZED_LWRP || ZED_URP
         RenderPipelineManager.beginCameraRendering += LWRPBeginCamera;
 #elif ZED_HDRP
         ZEDManager manager = FindObjectOfType<ZEDManager>();
@@ -309,7 +309,7 @@ public class BBox3DHandler : MonoBehaviour
         rend.materials = mats;
     }
 
-#if ZED_LWRP
+#if ZED_LWRP || ZED_URP
     private void LWRPBeginCamera(ScriptableRenderContext context, Camera rendcam)
     {
         OnCameraPreRender(rendcam);
@@ -364,9 +364,9 @@ public class BBox3DHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
         Camera.onPreCull -= OnCameraPreRender;
-#elif ZED_LWRP
+#elif ZED_LWRP || ZED_URP
         RenderPipelineManager.beginCameraRendering -= LWRPBeginCamera;
 #elif ZED_HDRP
 

@@ -3,7 +3,7 @@
 using UnityEngine;
 using UnityEngine.XR;
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
 using UnityEngine.Rendering;
 #endif
 
@@ -32,7 +32,7 @@ public class ZEDMirror : MonoBehaviour
     {
         XRSettings.showDeviceView = false; //Turn off default behavior.
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_LWRP || ZED_HDRP || ZED_URP
         RenderPipelineManager.endFrameRendering += OnFrameEnd;
 #endif
 
@@ -46,7 +46,7 @@ public class ZEDMirror : MonoBehaviour
         }
     }
 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
         if (textureOverlayLeft != null)
