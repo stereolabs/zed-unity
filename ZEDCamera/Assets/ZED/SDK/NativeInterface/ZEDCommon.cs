@@ -649,7 +649,11 @@ namespace sl
 		/// <summary>
 		/// Native depth. Very accurate, but at a large performance cost.
 		/// </summary>
-		ULTRA
+		ULTRA,
+        /// <summary>
+        ///  End to End Neural disparity estimation, requires AI module
+        /// </summary>
+        NEURAL
     };
 
     /// <summary>
@@ -1197,14 +1201,22 @@ namespace sl
         /// Lossless compression based on png/zstd. Average size = 42% of RAW.
         /// </summary>
         LOSSLESS_BASED,
-		/// <summary>
-		/// AVCHD Based compression (H264). Available since ZED SDK 2.7
-		/// </summary>
-		H264_BASED,
-		/// <summary>
-		/// HEVC Based compression (H265). Available since ZED SDK 2.7
-		/// </summary>
-		H265_BASED,
+        /// <summary>
+        /// H264(AVCHD) GPU based compression : avg size = 1% (of RAW). Requires a NVIDIA GPU
+        /// </summary>
+        H264_BASED,
+        /// <summary>
+        /// H265(HEVC) GPU based compression: avg size = 1% (of RAW). Requires a NVIDIA GPU, Pascal architecture or newer
+        /// </summary>
+        H265_BASED,
+        /// <summary>
+        /// H264 Lossless GPU/Hardware based compression: avg size = 25% (of RAW). Provides a SSIM/PSNR result (vs RAW) >= 99.9%. Requires a NVIDIA GPU
+        /// </summary>
+        H264_LOSSLESS_BASED,
+        /// <summary>
+        /// H265 Lossless GPU/Hardware based compression: avg size = 25% (of RAW). Provides a SSIM/PSNR result (vs RAW) >= 99.9%. Requires a NVIDIA GPU
+        /// </summary>
+        H265_LOSSLESS_BASED,
     }
 
 
