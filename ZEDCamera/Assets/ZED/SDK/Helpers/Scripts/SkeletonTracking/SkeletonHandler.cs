@@ -527,7 +527,10 @@ public class SkeletonHandler : ScriptableObject
         // Apply global transform
         if (rigBone[HumanBodyBones.Hips].transform)
         {
-            rigBone[HumanBodyBones.Hips].transform.position = targetBodyPosition;
+            var animator = humanoid.GetComponent<Animator>();
+            // There is an offset between the joint "Hips" and the equivalent in the ZED SDK. This offset compensates it.
+            Vector3 offset = new Vector3(0, animator.GetBoneTransform(HumanBodyBones.Hips).position.y - animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position.y, 0);
+            rigBone[HumanBodyBones.Hips].transform.position = targetBodyPosition + offset;
             rigBone[HumanBodyBones.Hips].transform.rotation = targetBodyOrientation;
         }
     }
