@@ -66,17 +66,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// </summary>
     public GameObject Avatar;
 
-	/// <summary>
-	/// Smoothing factor for humanoid movments.
-	/// </summary>
-	[Range(0, 1)]
-    [Tooltip("Smooth factor used for avatar movements and joint rotations.")]
-    public float smoothFactor = 0.5f;
-
 	public Dictionary<int,SkeletonHandler> avatarControlList;
-
-    private Vector3 initialPosition;
-    private Quaternion initialRotation;
 
     /// <summary>
     /// Start this instance.
@@ -212,8 +202,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         }
 
         handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, zedManager.GetZedRootTansform().rotation * data.globalRootOrientation, useAvatar);
-
-        handler.SetSmoothFactor(smoothFactor);
     }
 
     void UpdateViewCameraPosition()
