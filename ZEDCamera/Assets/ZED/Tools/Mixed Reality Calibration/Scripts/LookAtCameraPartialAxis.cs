@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-#if ZED_LWRP || ZED_HDRP || ZED_URP
+#if ZED_HDRP || ZED_URP
 using UnityEngine.Rendering;
 #endif 
 
@@ -31,9 +31,8 @@ public class LookAtCameraPartialAxis : MonoBehaviour
 
     private void Start()
     {
-        //Camera.onPreRender += LookAtCamera;
-#if ZED_LWRP || ZED_HDRP || ZED_URP
-        RenderPipeline.beginCameraRendering += LookAtCamera;
+#if ZED_HDRP || ZED_URP
+        RenderPipelineManager.beginCameraRendering += LookAtCamera;
 #else
         Camera.onPreRender += LookAtCamera;
 #endif
@@ -41,16 +40,37 @@ public class LookAtCameraPartialAxis : MonoBehaviour
 
     private void OnDestroy()
     {
-        //Camera.onPreRender -= LookAtCamera;
-#if ZED_LWRP || ZED_HDRP ||ZED_URP
-        RenderPipeline.beginCameraRendering -= LookAtCamera;
+#if ZED_HDRP || ZED_URP
+        RenderPipelineManager.beginCameraRendering -= LookAtCamera;
 #else
         Camera.onPreRender -= LookAtCamera;
 #endif
     }
 
 
+#if ZED_URP || ZED_HDRP
+
     /// <summary>
+    /// Rotates the transform to face the target camera on all enabled axes. 
+    /// </summary>
+    /// <param name="cam"></param>
+    void LookAtCamera(ScriptableRenderContext context, Camera cam)
+    {
+        //Camera cam = Camera.current;
+        if (cam.name.Contains("Scene") || cam.name.Contains("Editor")) return;
+
+        Quaternion lookrot = Quaternion.LookRotation(transform.position - cam.transform.position, Vector3.up);
+        Vector3 lookeuler = lookrot.eulerAngles;
+
+        float newx = followX ? lookeuler.x : transform.eulerAngles.x;
+        float newy = followY ? lookeuler.y : transform.eulerAngles.y;
+        float newz = followZ ? lookeuler.z : transform.eulerAngles.z;
+
+        transform.rotation = Quaternion.Euler(newx, newy, newz);
+    }
+
+#else
+        /// <summary>
     /// Rotates the transform to face the target camera on all enabled axes. 
     /// </summary>
     /// <param name="cam"></param>
@@ -67,5 +87,6 @@ public class LookAtCameraPartialAxis : MonoBehaviour
         float newz = followZ ? lookeuler.z : transform.eulerAngles.z;
 
         transform.rotation = Quaternion.Euler(newx, newy, newz);
-	}
+    }
+#endif
 }

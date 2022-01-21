@@ -186,8 +186,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
         List<int> activeids = liveBBoxes.Keys.ToList();
 
         List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showONTracked, showSEARCHINGTracked, showOFFTracked);
-        int i = 0;
-        //Test just setting box to first available. 
+        //Test just setting box to first available.
         foreach (DetectedObject dobj in newobjects)
         {
             //Remove the ID from the list we'll use to clear no-longer-visible boxes. 

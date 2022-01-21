@@ -2,7 +2,7 @@
 using UnityEngine;
 using System.IO;
 
-#if ZED_LWRP || ZED_HDRP || ZED_URP
+#if ZED_HDRP || ZED_URP
 using UnityEngine.Rendering;
 #endif
 
@@ -347,7 +347,7 @@ public class GreenScreenManager : MonoBehaviour
             garbageMatte = new GarbageMatte(cameraManager, finalMat, transform, garbageMatte);
         }
 
-#if ZED_LWRP || ZED_HDRP || ZED_URP
+#if ZED_HDRP || ZED_URP
         cam = GetComponent<Camera>();
         if (!cam) Debug.LogError("GreenScreenManager is not attached to a Camera.");
         RenderPipelineManager.beginCameraRendering += OnSRPPreRender;
@@ -639,7 +639,7 @@ public class GreenScreenManager : MonoBehaviour
         }
     }
 
-#if ZED_LWRP || ZED_HDRP || ZED_URP
+#if ZED_HDRP || ZED_URP
     /// <summary>
     /// 
     /// </summary>

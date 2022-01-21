@@ -1717,7 +1717,7 @@ public class ZEDManager : MonoBehaviour
             StopObjectDetection();
         }
 
-#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
+#if !ZED_HDRP && !ZED_URP
         ClearRendering();
 #endif
 
@@ -1749,7 +1749,7 @@ public class ZEDManager : MonoBehaviour
         sl.ZEDCamera.UnloadInstance((int)cameraID);
     }
 
-#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
+#if !ZED_HDRP && !ZED_URP
     private void ClearRendering()
     {
         if (camLeftTransform != null)

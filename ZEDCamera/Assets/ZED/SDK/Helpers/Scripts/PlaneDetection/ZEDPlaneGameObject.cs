@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Threading;
 using System.Runtime.InteropServices;
 
-#if ZED_LWRP || ZED_HDRP
+#if ZED_URP || ZED_HDRP
 using UnityEngine.Rendering;
 #endif
 
@@ -261,7 +261,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
         isCreated = true;
 
         //Subscribe to events that let you govern visibility in the scene and game. 
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_URP && !ZED_HDRP
         Camera.onPreCull += PreCull;
         Camera.onPostRender += PostRender;
 #else
@@ -443,7 +443,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
         return defaultmaterial;
     }
 
-#if! ZED_LWRP && !ZED_HDRP
+#if! ZED_URP && !ZED_HDRP
     /// <summary>
     /// Disables the MeshRenderer object for rendering a single camera, depending on display settings in ZEDPlaneDetectionManager. 
     /// </summary>
@@ -497,7 +497,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
 
     private void OnDestroy()
     {
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_URP && !ZED_HDRP
         Camera.onPreCull -= PreCull;
         Camera.onPostRender -= PostRender;
 #else

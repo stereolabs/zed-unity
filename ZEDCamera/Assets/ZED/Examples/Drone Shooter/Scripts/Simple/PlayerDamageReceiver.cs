@@ -27,7 +27,7 @@ public class PlayerDamageReceiver : MonoBehaviour
     /// </summary>
     private float coloralpha
     {
-#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
+#if !ZED_HDRP && !ZED_URP
         get
         {
             return meshrenderer.material.color.a;

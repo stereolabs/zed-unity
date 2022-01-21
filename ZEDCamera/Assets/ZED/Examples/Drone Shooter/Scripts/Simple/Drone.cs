@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Drone : MonoBehaviour, ILaserable
@@ -162,7 +161,7 @@ public class Drone : MonoBehaviour, ILaserable
 
     private float damageFlashAmount
     {
-#if !ZED_LWRP && !ZED_HDRP || !ZED_URP
+#if !ZED_HDRP || !ZED_URP
         get
         {
             return meshrenderer.material.GetFloat("_Blend");
@@ -182,7 +181,7 @@ public class Drone : MonoBehaviour, ILaserable
             newcol.a = value;
             meshrenderer.material.SetColor("_UnlitColor", newcol);
         }
-#elif ZED_LWRP || ZED_URP
+#elif ZED_URP
         get
         {
             return meshrenderer.material.GetColor("_BaseColor").a;

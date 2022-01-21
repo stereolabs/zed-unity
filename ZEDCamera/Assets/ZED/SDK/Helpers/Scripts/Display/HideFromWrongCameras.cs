@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-#if ZED_LWRP || ZED_HDRP || ZED_URP
+#if ZED_HDRP || ZED_URP
 using UnityEngine.Rendering;
 #endif
 
@@ -53,7 +53,7 @@ public class HideFromWrongCameras : MonoBehaviour
     {
         rend = GetComponent<Renderer>();
 
-#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
+#if !ZED_HDRP && !ZED_URP
 
         Camera.onPreRender += PreRender;
         Camera.onPostRender += PostRender;
@@ -85,7 +85,7 @@ public class HideFromWrongCameras : MonoBehaviour
         renderableCamera = cam;
     }
 
-#if ZED_LWRP || ZED_HDRP || ZED_URP
+#if ZED_HDRP || ZED_URP
     private void SRPStartFrame(ScriptableRenderContext context, Camera[] cams)
     {
         rend.enabled = false;
@@ -164,7 +164,7 @@ public class HideFromWrongCameras : MonoBehaviour
 
     private void OnDestroy()
     {
-#if !ZED_LWRP && !ZED_HDRP && !ZED_URP
+#if !ZED_HDRP && !ZED_URP
         Camera.onPreRender -= PreRender;
         Camera.onPostRender -= PostRender;
 #else

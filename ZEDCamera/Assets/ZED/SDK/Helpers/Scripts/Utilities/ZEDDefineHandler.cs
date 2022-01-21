@@ -12,18 +12,13 @@ using UnityEditor.PackageManager.Requests;
 
 /// <summary>
 /// Manages the various compiler defines that the ZED Unity plugin uses to enable and disable features that are dependent on specific packages. 
-/// This includes the SteamVR and Oculus plugins (for controller interaction), OpenCV for Unity (for ArUco detection) and the Lightweight and High Definition Render Pipelines. 
+/// This includes the SteamVR and Oculus plugins (for controller interaction) and OpenCV for Unity (for ArUco detection). 
 /// </summary>
 [InitializeOnLoad]
 public class ZEDDefineHandler : AssetPostprocessor
 {
-    const float PACKAGE_LOAD_TIMEOUT_SECONDS = 5f;
     static ZEDDefineHandler()
-    {
-        if (!EditorApplication.isPlayingOrWillChangePlaymode) //TODO: Find a way to make this run only once when you open Unity. 
-        {
-            CheckForLWRPPackage();
-        }   
+    {  
     }
 
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
@@ -73,63 +68,6 @@ public class ZEDDefineHandler : AssetPostprocessor
         }
 
 #endregion
-
-
-    }
-
-    static ListRequest request;
-
-    static void CheckForLWRPPackage()
-    {
-        request = Client.List();
-
-
-        EditorApplication.update += CheckForLWRPPackageRequestFinished;
-        
-    }
-
-    static void CheckForLWRPPackageRequestFinished()
-    {
-        if (request.IsCompleted && request.Status == StatusCode.Success)
-        {
-            bool foundlwrppackage = false;
-            bool foundhdrppackage = false;
-            bool foundurppackage = false;
-
-            foreach (UnityEditor.PackageManager.PackageInfo package in request.Result)
-            {
-                if (package.name.Contains("render-pipelines.lightweight"))
-                {
-                    //Debug.Log("Lightweight Render Pipeline package detected.");
-                    foundlwrppackage = true;
-                    break;
-                }
-                else if (package.name.Contains("render-pipelines.universal"))
-                {
-                    //Debug.Log("High Definition Render Pipeline package detected.");
-                    foundurppackage = true;
-                    break;
-                }
-                else if (package.name.Contains("render-pipelines.high-definition"))
-                {
-                    //Debug.Log("High Definition Render Pipeline package detected.");
-                    foundhdrppackage = true;
-                    break;
-                }
-            }
-
-            if (foundlwrppackage) ActivateDefine("LWRP", "ZED_LWRP");
-            else DeactivateDefine("LWRP", "ZED_LWRP");
-
-            if (foundhdrppackage) ActivateDefine("HDRP", "ZED_HDRP");
-            else DeactivateDefine("HDRP", "ZED_HDRP");
-
-            if (foundurppackage) ActivateDefine("URP", "ZED_URP");
-            else DeactivateDefine("URP", "ZED_URP");
-
-            //Debug.Log("Scanned packages in " + requesttime.ToString("F2") + " seconds.");
-            EditorApplication.update -= CheckForLWRPPackageRequestFinished;
-        }
     }
 
     /// <summary>
