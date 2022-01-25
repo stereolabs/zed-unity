@@ -76,6 +76,12 @@
 				float _ZEDFactorAffectReal;
 				float _MaxDepth;
 
+				bool Unity_IsNan_float3(float3 In)
+				{
+					bool Out = (In < 0.0 || In > 0.0 || In == 0.0) ? 0 : 1;
+					return Out;
+				}
+
 				// vertex shader
 				v2f_surf vert_surf(appdata_full v) 
 				{
@@ -108,7 +114,7 @@
 					//Filter out depth values beyond the max value. 
 					if (_MaxDepth < 40.0) //Avoid clipping out FAR values when not using feature. 
 					{
-						if (zed_xyz.z > _MaxDepth) discard;
+						if (zed_xyz.z > _MaxDepth || Unity_IsNan_float3(zed_xyz.z)) discard;
 					}
 
 				#ifdef NO_DEPTH_OCC

@@ -401,6 +401,18 @@ public class ZEDRenderingPlane : MonoBehaviour
         }
 
         hider.SetRenderCamera(cam); //This canvas will allow this camera to render it. 
+
+#if ZED_URP
+        Material Mat_Zed_Forward_Lighting = Resources.Load("Materials/Lighting/Mat_ZED_Forward_Lighting_URP") as Material;
+        Material Mat_Zed_GreenScreen = Resources.Load("Materials/Mat_ZED_GreenScreen_URP") as Material;
+        if(!GetComponent<GreenScreenManager>()) canvas.GetComponent<MeshRenderer>().material = Mat_Zed_Forward_Lighting;
+        else canvas.GetComponent<MeshRenderer>().material = Mat_Zed_GreenScreen;
+#elif ZED_HDRP
+        Material Mat_Zed_Forward_Lighting = Resources.Load("Materials/Lighting/Mat_ZED_Forward_Lighting_HDRP") as Material;
+        Material Mat_Zed_GreenScreen = Resources.Load("Materials/Mat_ZED_GreenScreen_HDRP") as Material;
+        if (!GetComponent<GreenScreenManager>()) canvas.GetComponent<MeshRenderer>().material = Mat_Zed_Forward_Lighting;
+        else canvas.GetComponent<MeshRenderer>().material = Mat_Zed_GreenScreen;
+#endif
     }
 
     /// <summary>
