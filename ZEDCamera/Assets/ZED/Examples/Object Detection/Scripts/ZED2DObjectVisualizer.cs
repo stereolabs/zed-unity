@@ -6,9 +6,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// For the ZED 2D Object Detection sample. 
+/// For the ZED 2D Object Detection sample.
 /// Listens for new object detections (via the ZEDManager.OnObjectDetection event) and moves + resizes canvas prefabs
-/// to represent them. 
+/// to represent them.
 /// <para>Works by instantiating a pool of prefabs, and each frame going through the DetectedFrame received from the event
 /// to make sure each detected object has a representative GameObject. Also disables GameObjects whose objects are no
 /// longer visible and returns them to the pool.</para>
@@ -16,8 +16,8 @@ using UnityEngine.UI;
 public class ZED2DObjectVisualizer : MonoBehaviour
 {
     /// <summary>
-    /// The scene's ZEDManager. 
-    /// If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DObjectVisualizer commponents in the scene. 
+    /// The scene's ZEDManager.
+    /// If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DObjectVisualizer commponents in the scene.
     /// </summary>
     [Tooltip("The scene's ZEDManager.\r\n" +
     "If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DObjectVisualizer commponents in the scene. ")]
@@ -25,15 +25,15 @@ public class ZED2DObjectVisualizer : MonoBehaviour
 
     /// <summary>
     /// The scene's canvas. This will be adjusted to have required settings/components so that the bounding boxes
-    /// will line up properly with the ZED video feed. 
+    /// will line up properly with the ZED video feed.
     /// </summary>
     [Tooltip("The scene's canvas. This will be adjusted to have required settings/components so that the bounding boxes " +
         "will line up properly with the ZED video feed.")]
     public Canvas canvas;
 
     /// <summary>
-    /// If true, the ZED Object Detection manual will be started as soon as the ZED is initiated. 
-    /// This avoids having to press the Start Object Detection button in ZEDManager's Inspector. 
+    /// If true, the ZED Object Detection manual will be started as soon as the ZED is initiated.
+    /// This avoids having to press the Start Object Detection button in ZEDManager's Inspector.
     /// </summary>
     [Tooltip("If true, the ZED Object Detection manual will be started as soon as the ZED is initiated. " +
     "This avoids having to press the Start Object Detection button in ZEDManager's Inspector.")]
@@ -41,9 +41,9 @@ public class ZED2DObjectVisualizer : MonoBehaviour
 
 
     /// <summary>
-    /// Prefab object that's instantiated to represent detected objects. 
-    /// This should ideally be the 2D Bounding Box prefab. But otherwise, it expects the object to have a BBox2DHandler script in the root object, 
-    /// and the RectTransform should be bottom-left-aligned (pivot set to 0, 0). 
+    /// Prefab object that's instantiated to represent detected objects.
+    /// This should ideally be the 2D Bounding Box prefab. But otherwise, it expects the object to have a BBox2DHandler script in the root object,
+    /// and the RectTransform should be bottom-left-aligned (pivot set to 0, 0).
     /// </summary>
     [Space(5)]
     [Header("Box Appearance")]
@@ -53,10 +53,10 @@ public class ZED2DObjectVisualizer : MonoBehaviour
     public GameObject boundingBoxPrefab;
 
     /// <summary>
-    /// The colors that will be cycled through when assigning colors to new bounding boxes. 
+    /// The colors that will be cycled through when assigning colors to new bounding boxes.
     /// </summary>
     [Tooltip("The colors that will be cycled through when assigning colors to new bounding boxes. ")]
-    //[ColorUsage(true, true)] //Uncomment to enable HDR colors in versions of Unity that support it. 
+    //[ColorUsage(true, true)] //Uncomment to enable HDR colors in versions of Unity that support it.
     public List<Color> boxColors = new List<Color>()
     {
         new Color(.231f, .909f, .69f, 1),
@@ -68,25 +68,25 @@ public class ZED2DObjectVisualizer : MonoBehaviour
 
     /// <summary>
     /// When a detected object is first given a box and assigned a color, we store it so that if the object
-    /// disappears and appears again later, it's assigned the same color. 
+    /// disappears and appears again later, it's assigned the same color.
     /// This is also solvable by making the color a function of the ID number itself, but then you can get
-    /// repeat colors under certain conditions. 
+    /// repeat colors under certain conditions.
     /// </summary>
     private Dictionary<int, Color> idColorDict = new Dictionary<int, Color>();
 
     /// <summary>
-    /// If true, draws a 2D mask over where the SDK believes the detected object is. 
+    /// If true, draws a 2D mask over where the SDK believes the detected object is.
     /// </summary>
     [Space(5)]
     [Header("Mask")]
     public bool showObjectMask = true;
     /// <summary>
-    /// Used to warn the user only once if they enable the mask but the mask was not enabled when object detection was initialized. See OnValidate. 
+    /// Used to warn the user only once if they enable the mask but the mask was not enabled when object detection was initialized. See OnValidate.
     /// </summary>
-    private bool lastShowObjectMaskValue; 
+    private bool lastShowObjectMaskValue;
 
     /// <summary>
-    /// Display bounding boxes of objects that are actively being tracked by object tracking, where valid positions are known. 
+    /// Display bounding boxes of objects that are actively being tracked by object tracking, where valid positions are known.
     /// </summary>
     [Space(5)]
     [Header("Filters")]
@@ -104,23 +104,23 @@ public class ZED2DObjectVisualizer : MonoBehaviour
     public bool showOFFTracked = false;
 
     /// <summary>
-    /// Used to know which of the available colors will be assigned to the next bounding box to be used. 
+    /// Used to know which of the available colors will be assigned to the next bounding box to be used.
     /// </summary>
     private int nextColorIndex = 0;
 
     /// <summary>
-    /// Pre-instantiated bbox prefabs currently not in use. 
+    /// Pre-instantiated bbox prefabs currently not in use.
     /// </summary>
     private Stack<GameObject> bboxPool = new Stack<GameObject>();
 
     /// <summary>
-    /// All active RectTransforms within GameObjects that were instantiated to the prefab and that currently represent a detected object. 
-    /// Key is the object's objectID. 
+    /// All active RectTransforms within GameObjects that were instantiated to the prefab and that currently represent a detected object.
+    /// Key is the object's objectID.
     /// </summary>
     private Dictionary<int, RectTransform> liveBBoxes = new Dictionary<int, RectTransform>();
 
     /// <summary>
-    /// List of all 2D masks created in a frame. Used so that they can all be disposed of in the frame afterward. 
+    /// List of all 2D masks created in a frame. Used so that they can all be disposed of in the frame afterward.
     /// </summary>
     private List<Texture2D> lastFrameMasks = new List<Texture2D>();
 
@@ -134,7 +134,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
         zedManager.OnObjectDetection += Visualize2DBoundingBoxes;
         zedManager.OnZEDReady += OnZEDReady;
 
-        if (!canvas) //If we don't have a canvas in the scene, we need one. 
+        if (!canvas) //If we don't have a canvas in the scene, we need one.
         {
             GameObject canvasgo = new GameObject("Canvas - " + zedManager.name);
             canvas = canvasgo.AddComponent<Canvas>();
@@ -150,10 +150,10 @@ public class ZED2DObjectVisualizer : MonoBehaviour
             zedManager.StartObjectDetection();
         }
 
-        //Enforce some specific settings on the canvas that are needed for things to line up. 
+        //Enforce some specific settings on the canvas that are needed for things to line up.
         canvas.renderMode = RenderMode.ScreenSpaceCamera;
         canvas.worldCamera = zedManager.GetLeftCamera();
-        //Canvas needs to have its plane distance set within the camera's view frustum. 
+        //Canvas needs to have its plane distance set within the camera's view frustum.
         canvas.planeDistance = 1;
         CanvasScaler scaler = canvas.GetComponent<CanvasScaler>();
         if (!scaler)
@@ -172,24 +172,24 @@ public class ZED2DObjectVisualizer : MonoBehaviour
 
     /// <summary>
     /// Given a frame of object detections, positions a canvas object to represent every visible object
-    /// to encompass the object within the 2D image from the ZED. 
-    /// <para>Called from ZEDManager.OnObjectDetection each time there's a new detection frame available.</para> 
+    /// to encompass the object within the 2D image from the ZED.
+    /// <para>Called from ZEDManager.OnObjectDetection each time there's a new detection frame available.</para>
     /// </summary>
     public void Visualize2DBoundingBoxes(DetectionFrame dframe)
     {
-        //Clear any masks that were displayed last frame, to avoid memory leaks. 
+        //Clear any masks that were displayed last frame, to avoid memory leaks.
         DestroyLastFrameMaskTextures();
 
         //Debug.Log("Received frame with " + dframe.detectedObjects.Count + " objects.");
-        //Get a list of all active IDs from last frame, and we'll remove each box that's visible this frame. 
-        //At the end, we'll clear the remaining boxes, as those are objects no longer visible to the ZED. 
+        //Get a list of all active IDs from last frame, and we'll remove each box that's visible this frame.
+        //At the end, we'll clear the remaining boxes, as those are objects no longer visible to the ZED.
         List<int> activeids = liveBBoxes.Keys.ToList();
 
         List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showONTracked, showSEARCHINGTracked, showOFFTracked);
         //Test just setting box to first available.
         foreach (DetectedObject dobj in newobjects)
         {
-            //Remove the ID from the list we'll use to clear no-longer-visible boxes. 
+            //Remove the ID from the list we'll use to clear no-longer-visible boxes.
             if (activeids.Contains(dobj.id)) activeids.Remove(dobj.id);
 
             //Get the relevant box. This function will create a new one if it wasn't designated yet. 
@@ -210,7 +210,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
             Rect objrect = dobj.Get2DBoundingBoxRect();
 
 #endif
-            //Adjust the size of the RectTransform to encompass the object. 
+            //Adjust the size of the RectTransform to encompass the object.
             bbox.sizeDelta = new Vector2(objrect.width, objrect.height);
             bbox.anchoredPosition = new Vector2(objrect.x, objrect.y);
 
@@ -223,20 +223,20 @@ public class ZED2DObjectVisualizer : MonoBehaviour
 */
 
 
-            //Apply the mask. 
+            //Apply the mask.
             if (showObjectMask)
             {
-                //Make a new image for this new mask. 
+                //Make a new image for this new mask.
                 Texture2D maskimage;
                 if (dobj.GetMaskTexture(out maskimage, false))
                 {
-                    idtext.SetMaskImage(maskimage); //Apply to 2D bbox. 
-                    lastFrameMasks.Add(maskimage);   //Cache the texture so it's deleted next time we update our objects. 
-                }   
+                    idtext.SetMaskImage(maskimage); //Apply to 2D bbox.
+                    lastFrameMasks.Add(maskimage);   //Cache the texture so it's deleted next time we update our objects.
+                }
             }
         }
 
-        //Remove boxes for objects that the ZED can no longer see. 
+        //Remove boxes for objects that the ZED can no longer see.
         foreach (int id in activeids)
         {
             ReturnBoxToPool(id, liveBBoxes[id]);
@@ -247,8 +247,8 @@ public class ZED2DObjectVisualizer : MonoBehaviour
 
     /// <summary>
     /// Returs the RectTransform within the GameObject (instantiated from boundingBoxPrefab) that represents the provided DetectedObject.
-    /// If none exists, it retrieves one from the pool (or instantiates a new one if none is available) and 
-    /// sets it up with the proper ID and colors. 
+    /// If none exists, it retrieves one from the pool (or instantiates a new one if none is available) and
+    /// sets it up with the proper ID and colors.
     /// </summary>
     private RectTransform GetBBoxForObject(DetectedObject dobj)
     {
@@ -292,8 +292,8 @@ public class ZED2DObjectVisualizer : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets an available GameObject (instantiated from boundingBoxPrefab) from the pool, 
-    /// or instantiates a new one if none are available. 
+    /// Gets an available GameObject (instantiated from boundingBoxPrefab) from the pool,
+    /// or instantiates a new one if none are available.
     /// </summary>
     /// <returns></returns>
     private GameObject GetAvailableBBox()
@@ -312,8 +312,8 @@ public class ZED2DObjectVisualizer : MonoBehaviour
     }
 
     /// <summary>
-    /// Disables a RectTransform's GameObject that was being used to represent an object (of the given id) and 
-    /// puts it back into the pool for later use. 
+    /// Disables a RectTransform's GameObject that was being used to represent an object (of the given id) and
+    /// puts it back into the pool for later use.
     /// </summary>
     private void ReturnBoxToPool(int id, RectTransform bbox)
     {
@@ -333,8 +333,8 @@ public class ZED2DObjectVisualizer : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns a color from the boxColors list. 
-    /// Colors are returned sequentially in order of their appearance in that list. 
+    /// Returns a color from the boxColors list.
+    /// Colors are returned sequentially in order of their appearance in that list.
     /// </summary>
     /// <returns></returns>
     private Color GetNextColor()
@@ -358,7 +358,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
     }
 
     /// <summary>
-    /// Sorts all objects in the canvas based on their distance from the camera, so that closer objects overlap further objects. 
+    /// Sorts all objects in the canvas based on their distance from the camera, so that closer objects overlap further objects.
     /// </summary>
     private void SortActiveObjectsByDepth()
     {
@@ -378,8 +378,8 @@ public class ZED2DObjectVisualizer : MonoBehaviour
     }
 
     /// <summary>
-    /// Destroys all textures added to the lastFrameMasks the last time Object Detection was called. 
-    /// Called when we're done using them (before updating with new data) to avoid memory leaks. 
+    /// Destroys all textures added to the lastFrameMasks the last time Object Detection was called.
+    /// Called when we're done using them (before updating with new data) to avoid memory leaks.
     /// </summary>
     private void DestroyLastFrameMaskTextures()
     {
@@ -395,7 +395,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
 
     private void OnValidate()
     {
-        //If the user changes the showObjectMask setting to true, warn them if its ZEDManager has objectDetection2DMask set to false, because masks won't show up. 
+        //If the user changes the showObjectMask setting to true, warn them if its ZEDManager has objectDetection2DMask set to false, because masks won't show up.
         if (Application.isPlaying && showObjectMask != lastShowObjectMaskValue)
         {
             lastShowObjectMaskValue = showObjectMask;
