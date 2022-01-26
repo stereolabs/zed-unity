@@ -125,7 +125,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     {
 		List<int> remainingKeyList = new List<int>(avatarControlList.Keys);
 		List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showON, showSEARCHING, showOFF);
-
  		foreach (DetectedObject dobj in newobjects)
         {
 			int person_id = dobj.rawObjectData.id;

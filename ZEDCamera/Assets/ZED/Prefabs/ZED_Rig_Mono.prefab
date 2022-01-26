@@ -79,6 +79,7 @@ MonoBehaviour:
   objectDetectionModel: 1
   bodyFitting: 0
   maxRange: 40
+  bodyFormat: 1
   SK_personDetectionConfidenceThreshold: 50
   OD_personDetectionConfidenceThreshold: 60
   vehicleDetectionConfidenceThreshold: 60
@@ -86,12 +87,14 @@ MonoBehaviour:
   animalDetectionConfidenceThreshold: 60
   electronicsDetectionConfidenceThreshold: 60
   fruitVegetableDetectionConfidenceThreshold: 60
+  sportDetectionConfidenceThreshold: 60
   objectClassPersonFilter: 1
   objectClassVehicleFilter: 1
   objectClassBagFilter: 1
   objectClassAnimalFilter: 1
   objectClassElectronicsFilter: 1
   objectClassFruitVegetableFilter: 1
+  objectClassSportFilter: 1
   depthOcclusion: 1
   postProcessing: 1
   m_cameraBrightness: 100
@@ -143,6 +146,7 @@ MonoBehaviour:
   trackingState: '-'
   objectDetectionFPS: '-'
   sensingMode: 1
+  ZEDGrabError: 1
   setIMUPriorInAR: 1
   allowARPassThrough: 1
   gravityRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -225,6 +229,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -249,6 +254,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114589286496521468
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -61,7 +61,7 @@ public class RenderingPipelineDefines
             {
                 return PipelineType.HDPipeline;
             }
-            else if (srpType.Contains("UniversalRenderPipelineAsset") || srpType.Contains("LightweightRenderPipelineAsset"))
+            else if (srpType.Contains("UniversalRenderPipelineAsset"))
             {
                 return PipelineType.UniversalPipeline;
             }
