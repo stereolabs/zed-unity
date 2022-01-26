@@ -13,7 +13,6 @@ public class EditPrefabAssetScope : IDisposable
     {
         this.assetPath = assetPath;
         prefabRoot = PrefabUtility.LoadPrefabContents(assetPath);
-        Debug.Log(prefabRoot.name);
     }
 
     public void Dispose()
@@ -27,7 +26,7 @@ public class EditPrefabAssetScope : IDisposable
 public class ConvertPrefabsToSRP
 {
 
-//#if ZED_URP
+#if ZED_URP
     [MenuItem("ZED/Convert all ZED Prefabs to URP")]
     static void ConvertAllZEDPrefabsToURP()
     {
@@ -66,7 +65,7 @@ public class ConvertPrefabsToSRP
                 }
                 using (var editScope = new EditPrefabAssetScope(zedRigStereoPath))
                 {
-                    Transform frame_left = editScope.prefabRoot.transform.Find("Camera_Left").Find("Frame");
+                    Transform frame_left = editScope.prefabRoot.transform.Find("Camera_eyes").Find("Left_eye").Find("Frame");
 
                     if (frame_left)
                     {
@@ -78,7 +77,7 @@ public class ConvertPrefabsToSRP
                         Debug.Log("Frame Left is not found");
                     }
 
-                    Transform frame_right = editScope.prefabRoot.transform.Find("Camera_Right").Find("Frame");
+                    Transform frame_right = editScope.prefabRoot.transform.Find("Camera_eyes").Find("Right_eye").Find("Frame");
 
                     if (frame_right)
                     {
@@ -128,7 +127,8 @@ public class ConvertPrefabsToSRP
 
     }
 
-//#elif ZED_HDRP
+#elif ZED_HDRP
+
     [MenuItem("ZED/Convert all ZED Prefabs to HDRP")]
     static void ConvertAllZEDPrefabsToHDRP()
     {
@@ -142,8 +142,8 @@ public class ConvertPrefabsToSRP
         if (SRP.GetType().ToString().Contains("HDRenderPipelineAsset"))
         {
 
-            Material Mat_Zed_Forward_Lighting = Resources.Load("Materials/Lighting/Mat_ZED_Forward_Lighting_HDRP") as Material;
-            Material Mat_Zed_GreenScreen = Resources.Load("Materials/Mat_ZED_GreenScreen_URP") as Material;
+            Material Mat_Zed_Forward_Lighting = Resources.Load("Materials/Lighting/Mat_ZED_HDRP_Lit") as Material;
+            Material Mat_Zed_GreenScreen = Resources.Load("Materials/Mat_ZED_Greenscreen_HDRP_Lit") as Material;
             Material Mat_Zed_Sun = Resources.Load("Sun/Materials/Sun_URP") as Material;
 
             // Modify prefab contents and save it back to the Prefab Asset
@@ -164,7 +164,7 @@ public class ConvertPrefabsToSRP
 
             using (var editScope = new EditPrefabAssetScope(zedRigStereoPath))
             {
-                Transform frame_left = editScope.prefabRoot.transform.Find("Camera_Left").Find("Frame");
+                Transform frame_left = editScope.prefabRoot.transform.Find("Camera_eyes").Find("Left_eye").Find("Frame");
 
                 if (frame_left)
                 {
@@ -176,7 +176,7 @@ public class ConvertPrefabsToSRP
                     Debug.Log("Frame Left is not found");
                 }
 
-                Transform frame_right = editScope.prefabRoot.transform.Find("Camera_Right").Find("Frame");
+                Transform frame_right = editScope.prefabRoot.transform.Find("Camera_eyes").Find("Right_eye").Find("Frame");
 
                 if (frame_right)
                 {
@@ -224,7 +224,8 @@ public class ConvertPrefabsToSRP
         }
     }
 
-//#endif
+#else
+
     [MenuItem("ZED/Convert all ZED Prefabs to built-in RP")]
     static void ConvertAllZEDPrefabsToBuiltInRP()
     {
@@ -257,7 +258,7 @@ public class ConvertPrefabsToSRP
         }
         using (var editScope = new EditPrefabAssetScope(zedRigStereoPath))
         {
-            Transform frame_left = editScope.prefabRoot.transform.Find("Camera_Left").Find("Frame");
+            Transform frame_left = editScope.prefabRoot.transform.Find("Camera_eyes").Find("Left_eye").Find("Frame");
 
             if (frame_left)
             {
@@ -269,7 +270,7 @@ public class ConvertPrefabsToSRP
                 Debug.Log("Frame Left is not found");
             }
 
-            Transform frame_right = editScope.prefabRoot.transform.Find("Camera_Right").Find("Frame");
+            Transform frame_right = editScope.prefabRoot.transform.Find("Camera_eyes").Find("Right_eye").Find("Frame");
 
             if (frame_right)
             {
@@ -311,6 +312,9 @@ public class ConvertPrefabsToSRP
             }
         }
     }
+
+#endif
+
 }
 
 

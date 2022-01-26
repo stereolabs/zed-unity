@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Mat_ZED_GreenScreen_HDRP
+  m_Name: Mat_ZED_Greenscreen_HDRP_Lit
   m_Shader: {fileID: -6465566751694194690, guid: 6ceec0c02b02905498a7d7bba0eb0ae6,
     type: 3}
   m_ShaderKeywords: _ALPHATEST_ON _DEPTHOFFSET_ON _DISABLE_SSR_TRANSPARENT _ENABLE_FOG_ON_TRANSPARENT
