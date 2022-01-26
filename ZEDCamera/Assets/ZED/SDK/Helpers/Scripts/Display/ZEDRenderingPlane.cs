@@ -487,6 +487,9 @@ public class ZEDRenderingPlane : MonoBehaviour
         //IF AR REMOVE
         //aspectRatio = new WindowAspectRatio(cam);
 
+#if ZED_LWRP || ZED_HDRP || ZED_URP
+        RenderPipelineManager.beginFrameRendering += SRPStartFrame;
+#endif
     }
 
 
@@ -1257,6 +1260,10 @@ public class ZEDRenderingPlane : MonoBehaviour
         {
             mask.Release();
         }
+
+#if ZED_HDRP || ZED_URP
+        RenderPipelineManager.beginFrameRendering -= SRPStartFrame;
+#endif
     }
 
     /// <summary>
@@ -1315,6 +1322,47 @@ public class ZEDRenderingPlane : MonoBehaviour
         blender.SetInt(isTexturedID, d);
     }
 
+#if ZED_HDRP || ZED_URP
+    /// <summary>
+    /// Blend the wireframe into the image. Used in SRP because there is no OnRenderImage automatic function.
+    /// </summary>
+    private void SRPStartFrame(ScriptableRenderContext context, Camera[] rendcam)
+    {
+        foreach(Camera camera in rendcam)
+        {
+            if (camera == renderingCam && zedManager.GetSpatialMapping.display)
+            {
+                DrawSpatialMappingMeshes(camera);
+            }
+        }
+
+    }
+    /// <summary>
+    /// Draw every chunk of the wiremesh
+    /// </summary>
+    /// <param name="drawcam"></param>
+    private void DrawSpatialMappingMeshes(Camera drawcam)
+    {
+
+        ZEDSpatialMapping spatialMapping = zedManager.GetSpatialMapping;
+
+        if (spatialMapping == null) return;
+        if(spatialMapping.IsRunning()) // Draw all chunks/submeshes used while spatial mapping is running, before merging.
+        {
+            foreach (ZEDSpatialMapping.Chunk chunk in spatialMapping.Chunks.Values)
+            {
+                Matrix4x4 canvastrs = Matrix4x4.TRS(chunk.o.transform.position, chunk.o.transform.rotation, chunk.o.transform.localScale);
+                Graphics.DrawMesh(chunk.mesh, canvastrs, chunk.o.GetComponent<MeshRenderer>().material, gameObject.layer, drawcam, 0, null, false, false);
+            }
+        }
+        else  if (!spatialMapping.IsRunning()) // Draw final chunks, after merging.
+            foreach (ZEDSpatialMapping.Chunk chunk in spatialMapping.ChunkList)
+            {
+                Matrix4x4 canvastrs = Matrix4x4.TRS(chunk.o.transform.position, chunk.o.transform.rotation, chunk.o.transform.localScale);
+                Graphics.DrawMesh(chunk.mesh, canvastrs, chunk.o.GetComponent<MeshRenderer>().material, gameObject.layer, drawcam, 0, null, false, false);
+            }
+    }
+#else
     /// <summary>
     /// Where the post-processing occurs.
     /// Called by Unity whenever the attached Camera renders an image. 
@@ -1373,7 +1421,7 @@ public class ZEDRenderingPlane : MonoBehaviour
             }
         }
     }
-
+#endif
     /// <summary>
     /// Apply post-processing effects to the given RenderTexture. 
     /// </summary>

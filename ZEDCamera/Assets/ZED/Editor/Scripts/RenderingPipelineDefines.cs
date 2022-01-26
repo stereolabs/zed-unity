@@ -23,6 +23,7 @@ public class RenderingPipelineDefines
     /// <summary>
     /// Update the unity pipeline defines for URP
     /// </summary>
+    [MenuItem("ZED/Check Rendering Pipeline")]
     static void UpdateDefines()
     {
         var pipeline = GetPipeline();

@@ -4,8 +4,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Runtime.InteropServices;
-using System.Reflection;
-using System.Threading;
 
 namespace sl
 {

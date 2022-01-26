@@ -4,12 +4,6 @@ using System.Threading;
 using UnityEngine.XR;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 
 /// <summary>
 /// The central script of the ZED Unity plugin, and the primary way a developer can interact with the camera.
@@ -2910,68 +2904,36 @@ public class ZEDManager : MonoBehaviour
         arRig = zedRigDisplayer.AddComponent<ZEDMixedRealityPlugin>();
 
         /*Screens left and right */
-        GameObject leftScreen = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        leftScreen.name = "Quad - Left";
-        MeshRenderer meshLeftScreen = leftScreen.GetComponent<MeshRenderer>();
-        meshLeftScreen.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
-        meshLeftScreen.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
-        meshLeftScreen.receiveShadows = false;
-        meshLeftScreen.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
-        meshLeftScreen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        meshLeftScreen.sharedMaterial = Resources.Load("Materials/Unlit/Mat_ZED_Unlit") as Material;
-        leftScreen.layer = arLayer;
-        GameObject.Destroy(leftScreen.GetComponent<MeshCollider>());
-
-        GameObject rightScreen = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        rightScreen.name = "Quad - Right";
-        MeshRenderer meshRightScreen = rightScreen.GetComponent<MeshRenderer>();
-        meshRightScreen.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
-        meshRightScreen.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
-        meshRightScreen.receiveShadows = false;
-        meshRightScreen.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
-        meshRightScreen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        GameObject.Destroy(rightScreen.GetComponent<MeshCollider>());
-        meshRightScreen.sharedMaterial = Resources.Load("Materials/Unlit/Mat_ZED_Unlit") as Material;
-        rightScreen.layer = arLayer;
+        GameObject centerScreen = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        centerScreen.name = "Quad";
+        MeshRenderer meshCenterScreen = centerScreen.GetComponent<MeshRenderer>();
+        meshCenterScreen.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+        meshCenterScreen.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+        meshCenterScreen.receiveShadows = false;
+        meshCenterScreen.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
+        meshCenterScreen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        meshCenterScreen.sharedMaterial = Resources.Load("Materials/Unlit/Mat_ZED_Unlit") as Material;
+        centerScreen.layer = arLayer;
+        GameObject.Destroy(centerScreen.GetComponent<MeshCollider>());
 
         /*Camera left and right*/
-        GameObject camLeft = new GameObject("cameraLeft");
-        camLeft.transform.SetParent(zedRigDisplayer.transform);
-        Camera camL = camLeft.AddComponent<Camera>();
-        camL.stereoTargetEye = StereoTargetEyeMask.Both; //Temporary setting to fix loading screen issue.
-        camL.renderingPath = RenderingPath.Forward;//Minimal overhead
-        camL.clearFlags = CameraClearFlags.Color;
-        camL.backgroundColor = Color.black;
-        camL.cullingMask = 1 << arLayer;
-        camL.allowHDR = false;
-        camL.allowMSAA = false;
-        camL.depth = camLeftTransform.GetComponent<Camera>().depth;
+        GameObject camCenter = new GameObject("camera");
+        camCenter.transform.SetParent(zedRigDisplayer.transform);
+        Camera cam = camCenter.AddComponent<Camera>();
+        cam.renderingPath = RenderingPath.Forward;//Minimal overhead
+        cam.clearFlags = CameraClearFlags.Color;
+        cam.backgroundColor = Color.black;
+        cam.stereoTargetEye = StereoTargetEyeMask.Both; //Temporary setting to fix loading screen issue.
+        cam.cullingMask = 1 << arLayer;
+        cam.allowHDR = false;
+        cam.allowMSAA = false;
+        cam.depth = camRightTransform.GetComponent<Camera>().depth;
 
-        GameObject camRight = new GameObject("cameraRight");
-        camRight.transform.SetParent(zedRigDisplayer.transform);
-        Camera camR = camRight.AddComponent<Camera>();
-        camR.renderingPath = RenderingPath.Forward;//Minimal overhead
-        camR.clearFlags = CameraClearFlags.Color;
-        camR.backgroundColor = Color.black;
-        camR.stereoTargetEye = StereoTargetEyeMask.Both; //Temporary setting to fix loading screen issue.
-        camR.cullingMask = 1 << arLayer;
-        camR.allowHDR = false;
-        camR.allowMSAA = false;
-        camR.depth = camRightTransform.GetComponent<Camera>().depth;
-
-        HideFromWrongCameras.RegisterZEDCam(camL);
-        HideFromWrongCameras lhider = leftScreen.AddComponent<HideFromWrongCameras>();
-        lhider.SetRenderCamera(camL);
-        lhider.showInNonZEDCameras = false;
-
-        HideFromWrongCameras.RegisterZEDCam(camR);
-        HideFromWrongCameras rhider = rightScreen.AddComponent<HideFromWrongCameras>();
-        rhider.SetRenderCamera(camR);
-        rhider.showInNonZEDCameras = false;
-
-        SetLayerRecursively(camRight, arLayer);
-        SetLayerRecursively(camLeft, arLayer);
-
+        HideFromWrongCameras.RegisterZEDCam(cam);
+        HideFromWrongCameras hider = centerScreen.AddComponent<HideFromWrongCameras>();
+        hider.SetRenderCamera(cam);
+        hider.showInNonZEDCameras = false;
+        SetLayerRecursively(camCenter, arLayer);
 
         //Hide camera in editor.
 #if UNITY_EDITOR
@@ -2982,16 +2944,12 @@ public class ZEDManager : MonoBehaviour
             UnityEditor.Tools.visibleLayers = ~(flippedVisibleLayers | layerNumberBinary);
         }
 #endif
-        leftScreen.transform.SetParent(zedRigDisplayer.transform);
-        rightScreen.transform.SetParent(zedRigDisplayer.transform);
+        centerScreen.transform.SetParent(zedRigDisplayer.transform);
 
-
-        arRig.finalCameraLeft = camLeft;
-        arRig.finalCameraRight = camRight;
+        arRig.finalCameraCenter = camCenter;
         arRig.ZEDEyeLeft = camLeftTransform.gameObject;
         arRig.ZEDEyeRight = camRightTransform.gameObject;
-        arRig.quadLeft = leftScreen.transform;
-        arRig.quadRight = rightScreen.transform;
+        arRig.quadCenter = centerScreen.transform;
 
         ZEDMixedRealityPlugin.OnHmdCalibChanged += CalibrationHasChanged;
         if (hasXRDevice())
@@ -3002,7 +2960,6 @@ public class ZEDManager : MonoBehaviour
             HMDDevice = XRDevice.model;
 #endif
         }
-
 
         return zedRigDisplayer;
     }
