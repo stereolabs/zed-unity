@@ -3,6 +3,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+#if ZED_URP
+using UnityEngine.Rendering.Universal;
+#endif
 
 /// <summary>
 /// Contols the ZEDSkeletonTracking . Links the SDK to Unity
@@ -77,6 +80,12 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
 		if (zedManager)
         {
+#if ZED_URP
+            UniversalAdditionalCameraData urpCamData = zedManager.GetLeftCamera().GetComponent<UniversalAdditionalCameraData>();
+            urpCamData.renderPostProcessing = true;
+            urpCamData.renderShadows = false;
+#endif
+
             zedManager.OnZEDReady += OnZEDReady;
             zedManager.OnObjectDetection += updateSkeletonData;
 		}

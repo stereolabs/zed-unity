@@ -23,7 +23,6 @@ public class RenderingPipelineDefines
     /// <summary>
     /// Update the unity pipeline defines for URP
     /// </summary>
-    [MenuItem("ZED/Check Rendering Pipeline")]
     static void UpdateDefines()
     {
         var pipeline = GetPipeline();
@@ -83,7 +82,7 @@ public class RenderingPipelineDefines
     /// </summary>
     /// <param name="define"></param>
     /// <param name="buildTargetGroup"></param>
-    static void AddDefine(string define)
+    public static void AddDefine(string define)
     {
         var definesList = GetDefines();
         if (!definesList.Contains(define))

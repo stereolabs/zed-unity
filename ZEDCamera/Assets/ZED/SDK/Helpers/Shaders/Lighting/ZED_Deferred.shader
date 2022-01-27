@@ -43,7 +43,7 @@ Properties
 			#include "UnityCG.cginc"
 			 #pragma multi_compile ___ UNITY_HDR_ON
 			#pragma multi_compile __ ZED_XYZ
-			#pragma multi_compile __ NO_DEPTH_OCC
+			#pragma multi_compile __ NO_DEPTH
 			struct v2f
 			{
 				float4 pos : POSITION;
@@ -117,7 +117,7 @@ Properties
 				outColor = saturate(tex2D (_MainTex, i.depthUV).bgra);
 				outColor *= _ZEDFactorAffectReal;
 
-				#ifdef NO_DEPTH_OCC
+				#ifdef NO_DEPTH
 					#if SHADER_API_D3D11
 									outDepth = 0;
 					#elif SHADER_API_GLCORE

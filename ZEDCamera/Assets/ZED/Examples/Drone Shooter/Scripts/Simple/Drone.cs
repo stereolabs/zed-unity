@@ -164,22 +164,24 @@ public class Drone : MonoBehaviour, ILaserable
 #if !ZED_HDRP || !ZED_URP
         get
         {
-            return meshrenderer.material.GetFloat("_Blend");
+            return meshrenderer.material.GetColor("_Color").a;
         }
         set
         {
-            meshrenderer.material.SetFloat("_Blend", value);
+            Color newcol = meshrenderer.material.GetColor("_Color");
+            newcol.a = value;
+            meshrenderer.material.SetColor("_Color", newcol);
         }
 #elif ZED_HDRP
         get
         {
-            return meshrenderer.material.GetColor("_UnlitColor").a;
+            return meshrenderer.material.GetColor("_BaseColor").a;
         }
         set
         {
-            Color newcol = meshrenderer.material.GetColor("_UnlitColor");
+            Color newcol = meshrenderer.material.GetColor("_BaseColor");
             newcol.a = value;
-            meshrenderer.material.SetColor("_UnlitColor", newcol);
+            meshrenderer.material.SetColor("_BaseColor", newcol);
         }
 #elif ZED_URP
         get

@@ -31,7 +31,7 @@
 				#pragma multi_compile_fwdbase
 				#pragma multi_compile_fwdadd_fullshadows
 
-				#pragma multi_compile __ NO_DEPTH_OCC
+				#pragma multi_compile __ NO_DEPTH
 
 				#include "HLSLSupport.cginc"
 				#include "UnityShaderVariables.cginc"
@@ -117,7 +117,7 @@
 						if (zed_xyz.z > _MaxDepth || Unity_IsNan_float3(zed_xyz.z)) discard;
 					}
 
-				#ifdef NO_DEPTH_OCC
+				#ifdef NO_DEPTH
 					#if SHADER_API_D3D11
 						outDepth = 0;
 					#elif SHADER_API_GLCORE

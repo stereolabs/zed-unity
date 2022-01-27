@@ -23,12 +23,11 @@ public class EditPrefabAssetScope : IDisposable
 }
 
 
-public class ConvertPrefabsToSRP
+public class UpgradePluginToSRP
 {
 
-#if ZED_URP
-    [MenuItem("ZED/Convert all ZED Prefabs to URP")]
-    static void ConvertAllZEDPrefabsToURP()
+    [MenuItem("ZED/Upgrade ZED Plugin to URP")]
+    static void UpgradeToURP()
     {
         var SRP = GraphicsSettings.renderPipelineAsset;
 
@@ -42,6 +41,9 @@ public class ConvertPrefabsToSRP
         {
             if (SRP.GetType().ToString().Contains("UniversalRenderPipelineAsset"))
             {
+
+                RenderingPipelineDefines.AddDefine("ZED_URP");
+                RenderingPipelineDefines.RemoveDefine("ZED_HDRP");
 
                 Material Mat_Zed_Forward_Lighting = Resources.Load("Materials/Lighting/Mat_ZED_Forward_Lighting_URP") as Material;
                 Material Mat_Zed_GreenScreen = Resources.Load("Materials/Mat_ZED_GreenScreen_URP") as Material;
@@ -122,10 +124,8 @@ public class ConvertPrefabsToSRP
 
     }
 
-#elif ZED_HDRP
-
-    [MenuItem("ZED/Convert all ZED Prefabs to HDRP")]
-    static void ConvertAllZEDPrefabsToHDRP()
+    [MenuItem("ZED/Upgrade ZED Plugin to HDRP")]
+    static void UpgradeToHDRP()
     {
         var SRP = GraphicsSettings.renderPipelineAsset;
 
@@ -136,6 +136,9 @@ public class ConvertPrefabsToSRP
 
         if (SRP.GetType().ToString().Contains("HDRenderPipelineAsset"))
         {
+
+            RenderingPipelineDefines.AddDefine("ZED_HDRP");
+            RenderingPipelineDefines.RemoveDefine("ZED_URP");
 
             Material Mat_Zed_Forward_Lighting = Resources.Load("Materials/Lighting/Mat_ZED_HDRP_Lit") as Material;
             Material Mat_Zed_GreenScreen = Resources.Load("Materials/Mat_ZED_Greenscreen_HDRP_Lit") as Material;
@@ -214,12 +217,11 @@ public class ConvertPrefabsToSRP
         }
     }
 
-#else
-
-    [MenuItem("ZED/Convert all ZED Prefabs to built-in RP")]
-    static void ConvertAllZEDPrefabsToBuiltInRP()
+    /*[MenuItem("ZED/Revert ZED Plugin to built-in RP")]
+    static void RevertToBuiltInRP()
     {
-        var SRP = GraphicsSettings.renderPipelineAsset;
+        RenderingPipelineDefines.RemoveDefine("ZED_HDRP");
+        RenderingPipelineDefines.RemoveDefine("ZED_URP");
 
         string zedRigMonoPath = "Assets/ZED/Prefabs/ZED_Rig_Mono.prefab";
         string zedRigStereoPath = "Assets/ZED/Prefabs/ZED_Rig_Stereo.prefab";
@@ -295,10 +297,7 @@ public class ConvertPrefabsToSRP
                 Debug.Log("Planetarium is not found");
             }
         }
-    }
-
-#endif
-
+    }*/
 }
 
 

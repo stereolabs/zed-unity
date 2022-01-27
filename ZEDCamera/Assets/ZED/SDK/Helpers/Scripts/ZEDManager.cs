@@ -2115,17 +2115,17 @@ public class ZEDManager : MonoBehaviour
             if (renderingPath == ZEDRenderingMode.FORWARD)
             {
                 if (leftRenderingPlane)
-                    leftRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH_OCC");
+                    leftRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH");
                 if (rightRenderingPlane)
-                    rightRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH_OCC");
+                    rightRenderingPlane.ManageKeywordPipe(!depthOcclusion, "NO_DEPTH");
 
             }
             else if (renderingPath == ZEDRenderingMode.DEFERRED)
             {
                 if (leftRenderingPlane)
-                    leftRenderingPlane.ManageKeywordDeferredMat(!depthOcclusion, "NO_DEPTH_OCC");
+                    leftRenderingPlane.ManageKeywordDeferredMat(!depthOcclusion, "NO_DEPTH");
                 if (rightRenderingPlane)
-                    rightRenderingPlane.ManageKeywordDeferredMat(!depthOcclusion, "NO_DEPTH_OCC");
+                    rightRenderingPlane.ManageKeywordDeferredMat(!depthOcclusion, "NO_DEPTH");
             }
         }
 

@@ -6284,12 +6284,12 @@ GameObject:
   - component: {fileID: 23946657749383414}
   - component: {fileID: 114776652047095942}
   m_Layer: 0
-  m_Name: Quad
+  m_Name: SunOutsideGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4176596059897552
 Transform:
   m_ObjectHideFlags: 0
