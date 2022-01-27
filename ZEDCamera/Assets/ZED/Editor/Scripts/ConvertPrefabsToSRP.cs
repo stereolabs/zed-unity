@@ -56,7 +56,6 @@ public class ConvertPrefabsToSRP
                     if (frame)
                     {
                         frame.GetComponent<MeshRenderer>().material = Mat_Zed_Forward_Lighting;
-                        Debug.Log("ZED_Rig_Mono is now converted.");
                     }
                     else
                     {
@@ -70,7 +69,6 @@ public class ConvertPrefabsToSRP
                     if (frame_left)
                     {
                         frame_left.GetComponent<MeshRenderer>().material = Mat_Zed_Forward_Lighting;
-                        Debug.Log("ZED_Rig_Mono is now converted.");
                     }
                     else
                     {
@@ -82,7 +80,6 @@ public class ConvertPrefabsToSRP
                     if (frame_right)
                     {
                         frame_right.GetComponent<MeshRenderer>().material = Mat_Zed_Forward_Lighting;
-                        Debug.Log("ZED_Rig_Mono is now converted.");
                     }
                     else
                     {
@@ -97,7 +94,6 @@ public class ConvertPrefabsToSRP
                     if (frame)
                     {
                         frame.GetComponent<MeshRenderer>().material = Mat_Zed_GreenScreen;
-                        Debug.Log("ZED_Rig_Mono is now converted.");
                     }
                     else
                     {
@@ -111,7 +107,6 @@ public class ConvertPrefabsToSRP
                     if (sun)
                     {
                         sun.GetComponent<MeshRenderer>().material = Mat_Zed_Sun;
-                        Debug.Log("Planetarium - Sun is now converted.");
                     }
                     else
                     {
@@ -154,7 +149,6 @@ public class ConvertPrefabsToSRP
                 if (frame)
                 {
                     frame.GetComponent<MeshRenderer>().material = Mat_Zed_Forward_Lighting;
-                    Debug.Log("ZED_Rig_Mono is now converted.");
                 }
                 else
                 {
@@ -169,7 +163,6 @@ public class ConvertPrefabsToSRP
                 if (frame_left)
                 {
                     frame_left.GetComponent<MeshRenderer>().material = Mat_Zed_Forward_Lighting;
-                    Debug.Log("ZED_Rig_Mono is now converted.");
                 }
                 else
                 {
@@ -181,7 +174,6 @@ public class ConvertPrefabsToSRP
                 if (frame_right)
                 {
                     frame_right.GetComponent<MeshRenderer>().material = Mat_Zed_Forward_Lighting;
-                    Debug.Log("ZED_Rig_Mono is now converted.");
                 }
                 else
                 {
@@ -196,7 +188,6 @@ public class ConvertPrefabsToSRP
                 if (frame)
                 {
                     frame.GetComponent<MeshRenderer>().material = Mat_Zed_GreenScreen;
-                    Debug.Log("ZED_Rig_Mono is now converted.");
                 }
                 else
                 {
@@ -210,7 +201,6 @@ public class ConvertPrefabsToSRP
                 if (sun)
                 {
                     sun.GetComponent<MeshRenderer>().material = Mat_Zed_Sun;
-                    Debug.Log("Planetarium - Sun is now converted.");
                 }
                 else
                 {
@@ -248,8 +238,6 @@ public class ConvertPrefabsToSRP
             if (frame)
             {
                 frame.GetComponent<MeshRenderer>().material = Mat_Zed_Forward_Lighting;
-
-                Debug.Log("ZED_Rig_Mono is now converted.");
             }
             else
             {
@@ -263,7 +251,6 @@ public class ConvertPrefabsToSRP
             if (frame_left)
             {
                 frame_left.GetComponent<MeshRenderer>().material = Mat_Zed_Forward_Lighting;
-                Debug.Log("ZED_Rig_Mono is now converted.");
             }
             else
             {
@@ -275,7 +262,6 @@ public class ConvertPrefabsToSRP
             if (frame_right)
             {
                 frame_right.GetComponent<MeshRenderer>().material = Mat_Zed_Forward_Lighting;
-                Debug.Log("ZED_Rig_Mono is now converted.");
             }
             else
             {
@@ -290,7 +276,6 @@ public class ConvertPrefabsToSRP
             if (frame)
             {
                 frame.GetComponent<MeshRenderer>().material = Mat_Zed_GreenScreen;
-                Debug.Log("ZED_Rig_Mono is now converted.");
             }
             else
             {
@@ -304,7 +289,6 @@ public class ConvertPrefabsToSRP
             if (sun)
             {
                 sun.GetComponent<MeshRenderer>().material = Mat_Zed_Sun;
-                Debug.Log("Planetarium - Sun is now converted.");
             }
             else
             {
