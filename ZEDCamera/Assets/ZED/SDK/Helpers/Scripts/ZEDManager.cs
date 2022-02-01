@@ -2144,6 +2144,7 @@ public class ZEDManager : MonoBehaviour
         runtimeParameters.enableDepth = true;
         runtimeParameters.confidenceThreshold = confidenceThreshold;
         runtimeParameters.textureConfidenceThreshold = textureConfidenceThreshold;
+        runtimeParameters.removeSaturatedAreas = true;
         //Don't change this reference frame. If we need normals in the world frame, better to do the conversion ourselves.
         runtimeParameters.measure3DReferenceFrame = sl.REFERENCE_FRAME.CAMERA;
 

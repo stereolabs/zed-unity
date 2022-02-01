@@ -1584,6 +1584,10 @@ namespace sl
         /// Defines texture confidence threshold for the depth. Based on textureness confidence. 
         /// </summary>
         public int textureConfidenceThreshold;
+        /// <summary>
+        /// Defines if the saturated area (Luminance>=255) must be removed from depth map estimation
+        /// </summary>
+        public bool removeSaturatedAreas;
 
     }
 
