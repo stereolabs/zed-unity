@@ -63,6 +63,9 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// </summary>
     public GameObject Avatar;
 
+    [Range(-2.0f, 2.0f)]
+    public float heightOffset = 0.0f;
+
 	public Dictionary<int,SkeletonHandler> avatarControlList;
 
     /// <summary>
@@ -204,6 +207,8 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         }
 
         handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, zedManager.GetZedRootTansform().rotation * data.globalRootOrientation, useAvatar);
+
+        handler.SetHeightOffset(heightOffset);
     }
 
     void UpdateViewCameraPosition()

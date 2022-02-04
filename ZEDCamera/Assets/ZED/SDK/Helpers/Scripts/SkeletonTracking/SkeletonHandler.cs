@@ -208,6 +208,16 @@ public class SkeletonHandler : ScriptableObject
     private Vector3 targetBodyPosition = new Vector3(0.0f, 0.0f, 0.0f);
     public Quaternion targetBodyOrientation = Quaternion.identity;
 
+    private float heightOffset = 0.5f;
+    /// <summary>
+    /// Sets the smooth factor.
+    /// </summary>
+    /// <param name="smooth">Smooth.</param>
+    public void SetHeightOffset(float offset)
+    {
+        heightOffset = offset;
+    }
+
     /// <summary>
     /// Create the avatar control
     /// </summary>
@@ -533,7 +543,7 @@ public class SkeletonHandler : ScriptableObject
             var animator = humanoid.GetComponent<Animator>();
             // There is an offset between the joint "Hips" and the equivalent in the ZED SDK. This offset compensates it.
             Vector3 offset = new Vector3(0, (animator.GetBoneTransform(HumanBodyBones.Hips).position.y - animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position.y), 0);
-            rigBone[HumanBodyBones.Hips].transform.position = targetBodyPosition + offset;
+            rigBone[HumanBodyBones.Hips].transform.position = targetBodyPosition + offset + new Vector3(0, heightOffset, 0);
             rigBone[HumanBodyBones.Hips].transform.rotation = targetBodyOrientation;
         }
     }
