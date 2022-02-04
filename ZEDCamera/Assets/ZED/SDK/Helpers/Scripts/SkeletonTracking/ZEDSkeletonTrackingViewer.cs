@@ -63,6 +63,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// </summary>
     public GameObject Avatar;
 
+    [Space(5)]
     [Range(-2.0f, 2.0f)]
     public float heightOffset = 0.0f;
 
@@ -176,6 +177,16 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
             }
             else
                 Debug.Log("<b><color=green> Switch to Skeleton mode</color></b>");
+        }
+
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            Debug.Log("Minus");
+            heightOffset -= 0.02f;
+        }
+        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            heightOffset += 0.02f;
         }
 
         if (useAvatar)
