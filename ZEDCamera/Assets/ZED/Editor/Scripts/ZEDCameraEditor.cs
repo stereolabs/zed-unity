@@ -114,6 +114,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty OD_2DMask;
     private SerializedProperty OD_DetectionModel;
     private SerializedProperty OD_MaxRange;
+    private SerializedProperty OD_FilteringMode;
     //Object Detection Runtime Prop
     private SerializedProperty OD_VehicleDetectionConfidence;
     private SerializedProperty OD_PersonDetectionConfidence;
@@ -258,10 +259,11 @@ public class ZEDCameraEditor : Editor
         ///Object Detection Serialized Properties
         OD_ImageSyncMode = serializedObject.FindProperty("objectDetectionImageSyncMode");
         OD_ObjectTracking = serializedObject.FindProperty("objectDetectionTracking");
-        OD_BodyFitting = serializedObject.FindProperty("bodyFitting");
+        OD_BodyFitting = serializedObject.FindProperty("objectDetectionBodyFitting");
         OD_2DMask = serializedObject.FindProperty("objectDetection2DMask");
         OD_DetectionModel = serializedObject.FindProperty("objectDetectionModel");
-        OD_MaxRange = serializedObject.FindProperty("maxRange");
+        OD_MaxRange = serializedObject.FindProperty("objectDetectionMaxRange");
+        OD_FilteringMode = serializedObject.FindProperty("objectDetectionFilteringMode");
 
         OD_PersonDetectionConfidence = serializedObject.FindProperty("OD_personDetectionConfidenceThreshold");
         SK_PersonDetectionConfidence = serializedObject.FindProperty("SK_personDetectionConfidenceThreshold");
@@ -777,8 +779,11 @@ public class ZEDCameraEditor : Editor
                 OD_BodyFitting.boolValue = EditorGUILayout.Toggle(BodyFittingLabel, OD_BodyFitting.boolValue);
             }
 
-            GUIContent maxRangeLabel = new GUIContent("Max Range", "Defines a upper depth range for detections.");
-            OD_MaxRange.floatValue = EditorGUILayout.Slider(maxRangeLabel, OD_MaxRange.floatValue, 0, 40.0f);
+            GUIContent MaxRangeLabel = new GUIContent("Max Range", "Defines a upper depth range for detections.");
+            OD_MaxRange.floatValue = EditorGUILayout.Slider(MaxRangeLabel, OD_MaxRange.floatValue, 0, 40.0f);
+
+            GUIContent FilteringModeLabel = new GUIContent("Filtering Mode", "Defines the bounding box preprocessor used.");
+            OD_FilteringMode.enumValueIndex = (int)(sl.OBJECT_FILTERING_MODE)EditorGUILayout.EnumPopup(FilteringModeLabel, (sl.OBJECT_FILTERING_MODE)OD_FilteringMode.enumValueIndex);
 
             GUI.enabled = true;
 
@@ -878,6 +883,17 @@ public class ZEDCameraEditor : Editor
                 GUIContent startODlabel = new GUIContent("Start Object Detection", "Begin the OD process.");
                 if (GUILayout.Button(startODlabel))
                 {
+                    Debug.Log("test avant check");
+                    sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(manager.objectDetectionModel));
+                    Debug.Log("test apres check");
+                    if (!AiModelStatus.optimized)
+                    {
+                        Debug.Log("<b><color=orange> The Model selected has not been downloaded/optimized. Unity will freeze during the optimization which may take several minutes.\n" +
+                            " We strongly recommend to use the ZED Diagnostic tool to download/optimze the AI model you plan to use.</color></b>");
+
+                    }
+                    Debug.Log("test apres optim check");
+
                     manager.StartObjectDetection();
                 }
             }

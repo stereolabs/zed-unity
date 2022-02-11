@@ -381,16 +381,22 @@ public class ZEDManager : MonoBehaviour
     /// Defines if the body fitting will be applied
     /// </summary>
     [HideInInspector]
-    public bool bodyFitting = false;
+    public bool objectDetectionBodyFitting = true;
 
     /// <summary>
     /// Defines a upper depth range for detections.
     /// </summary>
     [HideInInspector]
-    public float maxRange = 40.0f;
+    public float objectDetectionMaxRange = 40.0f;
+
+    /// <summary>
+    /// Defines a upper depth range for detections.
+    /// </summary>
+    [HideInInspector]
+    public sl.OBJECT_FILTERING_MODE objectDetectionFilteringMode = sl.OBJECT_FILTERING_MODE.NMS_3D;
 
     [HideInInspector]
-    public sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.POSE_34;
+    public sl.BODY_FORMAT objectDetectionBodyFormat = sl.BODY_FORMAT.POSE_34;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
@@ -2719,15 +2725,16 @@ public class ZEDManager : MonoBehaviour
             od_param.enableObjectTracking = objectDetectionTracking;
             od_param.enable2DMask = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
-            od_param.maxRange = maxRange;
-            if (bodyFormat == sl.BODY_FORMAT.POSE_34 && bodyFitting == false && (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
+            od_param.maxRange = objectDetectionMaxRange;
+            od_param.filteringMode = objectDetectionFilteringMode;
+            if (objectDetectionBodyFormat == sl.BODY_FORMAT.POSE_34 && objectDetectionBodyFitting == false && (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
                                                                                 || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST))
             {
                 Debug.LogWarning("sl.BODY_FORMAT.POSE_34 is chosen, Skeleton Tracking will automatically enable body fitting");
-                bodyFitting = true;
+                objectDetectionBodyFitting = true;
             }
-            od_param.bodyFormat = bodyFormat;
-            od_param.enableBodyFitting = bodyFitting;
+            od_param.bodyFormat = objectDetectionBodyFormat;
+            od_param.enableBodyFitting = objectDetectionBodyFitting;
 
             od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
             od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM) ? SK_personDetectionConfidenceThreshold : OD_personDetectionConfidenceThreshold;

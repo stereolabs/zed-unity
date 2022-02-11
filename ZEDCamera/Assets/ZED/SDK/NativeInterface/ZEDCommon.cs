@@ -1674,6 +1674,25 @@ namespace sl
         /// </summary>
         public float latency;
     }
+
+    /// <summary>
+    /// Contains AI model status.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct AI_Model_status
+    {
+        /// <summary>
+        /// the model file is currently present on the host.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool downloaded;
+        /// <summary>
+        /// an engine file with the expected architecure is found.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool optimized;
+    };
+
     /// <summary>
     /// Sets the object detection parameters.
     /// </summary>
@@ -1720,6 +1739,10 @@ namespace sl
         /// BatchParameters.enable need to be true to use this feature (by default disabled)
         /// </summary>
         public BatchParameters batchParameters;
+        /**
+        \brief Defines the filtering mode that should be applied to raw detections.
+        */
+        public OBJECT_FILTERING_MODE filteringMode;
     };
 
 
@@ -2044,9 +2067,67 @@ namespace sl
         /// <summary>
         /// For external inference, using your own custom model and/or frameworks. This mode disable the internal inference engine, the 2D bounding box detection must be provided
         /// </summary>
-        CUSTOM_BOX_OBJECTS
+        CUSTOM_BOX_OBJECTS,
+
+        LAST
     };
 
+    /// <summary>
+    /// Lists of supported bounding box preprocessing
+    /// </summary>
+    public enum OBJECT_FILTERING_MODE
+    {
+        /// <summary>
+        /// SDK will not apply any preprocessing to the detected objects 
+        /// </summary>
+        NONE,
+        /// <summary>
+        /// SDK will remove objects that are in the same 3D position as an already tracked object 
+        /// </summary>
+        NMS_3D
+    };
+
+    public enum AI_MODELS
+    {
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.MULTI_CLASS_BOX
+        /// </summary>
+        MULTI_CLASS_DETECTION,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM
+        /// </summary>
+        MULTI_CLASS_MEDIUM_DETECTION,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE
+        /// </summary>
+        MULTI_CLASS_ACCURATE_DETECTION,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.HUMAN_BODY_FAST
+        /// </summary>
+        HUMAN_BODY_FAST_DETECTION,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
+        /// </summary>
+        HUMAN_BODY_MEDIUM_DETECTION,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE
+        /// </summary>
+        HUMAN_BODY_ACCURATE_DETECTION, // 
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.PERSON_HEAD
+        /// </summary>
+        PERSON_HEAD_DETECTION,
+        /// <summary>
+        /// related to sl.BatchParameters.enable
+        /// </summary>
+        REID_ASSOCIATION, // related to 
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.NEURAL
+        /// </summary>
+        NEURAL_DEPTH,
+
+        LAST
+    };
 
     /// <summary>
     /// semantic and order of human body keypoints.

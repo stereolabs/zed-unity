@@ -99,7 +99,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
             Debug.LogWarning("MULTI_CLASS_BOX model can't be used for skeleton tracking, please use either HUMAN_BODY_FAST or HUMAN_BODY_ACCURATE");
         }
 
-        if (zedManager.bodyFormat == sl.BODY_FORMAT.POSE_18)
+        if (zedManager.objectDetectionBodyFormat == sl.BODY_FORMAT.POSE_18)
         {
             Debug.LogWarning(" BODY_FORMAT must be set to POSE_34 to animate 3D Avatars !");
             return;
@@ -171,7 +171,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
             useAvatar = !useAvatar;
             if (useAvatar)
             {
-                if (zedManager.bodyFitting)
+                if (zedManager.objectDetectionBodyFitting)
                     Debug.Log("<b><color=green> Switch to Avatar mode</color></b>");
 
             }
@@ -181,7 +181,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            Debug.Log("Minus");
             heightOffset -= 0.02f;
         }
         else if (Input.GetKeyDown(KeyCode.UpArrow))
