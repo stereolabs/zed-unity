@@ -883,17 +883,6 @@ public class ZEDCameraEditor : Editor
                 GUIContent startODlabel = new GUIContent("Start Object Detection", "Begin the OD process.");
                 if (GUILayout.Button(startODlabel))
                 {
-                    Debug.Log("test avant check");
-                    sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(manager.objectDetectionModel));
-                    Debug.Log("test apres check");
-                    if (!AiModelStatus.optimized)
-                    {
-                        Debug.Log("<b><color=orange> The Model selected has not been downloaded/optimized. Unity will freeze during the optimization which may take several minutes.\n" +
-                            " We strongly recommend to use the ZED Diagnostic tool to download/optimze the AI model you plan to use.</color></b>");
-
-                    }
-                    Debug.Log("test apres optim check");
-
                     manager.StartObjectDetection();
                 }
             }

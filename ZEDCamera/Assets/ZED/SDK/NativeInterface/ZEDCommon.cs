@@ -2082,9 +2082,13 @@ namespace sl
         /// </summary>
         NONE,
         /// <summary>
-        /// SDK will remove objects that are in the same 3D position as an already tracked object 
+        /// SDK will remove objects that are in the same 3D position as an already tracked object (independant of class ID). Default value
         /// </summary>
-        NMS_3D
+        NMS3D,
+        /// <summary>
+        /// SDK will remove objects that are in the same 3D position as an already tracked object of the same class ID
+        /// </summary>
+        NMS3D_PER_CLASS
     };
 
     public enum AI_MODELS

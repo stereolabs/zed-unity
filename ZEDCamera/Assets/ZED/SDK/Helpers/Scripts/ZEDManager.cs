@@ -393,7 +393,7 @@ public class ZEDManager : MonoBehaviour
     /// Defines a upper depth range for detections.
     /// </summary>
     [HideInInspector]
-    public sl.OBJECT_FILTERING_MODE objectDetectionFilteringMode = sl.OBJECT_FILTERING_MODE.NMS_3D;
+    public sl.OBJECT_FILTERING_MODE objectDetectionFilteringMode = sl.OBJECT_FILTERING_MODE.NMS3D;
 
     [HideInInspector]
     public sl.BODY_FORMAT objectDetectionBodyFormat = sl.BODY_FORMAT.POSE_34;
@@ -1892,8 +1892,8 @@ public class ZEDManager : MonoBehaviour
         //Starts a coroutine that initializes the ZED without freezing the game.
         lastInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
         openingLaunched = false;
-        StartCoroutine(InitZED());
 
+        StartCoroutine(InitZED());
 
         OnCamBrightnessChange += SetCameraBrightness; //Subscribe event for adjusting brightness setting.
         OnMaxDepthChange += SetMaxDepthRange;
@@ -2684,13 +2684,19 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     public void StartObjectDetection()
     {
+        sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel));
+        if (!AiModelStatus.optimized)
+        {
+            Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
+           // return;
+        }
         //We start a coroutine so we can delay actually starting the detection.
         //This is because the main thread is locked for awhile when you call this, appearing like a freeze.
         //This time lets us deliver a log message to the user indicating that this is expected.
         StartCoroutine(startObjectDetection());
     }
 
-
+    /// <summary>
     /// <summary>
     /// Starts the object detection module after a two-frame delay, allowing us to deliver a log message
     /// to the user indicating that what appears to be a freeze is actually expected and will pass.
@@ -2884,8 +2890,6 @@ public class ZEDManager : MonoBehaviour
         }
     }
     #endregion
-
-
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
