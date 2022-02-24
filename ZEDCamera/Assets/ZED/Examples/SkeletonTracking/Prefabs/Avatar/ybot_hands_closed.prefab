@@ -1,6 +1,14 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!1 &71190481803443685
+=======
+--- !u!1 &216043097350762051
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!1 &71190481803443685
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,30 +16,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 7494251199348275500}
   m_Layer: 0
   m_Name: mixamorig:RightHandIndex1
+=======
+  - component: {fileID: 992910871413749507}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandPinky2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 7494251199348275500}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandIndex1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &7494251199348275500
+=======
+--- !u!4 &992910871413749507
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &7494251199348275500
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 71190481803443685}
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 71190481803443685}
+  m_LocalRotation: {x: 0, y: 0, z: -0.17364825, w: 0.9848078}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.12266616, y: -0.002316732, z: 0.028220555}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3083298675963430785}
   m_Father: {fileID: 40559499379523650}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!1 &292681703095462355
+=======
+  m_GameObject: {fileID: 216043097350762051}
+  m_LocalRotation: {x: 0.00000002980232, y: -0.000000014900387, z: 0.000000014901936,
+    w: 1}
+  m_LocalPosition: {x: -0.041366525, y: 0.000000022999533, z: 0.00000026898434}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4725321790202537464}
+  m_Father: {fileID: 1186937135812169009}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &324313274763106166
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -20}
+--- !u!1 &292681703095462355
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -39,30 +91,177 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 695730779718268898}
   m_Layer: 0
   m_Name: mixamorig:RightHandPinky1
+=======
+  - component: {fileID: 8350323084043693168}
+  - component: {fileID: 96258468492385431}
+  m_Layer: 0
+  m_Name: Alpha_Surface
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 695730779718268898}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandPinky1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &695730779718268898
+=======
+--- !u!4 &8350323084043693168
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &695730779718268898
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 292681703095462355}
   m_LocalRotation: {x: -0.0354672, y: -0.035467204, z: -0.70621675, w: 0.70621675}
+=======
+  m_GameObject: {fileID: 292681703095462355}
+  m_LocalRotation: {x: 0, y: 0, z: -0.17364825, w: 0.9848078}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.10908192, y: -0.0022637171, z: -0.04725824}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6028302571481579734}
   m_Father: {fileID: 40559499379523650}
   m_RootOrder: 2
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: -5.7500005, y: 0, z: -90.00001}
 --- !u!1 &347777107649070782
+=======
+  m_GameObject: {fileID: 324313274763106166}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6201899075094982495}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!137 &96258468492385431
+SkinnedMeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 324313274763106166}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 1b2395225722dc948a38ffcdcc9f04cc, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  serializedVersion: 2
+  m_Quality: 0
+  m_UpdateWhenOffscreen: 0
+  m_SkinnedMotionVectors: 1
+  m_Mesh: {fileID: 4777371684598551356, guid: 7d59d5ae183bf5f4d9a5e0d075c1d978, type: 3}
+  m_Bones:
+  - {fileID: 1892005065662812107}
+  - {fileID: 2173331251444333656}
+  - {fileID: 4698526759287892144}
+  - {fileID: 6093301322760394971}
+  - {fileID: 862261839603012774}
+  - {fileID: 35185121910406620}
+  - {fileID: 8074217953057884224}
+  - {fileID: 127934625501944716}
+  - {fileID: 3984677754292631117}
+  - {fileID: 839727761919827319}
+  - {fileID: 2525148269251559260}
+  - {fileID: 1102706750217589406}
+  - {fileID: 9058384278963678889}
+  - {fileID: 1699294397325919458}
+  - {fileID: 8164769791286847854}
+  - {fileID: 6902396425299809538}
+  - {fileID: 4894533322593338200}
+  - {fileID: 4323085993498715388}
+  - {fileID: 4000383270764091023}
+  - {fileID: 748862256402536683}
+  - {fileID: 4912489354174764679}
+  - {fileID: 6988058552702115343}
+  - {fileID: 1186937135812169009}
+  - {fileID: 992910871413749507}
+  - {fileID: 4725321790202537464}
+  - {fileID: 3722093125421920553}
+  - {fileID: 206763072936777649}
+  - {fileID: 8216947045752192284}
+  - {fileID: 5201244078884960124}
+  - {fileID: 7168606245647440735}
+  - {fileID: 692153035281110968}
+  - {fileID: 9078905753691058606}
+  - {fileID: 2639454700264447050}
+  - {fileID: 2481797762944086057}
+  - {fileID: 5356218653181016494}
+  - {fileID: 2359449194410839570}
+  - {fileID: 7094449827248468159}
+  - {fileID: 1668113116384936950}
+  - {fileID: 3393283759718428600}
+  - {fileID: 457119905138272304}
+  - {fileID: 6823561144719590369}
+  - {fileID: 4690820334124515548}
+  - {fileID: 1951829364336867304}
+  - {fileID: 8325262161692616412}
+  - {fileID: 2361101488965679348}
+  - {fileID: 2133000809855010414}
+  - {fileID: 6479019943693381320}
+  - {fileID: 8782747818366492188}
+  - {fileID: 8223365994096457399}
+  - {fileID: 3649474401681927785}
+  - {fileID: 8143557721728161413}
+  - {fileID: 583134909405362202}
+  m_BlendShapeWeights: []
+  m_RootBone: {fileID: 1892005065662812107}
+  m_AABB:
+    m_Center: {x: 0.0000009536743, y: -0.09565458, z: 0.021622837}
+    m_Extent: {x: 0.97342485, y: 0.90236723, z: 0.18213426}
+  m_DirtyAABB: 0
+--- !u!1 &338313014114417727
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -20}
+--- !u!1 &347777107649070782
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -70,30 +269,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 3837172326764578448}
   m_Layer: 0
   m_Name: mixamorig:RightHandMiddle3
+=======
+  - component: {fileID: 2361101488965679348}
+  m_Layer: 0
+  m_Name: mixamorig:RightUpLeg
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 3837172326764578448}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandMiddle3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &3837172326764578448
+=======
+--- !u!4 &2361101488965679348
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &3837172326764578448
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 347777107649070782}
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 347777107649070782}
+  m_LocalRotation: {x: 0, y: 0, z: -0.32556805, w: 0.9455186}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.0345976, y: -0.0000000019721824, z: -0.0000002645789}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1318564427682553763}
   m_Father: {fileID: 4694328389159477382}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!1 &702918765833065150
+=======
+  m_GameObject: {fileID: 338313014114417727}
+  m_LocalRotation: {x: -0.000002931613, y: -0.000000013649597, z: 0.00000043784848,
+    w: 1}
+  m_LocalPosition: {x: 0.09124453, y: -0.06656398, z: -0.00055377925}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 2133000809855010414}
+  m_Father: {fileID: 1892005065662812107}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &504582348890122981
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -38}
+--- !u!1 &702918765833065150
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,30 +344,72 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 9167824894699594161}
   m_Layer: 0
   m_Name: mixamorig:LeftHandIndex3
+=======
+  - component: {fileID: 6301536276124406526}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandPinky4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 9167824894699594161}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandIndex3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &9167824894699594161
+=======
+--- !u!4 &6301536276124406526
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &9167824894699594161
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 702918765833065150}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 702918765833065150}
+  m_LocalRotation: {x: 0, y: 0, z: 0.32556805, w: 0.9455186}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.03415161, y: 0.000000005749108, z: -0.00000008770533}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1548312292331887380}
   m_Father: {fileID: 8304691067223495618}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!1 &842389922778204263
+=======
+  m_GameObject: {fileID: 504582348890122981}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.029238692, y: 0.000000014407377, z: 0.00000018732128}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4725321790202537464}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &863623213021448952
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 38}
+--- !u!1 &842389922778204263
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -132,20 +417,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 4659300732996816676}
   m_Layer: 0
   m_Name: mixamorig:LeftToeBase
+=======
+  - component: {fileID: 1186937135812169009}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandPinky1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 4659300732996816676}
+  m_Layer: 0
+  m_Name: mixamorig:LeftToeBase
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &4659300732996816676
+=======
+--- !u!4 &1186937135812169009
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &4659300732996816676
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 842389922778204263}
   m_LocalRotation: {x: 0.000000004649337, y: 1.1698642e-10, z: 9.313231e-10, w: 1}
   m_LocalPosition: {x: -0.0037335982, y: -0.10492193, z: 0.12640664}
@@ -188,6 +497,22 @@ Transform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1073484568371842817
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 863623213021448952}
+  m_LocalRotation: {x: 0.000000029802322, y: -0.000000014901934, z: -0.0000000149003885,
+    w: 1}
+  m_LocalPosition: {x: -0.10908195, y: -0.0022636496, z: -0.047258176}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 992910871413749507}
+  m_Father: {fileID: 839727761919827319}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1160928746113619211
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -195,30 +520,72 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 905843936058925497}
   m_Layer: 0
   m_Name: mixamorig:LeftHandRing2
+=======
+  - component: {fileID: 4577559001364838282}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandMiddle4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 905843936058925497}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandRing2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &905843936058925497
+=======
+--- !u!4 &4577559001364838282
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &905843936058925497
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 1073484568371842817}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 1073484568371842817}
+  m_LocalRotation: {x: 0, y: 0, z: 0.27563733, w: 0.96126175}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.036011904, y: 0.000000015129366, z: 0.0000003511219}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2901458844816435505}
   m_Father: {fileID: 4817410183457173461}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!1 &1577629577426895579
+=======
+  m_GameObject: {fileID: 1160928746113619211}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.036801923, y: -8.559337e-10, z: 0.00000032769248}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 9058384278963678889}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1316187046428091900
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 32}
+--- !u!1 &1577629577426895579
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -226,25 +593,53 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   - component: {fileID: 2211000310592067681}
   - component: {fileID: 5210420427815617051}
   m_Layer: 0
   m_Name: ybot_hands_closed
+<<<<<<< HEAD
+=======
+  - component: {fileID: 2133000809855010414}
+  m_Layer: 0
+  m_Name: mixamorig:RightLeg
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &2211000310592067681
+=======
+--- !u!4 &2133000809855010414
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &2211000310592067681
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 1577629577426895579}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.95, y: 0.95, z: 0.95}
+=======
+  m_GameObject: {fileID: 1577629577426895579}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_Children:
   - {fileID: 1917943385551774095}
   - {fileID: 4277524448265460558}
@@ -272,6 +667,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1594473213823279488
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 1316187046428091900}
+  m_LocalRotation: {x: 0.0000065525965, y: -0.000000021011672, z: -2.99793e-11, w: 1}
+  m_LocalPosition: {x: 0.002446805, y: -0.40595436, z: -0.0051452797}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6479019943693381320}
+  m_Father: {fileID: 2361101488965679348}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1529663631715931112
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -279,20 +689,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 5980604236534135029}
   m_Layer: 0
   m_Name: mixamorig:Hips
+=======
+  - component: {fileID: 8719722527404062895}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandThumb4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 5980604236534135029}
+  m_Layer: 0
+  m_Name: mixamorig:Hips
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &5980604236534135029
+=======
+--- !u!4 &8719722527404062895
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &5980604236534135029
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 1594473213823279488}
   m_LocalRotation: {x: 1.3930912e-15, y: 0.00000001376344, z: -0.0000004417766, w: 1}
   m_LocalPosition: {x: 0.00000006757011, y: 0.9979194, z: 0.000000484474}
@@ -305,6 +739,20 @@ Transform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1678675622762321663
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 1529663631715931112}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.026794039, y: -0.015469446, z: 0.0154692}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6902396425299809538}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1624494281954163848
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -312,20 +760,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 1901854463680863426}
   m_Layer: 0
   m_Name: mixamorig:RightHandThumb4
+=======
+  - component: {fileID: 6553551184706037917}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandMiddle4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 1901854463680863426}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandThumb4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &1901854463680863426
+=======
+--- !u!4 &6553551184706037917
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &1901854463680863426
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 1678675622762321663}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.026794035, y: -0.015469455, z: 0.015469198}
@@ -335,6 +807,20 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1802884047382966643
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 1624494281954163848}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.036801923, y: -0.000000006576055, z: 0.00000032509809}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 9078905753691058606}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1936264830725806626
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -342,20 +828,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 8870148097245709847}
   m_Layer: 0
   m_Name: mixamorig:RightShoulder
+=======
+  - component: {fileID: 2639454700264447050}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandThumb1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 8870148097245709847}
+  m_Layer: 0
+  m_Name: mixamorig:RightShoulder
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &8870148097245709847
+=======
+--- !u!4 &2639454700264447050
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &8870148097245709847
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 1802884047382966643}
   m_LocalRotation: {x: -0.000000014901161, y: 4.2632564e-14, z: -0.000000044703256,
     w: 1}
@@ -367,6 +877,21 @@ Transform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1962045616175087052
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 1936264830725806626}
+  m_LocalRotation: {x: -0.000010383226, y: -0.000008450052, z: 0.000009578869, w: 1}
+  m_LocalPosition: {x: 0.03788809, y: -0.02166998, z: 0.030030873}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 2481797762944086057}
+  m_Father: {fileID: 5201244078884960124}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2078946139216786514
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -374,20 +899,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 5359299652830290063}
   m_Layer: 0
   m_Name: mixamorig:RightArm
+=======
+  - component: {fileID: 8990344223741029661}
+  m_Layer: 0
+  m_Name: mixamorig:RightEye
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 5359299652830290063}
+  m_Layer: 0
+  m_Name: mixamorig:RightArm
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &5359299652830290063
+=======
+--- !u!4 &8990344223741029661
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &5359299652830290063
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 1962045616175087052}
   m_LocalRotation: {x: 0.000000014901161, y: 7.7756505e-24, z: 0.000000044703484,
     w: 1}
@@ -399,6 +948,20 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2061111305051871146
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 2078946139216786514}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.029444808, y: 0.07681745, z: 0.091204956}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 35185121910406620}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2170937090939154230
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -406,30 +969,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 6028302571481579734}
   m_Layer: 0
   m_Name: mixamorig:RightHandPinky2
+=======
+  - component: {fileID: 1102706750217589406}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandMiddle2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 6028302571481579734}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandPinky2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &6028302571481579734
+=======
+--- !u!4 &1102706750217589406
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &6028302571481579734
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 2061111305051871146}
   m_LocalRotation: {x: -0.11318814, y: 0.0683325, z: -0.6956501, w: 0.70610917}
+=======
+  m_GameObject: {fileID: 2061111305051871146}
+  m_LocalRotation: {x: 0, y: 0, z: -0.27563733, w: 0.96126175}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.041366514, y: 0, z: 0.00000026170164}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4267119532712268258}
   m_Father: {fileID: 695730779718268898}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: -3.7140002, y: 14.745001, z: -89.62601}
 --- !u!1 &2320001833316864699
+=======
+  m_GameObject: {fileID: 2170937090939154230}
+  m_LocalRotation: {x: -0.000000014901161, y: 0.000000014901165, z: -7.764959e-13,
+    w: 1}
+  m_LocalPosition: {x: -0.036139715, y: 0.000000026601377, z: 0.000000024623631}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 9058384278963678889}
+  m_Father: {fileID: 2525148269251559260}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2255757681996838505
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -32}
+--- !u!1 &2320001833316864699
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -437,29 +1044,59 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 1690155747690259004}
   m_Layer: 0
   m_Name: mixamorig:LeftHandThumb3
+=======
+  - component: {fileID: 6093301322760394971}
+  m_Layer: 0
+  m_Name: mixamorig:Spine2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 1690155747690259004}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandThumb3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &1690155747690259004
+=======
+--- !u!4 &6093301322760394971
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &1690155747690259004
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 2320001833316864699}
   m_LocalRotation: {x: 0.15468068, y: -0.38367167, z: -0.0332046, w: 0.9098172}
+=======
+  m_GameObject: {fileID: 2320001833316864699}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.033943538, y: -0.01959747, z: 0.019597854}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3583794621209218961}
   m_Father: {fileID: 4175269603175063120}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 14.832001, y: -47.124, z: -10.678}
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 --- !u!1 &2574404944575354304
 GameObject:
   m_ObjectHideFlags: 0
@@ -491,6 +1128,23 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2587430992478338339
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 2255757681996838505}
+  m_LocalRotation: {x: 0, y: 0, z: 1.8056423e-35, w: 1}
+  m_LocalPosition: {x: -0.00000091440717, y: 0.13360204, z: -0.016264597}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8074217953057884224}
+  - {fileID: 862261839603012774}
+  - {fileID: 3722093125421920553}
+  m_Father: {fileID: 4698526759287892144}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2596628094663606311
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -498,30 +1152,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 210406069026852496}
   m_Layer: 0
   m_Name: mixamorig:RightHandThumb3
+=======
+  - component: {fileID: 6479019943693381320}
+  m_Layer: 0
+  m_Name: mixamorig:RightFoot
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 210406069026852496}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandThumb3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &210406069026852496
+=======
+--- !u!4 &6479019943693381320
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &210406069026852496
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 2587430992478338339}
   m_LocalRotation: {x: 0.09390025, y: 0.33297434, z: 0.15703776, w: 0.92501354}
+=======
+  m_GameObject: {fileID: 2587430992478338339}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.033943504, y: -0.01959742, z: 0.019597854}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1901854463680863426}
   m_Father: {fileID: 7696513922515748631}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 3.9650002, y: 40.320004, z: 20.726002}
 --- !u!1 &2630429751033236775
+=======
+  m_GameObject: {fileID: 2596628094663606311}
+  m_LocalRotation: {x: -0.000003650786, y: 0.000000020896566, z: 0.0000000039579957,
+    w: 1}
+  m_LocalPosition: {x: -0.0024466943, y: -0.4204787, z: -0.02060231}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8782747818366492188}
+  m_Father: {fileID: 2133000809855010414}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3010895291541530011
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2630429751033236775
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -529,30 +1227,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 6888479116464043208}
   m_Layer: 0
   m_Name: mixamorig:RightHandIndex3
+=======
+  - component: {fileID: 4323085993498715388}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandIndex2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 6888479116464043208}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandIndex3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &6888479116464043208
+=======
+--- !u!4 &4323085993498715388
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &6888479116464043208
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 2630429751033236775}
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 2630429751033236775}
+  m_LocalRotation: {x: 0, y: 0, z: -0.32556805, w: 0.9455186}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.03415161, y: 0.0000000025299138, z: -0.000000086058414}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8586249481305415255}
   m_Father: {fileID: 3083298675963430785}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!1 &2739320296116904023
+=======
+  m_GameObject: {fileID: 3010895291541530011}
+  m_LocalRotation: {x: -0.00000010430813, y: 0.000000014901161, z: -7.7516346e-13,
+    w: 1}
+  m_LocalPosition: {x: -0.038919672, y: 0.000000016868665, z: 0.00000038721547}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4000383270764091023}
+  m_Father: {fileID: 4894533322593338200}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3056861292775290699
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -38}
+--- !u!1 &2739320296116904023
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -560,30 +1302,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 815854494326682726}
   m_Layer: 0
   m_Name: mixamorig:LeftHandIndex1
+=======
+  - component: {fileID: 8216947045752192284}
+  m_Layer: 0
+  m_Name: mixamorig:RightForeArm
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 815854494326682726}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandIndex1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &815854494326682726
+=======
+--- !u!4 &8216947045752192284
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &815854494326682726
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 2739320296116904023}
   m_LocalRotation: {x: 0.05606595, y: 0.042179447, z: 0.7066472, w: 0.70407903}
+=======
+  m_GameObject: {fileID: 2739320296116904023}
+  m_LocalRotation: {x: 0, y: 0, z: 0.17364816, w: 0.9848078}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.1226663, y: -0.0023167047, z: 0.028220562}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8304691067223495618}
   m_Father: {fileID: 4835125179313138249}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 1.108, y: 7.9700003, z: 90.286}
 --- !u!1 &2829656231916451398
+=======
+  m_GameObject: {fileID: 3056861292775290699}
+  m_LocalRotation: {x: -0.000000059604638, y: 0.000000003900862, z: -3.0876939e-15,
+    w: 1}
+  m_LocalPosition: {x: 0.27404684, y: 0.0000003288411, z: 0.000000052756395}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 5201244078884960124}
+  m_Father: {fileID: 206763072936777649}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3153737401757187383
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 20}
+--- !u!1 &2829656231916451398
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -591,20 +1377,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 4835125179313138249}
   m_Layer: 0
   m_Name: mixamorig:LeftHand
+=======
+  - component: {fileID: 127934625501944716}
+  m_Layer: 0
+  m_Name: mixamorig:LeftArm
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 4835125179313138249}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHand
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &4835125179313138249
+=======
+--- !u!4 &127934625501944716
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &4835125179313138249
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 2829656231916451398}
   m_LocalRotation: {x: 0.000025987818, y: 0.000000044703476, z: -1.1585687e-12, w: 1}
   m_LocalPosition: {x: -0.27614462, y: 0.00000028951808, z: 0.00000019646586}
@@ -619,6 +1429,22 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2852372613056622808
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 3153737401757187383}
+  m_LocalRotation: {x: 0.000000044703484, y: 2.4507967e-22, z: 0.000000044703484,
+    w: 1}
+  m_LocalPosition: {x: -0.12655036, y: -0.0026593448, z: -0.026009219}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 3984677754292631117}
+  m_Father: {fileID: 8074217953057884224}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3220331354916365491
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -626,15 +1452,31 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   - component: {fileID: 1917943385551774095}
   - component: {fileID: 771585884432548148}
   m_Layer: 0
   m_Name: Alpha_Joints
+<<<<<<< HEAD
+=======
+  - component: {fileID: 4698526759287892144}
+  m_Layer: 0
+  m_Name: mixamorig:Spine1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 --- !u!4 &1917943385551774095
 Transform:
   m_ObjectHideFlags: 0
@@ -651,10 +1493,21 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &771585884432548148
 SkinnedMeshRenderer:
+<<<<<<< HEAD
+=======
+--- !u!4 &4698526759287892144
+Transform:
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 2852372613056622808}
   m_Enabled: 1
   m_CastShadows: 1
@@ -664,6 +1517,10 @@ SkinnedMeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+<<<<<<< HEAD
+=======
+  m_RayTraceProcedural: 0
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -753,6 +1610,21 @@ SkinnedMeshRenderer:
     m_Extent: {x: 0.94527346, y: 0.7953514, z: 0.1378017}
   m_DirtyAABB: 0
 --- !u!1 &2948612855554084242
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 3220331354916365491}
+  m_LocalRotation: {x: 3.8774097e-26, y: -4.2632574e-14, z: 6.82121e-13, w: 1}
+  m_LocalPosition: {x: 0.0000013886521, y: 0.1164544, z: -0.014223412}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6093301322760394971}
+  m_Father: {fileID: 2173331251444333656}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3240162433904820874
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -760,30 +1632,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 4267119532712268258}
   m_Layer: 0
   m_Name: mixamorig:RightHandPinky3
+=======
+  - component: {fileID: 2525148269251559260}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandMiddle1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 4267119532712268258}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandPinky3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &4267119532712268258
+=======
+--- !u!4 &2525148269251559260
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &4267119532712268258
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 2948612855554084242}
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 2948612855554084242}
+  m_LocalRotation: {x: 0, y: 0, z: -0.32556805, w: 0.9455186}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.025948359, y: -0.000000009571486, z: -0.00000036661154}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5555708578245275738}
   m_Father: {fileID: 6028302571481579734}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!1 &3101968057090411907
+=======
+  m_GameObject: {fileID: 3240162433904820874}
+  m_LocalRotation: {x: 0.000000014901159, y: -0.000000044701945, z: 0.00000002980465,
+    w: 1}
+  m_LocalPosition: {x: -0.12775522, y: 0.00000013342024, z: 0.00000020418457}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1102706750217589406}
+  m_Father: {fileID: 839727761919827319}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3303898166560052784
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -38}
+--- !u!1 &3101968057090411907
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -791,20 +1707,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 8586249481305415255}
   m_Layer: 0
   m_Name: mixamorig:RightHandIndex4
+=======
+  - component: {fileID: 2481797762944086057}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandThumb2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 8586249481305415255}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandIndex4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &8586249481305415255
+=======
+--- !u!4 &2481797762944086057
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &8586249481305415255
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 3101968057090411907}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.030779855, y: -0.000000009372842, z: -0.00000008780579}
@@ -814,6 +1754,21 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3167388677352513309
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 3303898166560052784}
+  m_LocalRotation: {x: 0.000005132493, y: 0.0000031770373, z: -0.000005675953, w: 1}
+  m_LocalPosition: {x: 0.036754426, y: -0.021220084, z: 0.021220122}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 5356218653181016494}
+  m_Father: {fileID: 2639454700264447050}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3416868549090200328
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -821,20 +1776,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 3556728609459677474}
   m_Layer: 0
   m_Name: mixamorig:RightToeBase
+=======
+  - component: {fileID: 7168606245647440735}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandMiddle1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 3556728609459677474}
+  m_Layer: 0
+  m_Name: mixamorig:RightToeBase
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &3556728609459677474
+=======
+--- !u!4 &7168606245647440735
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &3556728609459677474
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 3167388677352513309}
   m_LocalRotation: {x: 0.000000029802322, y: 6.530776e-11, z: -2.3527402e-10, w: 1}
   m_LocalPosition: {x: 0.0037335984, y: -0.10492194, z: 0.12640662}
@@ -845,6 +1824,22 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3226604360539473081
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 3416868549090200328}
+  m_LocalRotation: {x: 0.000000014901159, y: 0.000000044701945, z: -0.00000002980465,
+    w: 1}
+  m_LocalPosition: {x: 0.12775522, y: 0.000000089457735, z: 0.00000018011639}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 692153035281110968}
+  m_Father: {fileID: 5201244078884960124}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3641839755730963456
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -852,30 +1847,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 1588847069012505823}
   m_Layer: 0
   m_Name: mixamorig:RightHandRing3
+=======
+  - component: {fileID: 8143557721728161413}
+  m_Layer: 0
+  m_Name: mixamorig:LeftFoot
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 1588847069012505823}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandRing3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &1588847069012505823
+=======
+--- !u!4 &8143557721728161413
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &1588847069012505823
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 3226604360539473081}
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 3226604360539473081}
+  m_LocalRotation: {x: 0, y: 0, z: -0.32556805, w: 0.9455186}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.03307317, y: 0.00000003760175, z: -0.00000021114596}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4135301271389165880}
   m_Father: {fileID: 5685402456306261774}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!1 &3315563522662450326
+=======
+  m_GameObject: {fileID: 3641839755730963456}
+  m_LocalRotation: {x: -0.000018015498, y: -0.00000010461389, z: -0.0000000013931898,
+    w: 1}
+  m_LocalPosition: {x: 0.002446696, y: -0.42047998, z: -0.020576412}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 583134909405362202}
+  m_Father: {fileID: 3649474401681927785}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3953160711268338640
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -38}
+--- !u!1 &3315563522662450326
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -883,20 +1922,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 1548312292331887380}
   m_Layer: 0
   m_Name: mixamorig:LeftHandIndex4
+=======
+  - component: {fileID: 35185121910406620}
+  m_Layer: 0
+  m_Name: mixamorig:Head
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 1548312292331887380}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandIndex4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &1548312292331887380
+=======
+--- !u!4 &35185121910406620
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &1548312292331887380
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 3315563522662450326}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.030779855, y: 7.926917e-10, z: -0.00000008560385}
@@ -906,6 +1969,23 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3369483056883108594
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 3953160711268338640}
+  m_LocalRotation: {x: 0, y: -0, z: -2.3158745e-36, w: 1}
+  m_LocalPosition: {x: -0.000000023707482, y: 0.1032183, z: 0.031424288}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 2964581900821346610}
+  - {fileID: 5828279744822540177}
+  - {fileID: 8990344223741029661}
+  m_Father: {fileID: 862261839603012774}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4011438979052186900
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -913,20 +1993,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 4848619624279565208}
   m_Layer: 0
   m_Name: mixamorig:Neck
+=======
+  - component: {fileID: 8164769791286847854}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandThumb2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 4848619624279565208}
+  m_Layer: 0
+  m_Name: mixamorig:Neck
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &4848619624279565208
+=======
+--- !u!4 &8164769791286847854
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &4848619624279565208
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 3369483056883108594}
   m_LocalRotation: {x: -5.2041704e-18, y: 4.2632927e-14, z: 2.273737e-13, w: 1}
   m_LocalPosition: {x: -0.0000002520208, y: 0.15032491, z: 0.007929048}
@@ -937,6 +2041,21 @@ Transform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3452248472222526145
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 4011438979052186900}
+  m_LocalRotation: {x: 0.000005132493, y: -0.0000031770362, z: 0.0000056908543, w: 1}
+  m_LocalPosition: {x: -0.03675443, y: -0.021220079, z: 0.021220123}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6902396425299809538}
+  m_Father: {fileID: 1699294397325919458}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4120834699881701213
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -944,20 +2063,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 9219699696501588339}
   m_Layer: 0
   m_Name: mixamorig:LeftForeArm
+=======
+  - component: {fileID: 407374335819646820}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandPinky4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 9219699696501588339}
+  m_Layer: 0
+  m_Name: mixamorig:LeftForeArm
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &9219699696501588339
+=======
+--- !u!4 &407374335819646820
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &9219699696501588339
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 3452248472222526145}
   m_LocalRotation: {x: -0.000000059604638, y: -0.000000003900862, z: -1.3205547e-24,
     w: 1}
@@ -969,6 +2112,20 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3485782072460916051
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 4120834699881701213}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.029238692, y: 0.00000000641227, z: 0.00000018695744}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8325262161692616412}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4163332417101775093
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -976,30 +2133,72 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 4694328389159477382}
   m_Layer: 0
   m_Name: mixamorig:RightHandMiddle2
+=======
+  - component: {fileID: 7602847600923819468}
+  m_Layer: 0
+  m_Name: mixamorig:LeftToe_End
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 4694328389159477382}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandMiddle2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &4694328389159477382
+=======
+--- !u!4 &7602847600923819468
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &4694328389159477382
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 3485782072460916051}
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 3485782072460916051}
+  m_LocalRotation: {x: 0, y: 0, z: -0.27563733, w: 0.96126175}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.036139715, y: 0.000000027565017, z: 0.000000030803374}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3837172326764578448}
   m_Father: {fileID: 3153256612449496161}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!1 &3538899966429612622
+=======
+  m_GameObject: {fileID: 4163332417101775093}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.000000002053664, y: 0.000000009634096, z: 0.09992521}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 583134909405362202}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4211319305639267673
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -32}
+--- !u!1 &3538899966429612622
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1007,20 +2206,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 7033163294546349580}
   m_Layer: 0
   m_Name: mixamorig:HeadTop_End
+=======
+  - component: {fileID: 1699294397325919458}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandThumb1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 7033163294546349580}
+  m_Layer: 0
+  m_Name: mixamorig:HeadTop_End
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &7033163294546349580
+=======
+--- !u!4 &1699294397325919458
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &7033163294546349580
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 3538899966429612622}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.0000015417259, y: 0.18474671, z: 0.06636399}
@@ -1030,6 +2253,21 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3648113144103122343
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 4211319305639267673}
+  m_LocalRotation: {x: -0.000010383226, y: 0.000008450052, z: -0.000009578869, w: 1}
+  m_LocalPosition: {x: -0.037888095, y: -0.021669967, z: 0.03003088}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8164769791286847854}
+  m_Father: {fileID: 839727761919827319}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4239102031715908939
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1037,20 +2275,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 4224900391401619849}
   m_Layer: 0
   m_Name: mixamorig:LeftUpLeg
+=======
+  - component: {fileID: 3393283759718428600}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandRing1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 4224900391401619849}
+  m_Layer: 0
+  m_Name: mixamorig:LeftUpLeg
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &4224900391401619849
+=======
+--- !u!4 &3393283759718428600
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &4224900391401619849
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 3648113144103122343}
   m_LocalRotation: {x: -0.000017517097, y: -0.000000013640878, z: 0.00000043808052,
     w: 1}
@@ -1062,6 +2324,22 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3663506582794408142
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 4239102031715908939}
+  m_LocalRotation: {x: 0.00000002980232, y: 0.000000029801548, z: -0.000000014902708,
+    w: 1}
+  m_LocalPosition: {x: 0.12147004, y: 0.00009890902, z: -0.022166314}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 457119905138272304}
+  m_Father: {fileID: 5201244078884960124}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4444412030378682174
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1069,30 +2347,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 3083298675963430785}
   m_Layer: 0
   m_Name: mixamorig:RightHandIndex2
+=======
+  - component: {fileID: 6988058552702115343}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandRing3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 3083298675963430785}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandIndex2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &3083298675963430785
+=======
+--- !u!4 &6988058552702115343
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &3083298675963430785
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 3663506582794408142}
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 3663506582794408142}
+  m_LocalRotation: {x: 0, y: 0, z: -0.27563733, w: 0.96126175}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.038919672, y: -7.205551e-10, z: 0.00000037513024}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6888479116464043208}
   m_Father: {fileID: 7494251199348275500}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!1 &3706344349602581112
+=======
+  m_GameObject: {fileID: 4444412030378682174}
+  m_LocalRotation: {x: 0.00000005960464, y: -0.000000014900386, z: 0.000000014901934,
+    w: 1}
+  m_LocalPosition: {x: -0.03307317, y: 0.000000045317442, z: -0.00000020893265}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 2529174611529717430}
+  m_Father: {fileID: 4912489354174764679}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4525722792885626263
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -32}
+--- !u!1 &3706344349602581112
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1100,30 +2422,72 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 3822227645058161047}
   m_Layer: 0
   m_Name: mixamorig:LeftHandMiddle3
+=======
+  - component: {fileID: 4485377636439310014}
+  m_Layer: 0
+  m_Name: mixamorig:RightToe_End
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 3822227645058161047}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandMiddle3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &3822227645058161047
+=======
+--- !u!4 &4485377636439310014
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &3822227645058161047
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 3706344349602581112}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 3706344349602581112}
+  m_LocalRotation: {x: 0, y: 0, z: 0.32556805, w: 0.9455186}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.0345976, y: 0.000000005432471, z: -0.00000026419679}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8590720606691672244}
   m_Father: {fileID: 5184494994163459488}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!1 &3708781727123750282
+=======
+  m_GameObject: {fileID: 4525722792885626263}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.0000000011347395, y: 0.000000004587741, z: 0.09992521}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8782747818366492188}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4611041010400910661
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 38}
+--- !u!1 &3708781727123750282
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1131,20 +2495,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 8798651487415933271}
   m_Layer: 0
   m_Name: mixamorig:LeftLeg
+=======
+  - component: {fileID: 4725321790202537464}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandPinky3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 8798651487415933271}
+  m_Layer: 0
+  m_Name: mixamorig:LeftLeg
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &8798651487415933271
+=======
+--- !u!4 &4725321790202537464
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &8798651487415933271
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 3708781727123750282}
   m_LocalRotation: {x: 0.000035527948, y: 0.000000089582485, z: 0.0000000041595536,
     w: 1}
@@ -1156,6 +2544,22 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4003968156574571020
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 4611041010400910661}
+  m_LocalRotation: {x: -0.000000059604645, y: -0.000000029803868, z: -0.000000029800773,
+    w: 1}
+  m_LocalPosition: {x: -0.025948359, y: 5.93904e-10, z: -0.00000036009018}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6301536276124406526}
+  m_Father: {fileID: 992910871413749507}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4719732467491005824
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1163,20 +2567,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 4135301271389165880}
   m_Layer: 0
   m_Name: mixamorig:RightHandRing4
+=======
+  - component: {fileID: 4000383270764091023}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandIndex3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 4135301271389165880}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandRing4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &4135301271389165880
+=======
+--- !u!4 &4000383270764091023
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &4135301271389165880
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 4003968156574571020}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.036601152, y: 0.00000002046845, z: 0.000000006718011}
@@ -1186,6 +2614,22 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4125368821155906951
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 4719732467491005824}
+  m_LocalRotation: {x: 7.528409e-15, y: 0.0000000148980766, z: -0.000000059605426,
+    w: 1}
+  m_LocalPosition: {x: -0.03415161, y: 0.000000005749108, z: -0.00000008770533}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6756009238114495530}
+  m_Father: {fileID: 4323085993498715388}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4831898831552659289
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1193,20 +2637,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 1755465715856572591}
   m_Layer: 0
   m_Name: mixamorig:LeftEye
+=======
+  - component: {fileID: 583134909405362202}
+  m_Layer: 0
+  m_Name: mixamorig:LeftToeBase
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 1755465715856572591}
+  m_Layer: 0
+  m_Name: mixamorig:LeftEye
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &1755465715856572591
+=======
+--- !u!4 &583134909405362202
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &1755465715856572591
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 4125368821155906951}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.02947915, y: 0.07681745, z: 0.09120731}
@@ -1216,6 +2684,21 @@ Transform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4235135441896027252
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 4831898831552659289}
+  m_LocalRotation: {x: 0.000000004649337, y: 1.1698642e-10, z: 9.313231e-10, w: 1}
+  m_LocalPosition: {x: -0.0037335982, y: -0.10492193, z: 0.12640664}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 7602847600923819468}
+  m_Father: {fileID: 8143557721728161413}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4909562178621776911
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1223,30 +2706,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 4817410183457173461}
   m_Layer: 0
   m_Name: mixamorig:LeftHandRing1
+=======
+  - component: {fileID: 2173331251444333656}
+  m_Layer: 0
+  m_Name: mixamorig:Spine
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 4817410183457173461}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandRing1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &4817410183457173461
+=======
+--- !u!4 &2173331251444333656
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &4817410183457173461
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 4235135441896027252}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 4235135441896027252}
+  m_LocalRotation: {x: 0, y: 0, z: 0.17364816, w: 0.9848078}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.12147005, y: 0.00009894983, z: -0.022166291}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 905843936058925497}
   m_Father: {fileID: 4835125179313138249}
   m_RootOrder: 3
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!1 &4362322475801186955
+=======
+  m_GameObject: {fileID: 4909562178621776911}
+  m_LocalRotation: {x: -1.3930783e-15, y: -0.00000001376344, z: 0.00000044177568,
+    w: 1}
+  m_LocalPosition: {x: -0.0000000056483196, y: 0.09923459, z: -0.012273348}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4698526759287892144}
+  m_Father: {fileID: 1892005065662812107}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5069742356021426239
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 20}
+--- !u!1 &4362322475801186955
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1254,20 +2781,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 40559499379523650}
   m_Layer: 0
   m_Name: mixamorig:RightHand
+=======
+  - component: {fileID: 4912489354174764679}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandRing2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 40559499379523650}
+  m_Layer: 0
+  m_Name: mixamorig:RightHand
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &40559499379523650
+=======
+--- !u!4 &4912489354174764679
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &40559499379523650
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 4362322475801186955}
   m_LocalRotation: {x: 0.000025987818, y: -0.000000044703476, z: 1.1585687e-12, w: 1}
   m_LocalPosition: {x: 0.27614462, y: 0.00000022661457, z: 0.0000001832407}
@@ -1282,6 +2833,22 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4413434183472769363
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 5069742356021426239}
+  m_LocalRotation: {x: -0.000000029802319, y: 0.000000029799999, z: -0.000000044705025,
+    w: 1}
+  m_LocalPosition: {x: -0.036011904, y: 0.000000015129366, z: 0.0000003511219}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6988058552702115343}
+  m_Father: {fileID: 748862256402536683}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5206851754272623323
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1289,30 +2856,73 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 5685402456306261774}
   m_Layer: 0
   m_Name: mixamorig:RightHandRing2
+=======
+  - component: {fileID: 2359449194410839570}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandIndex1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 5685402456306261774}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandRing2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &5685402456306261774
+=======
+--- !u!4 &2359449194410839570
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &5685402456306261774
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 4413434183472769363}
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 4413434183472769363}
+  m_LocalRotation: {x: 0, y: 0, z: -0.27563733, w: 0.96126175}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.036011904, y: 0.0000000023856512, z: 0.0000003486698}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1588847069012505823}
   m_Father: {fileID: 7469715660023273606}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!1 &4520872073866329479
+=======
+  m_GameObject: {fileID: 5206851754272623323}
+  m_LocalRotation: {x: 0.000000014901163, y: 7.7294296e-13, z: 0.00000001490116, w: 1}
+  m_LocalPosition: {x: 0.12266616, y: -0.002316732, z: 0.028220555}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 7094449827248468159}
+  m_Father: {fileID: 5201244078884960124}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5507077879041487232
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -32}
+--- !u!1 &4520872073866329479
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1320,20 +2930,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 4085887720757051262}
   m_Layer: 0
   m_Name: mixamorig:LeftShoulder
+=======
+  - component: {fileID: 9078905753691058606}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandMiddle3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 4085887720757051262}
+  m_Layer: 0
+  m_Name: mixamorig:LeftShoulder
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &4085887720757051262
+=======
+--- !u!4 &9078905753691058606
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &4085887720757051262
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 4520872073866329479}
   m_LocalRotation: {x: -0.000000044703484, y: 4.2632557e-14, z: -0.000000044703256,
     w: 1}
@@ -1345,6 +2979,22 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4846625215195561414
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 5507077879041487232}
+  m_LocalRotation: {x: 0.000000059604645, y: 0.000000029804642, z: 0.000000044701938,
+    w: 1}
+  m_LocalPosition: {x: 0.0345976, y: -0.0000000019721824, z: -0.0000002645789}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6553551184706037917}
+  m_Father: {fileID: 692153035281110968}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5526285344284122861
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1352,30 +3002,73 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 6396877568499235343}
   m_Layer: 0
   m_Name: mixamorig:LeftHandPinky1
+=======
+  - component: {fileID: 4690820334124515548}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandPinky1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 6396877568499235343}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandPinky1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &6396877568499235343
+=======
+--- !u!4 &4690820334124515548
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &6396877568499235343
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 4846625215195561414}
   m_LocalRotation: {x: -0.048163053, y: 0.04816306, z: 0.7054646, w: 0.7054646}
+=======
+  m_GameObject: {fileID: 4846625215195561414}
+  m_LocalRotation: {x: 0, y: 0, z: 0.17364816, w: 0.9848078}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.10908192, y: -0.0022636375, z: -0.04725824}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5006059285570846781}
   m_Father: {fileID: 4835125179313138249}
   m_RootOrder: 2
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: -7.8110003, y: 0, z: 90.00001}
 --- !u!1 &5350581220554447229
+=======
+  m_GameObject: {fileID: 5526285344284122861}
+  m_LocalRotation: {x: 0.00000007450581, y: 7.7383114e-13, z: 0.000000014901159, w: 1}
+  m_LocalPosition: {x: 0.10908193, y: -0.002263685, z: -0.0472582}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1951829364336867304}
+  m_Father: {fileID: 5201244078884960124}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5889510075910358605
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 20}
+--- !u!1 &5350581220554447229
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1383,30 +3076,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 5006059285570846781}
   m_Layer: 0
   m_Name: mixamorig:LeftHandPinky2
+=======
+  - component: {fileID: 3722093125421920553}
+  m_Layer: 0
+  m_Name: mixamorig:RightShoulder
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 5006059285570846781}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandPinky2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &5006059285570846781
+=======
+--- !u!4 &3722093125421920553
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &5006059285570846781
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 5350581220554447229}
   m_LocalRotation: {x: -0.058382384, y: 0.058382206, z: 0.69664097, w: 0.7126531}
+=======
+  m_GameObject: {fileID: 5350581220554447229}
+  m_LocalRotation: {x: 0, y: 0, z: 0.27563733, w: 0.96126175}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.041366532, y: 0.000000067055225, z: 0.00000026542693}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 661229151909122758}
   m_Father: {fileID: 6396877568499235343}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: -9.471001, y: 0.109000005, z: 88.689}
 --- !u!1 &5480725355632003841
+=======
+  m_GameObject: {fileID: 5889510075910358605}
+  m_LocalRotation: {x: -0.000000014901161, y: 4.2632564e-14, z: -0.000000044703256,
+    w: 1}
+  m_LocalPosition: {x: 0.06105696, y: 0.09110509, z: 0.007055634}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 206763072936777649}
+  m_Father: {fileID: 6093301322760394971}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6017945307209796338
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 32}
+--- !u!1 &5480725355632003841
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1414,20 +3151,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 7528556241542680522}
   m_Layer: 0
   m_Name: mixamorig:RightUpLeg
+=======
+  - component: {fileID: 206763072936777649}
+  m_Layer: 0
+  m_Name: mixamorig:RightArm
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 7528556241542680522}
+  m_Layer: 0
+  m_Name: mixamorig:RightUpLeg
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &7528556241542680522
+=======
+--- !u!4 &206763072936777649
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &7528556241542680522
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 5480725355632003841}
   m_LocalRotation: {x: -0.000002931613, y: -0.000000013649597, z: 0.00000043784848,
     w: 1}
@@ -1439,6 +3200,22 @@ Transform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5494020444831916104
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 6017945307209796338}
+  m_LocalRotation: {x: 0.000000014901161, y: 7.7756505e-24, z: 0.000000044703484,
+    w: 1}
+  m_LocalPosition: {x: 0.1265504, y: -0.0026602063, z: -0.026008958}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8216947045752192284}
+  m_Father: {fileID: 3722093125421920553}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6062995768043298964
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1446,21 +3223,45 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   - component: {fileID: 4277524448265460558}
   - component: {fileID: 5326462970297772969}
   m_Layer: 0
   m_Name: Alpha_Surface
+<<<<<<< HEAD
+=======
+  - component: {fileID: 1951829364336867304}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandPinky2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &4277524448265460558
+=======
+--- !u!4 &1951829364336867304
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &4277524448265460558
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 5494020444831916104}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
@@ -1484,6 +3285,10 @@ SkinnedMeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+<<<<<<< HEAD
+=======
+  m_RayTraceProcedural: 0
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1573,6 +3378,22 @@ SkinnedMeshRenderer:
     m_Extent: {x: 0.97342485, y: 0.90236723, z: 0.18213426}
   m_DirtyAABB: 0
 --- !u!1 &5746098009171910107
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 6062995768043298964}
+  m_LocalRotation: {x: -0.000000014901161, y: 0.000000029801548, z: -0.000000014902708,
+    w: 1}
+  m_LocalPosition: {x: 0.041366525, y: 0.000000004310631, z: 0.00000025609583}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8325262161692616412}
+  m_Father: {fileID: 4690820334124515548}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6726762613959325157
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1580,20 +3401,45 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 2291508211282372032}
   m_Layer: 0
   m_Name: mixamorig:LeftHandPinky4
+=======
+  - component: {fileID: 6201899075094982495}
+  - component: {fileID: 68044982231102757}
+  m_Layer: 0
+  m_Name: ybot
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 2291508211282372032}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandPinky4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &2291508211282372032
+=======
+--- !u!4 &6201899075094982495
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &2291508211282372032
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 5746098009171910107}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.029238692, y: 0.000000014407377, z: 0.00000018732128}
@@ -1603,6 +3449,42 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5935851864430751004
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 6726762613959325157}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 5918706345877296817}
+  - {fileID: 8350323084043693168}
+  - {fileID: 1892005065662812107}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &68044982231102757
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6726762613959325157}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 7d59d5ae183bf5f4d9a5e0d075c1d978, type: 3}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 1
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!1 &6817934956250896062
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1610,30 +3492,75 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 7791127678441827188}
   m_Layer: 0
   m_Name: mixamorig:RightHandThumb1
+=======
+  - component: {fileID: 1892005065662812107}
+  m_Layer: 0
+  m_Name: mixamorig:Hips
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 7791127678441827188}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandThumb1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &7791127678441827188
+=======
+--- !u!4 &1892005065662812107
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &7791127678441827188
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 5935851864430751004}
   m_LocalRotation: {x: -0.16701439, y: 0.028687194, z: 0.1668536, w: 0.9713101}
+=======
+  m_GameObject: {fileID: 5935851864430751004}
+  m_LocalRotation: {x: 0, y: 0.17364816, z: 0, w: 0.9848078}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.037888113, y: -0.021669965, z: 0.030030927}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7696513922515748631}
   m_Father: {fileID: 40559499379523650}
   m_RootOrder: 4
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: -19.513, y: 0, z: 19.495}
 --- !u!1 &6081963100526723948
+=======
+  m_GameObject: {fileID: 6817934956250896062}
+  m_LocalRotation: {x: 1.3930912e-15, y: 0.00000001376344, z: -0.0000004417766, w: 1}
+  m_LocalPosition: {x: 0.00000006757011, y: 0.9979194, z: 0.000000484474}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8223365994096457399}
+  - {fileID: 2361101488965679348}
+  - {fileID: 2173331251444333656}
+  m_Father: {fileID: 6201899075094982495}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6914509619781525953
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 20, z: 0}
+--- !u!1 &6081963100526723948
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1641,20 +3568,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 3781476917338954275}
   m_Layer: 0
   m_Name: mixamorig:RightEye
+=======
+  - component: {fileID: 5970121390369680380}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandThumb4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 3781476917338954275}
+  m_Layer: 0
+  m_Name: mixamorig:RightEye
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &3781476917338954275
+=======
+--- !u!4 &5970121390369680380
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &3781476917338954275
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 6081963100526723948}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.029444808, y: 0.07681745, z: 0.091204956}
@@ -1664,6 +3615,20 @@ Transform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6241470667559507976
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 6914509619781525953}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.026794035, y: -0.015469455, z: 0.015469198}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5356218653181016494}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6941468204211501740
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1671,30 +3636,73 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 5184494994163459488}
   m_Layer: 0
   m_Name: mixamorig:LeftHandMiddle2
+=======
+  - component: {fileID: 8325262161692616412}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandPinky3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 5184494994163459488}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandMiddle2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &5184494994163459488
+=======
+--- !u!4 &8325262161692616412
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &5184494994163459488
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 6241470667559507976}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 6241470667559507976}
+  m_LocalRotation: {x: 0, y: 0, z: 0.27563733, w: 0.96126175}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.036139715, y: 0.000000026601377, z: 0.000000024623631}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3822227645058161047}
   m_Father: {fileID: 7761320296303036514}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!1 &6336723975745683799
+=======
+  m_GameObject: {fileID: 6941468204211501740}
+  m_LocalRotation: {x: -0.00000008940697, y: -6.912583e-20, z: -1.3322676e-15, w: 1}
+  m_LocalPosition: {x: 0.025948359, y: -0.000000009571486, z: -0.00000036661154}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 407374335819646820}
+  m_Father: {fileID: 1951829364336867304}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7154615004567873571
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 32}
+--- !u!1 &6336723975745683799
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1702,20 +3710,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 2031508313028390885}
   m_Layer: 0
   m_Name: mixamorig:Spine2
+=======
+  - component: {fileID: 8782747818366492188}
+  m_Layer: 0
+  m_Name: mixamorig:RightToeBase
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 2031508313028390885}
+  m_Layer: 0
+  m_Name: mixamorig:Spine2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &2031508313028390885
+=======
+--- !u!4 &8782747818366492188
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &2031508313028390885
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 6336723975745683799}
   m_LocalRotation: {x: 0, y: 0, z: 1.8056423e-35, w: 1}
   m_LocalPosition: {x: -0.00000091440717, y: 0.13360204, z: -0.016264597}
@@ -1728,6 +3760,21 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6386928646986539573
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 7154615004567873571}
+  m_LocalRotation: {x: 0.000000029802322, y: 6.530776e-11, z: -2.3527402e-10, w: 1}
+  m_LocalPosition: {x: 0.0037335984, y: -0.10492194, z: 0.12640662}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4485377636439310014}
+  m_Father: {fileID: 6479019943693381320}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7184077909520939709
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1735,20 +3782,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 8590720606691672244}
   m_Layer: 0
   m_Name: mixamorig:LeftHandMiddle4
+=======
+  - component: {fileID: 4582099404568471913}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandIndex4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 8590720606691672244}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandMiddle4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &8590720606691672244
+=======
+--- !u!4 &4582099404568471913
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &8590720606691672244
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 6386928646986539573}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.036801923, y: -8.559337e-10, z: 0.00000032769248}
@@ -1758,6 +3829,20 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6555717606120313538
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 7184077909520939709}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.030779855, y: -0.000000009372842, z: -0.00000008780579}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1668113116384936950}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7240007932512629639
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1765,20 +3850,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 6135995782811431248}
   m_Layer: 0
   m_Name: mixamorig:RightLeg
+=======
+  - component: {fileID: 6823561144719590369}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandRing3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 6135995782811431248}
+  m_Layer: 0
+  m_Name: mixamorig:RightLeg
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &6135995782811431248
+=======
+--- !u!4 &6823561144719590369
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &6135995782811431248
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 6555717606120313538}
   m_LocalRotation: {x: 0.0000065525965, y: -0.000000021011672, z: -2.99793e-11, w: 1}
   m_LocalPosition: {x: 0.002446805, y: -0.40595436, z: -0.0051452797}
@@ -1789,6 +3898,22 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6738770148469073110
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 7240007932512629639}
+  m_LocalRotation: {x: 0.000000059604638, y: 0.000000014897292, z: -0.00000007450657,
+    w: 1}
+  m_LocalPosition: {x: 0.03307317, y: 0.00000003760175, z: -0.00000021114596}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8204738080588770822}
+  m_Father: {fileID: 457119905138272304}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7384867322566376908
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1796,20 +3921,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 3583794621209218961}
   m_Layer: 0
   m_Name: mixamorig:LeftHandThumb4
+=======
+  - component: {fileID: 862261839603012774}
+  m_Layer: 0
+  m_Name: mixamorig:Neck
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 3583794621209218961}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandThumb4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &3583794621209218961
+=======
+--- !u!4 &862261839603012774
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &3583794621209218961
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 6738770148469073110}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.026794039, y: -0.015469446, z: 0.0154692}
@@ -1819,6 +3968,21 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6788547215607827382
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 7384867322566376908}
+  m_LocalRotation: {x: -5.2041704e-18, y: 4.2632927e-14, z: 2.273737e-13, w: 1}
+  m_LocalPosition: {x: -0.0000002520208, y: 0.15032491, z: 0.007929048}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 35185121910406620}
+  m_Father: {fileID: 6093301322760394971}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7403249550184133544
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1826,20 +3990,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 1318564427682553763}
   m_Layer: 0
   m_Name: mixamorig:RightHandMiddle4
+=======
+  - component: {fileID: 6756009238114495530}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandIndex4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 1318564427682553763}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandMiddle4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &1318564427682553763
+=======
+--- !u!4 &6756009238114495530
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &1318564427682553763
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 6788547215607827382}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.036801923, y: -0.000000006576055, z: 0.00000032509809}
@@ -1849,6 +4037,20 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7022877739383837349
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 7403249550184133544}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.030779855, y: 7.926917e-10, z: -0.00000008560385}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4000383270764091023}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7446217070237654527
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1856,30 +4058,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 8304691067223495618}
   m_Layer: 0
   m_Name: mixamorig:LeftHandIndex2
+=======
+  - component: {fileID: 3984677754292631117}
+  m_Layer: 0
+  m_Name: mixamorig:LeftForeArm
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 8304691067223495618}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandIndex2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &8304691067223495618
+=======
+--- !u!4 &3984677754292631117
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &8304691067223495618
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 7022877739383837349}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 7022877739383837349}
+  m_LocalRotation: {x: 0, y: 0, z: 0.27563733, w: 0.96126175}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.038919672, y: 0.000000016868665, z: 0.00000038721547}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 9167824894699594161}
   m_Father: {fileID: 815854494326682726}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!1 &7120956746419486837
+=======
+  m_GameObject: {fileID: 7446217070237654527}
+  m_LocalRotation: {x: -0.000000059604638, y: -0.000000003900862, z: -1.3205547e-24,
+    w: 1}
+  m_LocalPosition: {x: -0.27404684, y: 0.00000039126675, z: 0.000000065881096}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 839727761919827319}
+  m_Father: {fileID: 127934625501944716}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7533627349310973317
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 32}
+--- !u!1 &7120956746419486837
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1887,20 +4133,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 4230826758531926562}
   m_Layer: 0
   m_Name: mixamorig:RightForeArm
+=======
+  - component: {fileID: 6902396425299809538}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandThumb3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 4230826758531926562}
+  m_Layer: 0
+  m_Name: mixamorig:RightForeArm
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &4230826758531926562
+=======
+--- !u!4 &6902396425299809538
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &4230826758531926562
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 7120956746419486837}
   m_LocalRotation: {x: -0.000000059604638, y: 0.000000003900862, z: -3.0876939e-15,
     w: 1}
@@ -1912,6 +4182,21 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7168266322539432457
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 7533627349310973317}
+  m_LocalRotation: {x: -0.0000051025772, y: 0.000009561153, z: 0.00000076763865, w: 1}
+  m_LocalPosition: {x: -0.033943586, y: -0.019597441, z: 0.019597929}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8719722527404062895}
+  m_Father: {fileID: 8164769791286847854}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7711430164440031998
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1919,20 +4204,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 5294012791928548530}
   m_Layer: 0
   m_Name: mixamorig:LeftArm
+=======
+  - component: {fileID: 2529174611529717430}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandRing4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 5294012791928548530}
+  m_Layer: 0
+  m_Name: mixamorig:LeftArm
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &5294012791928548530
+=======
+--- !u!4 &2529174611529717430
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &5294012791928548530
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 7168266322539432457}
   m_LocalRotation: {x: 0.000000044703484, y: 2.4507967e-22, z: 0.000000044703484,
     w: 1}
@@ -1944,6 +4253,20 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7209828725520978829
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 7711430164440031998}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.036601152, y: 0.00000002906111, z: 4.5477133e-10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6988058552702115343}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7734643804967504413
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1951,20 +4274,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 687391002264592270}
   m_Layer: 0
   m_Name: mixamorig:Spine1
+=======
+  - component: {fileID: 5356218653181016494}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandThumb3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 687391002264592270}
+  m_Layer: 0
+  m_Name: mixamorig:Spine1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &687391002264592270
+=======
+--- !u!4 &5356218653181016494
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &687391002264592270
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 7209828725520978829}
   m_LocalRotation: {x: 3.8774097e-26, y: -4.2632574e-14, z: 6.82121e-13, w: 1}
   m_LocalPosition: {x: 0.0000013886521, y: 0.1164544, z: -0.014223412}
@@ -1975,6 +4322,22 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7226520218866300340
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 7734643804967504413}
+  m_LocalRotation: {x: -0.0000050727735, y: -0.000009561156, z: -0.0000007974416,
+    w: 1}
+  m_LocalPosition: {x: 0.03394358, y: -0.019597458, z: 0.019597925}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 5970121390369680380}
+  m_Father: {fileID: 2481797762944086057}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7800153899082906137
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1982,30 +4345,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 7761320296303036514}
   m_Layer: 0
   m_Name: mixamorig:LeftHandMiddle1
+=======
+  - component: {fileID: 1668113116384936950}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandIndex3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 7761320296303036514}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandMiddle1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &7761320296303036514
+=======
+--- !u!4 &1668113116384936950
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &7761320296303036514
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 7226520218866300340}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 7226520218866300340}
+  m_LocalRotation: {x: 0, y: 0, z: 0.17364816, w: 0.9848078}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.12775522, y: 0.00000013342024, z: 0.00000020418457}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5184494994163459488}
   m_Father: {fileID: 4835125179313138249}
   m_RootOrder: 1
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!1 &7306899803133321486
+=======
+  m_GameObject: {fileID: 7800153899082906137}
+  m_LocalRotation: {x: 0.000000029802326, y: 0.000000014902701, z: 0.000000029801555,
+    w: 1}
+  m_LocalPosition: {x: 0.03415161, y: 0.0000000025299138, z: -0.000000086058414}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4582099404568471913}
+  m_Father: {fileID: 7094449827248468159}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7978859028871812969
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 20}
+--- !u!1 &7306899803133321486
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2013,30 +4420,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 7696513922515748631}
   m_Layer: 0
   m_Name: mixamorig:RightHandThumb2
+=======
+  - component: {fileID: 4894533322593338200}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandIndex1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 7696513922515748631}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandThumb2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &7696513922515748631
+=======
+--- !u!4 &4894533322593338200
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &7696513922515748631
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 7306899803133321486}
   m_LocalRotation: {x: 0.08233087, y: 0.23256019, z: 0.087402284, w: 0.96514153}
+=======
+  m_GameObject: {fileID: 7306899803133321486}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.036754392, y: -0.021220038, z: 0.021220095}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 210406069026852496}
   m_Father: {fileID: 7791127678441827188}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 6.7920003, y: 27.812002, z: 12.033001}
 --- !u!1 &7482089351006633014
+=======
+  m_GameObject: {fileID: 7978859028871812969}
+  m_LocalRotation: {x: 0.00000007450581, y: -7.738312e-13, z: -0.000000014901161,
+    w: 1}
+  m_LocalPosition: {x: -0.12266614, y: -0.0023166884, z: 0.028220579}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4323085993498715388}
+  m_Father: {fileID: 839727761919827319}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8010556352575866854
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7482089351006633014
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2044,30 +4495,177 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 3153256612449496161}
   m_Layer: 0
   m_Name: mixamorig:RightHandMiddle1
+=======
+  - component: {fileID: 5918706345877296817}
+  - component: {fileID: 4759080014392899082}
+  m_Layer: 0
+  m_Name: Alpha_Joints
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 3153256612449496161}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandMiddle1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &3153256612449496161
+=======
+--- !u!4 &5918706345877296817
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &3153256612449496161
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 7482089351006633014}
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 7482089351006633014}
+  m_LocalRotation: {x: 0, y: 0, z: -0.17364825, w: 0.9848078}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.12775522, y: 0.000000089457735, z: 0.00000018011639}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4694328389159477382}
   m_Father: {fileID: 40559499379523650}
   m_RootOrder: 1
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!1 &7833884242353010457
+=======
+  m_GameObject: {fileID: 8010556352575866854}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6201899075094982495}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!137 &4759080014392899082
+SkinnedMeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8010556352575866854}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: aa1fe9fc8e1be314e9eeff39347a6528, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  serializedVersion: 2
+  m_Quality: 0
+  m_UpdateWhenOffscreen: 0
+  m_SkinnedMotionVectors: 1
+  m_Mesh: {fileID: -1525253381413818895, guid: 7d59d5ae183bf5f4d9a5e0d075c1d978, type: 3}
+  m_Bones:
+  - {fileID: 1892005065662812107}
+  - {fileID: 2173331251444333656}
+  - {fileID: 4698526759287892144}
+  - {fileID: 6093301322760394971}
+  - {fileID: 862261839603012774}
+  - {fileID: 35185121910406620}
+  - {fileID: 8074217953057884224}
+  - {fileID: 127934625501944716}
+  - {fileID: 3984677754292631117}
+  - {fileID: 839727761919827319}
+  - {fileID: 2525148269251559260}
+  - {fileID: 1102706750217589406}
+  - {fileID: 9058384278963678889}
+  - {fileID: 1699294397325919458}
+  - {fileID: 8164769791286847854}
+  - {fileID: 6902396425299809538}
+  - {fileID: 4894533322593338200}
+  - {fileID: 4323085993498715388}
+  - {fileID: 4000383270764091023}
+  - {fileID: 748862256402536683}
+  - {fileID: 4912489354174764679}
+  - {fileID: 6988058552702115343}
+  - {fileID: 1186937135812169009}
+  - {fileID: 992910871413749507}
+  - {fileID: 4725321790202537464}
+  - {fileID: 3722093125421920553}
+  - {fileID: 206763072936777649}
+  - {fileID: 8216947045752192284}
+  - {fileID: 5201244078884960124}
+  - {fileID: 7168606245647440735}
+  - {fileID: 692153035281110968}
+  - {fileID: 9078905753691058606}
+  - {fileID: 2639454700264447050}
+  - {fileID: 2481797762944086057}
+  - {fileID: 5356218653181016494}
+  - {fileID: 2359449194410839570}
+  - {fileID: 7094449827248468159}
+  - {fileID: 1668113116384936950}
+  - {fileID: 3393283759718428600}
+  - {fileID: 457119905138272304}
+  - {fileID: 6823561144719590369}
+  - {fileID: 4690820334124515548}
+  - {fileID: 1951829364336867304}
+  - {fileID: 8325262161692616412}
+  - {fileID: 2361101488965679348}
+  - {fileID: 2133000809855010414}
+  - {fileID: 6479019943693381320}
+  - {fileID: 8782747818366492188}
+  - {fileID: 8223365994096457399}
+  - {fileID: 3649474401681927785}
+  - {fileID: 8143557721728161413}
+  - {fileID: 583134909405362202}
+  m_BlendShapeWeights: []
+  m_RootBone: {fileID: 1892005065662812107}
+  m_AABB:
+    m_Center: {x: 0.0000009536743, y: -0.19487926, z: 0.001876384}
+    m_Extent: {x: 0.94527346, y: 0.7953514, z: 0.1378017}
+  m_DirtyAABB: 0
+--- !u!1 &8068878304223674744
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -20}
+--- !u!1 &7833884242353010457
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2075,20 +4673,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 1248769263213320694}
   m_Layer: 0
   m_Name: mixamorig:RightFoot
+=======
+  - component: {fileID: 839727761919827319}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHand
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 1248769263213320694}
+  m_Layer: 0
+  m_Name: mixamorig:RightFoot
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &1248769263213320694
+=======
+--- !u!4 &839727761919827319
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &1248769263213320694
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 7833884242353010457}
   m_LocalRotation: {x: -0.000003650786, y: 0.000000020896566, z: 0.0000000039579957,
     w: 1}
@@ -2100,6 +4722,25 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8176777217288320971
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 8068878304223674744}
+  m_LocalRotation: {x: 0.000025987818, y: 0.000000044703476, z: -1.1585687e-12, w: 1}
+  m_LocalPosition: {x: -0.27614462, y: 0.00000028951808, z: 0.00000019646586}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4894533322593338200}
+  - {fileID: 2525148269251559260}
+  - {fileID: 1186937135812169009}
+  - {fileID: 748862256402536683}
+  - {fileID: 1699294397325919458}
+  m_Father: {fileID: 3984677754292631117}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8214247261798544057
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2107,20 +4748,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 2394827397640538866}
   m_Layer: 0
   m_Name: mixamorig:LeftToe_End
+=======
+  - component: {fileID: 5828279744822540177}
+  m_Layer: 0
+  m_Name: mixamorig:LeftEye
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 2394827397640538866}
+  m_Layer: 0
+  m_Name: mixamorig:LeftToe_End
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &2394827397640538866
+=======
+--- !u!4 &5828279744822540177
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &2394827397640538866
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 8176777217288320971}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.000000002053664, y: 0.000000009634096, z: 0.09992521}
@@ -2130,6 +4795,19 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8182682200124106851
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 8214247261798544057}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.02947915, y: 0.07681745, z: 0.09120731}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 35185121910406620}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8248525743485829962
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2137,20 +4815,77 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5555708578245275738}
+<<<<<<< HEAD
+  - component: {fileID: 748862256402536683}
   m_Layer: 0
-  m_Name: mixamorig:RightHandPinky4
+  m_Name: mixamorig:LeftHandRing1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5555708578245275738
+--- !u!4 &748862256402536683
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8248525743485829962}
+  m_LocalRotation: {x: 0.00000002980232, y: -0.000000029801548, z: 0.000000014902708,
+    w: 1}
+  m_LocalPosition: {x: -0.12147005, y: 0.00009894983, z: -0.022166291}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4912489354174764679}
+  m_Father: {fileID: 839727761919827319}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8373469774475650485
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+  - component: {fileID: 5555708578245275738}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandPinky4
+=======
+  - component: {fileID: 5201244078884960124}
+  m_Layer: 0
+  m_Name: mixamorig:RightHand
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 5555708578245275738}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandPinky4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+--- !u!4 &5555708578245275738
+=======
+--- !u!4 &5201244078884960124
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &5555708578245275738
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 8182682200124106851}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.029238692, y: 0.00000000641227, z: 0.00000018695744}
@@ -2160,6 +4895,25 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8244630347108731509
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 8373469774475650485}
+  m_LocalRotation: {x: 0.000025987818, y: -0.000000044703476, z: 1.1585687e-12, w: 1}
+  m_LocalPosition: {x: 0.27614462, y: 0.00000022661457, z: 0.0000001832407}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 2359449194410839570}
+  - {fileID: 7168606245647440735}
+  - {fileID: 4690820334124515548}
+  - {fileID: 3393283759718428600}
+  - {fileID: 2639454700264447050}
+  m_Father: {fileID: 8216947045752192284}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8467106263673052781
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2167,30 +4921,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 7469715660023273606}
   m_Layer: 0
   m_Name: mixamorig:RightHandRing1
+=======
+  - component: {fileID: 457119905138272304}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandRing2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 7469715660023273606}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandRing1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &7469715660023273606
+=======
+--- !u!4 &457119905138272304
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &7469715660023273606
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 8244630347108731509}
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 8244630347108731509}
+  m_LocalRotation: {x: 0, y: 0, z: -0.17364825, w: 0.9848078}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: 0.12147004, y: 0.00009890902, z: -0.022166314}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5685402456306261774}
   m_Father: {fileID: 40559499379523650}
   m_RootOrder: 3
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!1 &8272835234414590567
+=======
+  m_GameObject: {fileID: 8467106263673052781}
+  m_LocalRotation: {x: -0.000000029802319, y: -0.000000029799999, z: 0.000000044705025,
+    w: 1}
+  m_LocalPosition: {x: 0.036011904, y: 0.0000000023856512, z: 0.0000003486698}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6823561144719590369}
+  m_Father: {fileID: 3393283759718428600}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8503854351671577273
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -20}
+--- !u!1 &8272835234414590567
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2198,30 +4996,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 6857720030208865244}
   m_Layer: 0
   m_Name: mixamorig:LeftHandThumb1
+=======
+  - component: {fileID: 8074217953057884224}
+  m_Layer: 0
+  m_Name: mixamorig:LeftShoulder
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 6857720030208865244}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandThumb1
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &6857720030208865244
+=======
+--- !u!4 &8074217953057884224
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &6857720030208865244
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 8272835234414590567}
   m_LocalRotation: {x: -0.03869176, y: -0.010929265, z: -0.19042836, w: 0.9808775}
+=======
+  m_GameObject: {fileID: 8272835234414590567}
+  m_LocalRotation: {x: 0, y: -0.17364825, z: 0, w: 0.9848078}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.037887994, y: -0.02167, z: 0.030030925}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4175269603175063120}
   m_Father: {fileID: 4835125179313138249}
   m_RootOrder: 4
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: -4.592, y: -0.38500002, z: -21.958}
 --- !u!1 &8436128829653897216
+=======
+  m_GameObject: {fileID: 8503854351671577273}
+  m_LocalRotation: {x: -0.000000044703484, y: 4.2632557e-14, z: -0.000000044703256,
+    w: 1}
+  m_LocalPosition: {x: -0.061058242, y: 0.09110424, z: 0.0070555084}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 127934625501944716}
+  m_Father: {fileID: 6093301322760394971}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8710352123968569965
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: -20, z: 0}
+--- !u!1 &8436128829653897216
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2229,30 +5071,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 2901458844816435505}
   m_Layer: 0
   m_Name: mixamorig:LeftHandRing3
+=======
+  - component: {fileID: 692153035281110968}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandMiddle2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 2901458844816435505}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandRing3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &2901458844816435505
+=======
+--- !u!4 &692153035281110968
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &2901458844816435505
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 8436128829653897216}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 8436128829653897216}
+  m_LocalRotation: {x: 0, y: 0, z: 0.32556805, w: 0.9455186}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.03307317, y: 0.000000045317442, z: -0.00000020893265}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7757434554275078536}
   m_Father: {fileID: 905843936058925497}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!1 &8534329738663318185
+=======
+  m_GameObject: {fileID: 8710352123968569965}
+  m_LocalRotation: {x: -0.000000014901161, y: -0.000000014901165, z: 7.764959e-13,
+    w: 1}
+  m_LocalPosition: {x: 0.036139715, y: 0.000000027565017, z: 0.000000030803374}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 9078905753691058606}
+  m_Father: {fileID: 7168606245647440735}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8764617912363236720
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 38}
+--- !u!1 &8534329738663318185
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2260,20 +5146,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 8539348789170817408}
   m_Layer: 0
   m_Name: mixamorig:RightToe_End
+=======
+  - component: {fileID: 2964581900821346610}
+  m_Layer: 0
+  m_Name: mixamorig:HeadTop_End
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 8539348789170817408}
+  m_Layer: 0
+  m_Name: mixamorig:RightToe_End
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &8539348789170817408
+=======
+--- !u!4 &2964581900821346610
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &8539348789170817408
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 8534329738663318185}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.0000000011347395, y: 0.000000004587741, z: 0.09992521}
@@ -2283,6 +5193,19 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8593758790975105659
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 8764617912363236720}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.0000015417259, y: 0.18474671, z: 0.06636399}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 35185121910406620}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8799520043696210585
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2290,30 +5213,107 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 661229151909122758}
+<<<<<<< HEAD
+  - component: {fileID: 8223365994096457399}
   m_Layer: 0
-  m_Name: mixamorig:LeftHandPinky3
+  m_Name: mixamorig:LeftUpLeg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &661229151909122758
+--- !u!4 &8223365994096457399
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8799520043696210585}
+  m_LocalRotation: {x: -0.000017517097, y: -0.000000013640878, z: 0.00000043808052,
+    w: 1}
+  m_LocalPosition: {x: -0.091244526, y: -0.06656399, z: -0.00055377925}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 3649474401681927785}
+  m_Father: {fileID: 1892005065662812107}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8820859089359103984
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+  - component: {fileID: 661229151909122758}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandPinky3
+=======
+  - component: {fileID: 7094449827248468159}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandIndex2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 661229151909122758}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandPinky3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+--- !u!4 &661229151909122758
+=======
+--- !u!4 &7094449827248468159
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &661229151909122758
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 8593758790975105659}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+=======
+  m_GameObject: {fileID: 8593758790975105659}
+  m_LocalRotation: {x: 0, y: 0, z: 0.32556805, w: 0.9455186}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.025948359, y: 5.93904e-10, z: -0.00000036009018}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2291508211282372032}
   m_Father: {fileID: 5006059285570846781}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
 --- !u!1 &8805934469501369150
+=======
+  m_GameObject: {fileID: 8820859089359103984}
+  m_LocalRotation: {x: -0.000000044703484, y: -0.000000014901158, z: 7.7427507e-13,
+    w: 1}
+  m_LocalPosition: {x: 0.038919672, y: -7.205551e-10, z: 0.00000037513024}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1668113116384936950}
+  m_Father: {fileID: 2359449194410839570}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8918994354713512628
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 38}
+--- !u!1 &8805934469501369150
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2321,20 +5321,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 4160523210669777339}
   m_Layer: 0
   m_Name: mixamorig:LeftFoot
+=======
+  - component: {fileID: 3649474401681927785}
+  m_Layer: 0
+  m_Name: mixamorig:LeftLeg
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 4160523210669777339}
+  m_Layer: 0
+  m_Name: mixamorig:LeftFoot
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &4160523210669777339
+=======
+--- !u!4 &3649474401681927785
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &4160523210669777339
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 8805934469501369150}
   m_LocalRotation: {x: -0.000018015498, y: -0.00000010461389, z: -0.0000000013931898,
     w: 1}
@@ -2346,6 +5370,22 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9107103012482743534
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 8918994354713512628}
+  m_LocalRotation: {x: 0.000035527948, y: 0.000000089582485, z: 0.0000000041595536,
+    w: 1}
+  m_LocalPosition: {x: -0.0024468019, y: -0.40595403, z: -0.005170411}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 8143557721728161413}
+  m_Father: {fileID: 8223365994096457399}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8921925275077639494
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2353,20 +5393,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 5243210203462847202}
   m_Layer: 0
   m_Name: mixamorig:Head
+=======
+  - component: {fileID: 9058384278963678889}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandMiddle3
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 5243210203462847202}
+  m_Layer: 0
+  m_Name: mixamorig:Head
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &5243210203462847202
+=======
+--- !u!4 &9058384278963678889
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &5243210203462847202
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_GameObject: {fileID: 9107103012482743534}
   m_LocalRotation: {x: 0, y: -0, z: -2.3158745e-36, w: 1}
   m_LocalPosition: {x: -0.000000023707482, y: 0.1032183, z: 0.031424288}
@@ -2379,6 +5443,21 @@ Transform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9157473046088243754
+<<<<<<< HEAD
+=======
+  m_GameObject: {fileID: 8921925275077639494}
+  m_LocalRotation: {x: 3.2786822e-16, y: -7.7005665e-13, z: -0.000000014901165, w: 1}
+  m_LocalPosition: {x: -0.0345976, y: 0.000000005432471, z: -0.00000026419679}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4577559001364838282}
+  m_Father: {fileID: 1102706750217589406}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9164381708887797042
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2386,26 +5465,66 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   - component: {fileID: 4175269603175063120}
   m_Layer: 0
   m_Name: mixamorig:LeftHandThumb2
+=======
+  - component: {fileID: 8204738080588770822}
+  m_Layer: 0
+  m_Name: mixamorig:RightHandRing4
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  - component: {fileID: 4175269603175063120}
+  m_Layer: 0
+  m_Name: mixamorig:LeftHandThumb2
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
 --- !u!4 &4175269603175063120
+=======
+--- !u!4 &8204738080588770822
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+--- !u!4 &4175269603175063120
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot_hands_closed.prefab
   m_GameObject: {fileID: 9157473046088243754}
   m_LocalRotation: {x: 0.09441341, y: -0.2341691, z: -0.020260716, w: 0.96738845}
+=======
+  m_GameObject: {fileID: 9157473046088243754}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   m_LocalPosition: {x: -0.03675437, y: -0.021220084, z: 0.021220177}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1690155747690259004}
   m_Father: {fileID: 6857720030208865244}
   m_RootOrder: 0
+<<<<<<< HEAD
   m_LocalEulerAnglesHint: {x: 9.973001, y: -27.639002, z: -4.859}
+=======
+  m_GameObject: {fileID: 9164381708887797042}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.036601152, y: 0.00000002046845, z: 0.000000006718011}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6823561144719590369}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/ybot.prefab
+=======
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a

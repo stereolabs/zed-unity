@@ -4,8 +4,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Runtime.InteropServices;
-using System.Reflection;
-using System.Threading;
 
 namespace sl
 {
@@ -287,7 +285,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(3, 6, 0);
+        public static readonly System.Version PluginVersion = new System.Version(3, 7, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -511,7 +509,7 @@ namespace sl
          */
         [DllImport(nameDll, EntryPoint = "sl_enable_positional_tracking_unity")]
         private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false,
-            bool trackingIsStatic = false, bool enableIMUFusion = true, System.Text.StringBuilder aeraFilePath = null);
+            bool trackingIsStatic = false, bool enableIMUFusion = true, System.Text.StringBuilder areaFilePath = null);
 
         [DllImport(nameDll, EntryPoint = "sl_disable_positional_tracking")]
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
@@ -638,6 +636,14 @@ namespace sl
         /*
         * Objects Detection functions (starting v3.0)
         */
+
+        [DllImport(nameDll, EntryPoint = "sl_check_AI_model_status")]
+        private static extern IntPtr dllz_check_AI_model_status(AI_MODELS model, int gpu_id);
+
+        [DllImport(nameDll, EntryPoint = "sl_optimize_AI_model")]
+        private static extern int dllz_optimize_AI_model(AI_MODELS model, int gpu_id);
+
+
         [DllImport(nameDll, EntryPoint = "sl_enable_objects_detection")]
         private static extern int dllz_enable_objects_detection(int cameraID, ref dll_ObjectDetectionParameters od_params);
 
@@ -2598,6 +2604,66 @@ namespace sl
         ////////////////////////
         /// Object detection ///
         ////////////////////////
+        public static sl.AI_MODELS cvtDetection(sl.DETECTION_MODEL m_in)
+        {
+            sl.AI_MODELS m_out = sl.AI_MODELS.LAST;
+            switch (m_in)
+            {
+                case sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE: m_out = sl.AI_MODELS.HUMAN_BODY_ACCURATE_DETECTION; break;
+                case sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM: m_out = sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION; break;
+                case sl.DETECTION_MODEL.HUMAN_BODY_FAST: m_out = sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION; break;
+                case sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE: m_out = sl.AI_MODELS.MULTI_CLASS_ACCURATE_DETECTION; break;
+                case sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM: m_out = sl.AI_MODELS.MULTI_CLASS_MEDIUM_DETECTION; break;
+                case sl.DETECTION_MODEL.MULTI_CLASS_BOX: m_out = sl.AI_MODELS.MULTI_CLASS_DETECTION; break;
+                case sl.DETECTION_MODEL.PERSON_HEAD_BOX: m_out = sl.AI_MODELS.PERSON_HEAD_DETECTION; break;
+            }
+            return m_out;
+        }
+
+        public static sl.DETECTION_MODEL cvtDetection(sl.AI_MODELS m_in)
+        {
+            sl.DETECTION_MODEL m_out = sl.DETECTION_MODEL.LAST;
+            switch (m_in)
+            {
+                case sl.AI_MODELS.HUMAN_BODY_ACCURATE_DETECTION: m_out = sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE; break;
+                case sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION: m_out = sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM; break;
+                case sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION: m_out = sl.DETECTION_MODEL.HUMAN_BODY_FAST; break;
+                case sl.AI_MODELS.MULTI_CLASS_ACCURATE_DETECTION: m_out = sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE; break;
+                case sl.AI_MODELS.MULTI_CLASS_MEDIUM_DETECTION: m_out = sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM; break;
+                case sl.AI_MODELS.MULTI_CLASS_DETECTION: m_out = sl.DETECTION_MODEL.MULTI_CLASS_BOX; break;
+                case sl.AI_MODELS.PERSON_HEAD_DETECTION: m_out = sl.DETECTION_MODEL.PERSON_HEAD_BOX; break;
+            }
+            return m_out;
+        }
+
+        /// <summary>
+        /// Check if a corresponding optimized engine is found for the requested Model based on your rig configuration.
+        /// </summary>
+        /// <param name="model"> AI model to check.</param>
+        /// <param name="gpu_id">ID of the gpu.</param>
+        /// <returns></returns>
+        public static AI_Model_status CheckAIModelStatus(AI_MODELS model, int gpu_id = 0)
+        {
+            IntPtr p = dllz_check_AI_model_status(model, gpu_id);
+            if (p == IntPtr.Zero)
+            {
+                return new AI_Model_status();
+            }
+            AI_Model_status status = (AI_Model_status)Marshal.PtrToStructure(p, typeof(AI_Model_status));
+
+            return status;
+        }
+
+        /// <summary>
+        /// Optimize the requested model, possible download if the model is not present on the host.
+        /// </summary>
+        /// <param name="model">AI model to optimize.</param>
+        /// <param name="gpu_id">ID of the gpu to optimize on.</param>
+        /// <returns></returns>
+        public static sl.ERROR_CODE OptimizeAIModel(AI_MODELS model, int gpu_id = 0)
+        {
+            return (sl.ERROR_CODE)dllz_optimize_AI_model(model, gpu_id);
+        }
 
         /// <summary>
         /// Enable object detection module
@@ -2635,7 +2701,6 @@ namespace sl
                 dllz_pause_objects_detection(CameraID, status);
             }
         }
-
 
         public sl.ERROR_CODE IngestCustomBoxObjects(List<CustomBoxObjectData> objects_in)
         {

@@ -107,13 +107,18 @@ public class ZEDCameraEditor : Editor
     /// </summary>
     private SerializedProperty meshPath;
 
+<<<<<<< HEAD
     //Object Detection Prop
+=======
+    //Object Detection Prop 
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
     private SerializedProperty OD_ImageSyncMode;
     private SerializedProperty OD_ObjectTracking;
     private SerializedProperty OD_BodyFitting;
     private SerializedProperty OD_2DMask;
     private SerializedProperty OD_DetectionModel;
     private SerializedProperty OD_MaxRange;
+    private SerializedProperty OD_FilteringMode;
     //Object Detection Runtime Prop
     private SerializedProperty OD_VehicleDetectionConfidence;
     private SerializedProperty OD_PersonDetectionConfidence;
@@ -258,10 +263,11 @@ public class ZEDCameraEditor : Editor
         ///Object Detection Serialized Properties
         OD_ImageSyncMode = serializedObject.FindProperty("objectDetectionImageSyncMode");
         OD_ObjectTracking = serializedObject.FindProperty("objectDetectionTracking");
-        OD_BodyFitting = serializedObject.FindProperty("bodyFitting");
+        OD_BodyFitting = serializedObject.FindProperty("objectDetectionBodyFitting");
         OD_2DMask = serializedObject.FindProperty("objectDetection2DMask");
         OD_DetectionModel = serializedObject.FindProperty("objectDetectionModel");
-        OD_MaxRange = serializedObject.FindProperty("maxRange");
+        OD_MaxRange = serializedObject.FindProperty("objectDetectionMaxRange");
+        OD_FilteringMode = serializedObject.FindProperty("objectDetectionFilteringMode");
 
         OD_PersonDetectionConfidence = serializedObject.FindProperty("OD_personDetectionConfidenceThreshold");
         SK_PersonDetectionConfidence = serializedObject.FindProperty("SK_personDetectionConfidenceThreshold");
@@ -777,8 +783,16 @@ public class ZEDCameraEditor : Editor
                 OD_BodyFitting.boolValue = EditorGUILayout.Toggle(BodyFittingLabel, OD_BodyFitting.boolValue);
             }
 
+<<<<<<< HEAD
             GUIContent maxRangeLabel = new GUIContent("Max Range", "Defines a upper depth range for detections.");
             OD_MaxRange.floatValue = EditorGUILayout.Slider(maxRangeLabel, OD_MaxRange.floatValue, 0, 40.0f);
+=======
+            GUIContent MaxRangeLabel = new GUIContent("Max Range", "Defines a upper depth range for detections.");
+            OD_MaxRange.floatValue = EditorGUILayout.Slider(MaxRangeLabel, OD_MaxRange.floatValue, 0, 40.0f);
+
+            GUIContent FilteringModeLabel = new GUIContent("Filtering Mode", "Defines the bounding box preprocessor used.");
+            OD_FilteringMode.enumValueIndex = (int)(sl.OBJECT_FILTERING_MODE)EditorGUILayout.EnumPopup(FilteringModeLabel, (sl.OBJECT_FILTERING_MODE)OD_FilteringMode.enumValueIndex);
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 
             GUI.enabled = true;
 
@@ -847,6 +861,7 @@ public class ZEDCameraEditor : Editor
                 EditorGUI.indentLevel--;
             }
             else if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.PERSON_HEAD_BOX)
+<<<<<<< HEAD
             {
 
                 EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
@@ -861,6 +876,22 @@ public class ZEDCameraEditor : Editor
             }
             else //SKELETON
             {
+=======
+            {
+
+                EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
+                GUILayout.Space(5);
+                EditorGUI.indentLevel++;
+
+                GUIContent OD_personDetectionConfidenceThresholdLabel = new GUIContent("Person head Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
+                "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
+                OD_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(OD_personDetectionConfidenceThresholdLabel, OD_PersonDetectionConfidence.intValue, 1, 99);
+            }
+            else if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.CUSTOM_BOX_OBJECTS) { 
+            }
+            else //SKELETON
+            {
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
                 EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
                 GUILayout.Space(5);
                 EditorGUI.indentLevel++;
@@ -1045,7 +1076,11 @@ public class ZEDCameraEditor : Editor
             GUIContent enalbeIMUFusionLabel = new GUIContent("Visual-Inertial Tracking", "If true, and you are using a ZED2 or ZED Mini, IMU fusion uses data from the camera's IMU to improve tracking results. ");
             enableIMUFusionProperty.boolValue = EditorGUILayout.Toggle(enalbeIMUFusionLabel, enableIMUFusionProperty.boolValue);
 
+<<<<<<< HEAD
             //Whether to enable the ZED SDK's self-calibration feature.
+=======
+            //Whether to enable the ZED SDK's self-calibration feature. 
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
             GUIContent enableselfcaliblabel = new GUIContent("Self-Calibration", "If true, the ZED SDK will subtly adjust the ZED's calibration " +
                 "during runtime to account for heat and other factors. Reasons to disable this are rare. ");
             enableSelfCalibrationProperty.boolValue = EditorGUILayout.Toggle(enableselfcaliblabel, enableSelfCalibrationProperty.boolValue);
@@ -1072,7 +1107,11 @@ public class ZEDCameraEditor : Editor
 
             EditorGUI.indentLevel++;
 
+<<<<<<< HEAD
             //Style for the AR layer box.
+=======
+            //Style for the AR layer box. 
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
             GUIStyle layerboxstyle = new GUIStyle(EditorStyles.numberField);
             layerboxstyle.fixedWidth = 30;
             layerboxstyle.stretchWidth = false;
@@ -1179,7 +1218,11 @@ public class ZEDCameraEditor : Editor
                 "usually be left on. However, in some setups, like when using a custom mount, this can cause tracking errors.");
             setIMUPrior.boolValue = EditorGUILayout.Toggle(setimupriorlabel, manager.setIMUPriorInAR);
 
+<<<<<<< HEAD
             //Fade In At Start toggle.
+=======
+            //Fade In At Start toggle. 
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
             GUIContent fadeinlabel = new GUIContent("Fade In at Start", "When enabled, makes the ZED image fade in from black when the application starts.");
             fadeinonstart.boolValue = EditorGUILayout.Toggle(fadeinlabel, manager.fadeInOnStart);
 

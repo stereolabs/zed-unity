@@ -134,8 +134,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1001 &357707471
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -493,7 +493,7 @@ PrefabInstance:
     - target: {fileID: 114219090854195206, guid: dda0baf117c99c04dbb8fb1c9e2d1c69,
         type: 3}
       propertyPath: manager
-      value: 
+      value:
       objectReference: {fileID: 139748563}
     - target: {fileID: 114258083924026048, guid: dda0baf117c99c04dbb8fb1c9e2d1c69,
         type: 3}
@@ -508,7 +508,7 @@ PrefabInstance:
     - target: {fileID: 114776652047095942, guid: dda0baf117c99c04dbb8fb1c9e2d1c69,
         type: 3}
       propertyPath: target
-      value: 
+      value:
       objectReference: {fileID: 915697319}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dda0baf117c99c04dbb8fb1c9e2d1c69, type: 3}
@@ -582,11 +582,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
-      propertyPath: resolution
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
-        type: 3}
       propertyPath: enableTracking
       value: 1
       objectReference: {fileID: 0}
@@ -608,7 +603,7 @@ PrefabInstance:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: svoInputFileName
-      value: 
+      value:
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
@@ -695,14 +690,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   index: -1
   useLegacySteamVRInput: 0
   deviceToTrack: 1
   latencyCompensation: 78
   correctControllerDrift: 1
-  SNHolder: 
+  SNHolder:
   zedManager: {fileID: 139748563}
   fireBinding:
     actionPath: /actions/default/in/Teleport
@@ -861,8 +856,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   cachedLight: {fileID: 0}
   interiorCone: 0.1
 --- !u!1 &1926151452
@@ -892,14 +887,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   index: -1
   useLegacySteamVRInput: 0
   deviceToTrack: 0
   latencyCompensation: 78
   correctControllerDrift: 1
-  SNHolder: 
+  SNHolder:
   zedManager: {fileID: 139748563}
   fireBinding:
     actionPath: /actions/default/in/Teleport

@@ -2,13 +2,10 @@
 
 using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
-using System;
 
-#if UNITY_EDITOR
-using UnityEditor;
+#if ZED_URP
+using UnityEngine.Rendering.Universal;
 #endif
-
 
 /// <summary>
 /// Contols the ZEDSkeletonTracking . Links the SDK to Unity
@@ -66,6 +63,10 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// </summary>
     public GameObject Avatar;
 
+    [Space(5)]
+    [Range(-2.0f, 2.0f)]
+    public float heightOffset = 0.0f;
+
 	public Dictionary<int,SkeletonHandler> avatarControlList;
 
     /// <summary>
@@ -83,8 +84,14 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
 		if (zedManager)
         {
-        zedManager.OnZEDReady += OnZEDReady;
-        zedManager.OnObjectDetection += updateSkeletonData;
+#if ZED_URP
+            UniversalAdditionalCameraData urpCamData = zedManager.GetLeftCamera().GetComponent<UniversalAdditionalCameraData>();
+            urpCamData.renderPostProcessing = true;
+            urpCamData.renderShadows = false;
+#endif
+
+            zedManager.OnZEDReady += OnZEDReady;
+            zedManager.OnObjectDetection += updateSkeletonData;
 		}
 
         if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM )
@@ -92,7 +99,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
             Debug.LogWarning("MULTI_CLASS_BOX model can't be used for skeleton tracking, please use either HUMAN_BODY_FAST or HUMAN_BODY_ACCURATE");
         }
 
-        if (zedManager.bodyFormat == sl.BODY_FORMAT.POSE_18)
+        if (zedManager.objectDetectionBodyFormat == sl.BODY_FORMAT.POSE_18)
         {
             Debug.LogWarning(" BODY_FORMAT must be set to POSE_34 to animate 3D Avatars !");
             return;
@@ -125,7 +132,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     {
 		List<int> remainingKeyList = new List<int>(avatarControlList.Keys);
 		List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showON, showSEARCHING, showOFF);
-
  		foreach (DetectedObject dobj in newobjects)
         {
 			int person_id = dobj.rawObjectData.id;
@@ -165,12 +171,21 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
             useAvatar = !useAvatar;
             if (useAvatar)
             {
-                if (zedManager.bodyFitting)
+                if (zedManager.objectDetectionBodyFitting)
                     Debug.Log("<b><color=green> Switch to Avatar mode</color></b>");
 
             }
             else
                 Debug.Log("<b><color=green> Switch to Skeleton mode</color></b>");
+        }
+
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            heightOffset -= 0.02f;
+        }
+        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            heightOffset += 0.02f;
         }
 
         if (useAvatar)
@@ -198,11 +213,12 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         for (int i = 0; i < 34; i++)
         {
             worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
-            worldJointsRot[i] = data.localOrientationPerJoint[i];
+            worldJointsRot[i] = data.localOrientationPerJoint[i].normalized;
         }
 
         handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, zedManager.GetZedRootTansform().rotation * data.globalRootOrientation, useAvatar);
 
+        handler.SetHeightOffset(heightOffset);
     }
 
     void UpdateViewCameraPosition()

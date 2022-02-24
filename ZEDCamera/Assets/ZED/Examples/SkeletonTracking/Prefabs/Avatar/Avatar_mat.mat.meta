@@ -1,5 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
+<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/Avatar_mat.mat.meta
 guid: cacfcbf2d2a7fe14a9f781a40fec7c3e
+=======
+guid: f0e3cd68cb6241c4b9ef3868902ce9af
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/SimpleMR/Materials/Default.mat.meta
+=======
+guid: cacfcbf2d2a7fe14a9f781a40fec7c3e
+>>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 0

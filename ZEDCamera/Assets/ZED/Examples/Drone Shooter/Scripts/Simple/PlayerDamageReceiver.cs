@@ -27,7 +27,7 @@ public class PlayerDamageReceiver : MonoBehaviour
     /// </summary>
     private float coloralpha
     {
-#if !ZED_LWRP && !ZED_HDRP
+#if !ZED_HDRP && !ZED_URP
         get
         {
             return meshrenderer.material.color.a;
@@ -39,13 +39,13 @@ public class PlayerDamageReceiver : MonoBehaviour
 #else
         get
         {
-            return meshrenderer.material.GetColor("_UnlitColor").a;
+            return meshrenderer.material.GetColor("_BaseColor").a;
         }
         set
         {
-            Color newcol = meshrenderer.material.GetColor("_UnlitColor");
+            Color newcol = meshrenderer.material.GetColor("_BaseColor");
             newcol.a = value;
-            meshrenderer.material.SetColor("_UnlitColor", newcol);
+            meshrenderer.material.SetColor("_BaseColor", newcol);
         }
 #endif
 
