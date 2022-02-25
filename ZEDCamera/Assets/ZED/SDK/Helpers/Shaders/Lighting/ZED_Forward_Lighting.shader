@@ -31,7 +31,7 @@
 				#pragma multi_compile_fwdbase
 				#pragma multi_compile_fwdadd_fullshadows
 
-				#pragma multi_compile __ NO_DEPTH_OCC
+				#pragma multi_compile __ NO_DEPTH
 
 				#include "HLSLSupport.cginc"
 				#include "UnityShaderVariables.cginc"
@@ -76,8 +76,14 @@
 				float _ZEDFactorAffectReal;
 				float _MaxDepth;
 
+				bool Unity_IsNan_float3(float3 In)
+				{
+					bool Out = (In < 0.0 || In > 0.0 || In == 0.0) ? 0 : 1;
+					return Out;
+				}
+
 				// vertex shader
-				v2f_surf vert_surf(appdata_full v) 
+				v2f_surf vert_surf(appdata_full v)
 				{
 
 					v2f_surf o;
@@ -98,20 +104,20 @@
 				}
 
 				// fragment shader
-				void frag_surf(v2f_surf IN, out fixed4 outColor : SV_Target, out float outDepth : SV_Depth) 
+				void frag_surf(v2f_surf IN, out fixed4 outColor : SV_Target, out float outDepth : SV_Depth)
 				{
 					UNITY_INITIALIZE_OUTPUT(fixed4,outColor);
 					float4 uv = IN.pack0;
 
 					float3 zed_xyz = tex2D(_DepthXYZTex, uv.zw).xxx;
 
-					//Filter out depth values beyond the max value. 
-					if (_MaxDepth < 40.0) //Avoid clipping out FAR values when not using feature. 
+					//Filter out depth values beyond the max value.
+					if (_MaxDepth < 40.0) //Avoid clipping out FAR values when not using feature.
 					{
-						if (zed_xyz.z > _MaxDepth) discard;
+						if (zed_xyz.z > _MaxDepth || Unity_IsNan_float3(zed_xyz.z)) discard;
 					}
 
-				#ifdef NO_DEPTH_OCC
+				#ifdef NO_DEPTH
 					#if SHADER_API_D3D11
 						outDepth = 0;
 					#elif SHADER_API_GLCORE

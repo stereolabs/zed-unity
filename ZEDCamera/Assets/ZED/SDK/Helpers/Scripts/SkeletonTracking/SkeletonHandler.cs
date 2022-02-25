@@ -8,7 +8,7 @@ using System;
 
 public class SkeletonHandler : ScriptableObject
 {
-
+    // For Skeleton Display
     private const int
     // JointType
     JointType_Head = 26,
@@ -41,7 +41,7 @@ public class SkeletonHandler : ScriptableObject
     JointType_Nose = 27,
     jointCount = 34;
 
-
+    // List of bones (pair of joints). Used for Skeleton mode.
     private static readonly int[] bonesList = new int[] {
     JointType_SpineBase, JointType_HipRight,
     JointType_HipLeft, JointType_SpineBase,
@@ -75,6 +75,7 @@ public class SkeletonHandler : ScriptableObject
     JointType_FootRight, JointType_HeelRight
     };
 
+    // List of joint that will be rendered as a sphere in the Skeleton mode
     private static readonly int[] sphereList = new int[] {
     JointType_SpineBase,
     JointType_SpineNaval,
@@ -105,12 +106,24 @@ public class SkeletonHandler : ScriptableObject
     JointType_Nose
     };
 
-    public Vector3[] joints = new Vector3[jointCount];
+    // List of available colors for Skeletons
+    private Color[] colors = new Color[]{
+    new Color( 232.0f / 255.0f, 176.0f / 255.0f,59.0f / 255.0f),
+    new Color(175.0f / 255.0f, 208.0f / 255.0f,25.0f / 255.0f),
+    new Color(102.0f / 255.0f / 255.0f, 205.0f / 255.0f,105.0f / 255.0f),
+    new Color(185.0f / 255.0f, 0.0f / 255.0f,255.0f / 255.0f),
+    new Color(99.0f / 255.0f, 107.0f / 255.0f,252.0f / 255.0f),
+    new Color(252.0f / 255.0f, 225.0f / 255.0f, 8.0f / 255.0f),
+    new Color(167.0f / 255.0f, 130.0f / 255.0f, 141.0f / 255.0f),
+    new Color(194.0f / 255.0f, 72.0f / 255.0f, 113.0f / 255.0f)
+    };
 
+    public Vector3[] joints = new Vector3[jointCount];
     GameObject skeleton;
     public GameObject[] bones;
     public GameObject[] spheres;
 
+    // Index of bone parent
     private static readonly int[] parentsIdx = new int[]{
         -1,
         0,
@@ -145,7 +158,6 @@ public class SkeletonHandler : ScriptableObject
         26,
         26
     };
-
 
     // Bones output by the ZED SDK (in this order)
     private static HumanBodyBones[] humanBone = new HumanBodyBones[] {
@@ -185,17 +197,6 @@ public class SkeletonHandler : ScriptableObject
    // HumanBodyBones.LastBone, // Right Heel
     };
 
-    private Color[] colors = new Color[]{
-    new Color( 232.0f / 255.0f, 176.0f / 255.0f,59.0f / 255.0f),
-    new Color(175.0f / 255.0f, 208.0f / 255.0f,25.0f / 255.0f),
-    new Color(102.0f / 255.0f / 255.0f, 205.0f / 255.0f,105.0f / 255.0f),
-    new Color(185.0f / 255.0f, 0.0f / 255.0f,255.0f / 255.0f),
-    new Color(99.0f / 255.0f, 107.0f / 255.0f,252.0f / 255.0f),
-    new Color(252.0f / 255.0f, 225.0f / 255.0f, 8.0f / 255.0f),
-    new Color(167.0f / 255.0f, 130.0f / 255.0f, 141.0f / 255.0f),
-    new Color(194.0f / 255.0f, 72.0f / 255.0f, 113.0f / 255.0f)
-    };
-
     private GameObject humanoid;
     private Dictionary<HumanBodyBones, RigBone> rigBone = null;
     private Dictionary<HumanBodyBones, Quaternion> rigBoneTarget = null;
@@ -206,6 +207,16 @@ public class SkeletonHandler : ScriptableObject
 
     private Vector3 targetBodyPosition = new Vector3(0.0f, 0.0f, 0.0f);
     public Quaternion targetBodyOrientation = Quaternion.identity;
+
+    private float heightOffset = 0.5f;
+    /// <summary>
+    /// Sets the smooth factor.
+    /// </summary>
+    /// <param name="smooth">Smooth.</param>
+    public void SetHeightOffset(float offset)
+    {
+        heightOffset = offset;
+    }
 
     /// <summary>
     /// Create the avatar control
@@ -390,7 +401,8 @@ public class SkeletonHandler : ScriptableObject
         }
     }
 
-    // Update skeleton display
+
+    // Update skeleton display with new SDK data
     void updateSkeleton()
     {
         float width = 0.025f;
@@ -460,22 +472,25 @@ public class SkeletonHandler : ScriptableObject
         {
             if (humanBone[i] != HumanBodyBones.LastBone && outPose[humanBone[i]].transform)
             {
+                Transform outPoseTransform = outPose[humanBone[i]].transform;
+
                 if (parentsIdx[i] == parentIdx)
                 {
+                    Quaternion restPoseRotation = default_rotations[humanBone[i]];
                     Quaternion restPoseRotChild = new Quaternion();
 
                     if (parentsIdx[i] != -1)
                     {
-                        Quaternion jointRotation = restPosRot * outPose[humanBone[i]].transform.localRotation;
-                        outPose[humanBone[i]].transform.localRotation = jointRotation;
+                        Quaternion jointRotation = restPosRot * outPoseTransform.localRotation;
+                        outPoseTransform.localRotation = jointRotation;
 
                         if (!inverse)
                         {
-                            restPoseRotChild = restPosRot * default_rotations[humanBone[i]];
+                            restPoseRotChild = restPosRot * restPoseRotation;
                         }
                         else
                         {
-                            restPoseRotChild = Quaternion.Inverse(default_rotations[humanBone[i]]) * restPosRot;
+                            restPoseRotChild = Quaternion.Inverse(restPoseRotation) * restPosRot;
                         }
                     }
                     else
@@ -521,7 +536,6 @@ public class SkeletonHandler : ScriptableObject
 
             }
         }
-
         PropagateRestPoseRotations(0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
 
         // Apply global transform
@@ -529,8 +543,8 @@ public class SkeletonHandler : ScriptableObject
         {
             var animator = humanoid.GetComponent<Animator>();
             // There is an offset between the joint "Hips" and the equivalent in the ZED SDK. This offset compensates it.
-            Vector3 offset = new Vector3(0, animator.GetBoneTransform(HumanBodyBones.Hips).position.y - animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position.y, 0);
-            rigBone[HumanBodyBones.Hips].transform.position = targetBodyPosition + offset;
+            Vector3 offset = new Vector3(0, (animator.GetBoneTransform(HumanBodyBones.Hips).position.y - animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position.y), 0);
+            rigBone[HumanBodyBones.Hips].transform.position = targetBodyPosition + offset + new Vector3(0, heightOffset, 0);
             rigBone[HumanBodyBones.Hips].transform.rotation = targetBodyOrientation;
         }
     }
