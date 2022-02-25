@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/Alpha_Joints_MAT.mat.meta
-guid: aa1fe9fc8e1be314e9eeff39347a6528
-=======
 guid: 589f2f18df9d7384fa55a7cc864f8ca2
->>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/GreenScreen/Resources/Materials/Mat_ZED_Greenscreen_HDRP_Lit.mat.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 0

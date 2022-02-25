@@ -563,7 +563,6 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
         Quaternion r;
 
-        Quaternion r;
         //Modified code to ensure view in HMD does not play like a movie screen
         if (manager.inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO || manager.inputType == sl.INPUT_TYPE.INPUT_TYPE_STREAM)
         {

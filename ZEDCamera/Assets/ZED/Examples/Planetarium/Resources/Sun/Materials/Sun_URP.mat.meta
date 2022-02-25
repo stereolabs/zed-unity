@@ -1,12 +1,8 @@
 fileFormatVersion: 2
-<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/White.mat.meta
-guid: 1b2395225722dc948a38ffcdcc9f04cc
-=======
 guid: b8ccaac990b85c54d996b489dccb2e39
->>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a:ZEDCamera/Assets/ZED/Examples/Planetarium/Resources/Sun/Materials/Sun_URP.mat.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 0
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  userData:
+  assetBundleName:
+  assetBundleVariant:

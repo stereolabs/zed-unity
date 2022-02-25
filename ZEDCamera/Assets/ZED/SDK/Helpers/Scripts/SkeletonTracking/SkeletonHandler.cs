@@ -401,11 +401,8 @@ public class SkeletonHandler : ScriptableObject
         }
     }
 
-<<<<<<< HEAD
-    // Update skeleton display
-=======
+
     // Update skeleton display with new SDK data
->>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
     void updateSkeleton()
     {
         float width = 0.025f;
