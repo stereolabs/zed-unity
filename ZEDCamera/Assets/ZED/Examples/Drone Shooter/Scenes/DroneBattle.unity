@@ -154,47 +154,6 @@ PrefabInstance:
     - target: {fileID: 4309805032874704, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
-<<<<<<< HEAD
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-=======
       objectReference: {fileID: 0}
     - target: {fileID: 4309805032874704, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
       propertyPath: m_LocalPosition.z
@@ -329,7 +288,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
->>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
 --- !u!4 &741507345 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4138687653623062, guid: e13ee7e0790c7d243b7aa67fe604acac,
@@ -351,26 +309,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
-<<<<<<< HEAD
   m_Name:
   m_EditorClassIdentifier:
-=======
-  m_Name:
-  m_EditorClassIdentifier:
->>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   deviceToTrack: 0
   latencyCompensation: 78
   correctControllerDrift: 1
   SNHolder:
   zedManager: {fileID: 1344833222}
-<<<<<<< HEAD
-  fireButton: 2
-  clickButton: 2
-  backButton: 8
-  grabButton: 3
-  navigateUIAxis: 10
-=======
->>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
   onFireDown:
     m_PersistentCalls:
       m_Calls: []
@@ -410,13 +355,6 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
-<<<<<<< HEAD
-    - target: {fileID: 4937924797587290, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 3}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
-=======
->>>>>>> 96ee8b6e83f19980efce3f521c262ff86b85f93a
     - target: {fileID: 4937924797587290, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

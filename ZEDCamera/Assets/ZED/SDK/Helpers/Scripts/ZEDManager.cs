@@ -2177,8 +2177,6 @@ public class ZEDManager : MonoBehaviour
     {
         if (requestNewFrame && zedReady)
         {
-            ZEDGrabError = sl.ERROR_CODE.FAILURE;
-
             if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO)
             {
                 //handle pause
