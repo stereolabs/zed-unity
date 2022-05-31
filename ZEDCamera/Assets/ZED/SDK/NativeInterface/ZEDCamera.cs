@@ -285,7 +285,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(3, 7, 0);
+        public static readonly System.Version PluginVersion = new System.Version(3, 8, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -346,6 +346,12 @@ namespace sl
         private static extern void dllz_get_device_list(sl.DeviceProperties[] deviceList, out int nbDevices);
 
         /*
+         * GetStreamingDeviceList function
+         */
+        [DllImport(nameDll, EntryPoint = "sl_get_streaming_device_list")]
+        private static extern void dllz_get_streaming_device_list(sl.StreamingProperties[] streamingDeviceList, out int nbDevices);
+
+        /*
         * Reboot function.
         */
         [DllImport(nameDll, EntryPoint = "sl_reboot")]
@@ -357,8 +363,17 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_enable_recording")]
         private static extern int dllz_enable_recording(int cameraID, System.Text.StringBuilder video_filename, int compresssionMode,int bitrate,int target_fps,bool transcode);
 
+        [DllImport(nameDll, EntryPoint = "sl_get_recording_status")]
+        private static extern IntPtr dllz_get_recording_status(int cameraID);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_recording_parameters")]
+        private static extern IntPtr dllz_get_recording_parameters(int cameraID);
+
         [DllImport(nameDll, EntryPoint = "sl_disable_recording")]
         private static extern bool dllz_disable_recording(int cameraID);
+
+        [DllImport(nameDll, EntryPoint = "sl_pause_recording")]
+        private static extern void dllz_pause_recording(int cameraID, bool status);
 
         /*
         * Texturing functions.
@@ -416,6 +431,9 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_get_camera_fps")]
         private static extern float dllz_get_camera_fps(int cameraID);
 
+        [DllImport(nameDll, EntryPoint = "sl_is_opened")]
+        private static extern bool dllz_is_opened(int cameraID);
+
         [DllImport(nameDll, EntryPoint = "sl_get_width")]
         private static extern int dllz_get_width(int cameraID);
 
@@ -457,6 +475,15 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_get_frame_dropped_percent")]
         private static extern float dllz_get_frame_dropped_percent(int cameraID);
+/*
+        [DllImport(nameDll, EntryPoint = "sl_get_init_parameters")]
+        private static extern IntPtr dllz_get_init_parameters(int cameraID);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_runtime_parameters")]
+        private static extern IntPtr dllz_get_runtime_parameters(int cameraID);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_positional_tracking_parameters")]
+        private static extern IntPtr dllz_get_positional_tracking_parameters(int cameraID);*/
 
         /*
          * SVO control functions.
@@ -503,19 +530,25 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_get_depth_min_range_value")]
         private static extern float dllz_get_depth_min_range_value(int cameraID);
 
+        [DllImport(nameDll, EntryPoint = "sl_get_current_min_max_depth")]
+        private static extern float dllz_get_current_min_max_depth(int cameraID, ref float min, ref float max);
+
 
         /*
          * Motion Tracking functions.
          */
         [DllImport(nameDll, EntryPoint = "sl_enable_positional_tracking_unity")]
         private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, 
-            bool trackingIsStatic = false, bool enableIMUFusion = true, System.Text.StringBuilder aeraFilePath = null);
+            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, System.Text.StringBuilder aeraFilePath = null);
 
-        [DllImport(nameDll, EntryPoint = "sl_disable_positional_ttracking")]
+        [DllImport(nameDll, EntryPoint = "sl_disable_positional_tracking")]
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
 
+        [DllImport(nameDll, EntryPoint = "sl_is_positional_tracking_enabled")]
+        private static extern bool dllz_is_positional_tracking_enabled(int cameraID);
+
         [DllImport(nameDll, EntryPoint = "sl_save_area_map")]
-        private static extern int dllz_save_current_area(int cameraID, System.Text.StringBuilder path);
+        private static extern int dllz_save_area_map(int cameraID, System.Text.StringBuilder path);
 
         [DllImport(nameDll, EntryPoint = "sl_get_position_data")]
         private static extern int dllz_get_position_data(int cameraID, ref Pose pose, int reference_frame);
@@ -558,6 +591,9 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_disable_spatial_mapping")]
         private static extern void dllz_disable_spatial_mapping(int cameraID);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_spatial_mapping_parameters")]
+        private static extern IntPtr dllz_get_spatial_mapping_parameters(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_pause_spatial_mapping")]
         private static extern void dllz_pause_spatial_mapping(int cameraID, bool status);
@@ -632,6 +668,8 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_disable_streaming")]
         private static extern void dllz_disable_streaming(int cameraID);
 
+        [DllImport(nameDll, EntryPoint = "sl_get_streaming_parameters")]
+        private static extern IntPtr dllz_get_streaming_parameters(int cameraID);
 
         /*
         * Objects Detection functions (starting v3.0)
@@ -646,6 +684,9 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_enable_objects_detection")]
         private static extern int dllz_enable_objects_detection(int cameraID, ref dll_ObjectDetectionParameters od_params);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_object_detection_parameters")]
+        private static extern IntPtr dllz_get_object_detection_parameters(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_disable_objects_detection")]
         private static extern void dllz_disable_objects_detection(int cameraID);
@@ -689,6 +730,12 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_get_sdk_version")]
         private static extern IntPtr dllz_get_sdk_version();
+
+        /*
+         * Change the coordinate system of a transform matrix.
+        */
+        [DllImport(nameDll, EntryPoint = "sl_convert_coordinate_system")]
+        private static extern int dllz_convert_coordinate_system(ref Quaternion rotation, ref Vector3 translation, sl.COORDINATE_SYSTEM coordSystemSrc, sl.COORDINATE_SYSTEM coordSystemDest);
 
         [DllImport(nameDll, EntryPoint = "sl_compute_offset")]
         private static extern void dllz_compute_offset(float[] A, float[] B, int nbVectors, float[] C);
@@ -954,10 +1001,12 @@ namespace sl
             /// </summary>
             public sl.DEPTH_MODE depthMode;
             /// <summary>
-            /// True to stabilize the depth map. Recommended.
+            /// This sets the depth stabilizer temporal smoothing strength.
+	        /// the depth stabilize smooth range is [0, 100]
+            /// 0 means a low temporal smmoothing behavior(for highly dynamic scene),
+            /// 100 means a high temporal smoothing behavior(for static scene)
             /// </summary>
-            [MarshalAs(UnmanagedType.U1)]
-            public bool depthStabilization;
+            public float depthStabilization;
             /// <summary>
             /// Minimum distance from the camera from which depth will be computed, in the defined coordinateUnit.
             /// </summary>
@@ -1162,6 +1211,33 @@ namespace sl
         }
 
         /// <summary>
+        ///  Get the recording information
+        /// </summary>
+        /// <returns></returns>
+        public sl.RecordingStatus GetRecordingStatus()
+        {
+            IntPtr p = dllz_get_recording_status(CameraID);
+
+            if (p == IntPtr.Zero)
+            {
+                return new RecordingStatus();
+            }
+            RecordingStatus parameters = (RecordingStatus)Marshal.PtrToStructure(p, typeof(RecordingStatus));
+
+            return parameters;
+        }
+
+        /// <summary>
+        /// Pauses or resumes the recording.
+        /// </summary>
+        /// <param name="status"> if true, the recording is paused. If false, the recording is resumed. </param>
+        /// <returns></returns>
+        public void PauseRecording(bool status)
+        {
+            dllz_pause_recording(CameraID, status);
+        }
+
+        /// <summary>
         /// Stops recording to an SVO/AVI, if applicable, and closes the file.
         /// </summary>
         public bool DisableRecording()
@@ -1253,11 +1329,11 @@ namespace sl
         /// <param name="areaFilePath"> (optional) file of spatial memory file that has to be loaded to relocate in the scene.</param>
         /// <returns></returns>
         public sl.ERROR_CODE EnableTracking(ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = true, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, bool trackingIsStatic = false, 
-            bool enableIMUFusion = true, string areaFilePath = "")
+            bool enableIMUFusion = true, float depthMinRange = -1.0f, string areaFilePath = "")
         {
             sl.ERROR_CODE trackingStatus = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
             trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(CameraID, ref quat, ref vec, enableSpatialMemory, enablePoseSmoothing, enableFloorAlignment, 
-                trackingIsStatic, enableIMUFusion, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
+                trackingIsStatic, enableIMUFusion, depthMinRange, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
             return trackingStatus;
         }
 
@@ -1297,11 +1373,6 @@ namespace sl
         public void DisableTracking(string path = "")
         {
             dllz_disable_tracking(CameraID, new System.Text.StringBuilder(path, path.Length));
-        }
-
-        public sl.ERROR_CODE SaveCurrentArea(string path)
-        {
-            return (sl.ERROR_CODE)dllz_save_current_area(CameraID, new System.Text.StringBuilder(path, path.Length));
         }
 
         /// <summary>
@@ -1591,7 +1662,14 @@ namespace sl
             return dllz_get_camera_fps(CameraID);
         }
 
-
+        /// <summary>
+        /// Reports if the camera has been successfully opened.
+        /// </summary>
+        /// <returns> Returns true if the ZED is already setup, otherwise false.</returns>
+        public bool IsOpened()
+        {
+            return dllz_is_opened(CameraID);
+        }
 
         public CalibrationParameters GetCalibrationParameters(bool raw = false)
         {
@@ -2003,6 +2081,38 @@ namespace sl
             return PtrToStringUtf8(dllz_get_sdk_version());
         }
 
+
+        /// <summary>
+        /// Gets the version of the currently installed ZED SDK.
+        /// </summary>
+        /// <returns>ZED SDK version as a string in the format MAJOR.MINOR.PATCH.</returns>
+        public static void GetSDKVersion(ref int major, ref int minor, ref int patch)
+        {
+            string sdkVersion = PtrToStringUtf8(dllz_get_sdk_version());
+
+            string[] version = sdkVersion.Split('.');
+
+            if (version.Length == 3)
+            {
+                int.TryParse(version[0], out major);
+                int.TryParse(version[1], out minor);
+                int.TryParse(version[2], out patch);
+            }
+        }
+
+        /// <summary>
+        /// Change the coordinate system of a transform matrix.
+        /// </summary>
+        /// <param name="rotation">[In, Out] : rotation to transform</param>
+        /// <param name="translation"> [In, Out] : translation to transform</param>
+        /// <param name="coordinateSystemSrc"> The current coordinate system of the translation/rotation</param>
+        /// <param name="coordinateSystemDest"> The destination coordinate system for the translation/rotation.</param>
+        /// <returns> SUCCESS if everything went well, FAILURE otherwise.</returns>
+        public static sl.ERROR_CODE ConvertCoordinateSystem(ref Quaternion rotation, ref Vector3 translation, sl.COORDINATE_SYSTEM coordinateSystemSrc, sl.COORDINATE_SYSTEM coordinateSystemDest)
+        {
+            return (sl.ERROR_CODE)dllz_convert_coordinate_system(ref rotation, ref translation, coordinateSystemSrc, coordinateSystemDest);
+        }
+
         /// <summary>
         /// List all the connected devices with their associated information.
         /// This function lists all the cameras available and provides their serial number, models and other information.
@@ -2014,6 +2124,19 @@ namespace sl
             dllz_get_device_list(deviceList, out nbDevices);
 
             return deviceList;
+        }
+
+        /// <summary>
+        /// List all the connected devices with their associated information.
+        /// This function lists all the cameras available and provides their serial number, models and other information.
+        /// </summary>
+        /// <returns>The device properties for each connected camera</returns>
+        public static sl.StreamingProperties[] GetStreamingDeviceList(out int nbDevices)
+        {
+            sl.StreamingProperties[] streamingDeviceList = new sl.StreamingProperties[(int)Constant.MAX_CAMERA_PLUGIN];
+            dllz_get_streaming_device_list(streamingDeviceList, out nbDevices);
+
+            return streamingDeviceList;
         }
 
         /// <summary>
@@ -2147,6 +2270,18 @@ namespace sl
             return r;
         }
 
+
+        /// <summary>
+        /// Gets the current range of perceived depth.
+        /// </summary>
+        /// <param name="min">Minimum depth detected (in selected sl.UNIT)</param>
+        /// <param name="max">Maximum depth detected (in selected sl.UNIT)</param>
+        /// <returns>SUCCESS if values have been extracted. Other ERROR_CODE otherwise.</returns>
+        public sl.ERROR_CODE GetCurrentMixMaxDepth(ref float min, ref float max)
+        {
+            return (sl.ERROR_CODE)dllz_get_current_min_max_depth(CameraID, ref min, ref max);
+        }
+
         /// <summary>
         /// Initializes and begins the spatial mapping processes.
         /// </summary>
@@ -2173,6 +2308,15 @@ namespace sl
             {
                 dllz_disable_spatial_mapping(CameraID);
             }
+        }
+
+        /// <summary>
+        /// Gets the current position of the camera and state of the tracking, with an optional offset to the tracking frame.
+        /// </summary>
+        /// <returns> true if the tracking module is enabled</returns>
+        public bool IsPositionalTrackingEnabled()
+        {
+            return dllz_is_positional_tracking_enabled(CameraID);
         }
 
         /// <summary>
@@ -2205,6 +2349,16 @@ namespace sl
         public sl.ERROR_CODE RetrieveMesh(Vector3[] vertices, int[] triangles, int nbSubmeshMax, Vector2[] uvs, IntPtr textures)
         {
             return (sl.ERROR_CODE)dllz_retrieve_mesh(CameraID, vertices, triangles, nbSubmeshMax, uvs, textures);
+        }
+
+        /// <summary>
+        /// Saves the current area learning file. The file will contain spatial memory data generated by the tracking.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name=""></param>
+        public ERROR_CODE SaveAreaMap(string areaFilePath)
+        {
+            return (ERROR_CODE)dllz_save_area_map(CameraID, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
         }
 
         /// <summary>
@@ -2407,6 +2561,7 @@ namespace sl
         {
             return (sl.ERROR_CODE)(dllz_retrieve_image(CameraID, mat.MatPtr, (int)view, (int)mem, (int)resolution.width, (int)resolution.height));
         }
+
 
         /// <summary>
         /// Computes offsets of the optical centers used to line up the ZED's images properly with Unity cameras.

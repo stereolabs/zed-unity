@@ -847,7 +847,7 @@ public class ZEDSpatialMapping
         zedCamera.DisableTracking();
         Quaternion quat = Quaternion.identity; Vector3 tr = Vector3.zero;
 
-        if (zedCamera.EnableTracking(ref quat, ref tr, true, false, false, false, true, System.IO.File.Exists(basePath + ".area") ? basePath + ".area" : "") != sl.ERROR_CODE.SUCCESS)
+        if (zedCamera.EnableTracking(ref quat, ref tr, true, false, false, false, true, -1.0f, System.IO.File.Exists(basePath + ".area") ? basePath + ".area" : "") != sl.ERROR_CODE.SUCCESS)
         {
             Debug.LogWarning(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
         }
@@ -1197,7 +1197,7 @@ public class ZEDSpatialMapping
 
         //Save the .area file for spatial memory. 
         string areaName = meshFilePath.Substring(0, meshFilePath.LastIndexOf(".")) + ".area";
-        zedCamera.SaveCurrentArea(areaName);
+        zedCamera.SaveAreaMap(areaName);
         Thread.CurrentThread.CurrentCulture = oldCulture;
     }
 

@@ -262,6 +262,7 @@ public class SkeletonHandler : ScriptableObject
         GameObject.Destroy(skeleton);
         rigBone.Clear();
         rigBoneTarget.Clear();
+        default_rotations.Clear();
         Array.Clear(bones, 0, bones.Length);
         Array.Clear(spheres, 0, spheres.Length);
     }

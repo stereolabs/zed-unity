@@ -85,12 +85,43 @@ namespace sl
     [StructLayout(LayoutKind.Sequential)]
     public struct Pose
     {
+        /// <summary>
+        /// boolean that indicates if tracking is activated or not. You should check that first if something wrong.
+        /// </summary>
         public bool valid;
-        public ulong timestap;
+        /// <summary>
+        /// Timestamp of the pose. This timestamp should be compared with the camera timestamp for synchronization.
+        /// </summary>
+        public ulong timestamp;
+        /// <summary>
+        /// orientation from the pose.
+        /// </summary>
         public Quaternion rotation;
+        /// <summary>
+        /// translation from the pose.
+        /// </summary>
         public Vector3 translation;
+        /// <summary>
+        /// Confidence/Quality of the pose estimation for the target frame.
+        /// A confidence metric of the tracking[0 - 100], 0 means that the tracking is lost, 100 means that the tracking can be fully trusted.
+        /// </summary>
         public int pose_confidence;
-	};
+        /// <summary>
+        /// 6x6 Pose covariance of translation (the first 3 values) and rotation in so3 (the last 3 values)
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 36)]
+        public float[] pose_covariance;
+        /// <summary>
+        /// Twist of the camera available in reference camera, this expresses velocity in free space, broken into its linear and angular parts.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+        public float[] twist;
+        /// <summary>
+        /// Row-major representation of the 6x6 twist covariance matrix of the camera, this expresses the uncertainty of the twist.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 36)]
+        public float[] twist_covariance;
+    };
 
     /// <summary>
     /// Rect structure to define a rectangle or a ROI in pixels
@@ -137,6 +168,73 @@ namespace sl
         /// </summary>
         public int sn;
     };
+
+    /// <summary>
+    /// Streaming device properties
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct StreamingProperties
+    {
+        /// <summary>
+        /// The streaming IP of the device
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+        public string ip;
+        /// <summary>
+        /// The streaming port
+        /// </summary>
+        public ushort port;
+        /// <summary>
+        /// The current bitrate of encoding of the streaming device
+        /// </summary>
+        public int currentBitrate;
+        /// <summary>
+        /// The current codec used for compression in streaming device
+        /// </summary>
+        public sl.STREAMING_CODEC codec;
+    };
+
+    /// <summary>
+    /// Container for information about the current SVO recording process.
+    /// </summary><remarks>
+    /// Mirrors RecordingStatus in the ZED C++ SDK. For more info, visit:
+    /// https://www.stereolabs.com/docs/api/structsl_1_1RecordingStatus.html
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RecordingStatus
+    {
+        /// <summary>
+        /// Recorder status, true if enabled.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool is_recording;
+        /// <summary>
+        /// Recorder status, true if the pause is enabled.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool is_paused;
+        /// <summary>
+        /// Status of the current frame. True if recording was successful, false if frame could not be written.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool status;
+        /// <summary>
+        /// Compression time for the current frame in milliseconds.
+        /// </summary>
+        public double current_compression_time;
+        /// <summary>
+        /// Compression ratio (% of raw size) for the current frame.
+        /// </summary>
+        public double current_compression_ratio;
+        /// <summary>
+        /// Average compression time in millisecond since beginning of recording.
+        /// </summary>
+        public double average_compression_time;
+        /// <summary>
+        /// Compression ratio (% of raw size) since recording was started.
+        /// </summary>
+        public double average_compression_ratio;
+    }
 
     /// <summary>
     /// Full IMU data structure.
@@ -1425,9 +1523,12 @@ namespace sl
         /// </summary>
         public string sdkVerboseLogFile = "";
         /// <summary>
-        /// True to stabilize the depth map. Recommended.
+        /// This sets the depth stabilizer temporal smoothing strength.
+        /// the depth stabilize smooth range is [0, 100]
+        /// 0 means a low temporal smmoothing behavior(for highly dynamic scene),
+        /// 100 means a high temporal smoothing behavior(for static scene)
         /// </summary>
-        public bool depthStabilization;
+        public float depthStabilization;
 		/// <summary>
 		/// Optional path for searching configuration (calibration) file SNxxxx.conf. (introduced in ZED SDK 2.6)
 		/// </summary>
@@ -1484,7 +1585,7 @@ namespace sl
             this.sdkGPUId = -1;
             this.sdkVerboseLogFile = "";
             this.enableRightSideMeasure = false;
-            this.depthStabilization = true;
+            this.depthStabilization = -1.0f;
 			this.optionalSettingsPath = "";
 			this.sensorsRequired = false;
             this.ipStream = "";
@@ -1828,7 +1929,10 @@ namespace sl
         public Vector3 rootWorldPosition; //object root position
         public Vector3 headWorldPosition; //object head position (only for HUMAN detectionModel)
         public Vector3 rootWorldVelocity; //object root velocity
-
+        /// <summary>
+        /// 3D object dimensions: width, height, length. Defined in InitParameters.UNIT, expressed in RuntimeParameters.measure3DReferenceFrame.
+        /// </summary>
+        public Vector3 dimensions;
 
         /// <summary>
         /// The 3D space bounding box. given as array of vertices

@@ -1518,6 +1518,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
+      propertyPath: cameraID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
       propertyPath: inputType
       value: 0
       objectReference: {fileID: 0}
@@ -1533,6 +1538,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
+      propertyPath: trackingIsStatic
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
       propertyPath: advancedPanelOpen
       value: 0
       objectReference: {fileID: 0}
@@ -1545,6 +1555,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_confidenceThreshold
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: estimateInitialPosition
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}

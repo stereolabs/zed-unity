@@ -905,6 +905,11 @@ public class ZEDManager : MonoBehaviour
     public bool enableIMUFusion = true;
 
     /// <summary>
+    /// This setting allows you to change the minimum depth used by the SDK for Positional Tracking.
+    /// </summary>
+    [HideInInspector]
+    public float depthMinRange = -1.0f;
+    /// <summary>
     /// If true, the ZED SDK will subtly adjust the ZED's calibration during runtime to account for heat and other factors.
     /// Reasons to disable this are rare.
     /// </summary>
@@ -1075,10 +1080,11 @@ public class ZEDManager : MonoBehaviour
     /// (sensing mode, point cloud, if depth is enabled, etc.).
     /// </summary>
     private sl.RuntimeParameters runtimeParameters;
-    /// <summary>
-    /// Enables the ZED SDK's depth stabilizer, which improves depth accuracy and stability. There's rarely a reason to disable this.
-    /// </summary>
-    private bool depthStabilizer = true;
+    /// This sets the depth stabilizer temporal smoothing strength.
+    /// the depth stabilize smooth range is [0, 100]
+    /// 0 means a low temporal smmoothing behavior(for highly dynamic scene),
+    /// 100 means a high temporal smoothing behavior(for static scene)
+    private float depthStabilization = -1f;
     /// <summary>
     /// Indicates if Sensors( IMU,...) is needed/required. For most applications, it is required.
     /// Sensors are transmitted through USB2.0 lines. If USB2 is not available (USB3.0 only extension for example), set it to false.
@@ -1799,7 +1805,7 @@ public class ZEDManager : MonoBehaviour
         initParameters.cameraFPS = FPS;
         initParameters.cameraDeviceID = (int)cameraID;
         initParameters.depthMode = depthMode;
-        initParameters.depthStabilization = depthStabilizer;
+        initParameters.depthStabilization = depthStabilization;
         initParameters.sensorsRequired = sensorsRequired;
         initParameters.depthMaximumDistance = 40.0f; // 40 meters should be enough for all applications
         initParameters.cameraImageFlip = (int)cameraFlipMode;
@@ -2174,7 +2180,6 @@ public class ZEDManager : MonoBehaviour
     {
         if (requestNewFrame && zedReady)
         {
-            ZEDGrabError = sl.ERROR_CODE.FAILURE;
 
             if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO)
             {
@@ -2313,7 +2318,7 @@ public class ZEDManager : MonoBehaviour
             }
 
             sl.ERROR_CODE err = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
-                enablePoseSmoothing, estimateInitialPosition, trackingIsStatic, enableIMUFusion, pathSpatialMemory));
+                enablePoseSmoothing, estimateInitialPosition, trackingIsStatic, enableIMUFusion, depthMinRange, pathSpatialMemory));
 
             //Now enable the tracking with the proper parameters.
             if (!(enableTracking = (err == sl.ERROR_CODE.SUCCESS)))
@@ -2687,7 +2692,7 @@ public class ZEDManager : MonoBehaviour
         sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel));
         if (!AiModelStatus.optimized)
         {
-            Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
+           // Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
            // return;
         }
         //We start a coroutine so we can delay actually starting the detection.
@@ -3272,7 +3277,7 @@ public class ZEDManager : MonoBehaviour
             {
                 //Enables tracking and initializes the first position of the camera.
                 if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, estimateInitialPosition, trackingIsStatic,
-                    enableIMUFusion, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
+                    enableIMUFusion, depthMinRange, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
                 {
                     isZEDTracked = false;
                     throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));

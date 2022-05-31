@@ -116,6 +116,7 @@ Properties
 				float3 normals = tex2D(_NormalsTex, i.depthUV).rgb;
 				outColor = saturate(tex2D (_MainTex, i.depthUV).bgra);
 				outColor *= _ZEDFactorAffectReal;
+				outDepth = 0;
 
 				#ifdef NO_DEPTH
 					#if SHADER_API_D3D11
