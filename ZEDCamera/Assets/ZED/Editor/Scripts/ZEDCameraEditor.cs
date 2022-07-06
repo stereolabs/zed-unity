@@ -115,6 +115,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty OD_DetectionModel;
     private SerializedProperty OD_MaxRange;
     private SerializedProperty OD_FilteringMode;
+    private SerializedProperty OD_MinimumKPThresh;
     //Object Detection Runtime Prop
     private SerializedProperty OD_VehicleDetectionConfidence;
     private SerializedProperty OD_PersonDetectionConfidence;
@@ -264,6 +265,7 @@ public class ZEDCameraEditor : Editor
         OD_DetectionModel = serializedObject.FindProperty("objectDetectionModel");
         OD_MaxRange = serializedObject.FindProperty("objectDetectionMaxRange");
         OD_FilteringMode = serializedObject.FindProperty("objectDetectionFilteringMode");
+        OD_MinimumKPThresh = serializedObject.FindProperty("minimumKeypointsThreshold");
 
         OD_PersonDetectionConfidence = serializedObject.FindProperty("OD_personDetectionConfidenceThreshold");
         SK_PersonDetectionConfidence = serializedObject.FindProperty("SK_personDetectionConfidenceThreshold");
@@ -777,6 +779,9 @@ public class ZEDCameraEditor : Editor
                 GUIContent BodyFittingLabel = new GUIContent("Enable Body Fitting", "Defines if the body fitting will be applied.\r\n\n" +
                 "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
                 OD_BodyFitting.boolValue = EditorGUILayout.Toggle(BodyFittingLabel, OD_BodyFitting.boolValue);
+
+                GUIContent MinKPThresh = new GUIContent("Minimum keypoints threshold", "Filter detections with low number of keypoints detected");
+                OD_MinimumKPThresh.intValue = EditorGUILayout.IntSlider(MinKPThresh, OD_MinimumKPThresh.intValue, 0, 34);
             }
 
             GUIContent MaxRangeLabel = new GUIContent("Max Range", "Defines a upper depth range for detections.");

@@ -398,6 +398,9 @@ public class ZEDManager : MonoBehaviour
     [HideInInspector]
     public sl.BODY_FORMAT objectDetectionBodyFormat = sl.BODY_FORMAT.POSE_34;
 
+    [HideInInspector]
+    public int minimumKeypointsThreshold = 0;
+
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
@@ -2765,6 +2768,8 @@ public class ZEDManager : MonoBehaviour
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.SPORT] = Convert.ToInt32(objectClassSportFilter);
 
+            od_runtime_params.minimumKeypointsThreshold = minimumKeypointsThreshold;
+
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
             watch.Start();
 
@@ -2820,6 +2825,8 @@ public class ZEDManager : MonoBehaviour
         od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
         od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
         od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
+
+        od_runtime_params.minimumKeypointsThreshold = minimumKeypointsThreshold;
 
         if (objectDetectionImageSyncMode == false) RetrieveObjectDetectionFrame(); //If true, this is called in the AcquireImages function in the image acquisition thread.
 
@@ -3083,6 +3090,10 @@ public class ZEDManager : MonoBehaviour
                 }
                 Thread.Sleep(500);
             }
+        }
+        else
+        {
+            Debug.LogWarning("Reboot has failed with error " + err);
         }
 
         if (isCameraAvailable)

@@ -98,9 +98,6 @@
             "m_Id": "8a8dce306f2c42c78d7794540666de8d"
         },
         {
-            "m_Id": "2d3181b4cfde454bb091a6fb8e160ebf"
-        },
-        {
             "m_Id": "eecacac10c48407089890259ca8476bf"
         },
         {
@@ -547,9 +544,6 @@
                 "m_Id": "8a8dce306f2c42c78d7794540666de8d"
             },
             {
-                "m_Id": "2d3181b4cfde454bb091a6fb8e160ebf"
-            },
-            {
                 "m_Id": "eecacac10c48407089890259ca8476bf"
             },
             {
@@ -666,8 +660,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 504.0,
-            "y": 123.9999771118164,
+            "x": 362.0000305175781,
+            "y": 243.00001525878907,
             "width": 135.0,
             "height": 118.0
         }
@@ -785,11 +779,11 @@
     },
     "m_Name": "NO_DEPTH",
     "m_DefaultReferenceName": "BOOLEAN_0CF2A92FC76D4422997BFCAA660E69C5_ON",
-    "m_OverrideReferenceName": "",
+    "m_OverrideReferenceName": "NO_DEPTH",
     "m_GeneratePropertyBlock": true,
     "m_KeywordType": 0,
-    "m_KeywordDefinition": 0,
-    "m_KeywordScope": 0,
+    "m_KeywordDefinition": 1,
+    "m_KeywordScope": 1,
     "m_Entries": [],
     "m_Value": 0,
     "m_IsEditable": true
@@ -1385,39 +1379,6 @@
 
 {
     "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.BlockNode",
-    "m_ObjectId": "2d3181b4cfde454bb091a6fb8e160ebf",
-    "m_Group": {
-        "m_Id": ""
-    },
-    "m_Name": "SurfaceDescription.CoatMask",
-    "m_DrawState": {
-        "m_Expanded": true,
-        "m_Position": {
-            "serializedVersion": "2",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 0.0,
-            "height": 0.0
-        }
-    },
-    "m_Slots": [
-        {
-            "m_Id": "6f584128d9494126b889fe8d7ab16c78"
-        }
-    ],
-    "synonyms": [],
-    "m_Precision": 0,
-    "m_PreviewExpanded": true,
-    "m_PreviewMode": 0,
-    "m_CustomColors": {
-        "m_SerializableColors": []
-    },
-    "m_SerializedDescriptor": "SurfaceDescription.CoatMask"
-}
-
-{
-    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "2f4333a9eb2f398da71a181d2bd40ca3",
     "m_Id": 1,
@@ -1612,7 +1573,7 @@
     "m_DOTSInstancing": false,
     "m_Version": 0,
     "m_FirstTimeMigrationExecuted": true,
-    "inspectorFoldoutMask": 0
+    "inspectorFoldoutMask": 9
 }
 
 {
@@ -1725,7 +1686,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 0.5,
+    "m_Value": 1.0,
     "m_FloatType": 1,
     "m_RangeValues": {
         "x": 0.0,
@@ -2185,21 +2146,6 @@
 
 {
     "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
-    "m_ObjectId": "6f584128d9494126b889fe8d7ab16c78",
-    "m_Id": 0,
-    "m_DisplayName": "Coat Mask",
-    "m_SlotType": 0,
-    "m_Hidden": false,
-    "m_ShaderOutputName": "CoatMask",
-    "m_StageCapability": 2,
-    "m_Value": 0.0,
-    "m_DefaultValue": 0.0,
-    "m_Labels": []
-}
-
-{
-    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.GroupData",
     "m_ObjectId": "70d23965b28e43379ea5a490e1a7059c",
     "m_Title": "Flipped UV Input",
@@ -2309,7 +2255,7 @@
     "m_ShaderOutputName": "Max",
     "m_StageCapability": 3,
     "m_Value": {
-        "x": 20.0,
+        "x": 40.0,
         "y": 1.0,
         "z": 1.0,
         "w": 1.0
@@ -3440,9 +3386,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 51.99998474121094,
-            "y": 152.0,
-            "width": 208.0,
+            "x": 43.999996185302737,
+            "y": 267.0,
+            "width": 208.00001525878907,
             "height": 326.0
         }
     },
