@@ -4,7 +4,6 @@
 {
 
 	Properties{
-		[MaterialToggle] directionalLightEffect("Directional light affects image", Int) = 0
 		_MaxDepth("Max Depth Range", Range(1,40)) = 40
 		_DepthXYZTex("Depth texture", 2D) = "" {}
 		_MainTex("Main texture", 2D) = "" {}
@@ -72,7 +71,6 @@
 				sampler2D _MaskTex;
 				int _HasShadows;
 				float4 ZED_directionalLight[2];
-				int directionalLightEffect;
 				float _ZEDFactorAffectReal;
 				float _MaxDepth;
 
@@ -142,7 +140,7 @@
 					// e(1) == 2.71828182846
 					if (_HasShadows == 1) {
 						//Depends on the ambient lighting
-						float atten = saturate(tex2D(_DirectionalShadowMap, fixed2(uv.z, 1 - uv.w)) + log(1 + 1.72*length(UNITY_LIGHTMODEL_AMBIENT.rgb)/4.0));
+						float atten = saturate(tex2D(_DirectionalShadowMap, fixed2(uv.z, 1 - uv.w)) + log(1 + 1.72 * length(UNITY_LIGHTMODEL_AMBIENT.rgb) / 4.0));
 
 						c = half4(color*atten);
 					}

@@ -23,17 +23,20 @@ Material:
   m_Name: Mat_ZED_HDRP_Lit
   m_Shader: {fileID: -6465566751694194690, guid: 82f08abc9c8ae3842b12da59567af90e,
     type: 3}
-  m_ShaderKeywords: _DEPTHOFFSET_ON _DISABLE_DECALS _DISABLE_SSR _DISABLE_SSR_TRANSPARENT
+  m_ShaderKeywords: _ALPHATEST_ON _DEPTHOFFSET_ON _DISABLE_DECALS _DISABLE_SSR _DISABLE_SSR_TRANSPARENT
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
-  stringTagMap: {}
+  m_CustomRenderQueue: 2450
+  stringTagMap:
+    MotionVector: User
+    RenderType: TransparentCutout
   disabledShaderPasses:
   - TransparentDepthPrepass
   - TransparentDepthPostpass
   - TransparentBackface
   - RayTracingPrepass
+  - MOTIONVECTORS
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -111,7 +114,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AddPrecomputedVelocity: 0
-    - _AlphaCutoffEnable: 0
+    - _AlphaCutoffEnable: 1
     - _AlphaDstBlend: 0
     - _AlphaSrcBlend: 1
     - _AlphaToMask: 0
@@ -170,7 +173,7 @@ Material:
     - _UseShadowThreshold: 0
     - _ZEDFactorAffectReal: 0.5
     - _ZTestDepthEqualForOpaque: 3
-    - _ZTestGBuffer: 4
+    - _ZTestGBuffer: 3
     - _ZTestTransparent: 4
     - _ZWrite: 1
     - directionalLightEffect: 1
