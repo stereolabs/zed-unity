@@ -1369,6 +1369,10 @@ namespace sl
         /// </summary>
         public int cameraDeviceID;
         /// <summary>
+        /// Serial number of the camera to open
+        /// </summary>
+        public uint serialNumber;
+        /// <summary>
         /// Path to a recorded SVO file to play, including filename.
         /// </summary>
         public string pathSVO = "";
@@ -1471,6 +1475,7 @@ namespace sl
             this.resolution = RESOLUTION.HD720;
             this.cameraFPS = 60;
             this.cameraDeviceID = 0;
+            this.serialNumber = 0;
             this.pathSVO = "";
             this.svoRealTimeMode = false;
             this.coordinateUnit = UNIT.METER;

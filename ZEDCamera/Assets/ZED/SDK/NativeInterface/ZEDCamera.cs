@@ -322,7 +322,7 @@ namespace sl
         * Opening function (Opens camera and creates textures).
         */
         [DllImport(nameDll, EntryPoint = "sl_open_camera")]
-        private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, System.Text.StringBuilder svoPath, System.Text.StringBuilder ipStream, int portStream, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
+        private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, uint serialNumber, System.Text.StringBuilder svoPath, System.Text.StringBuilder ipStream, int portStream, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
 
 
         /*
@@ -1053,7 +1053,7 @@ namespace sl
             }
             dll_initParameters initP = new dll_initParameters(initParameters); //DLL-friendly version of InitParameters.
             initP.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP; //Left-hand, Y-up is Unity's coordinate system, so we match that.
-            int v = dllz_open(CameraID, ref initP,
+            int v = dllz_open(CameraID, ref initP, initParameters.serialNumber,
                 new System.Text.StringBuilder(initParameters.pathSVO, initParameters.pathSVO.Length),
                 new System.Text.StringBuilder(initParameters.ipStream, initParameters.ipStream.Length),
                 initParameters.portStream,

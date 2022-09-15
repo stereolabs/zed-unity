@@ -1,132 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7089757308646879465
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcf384b154398e341b6b29969c078198, type: 3}
-  m_Name: MotionBlur
-  m_EditorClassIdentifier: 
-  active: 0
-  m_AdvancedMode: 0
-  quality:
-    m_OverrideState: 1
-    m_Value: 1
-  intensity:
-    m_OverrideState: 1
-    m_Value: 0.5
-    min: 0
-  maximumVelocity:
-    m_OverrideState: 0
-    m_Value: 200
-    min: 0
-    max: 1500
-  minimumVelocity:
-    m_OverrideState: 0
-    m_Value: 2
-    min: 0
-    max: 64
-  cameraMotionBlur:
-    m_OverrideState: 0
-    m_Value: 1
-  specialCameraClampMode:
-    m_OverrideState: 0
-    m_Value: 0
-  cameraVelocityClamp:
-    m_OverrideState: 0
-    m_Value: 0.05
-    min: 0
-    max: 0.3
-  cameraTranslationVelocityClamp:
-    m_OverrideState: 0
-    m_Value: 0.05
-    min: 0
-    max: 0.3
-  cameraRotationVelocityClamp:
-    m_OverrideState: 0
-    m_Value: 0.03
-    min: 0
-    max: 0.2
-  depthComparisonExtent:
-    m_OverrideState: 0
-    m_Value: 1
-    min: 0
-    max: 20
-  m_SampleCount:
-    m_OverrideState: 1
-    m_Value: 8
-    min: 2
---- !u!114 &-1016694868962581565
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56b145d2b9ee1ac4f846968484e7485a, type: 3}
-  m_Name: ContactShadows
-  m_EditorClassIdentifier: 
-  active: 0
-  m_AdvancedMode: 0
-  quality:
-    m_OverrideState: 0
-    m_Value: 3
-  enable:
-    m_OverrideState: 0
-    m_Value: 0
-  length:
-    m_OverrideState: 0
-    m_Value: 0.184
-    min: 0
-    max: 1
-  opacity:
-    m_OverrideState: 0
-    m_Value: 1
-    min: 0
-    max: 1
-  distanceScaleFactor:
-    m_OverrideState: 0
-    m_Value: 0.5
-    min: 0
-    max: 1
-  maxDistance:
-    m_OverrideState: 0
-    m_Value: 50
-    min: 0
-  minDistance:
-    m_OverrideState: 0
-    m_Value: 0
-    min: 0
-  fadeDistance:
-    m_OverrideState: 0
-    m_Value: 5
-    min: 0
-  fadeInDistance:
-    m_OverrideState: 0
-    m_Value: 0
-    min: 0
-  rayBias:
-    m_OverrideState: 0
-    m_Value: 0.2
-    min: 0
-    max: 1
-  thicknessScale:
-    m_OverrideState: 0
-    m_Value: 0.139
-    min: 0.02
-    max: 1
-  m_SampleCount:
-    m_OverrideState: 1
-    m_Value: 8
-    min: 4
-    max: 64
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,14 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   components:
   - {fileID: 7686318427622180703}
-  - {fileID: -1016694868962581565}
   - {fileID: 7502528774814404555}
   - {fileID: 7542669330009093999}
   - {fileID: 1501199423866068322}
-  - {fileID: 5315503232242033309}
   - {fileID: 1932259527246508038}
   - {fileID: 448115243408767295}
-  - {fileID: -7089757308646879465}
+  - {fileID: 2018669385028736523}
 --- !u!114 &448115243408767295
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -173,7 +44,7 @@ MonoBehaviour:
     m_Value: 0
   exposure:
     m_OverrideState: 0
-    m_Value: 13.5
+    m_Value: 0
   multiplier:
     m_OverrideState: 0
     m_Value: 1
@@ -186,8 +57,8 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: {x: 0.18750614, y: 0.29181972, z: 0.5}
   desiredLuxValue:
-    m_OverrideState: 0
-    m_Value: 20000
+    m_OverrideState: 1
+    m_Value: -3.82
   updateMode:
     m_OverrideState: 0
     m_Value: 0
@@ -294,7 +165,7 @@ MonoBehaviour:
     min: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 0.2
+    m_Value: 0.1
     min: 0
     max: 1
   scatter:
@@ -339,18 +210,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d7593b3a9277ac4696b20006c21dde2, type: 3}
   m_Name: VisualEnvironment
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   m_AdvancedMode: 0
   skyType:
     m_OverrideState: 1
     m_Value: 1
   skyAmbientMode:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 1
   fogType:
     m_OverrideState: 0
     m_Value: 0
---- !u!114 &5315503232242033309
+--- !u!114 &2018669385028736523
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -366,10 +237,10 @@ MonoBehaviour:
   m_AdvancedMode: 0
   mode:
     m_OverrideState: 0
-    m_Value: 1
-  meteringMode:
-    m_OverrideState: 0
     m_Value: 0
+  meteringMode:
+    m_OverrideState: 1
+    m_Value: 2
   luminanceSource:
     m_OverrideState: 0
     m_Value: 1
@@ -378,13 +249,13 @@ MonoBehaviour:
     m_Value: 0
   compensation:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0
   limitMin:
-    m_OverrideState: 0
-    m_Value: -10
+    m_OverrideState: 1
+    m_Value: -1
   limitMax:
-    m_OverrideState: 0
-    m_Value: 10
+    m_OverrideState: 1
+    m_Value: 14
   curveMap:
     m_OverrideState: 0
     m_Value:
@@ -520,7 +391,7 @@ MonoBehaviour:
   m_Name: AmbientOcclusion
   m_EditorClassIdentifier: 
   active: 0
-  m_AdvancedMode: 1
+  m_AdvancedMode: 0
   quality:
     m_OverrideState: 0
     m_Value: 1
@@ -539,7 +410,7 @@ MonoBehaviour:
     max: 1
   radius:
     m_OverrideState: 1
-    m_Value: 1.5
+    m_Value: 1
     min: 0.25
     max: 5
   spatialBilateralAggressiveness:
@@ -672,11 +543,11 @@ MonoBehaviour:
   m_AdvancedMode: 0
   maxShadowDistance:
     m_OverrideState: 1
-    m_Value: 150
+    m_Value: 70
     min: 0
   directionalTransmissionMultiplier:
     m_OverrideState: 0
-    m_Value: 0.983
+    m_Value: 1
     min: 0
     max: 1
   cascadeShadowSplitCount:
@@ -685,23 +556,23 @@ MonoBehaviour:
     min: 1
     max: 4
   cascadeShadowSplit0:
-    m_OverrideState: 0
-    m_Value: 0.05
+    m_OverrideState: 1
+    m_Value: 0.046875
   cascadeShadowSplit1:
-    m_OverrideState: 0
-    m_Value: 0.15
+    m_OverrideState: 1
+    m_Value: 0.140625
   cascadeShadowSplit2:
-    m_OverrideState: 0
-    m_Value: 0.3
+    m_OverrideState: 1
+    m_Value: 0.375
   cascadeShadowBorder0:
     m_OverrideState: 1
-    m_Value: 0.13333334
+    m_Value: 0.6666667
   cascadeShadowBorder1:
     m_OverrideState: 1
-    m_Value: 0.06666666
+    m_Value: 0.33333334
   cascadeShadowBorder2:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 0.13333334
   cascadeShadowBorder3:
     m_OverrideState: 0
     m_Value: 0

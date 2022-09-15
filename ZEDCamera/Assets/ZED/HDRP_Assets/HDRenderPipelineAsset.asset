@@ -148,16 +148,19 @@ MonoBehaviour:
       enableFptlForForwardOpaque: 0
       enableBigTilePrepass: 0
       isFptlEnabled: 0
-  m_RenderPipelineResources: {fileID: 11400000, guid: 3ce144cff5783da45aa5d4fdc2da14b7, type: 2}
+  m_RenderPipelineResources: {fileID: 11400000, guid: 3ce144cff5783da45aa5d4fdc2da14b7,
+    type: 2}
   m_RenderPipelineRayTracingResources: {fileID: 0}
-  m_DefaultVolumeProfile: {fileID: 11400000, guid: 7637fdba9232786489a40fbcbaf21daf, type: 2}
+  m_DefaultVolumeProfile: {fileID: 11400000, guid: 7637fdba9232786489a40fbcbaf21daf,
+    type: 2}
   m_LensAttenuation: 0
   m_UseRenderGraph: 1
-  m_DefaultLookDevProfile: {fileID: 11400000, guid: 7637fdba9232786489a40fbcbaf21daf, type: 2}
+  m_DefaultLookDevProfile: {fileID: 11400000, guid: 4dc3f0f4d35a148409c5e3a4d1270541,
+    type: 2}
   m_RenderingPathDefaultCameraFrameSettings:
     bitDatas:
-      data1: 69838057344013
-      data2: 4539628425463136280
+      data1: 70284954143757
+      data2: 4539628425461039128
     lodBias: 1
     lodBiasMode: 0
     lodBiasQualityLevel: 0
@@ -197,10 +200,10 @@ MonoBehaviour:
     sssCustomSampleBudget: 20
     materialQuality: 0
   m_RenderPipelineSettings:
-    supportShadowMask: 1
+    supportShadowMask: 0
     supportSSR: 0
     supportSSRTransparent: 0
-    supportSSAO: 0
+    supportSSAO: 1
     supportSSGI: 0
     supportSubsurfaceScattering: 0
     sssSampleBudget:
@@ -218,11 +221,11 @@ MonoBehaviour:
     lightLayerName6: Light Layer 6
     lightLayerName7: Light Layer 7
     supportDistortion: 0
-    supportTransparentBackface: 0
-    supportTransparentDepthPrepass: 0
-    supportTransparentDepthPostpass: 0
+    supportTransparentBackface: 1
+    supportTransparentDepthPrepass: 1
+    supportTransparentDepthPostpass: 1
     colorBufferFormat: 74
-    supportCustomPass: 0
+    supportCustomPass: 1
     customBufferFormat: 12
     supportedLitShaderMode: 1
     planarReflectionResolution:
@@ -241,9 +244,9 @@ MonoBehaviour:
     decalLayerName7: Decal Layer 7
     msaaSampleCount: 4
     supportMotionVectors: 1
-    supportRuntimeDebugDisplay: 1
+    supportRuntimeDebugDisplay: 0
     supportRuntimeAOVAPI: 0
-    supportDitheringCrossFade: 0
+    supportDitheringCrossFade: 1
     supportTerrainHole: 0
     supportProbeVolume: 0
     supportRayTracing: 0
@@ -261,7 +264,7 @@ MonoBehaviour:
       reflectionCubemapSize: 256
       reflectionCacheCompressed: 0
       reflectionProbeFormat: 74
-      skyReflectionSize: 256
+      skyReflectionSize: 512
       skyLightingOverrideLayerMask:
         serializedVersion: 2
         m_Bits: 0
@@ -275,18 +278,18 @@ MonoBehaviour:
       maxLightsPerClusterCell: 8
     hdShadowInitParams:
       maxShadowRequests: 128
-      directionalShadowsDepthBits: 32
+      directionalShadowsDepthBits: 16
       shadowFilteringQuality: 1
       punctualLightShadowAtlas:
         shadowAtlasResolution: 4096
         shadowAtlasDepthBits: 32
         useDynamicViewportRescale: 1
       areaLightShadowAtlas:
-        shadowAtlasResolution: 4096
-        shadowAtlasDepthBits: 32
-        useDynamicViewportRescale: 1
+        shadowAtlasResolution: 2048
+        shadowAtlasDepthBits: 16
+        useDynamicViewportRescale: 0
       cachedPunctualLightShadowAtlas: 2048
-      cachedAreaLightShadowAtlas: 1024
+      cachedAreaLightShadowAtlas: 2048
       shadowResolutionDirectional:
         m_Values: 00010000000200000004000000080000
         m_SchemaId:
@@ -351,7 +354,7 @@ MonoBehaviour:
       ChromaticAberrationMaxSamples: 03000000060000000c000000
     lightSettings:
       useContactShadow:
-        m_Values: 000000
+        m_Values: 000101
         m_SchemaId:
           m_Id: 
     maximumLODLevel:
@@ -440,8 +443,8 @@ MonoBehaviour:
   m_DefaultMaterialQualityLevel: 4
   diffusionProfileSettings: {fileID: 0}
   diffusionProfileSettingsList:
-  - {fileID: 11400000, guid: 06480f7f9faa1a34aa7de0fbed8c1c7b, type: 2}
-  - {fileID: 11400000, guid: 959748e3f61f6c3478b2a239a1eccb6a, type: 2}
+  - {fileID: 11400000, guid: 4e24b63c2d1821042aa23b182a67d8a9, type: 2}
+  - {fileID: 11400000, guid: ce7ab8c994cb43a4caa2d122cd328d78, type: 2}
   beforeTransparentCustomPostProcesses: []
   beforeTAACustomPostProcesses: []
   beforePostProcessCustomPostProcesses: []

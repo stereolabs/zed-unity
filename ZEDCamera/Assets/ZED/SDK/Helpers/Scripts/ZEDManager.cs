@@ -101,6 +101,12 @@ public class ZEDManager : MonoBehaviour
     public int FPS = 60;
 
     /// <summary>
+    /// Serial number of the camera to open. Leave the SN to 0 to open the camera by ID
+    /// </summary>
+    [HideInInspector]
+    public uint serialNumber = 0;
+
+    /// <summary>
     /// SVO Input FileName
     /// </summary>
     [HideInInspector]
@@ -1800,6 +1806,7 @@ public class ZEDManager : MonoBehaviour
         initParameters = new sl.InitParameters();
         initParameters.resolution = resolution;
         initParameters.cameraFPS = FPS;
+        initParameters.serialNumber = serialNumber;
         initParameters.cameraDeviceID = (int)cameraID;
         initParameters.depthMode = depthMode;
         initParameters.depthStabilization = depthStabilizer;
