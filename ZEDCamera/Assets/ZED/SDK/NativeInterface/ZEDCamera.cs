@@ -322,7 +322,7 @@ namespace sl
         * Opening function (Opens camera and creates textures).
         */
         [DllImport(nameDll, EntryPoint = "sl_open_camera")]
-        private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, System.Text.StringBuilder svoPath, System.Text.StringBuilder ipStream, int portStream, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
+        private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, uint serialNumber, System.Text.StringBuilder svoPath, System.Text.StringBuilder ipStream, int portStream, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
 
 
         /*
@@ -539,7 +539,7 @@ namespace sl
          */
         [DllImport(nameDll, EntryPoint = "sl_enable_positional_tracking_unity")]
         private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, 
-            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, System.Text.StringBuilder aeraFilePath = null);
+            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, sl.SENSOR_WORLD useSensorsWorld = sl.SENSOR_WORLD.IMU_GRAVITY, System.Text.StringBuilder aeraFilePath = null);
 
         [DllImport(nameDll, EntryPoint = "sl_disable_positional_tracking")]
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
@@ -582,6 +582,9 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_get_area_export_state")]
         private static extern int dllz_get_area_export_state(int cameraID);
+
+        [DllImport(nameDll, EntryPoint = "sl_set_region_of_interest")]
+        private static extern int dllz_sl_set_region_of_interest(int cameraID, IntPtr roiMask);
 
         /*
         * Spatial Mapping functions.
@@ -1102,7 +1105,7 @@ namespace sl
             }
             dll_initParameters initP = new dll_initParameters(initParameters); //DLL-friendly version of InitParameters.
             initP.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP; //Left-hand, Y-up is Unity's coordinate system, so we match that.
-            int v = dllz_open(CameraID, ref initP,
+            int v = dllz_open(CameraID, ref initP, initParameters.serialNumber,
                 new System.Text.StringBuilder(initParameters.pathSVO, initParameters.pathSVO.Length),
                 new System.Text.StringBuilder(initParameters.ipStream, initParameters.ipStream.Length),
                 initParameters.portStream,
@@ -1328,12 +1331,12 @@ namespace sl
         /// <param name="enableSpatialMemory">  (optional) define if spatial memory is enable or not.</param>
         /// <param name="areaFilePath"> (optional) file of spatial memory file that has to be loaded to relocate in the scene.</param>
         /// <returns></returns>
-        public sl.ERROR_CODE EnableTracking(ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = true, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, bool trackingIsStatic = false, 
-            bool enableIMUFusion = true, float depthMinRange = -1.0f, string areaFilePath = "")
+        public sl.ERROR_CODE EnableTracking(ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = true, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, bool trackingIsStatic = false,
+            bool enableIMUFusion = true, float depthMinRange = -1.0f, sl.SENSOR_WORLD useSensorsWorld = sl.SENSOR_WORLD.IMU_GRAVITY, string areaFilePath = "")
         {
             sl.ERROR_CODE trackingStatus = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
             trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(CameraID, ref quat, ref vec, enableSpatialMemory, enablePoseSmoothing, enableFloorAlignment, 
-                trackingIsStatic, enableIMUFusion, depthMinRange, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
+                trackingIsStatic, enableIMUFusion, depthMinRange, useSensorsWorld, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
             return trackingStatus;
         }
 
@@ -1920,7 +1923,20 @@ namespace sl
             err = (sl.ERROR_CODE)dllz_get_internal_sensors_data(CameraID, ref data, (int)referenceTime);
             return err;
         }
-        
+
+        /// <summary>
+        /// Defines a region of interest to focus on for all the SDK, discarding other parts.
+        /// </summary>
+        /// <param name="roiMask">the Mat defining the requested region of interest, all pixel set to 0 will be discard. If empty, set all pixels as valid, otherwise should fit the resolution of the current instance and its type should be U8_C1.</param>
+        /// <returns></returns>
+        public ERROR_CODE SetRegionOfInterest(sl.ZEDMat roiMask)
+        {
+            sl.ERROR_CODE err = sl.ERROR_CODE.FAILURE;
+
+            err = (sl.ERROR_CODE)dllz_sl_set_region_of_interest(CameraID, roiMask.GetPtr());
+            return err;
+        }
+
         /// <summary>
         /// Converts a float array to a matrix.
         /// </summary>

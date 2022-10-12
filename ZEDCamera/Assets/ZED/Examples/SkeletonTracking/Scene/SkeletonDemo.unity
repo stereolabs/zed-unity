@@ -336,7 +336,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: FPS
-      value: 60
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -351,7 +351,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: inputType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -361,7 +361,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: resolution
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -377,6 +377,11 @@ PrefabInstance:
         type: 3}
       propertyPath: svoLoopBack
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
+        type: 3}
+      propertyPath: serialNumber
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -416,7 +421,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: svoInputFileName
-      value: C:/Users/Benjamin/Downloads/digital_twin_prod_multipeople.svo
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -461,7 +466,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: camControlFoldoutOpen
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}

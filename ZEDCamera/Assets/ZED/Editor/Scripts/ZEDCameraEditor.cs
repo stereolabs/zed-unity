@@ -28,6 +28,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty depthModeProperty;
     private SerializedProperty usbResolutionProperty;
     private SerializedProperty usbFPSProperty;
+    private SerializedProperty usbSNProperty;
     private SerializedProperty svoFileNameProperty;
     private SerializedProperty svoLoopProperty;
     private SerializedProperty svoRealTimeModeProperty;
@@ -219,6 +220,7 @@ public class ZEDCameraEditor : Editor
         inputTypeProperty = serializedObject.FindProperty("inputType");
         usbResolutionProperty = serializedObject.FindProperty("resolution");
         usbFPSProperty = serializedObject.FindProperty("FPS");
+        usbSNProperty = serializedObject.FindProperty("serialNumber");
         svoFileNameProperty = serializedObject.FindProperty("svoInputFileName");
         svoLoopProperty = serializedObject.FindProperty("svoLoopBack");
         svoRealTimeModeProperty = serializedObject.FindProperty("svoRealTimeMode");
@@ -379,6 +381,10 @@ public class ZEDCameraEditor : Editor
                     "- HD2k: 15FPS\r\n\n- HD1080: 30FPS\r\n\n- HD720p: 60FPS\r\n\n- VGA: 100FPS");
                 GUI.enabled = !Application.isPlaying;
                 usbFPSProperty.intValue = EditorGUILayout.IntField(cameraFPSLabel, usbFPSProperty.intValue);
+
+                GUIContent cameraSerialNumberLabel = new GUIContent("Serial Number", "Serial number of the camera to open. Leave the SN to 0 to open the camera by ID.");
+                GUI.enabled = !Application.isPlaying;
+                usbSNProperty.intValue = EditorGUILayout.IntField(cameraSerialNumberLabel, usbSNProperty.intValue);
                 GUI.enabled = true;
                 serializedObject.ApplyModifiedProperties();
 

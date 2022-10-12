@@ -101,6 +101,12 @@ public class ZEDManager : MonoBehaviour
     public int FPS = 60;
 
     /// <summary>
+    /// Serial number of the camera to open. Leave the SN to 0 to open the camera by ID
+    /// </summary>
+    [HideInInspector]
+    public uint serialNumber = 0;
+
+    /// <summary>
     /// SVO Input FileName
     /// </summary>
     [HideInInspector]
@@ -912,6 +918,13 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public float depthMinRange = -1.0f;
+
+    /// <summary>
+    ///
+    /// </summary>
+    [HideInInspector]
+    public sl.SENSOR_WORLD sensorsWorld = sl.SENSOR_WORLD.IMU_GRAVITY;
+
     /// <summary>
     /// If true, the ZED SDK will subtly adjust the ZED's calibration during runtime to account for heat and other factors.
     /// Reasons to disable this are rare.
@@ -1805,6 +1818,7 @@ public class ZEDManager : MonoBehaviour
         //Set first few parameters for initialization. This will get passed to the ZED SDK when initialized.
         initParameters = new sl.InitParameters();
         initParameters.resolution = resolution;
+        initParameters.serialNumber = serialNumber;
         initParameters.cameraFPS = FPS;
         initParameters.cameraDeviceID = (int)cameraID;
         initParameters.depthMode = depthMode;
@@ -2277,7 +2291,10 @@ public class ZEDManager : MonoBehaviour
         {
             sl.ERROR_CODE err = zedCamera.EstimateInitialPosition(ref initialRotation, ref initialPosition);
             if (zedCamera.GetCameraModel() != sl.MODEL.ZED)
+            {
                 zedCamera.GetInternalIMUOrientation(ref initialRotation, sl.TIME_REFERENCE.IMAGE);
+            }
+
 
             if (err != sl.ERROR_CODE.SUCCESS)
                 Debug.LogWarning("Failed to estimate initial camera position");
@@ -2321,7 +2338,7 @@ public class ZEDManager : MonoBehaviour
             }
 
             sl.ERROR_CODE err = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
-                enablePoseSmoothing, estimateInitialPosition, trackingIsStatic, enableIMUFusion, depthMinRange, pathSpatialMemory));
+                enablePoseSmoothing, estimateInitialPosition, trackingIsStatic, enableIMUFusion, depthMinRange, sensorsWorld, pathSpatialMemory));
 
             //Now enable the tracking with the proper parameters.
             if (!(enableTracking = (err == sl.ERROR_CODE.SUCCESS)))
@@ -3049,7 +3066,6 @@ public class ZEDManager : MonoBehaviour
         forceCloseInit = false;
 
         Awake();
-
     }
 
     public void Reboot()
@@ -3288,7 +3304,7 @@ public class ZEDManager : MonoBehaviour
             {
                 //Enables tracking and initializes the first position of the camera.
                 if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, estimateInitialPosition, trackingIsStatic,
-                    enableIMUFusion, depthMinRange, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
+                    enableIMUFusion, depthMinRange, sensorsWorld, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
                 {
                     isZEDTracked = false;
                     throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));

@@ -1268,12 +1268,27 @@ namespace sl
     };
 
     /// <summary>
+    /// Defines the world type that the SDK can use to initialize the Positionnal Tracking module
+    /// </summary>
+    public enum SENSOR_WORLD
+    {
+        /// <summary>
+        /// default behavior
+        /// </summary>
+        OFF,
+        /// <summary>
+        /// align world to imu gravity measurement. keep the yaw from the user
+        /// </summary>
+        IMU_GRAVITY
+    };
+
+    /// <summary>
     /// Possible states of the ZED's Tracking system.
     /// </summary>
     public enum TRACKING_STATE
     {
         /// <summary>
-        /// Tracking is searching for a match from the database to relocate to a previously known position.
+        /// The camera is searching for a previously known position to locate itself.
         /// </summary>
         TRACKING_SEARCH,
         /// <summary>
@@ -1285,9 +1300,13 @@ namespace sl
         /// </summary>
         TRACKING_OFF,
         /// <summary>
-        /// This is the last searching state of the track, the track will be deleted in the next retreiveObject
+        /// Effective FPS is too low to give proper results for motion tracking. Consider using PERFORMANCES parameters (DEPTH_MODE_PERFORMANCE, low camera resolution (VGA,HD720))
         /// </summary>
-        TRACKING_TERMINATE
+        TRACKING_FPS_TOO_LOW,
+        /// <summary>
+        /// The camera is searching for the floor plane to locate itself related to it, the REFERENCE_FRAME::WORLD will be set afterward.
+        /// </summary>
+        TRACKING_SEARCHING_FLOOR_PLANE
     }
 
     /// <summary>
@@ -1467,6 +1486,10 @@ namespace sl
         /// </summary>
         public int cameraDeviceID;
         /// <summary>
+        /// Serial number of the camera to open
+        /// </summary>
+        public uint serialNumber;
+        /// <summary>
         /// Path to a recorded SVO file to play, including filename.
         /// </summary>
         public string pathSVO = "";
@@ -1572,6 +1595,7 @@ namespace sl
             this.resolution = RESOLUTION.HD720;
             this.cameraFPS = 60;
             this.cameraDeviceID = 0;
+            this.serialNumber = 0;
             this.pathSVO = "";
             this.svoRealTimeMode = false;
             this.coordinateUnit = UNIT.METER;
@@ -1844,6 +1868,15 @@ namespace sl
         \brief Defines the filtering mode that should be applied to raw detections.
         */
         public OBJECT_FILTERING_MODE filteringMode;
+        /// <summary>
+        /// When an object is not detected anymore, the SDK will predict its positions during a short period of time before switching its state to SEARCHING.
+        /// It prevents the jittering of the object state when there is a short misdetection.The user can define its own prediction time duration.
+        /// During this time, the object will have OK state even if it is not detected.
+        /// The duration is expressed in seconds.
+        /// The prediction_timeout_s will be clamped to 1 second as the prediction is getting worst with time.
+        /// Set this parameter to 0 to disable SDK predictions.
+        /// </summary>
+        public float predictionTimeout_s;
     };
 
 
@@ -2236,6 +2269,10 @@ namespace sl
         /// </summary>
         PERSON_HEAD_DETECTION,
         /// <summary>
+        /// related to sl.DETECTION_MODEL.PERSON_HEAD
+        /// </summary>
+        PERSON_HEAD_ACCURATE_DETECTION,
+        /// <summary>
         /// related to sl.BatchParameters.enable
         /// </summary>
         REID_ASSOCIATION, // related to 
@@ -2341,7 +2378,7 @@ namespace sl
         /// <summary>
         ///  Defines the object tracking state
         /// </summary>
-        public TRACKING_STATE trackingState = TRACKING_STATE.TRACKING_TERMINATE;
+        public TRACKING_STATE trackingState = TRACKING_STATE.TRACKING_OFF;
         /// <summary>
         /// A sample of 3d position
         /// </summary>
