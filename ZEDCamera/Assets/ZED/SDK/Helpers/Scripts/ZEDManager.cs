@@ -920,10 +920,10 @@ public class ZEDManager : MonoBehaviour
     public float depthMinRange = -1.0f;
 
     /// <summary>
-    ///
+    /// This setting allows you to override 2 of the 3 rotations from initial_world_transform using the IMU gravity
     /// </summary>
     [HideInInspector]
-    public sl.SENSOR_WORLD sensorsWorld = sl.SENSOR_WORLD.IMU_GRAVITY;
+    public bool setGravityAsOrigin = true;
 
     /// <summary>
     /// If true, the ZED SDK will subtly adjust the ZED's calibration during runtime to account for heat and other factors.
@@ -2338,7 +2338,7 @@ public class ZEDManager : MonoBehaviour
             }
 
             sl.ERROR_CODE err = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
-                enablePoseSmoothing, estimateInitialPosition, trackingIsStatic, enableIMUFusion, depthMinRange, sensorsWorld, pathSpatialMemory));
+                enablePoseSmoothing, estimateInitialPosition, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, pathSpatialMemory));
 
             //Now enable the tracking with the proper parameters.
             if (!(enableTracking = (err == sl.ERROR_CODE.SUCCESS)))
@@ -3304,7 +3304,7 @@ public class ZEDManager : MonoBehaviour
             {
                 //Enables tracking and initializes the first position of the camera.
                 if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, estimateInitialPosition, trackingIsStatic,
-                    enableIMUFusion, depthMinRange, sensorsWorld, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
+                    enableIMUFusion, depthMinRange, setGravityAsOrigin, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
                 {
                     isZEDTracked = false;
                     throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));

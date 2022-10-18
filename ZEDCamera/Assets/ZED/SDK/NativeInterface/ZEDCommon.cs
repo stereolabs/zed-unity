@@ -1268,21 +1268,6 @@ namespace sl
     };
 
     /// <summary>
-    /// Defines the world type that the SDK can use to initialize the Positionnal Tracking module
-    /// </summary>
-    public enum SENSOR_WORLD
-    {
-        /// <summary>
-        /// default behavior
-        /// </summary>
-        OFF,
-        /// <summary>
-        /// align world to imu gravity measurement. keep the yaw from the user
-        /// </summary>
-        IMU_GRAVITY
-    };
-
-    /// <summary>
     /// Possible states of the ZED's Tracking system.
     /// </summary>
     public enum TRACKING_STATE
