@@ -475,6 +475,11 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 23958819228058606, guid: dda0baf117c99c04dbb8fb1c9e2d1c69,
+        type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 108625368960626940, guid: dda0baf117c99c04dbb8fb1c9e2d1c69,
         type: 3}
       propertyPath: m_Range
@@ -572,12 +577,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
+      propertyPath: FPS
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
+      propertyPath: depthMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: inputType
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: showarrig
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
+      propertyPath: resolution
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
@@ -679,7 +699,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1227702867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -700,19 +720,19 @@ MonoBehaviour:
   SNHolder:
   zedManager: {fileID: 139748563}
   fireBinding:
-    actionPath: /actions/default/in/Teleport
+    actionPath:
     needsReinit: 0
   clickBinding:
-    actionPath: /actions/default/in/GrabGrip
+    actionPath:
     needsReinit: 0
   backBinding:
-    actionPath: /actions/default/in/GrabPinch
+    actionPath:
     needsReinit: 0
   grabBinding:
-    actionPath: /actions/default/in/GrabPinch
+    actionPath:
     needsReinit: 0
   navigateUIBinding:
-    actionPath: /actions/platformer/in/Move
+    actionPath:
     needsReinit: 0
   onFireDown:
     m_PersistentCalls:
@@ -876,7 +896,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1926151453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -897,19 +917,19 @@ MonoBehaviour:
   SNHolder:
   zedManager: {fileID: 139748563}
   fireBinding:
-    actionPath: /actions/default/in/Teleport
+    actionPath:
     needsReinit: 0
   clickBinding:
-    actionPath: /actions/default/in/GrabGrip
+    actionPath:
     needsReinit: 0
   backBinding:
-    actionPath: /actions/default/in/GrabPinch
+    actionPath:
     needsReinit: 0
   grabBinding:
-    actionPath: /actions/default/in/GrabPinch
+    actionPath:
     needsReinit: 0
   navigateUIBinding:
-    actionPath: /actions/platformer/in/Move
+    actionPath:
     needsReinit: 0
   onFireDown:
     m_PersistentCalls:

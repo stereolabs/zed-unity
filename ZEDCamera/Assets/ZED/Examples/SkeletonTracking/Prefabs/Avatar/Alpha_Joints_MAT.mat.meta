@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/SkeletonTracking/Prefabs/Avatar/Alpha_Joints_MAT.mat.meta
 guid: aa1fe9fc8e1be314e9eeff39347a6528
+========
+guid: b8ccaac990b85c54d996b489dccb2e39
+>>>>>>>> 9e91e4aff31261de60deb827d63134dc844277f6:ZEDCamera/Assets/ZED/Examples/Planetarium/Resources/Sun/Materials/Sun_URP.mat.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 0

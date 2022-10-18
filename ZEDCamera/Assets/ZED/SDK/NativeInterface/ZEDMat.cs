@@ -129,7 +129,11 @@ namespace sl
             /// <summary>
             /// Unsigned short 1 channel.
             /// </summary>
-            MAT_16U_C1
+            MAT_16U_C1,
+            /// <summary>
+            /// signed char 4 channels.
+            /// </summary>
+            MAT_S8_C4
         };
 
         /// <summary>

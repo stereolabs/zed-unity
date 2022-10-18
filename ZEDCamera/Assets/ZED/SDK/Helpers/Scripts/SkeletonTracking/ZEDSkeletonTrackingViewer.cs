@@ -58,16 +58,19 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     public bool showOFF = false;
 
     [Header("Avatar Control")]
-	/// <summary>
-	/// Avatar game object
-	/// </summary>
+    /// <summary>
+    /// Avatar game object
+    /// </summary>
+    [Tooltip("3D Rigged model.")]
     public GameObject Avatar;
 
     [Space(5)]
-    [Range(-2.0f, 2.0f)]
-    public float heightOffset = 0.0f;
+    [Tooltip("Mirror the animation.")]
+    public bool mirrorMode;
 
-	public Dictionary<int,SkeletonHandler> avatarControlList;
+    public Dictionary<int,SkeletonHandler> avatarControlList;
+
+    private float alpha = 0.1f;
 
     /// <summary>
     /// Start this instance.
@@ -140,7 +143,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 			if (avatarControlList.ContainsKey(person_id))
 			{
 				SkeletonHandler handler = avatarControlList[person_id];
-				UpdateAvatarControl(handler,dobj.rawObjectData, useAvatar);
+				UpdateAvatarControl(handler,dobj.rawObjectData);
 
 				// remove keys from list
 				remainingKeyList.Remove(person_id);
@@ -152,7 +155,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
                 handler.Create(Avatar);
                 handler.initSkeleton(person_id);
                 avatarControlList.Add(person_id, handler);
-                UpdateAvatarControl(handler, dobj.rawObjectData, useAvatar);
+                UpdateAvatarControl(handler, dobj.rawObjectData);
 			}
 		}
 
@@ -179,15 +182,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
                 Debug.Log("<b><color=green> Switch to Skeleton mode</color></b>");
         }
 
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            heightOffset -= 0.02f;
-        }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            heightOffset += 0.02f;
-        }
-
         if (useAvatar)
         {
             foreach (var skelet in avatarControlList)
@@ -205,7 +199,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// </summary>
 	/// <param name="handler">Handler.</param>
 	/// <param name="p">P.</param>
-	private void UpdateAvatarControl(SkeletonHandler handler, sl.ObjectDataSDK data, bool useAvatar)
+	private void UpdateAvatarControl(SkeletonHandler handler, sl.ObjectDataSDK data)
 	{
         Vector3[] worldJointsPos = new Vector3[34];
         Quaternion[] worldJointsRot = new Quaternion[34];
@@ -216,9 +210,21 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
             worldJointsRot[i] = data.localOrientationPerJoint[i].normalized;
         }
 
-        handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, zedManager.GetZedRootTansform().rotation * data.globalRootOrientation, useAvatar);
+        handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, zedManager.GetZedRootTansform().rotation * data.globalRootOrientation, useAvatar, mirrorMode);
 
-        handler.SetHeightOffset(heightOffset);
+        if (handler.GetAnimator())
+        {
+            if (data.keypointConfidence[(int)sl.BODY_PARTS_POSE_34.LEFT_ANKLE] != 0 && data.keypointConfidence[(int)sl.BODY_PARTS_POSE_34.RIGHT_ANKLE] != 0)
+            {
+                if (handler.GetAnimator().GetBoneTransform(HumanBodyBones.LeftToes) && handler.GetAnimator().GetBoneTransform(HumanBodyBones.RightToes))
+                {
+                    float leftFootHeight = handler.GetAnimator().GetBoneTransform(HumanBodyBones.LeftToes).position.y;
+                    float rightFootHeight = handler.GetAnimator().GetBoneTransform(HumanBodyBones.RightToes).position.y;
+                    handler.FeetOffset = alpha * Mathf.Min(leftFootHeight, rightFootHeight) + (1 - alpha) * handler.FeetOffset;
+                    //Debug.Log(handler.FeetOffset);
+                }
+            }
+        }
     }
 
     void UpdateViewCameraPosition()

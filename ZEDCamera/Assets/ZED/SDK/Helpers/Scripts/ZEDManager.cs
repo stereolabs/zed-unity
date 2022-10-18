@@ -405,7 +405,7 @@ public class ZEDManager : MonoBehaviour
     public sl.BODY_FORMAT objectDetectionBodyFormat = sl.BODY_FORMAT.POSE_34;
 
     [HideInInspector]
-    public sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.POSE_34;
+    public int minimumKeypointsThreshold = 0;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
@@ -914,6 +914,18 @@ public class ZEDManager : MonoBehaviour
     public bool enableIMUFusion = true;
 
     /// <summary>
+    /// This setting allows you to change the minimum depth used by the SDK for Positional Tracking.
+    /// </summary>
+    [HideInInspector]
+    public float depthMinRange = -1.0f;
+
+    /// <summary>
+    /// This setting allows you to override 2 of the 3 rotations from initial_world_transform using the IMU gravity
+    /// </summary>
+    [HideInInspector]
+    public bool setGravityAsOrigin = true;
+
+    /// <summary>
     /// If true, the ZED SDK will subtly adjust the ZED's calibration during runtime to account for heat and other factors.
     /// Reasons to disable this are rare.
     /// </summary>
@@ -1084,10 +1096,11 @@ public class ZEDManager : MonoBehaviour
     /// (sensing mode, point cloud, if depth is enabled, etc.).
     /// </summary>
     private sl.RuntimeParameters runtimeParameters;
-    /// <summary>
-    /// Enables the ZED SDK's depth stabilizer, which improves depth accuracy and stability. There's rarely a reason to disable this.
-    /// </summary>
-    private bool depthStabilizer = true;
+    /// This sets the depth stabilizer temporal smoothing strength.
+    /// the depth stabilize smooth range is [0, 100]
+    /// 0 means a low temporal smmoothing behavior(for highly dynamic scene),
+    /// 100 means a high temporal smoothing behavior(for static scene)
+    private float depthStabilization = -1f;
     /// <summary>
     /// Indicates if Sensors( IMU,...) is needed/required. For most applications, it is required.
     /// Sensors are transmitted through USB2.0 lines. If USB2 is not available (USB3.0 only extension for example), set it to false.
@@ -1805,11 +1818,12 @@ public class ZEDManager : MonoBehaviour
         //Set first few parameters for initialization. This will get passed to the ZED SDK when initialized.
         initParameters = new sl.InitParameters();
         initParameters.resolution = resolution;
+        initParameters.serialNumber = serialNumber;
         initParameters.cameraFPS = FPS;
         initParameters.serialNumber = serialNumber;
         initParameters.cameraDeviceID = (int)cameraID;
         initParameters.depthMode = depthMode;
-        initParameters.depthStabilization = depthStabilizer;
+        initParameters.depthStabilization = depthStabilization;
         initParameters.sensorsRequired = sensorsRequired;
         initParameters.depthMaximumDistance = 40.0f; // 40 meters should be enough for all applications
         initParameters.cameraImageFlip = (int)cameraFlipMode;
@@ -2184,6 +2198,7 @@ public class ZEDManager : MonoBehaviour
     {
         if (requestNewFrame && zedReady)
         {
+
             if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO)
             {
                 //handle pause
@@ -2277,7 +2292,10 @@ public class ZEDManager : MonoBehaviour
         {
             sl.ERROR_CODE err = zedCamera.EstimateInitialPosition(ref initialRotation, ref initialPosition);
             if (zedCamera.GetCameraModel() != sl.MODEL.ZED)
+            {
                 zedCamera.GetInternalIMUOrientation(ref initialRotation, sl.TIME_REFERENCE.IMAGE);
+            }
+
 
             if (err != sl.ERROR_CODE.SUCCESS)
                 Debug.LogWarning("Failed to estimate initial camera position");
@@ -2321,7 +2339,7 @@ public class ZEDManager : MonoBehaviour
             }
 
             sl.ERROR_CODE err = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
-                enablePoseSmoothing, estimateInitialPosition, trackingIsStatic, enableIMUFusion, pathSpatialMemory));
+                enablePoseSmoothing, estimateInitialPosition, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, pathSpatialMemory));
 
             //Now enable the tracking with the proper parameters.
             if (!(enableTracking = (err == sl.ERROR_CODE.SUCCESS)))
@@ -2695,7 +2713,7 @@ public class ZEDManager : MonoBehaviour
         sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel));
         if (!AiModelStatus.optimized)
         {
-            Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
+           // Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
            // return;
         }
         //We start a coroutine so we can delay actually starting the detection.
@@ -2768,6 +2786,8 @@ public class ZEDManager : MonoBehaviour
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
             od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.SPORT] = Convert.ToInt32(objectClassSportFilter);
 
+            od_runtime_params.minimumKeypointsThreshold = minimumKeypointsThreshold;
+
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
             watch.Start();
 
@@ -2823,6 +2843,8 @@ public class ZEDManager : MonoBehaviour
         od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
         od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
         od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
+
+        od_runtime_params.minimumKeypointsThreshold = minimumKeypointsThreshold;
 
         if (objectDetectionImageSyncMode == false) RetrieveObjectDetectionFrame(); //If true, this is called in the AcquireImages function in the image acquisition thread.
 
@@ -3045,7 +3067,6 @@ public class ZEDManager : MonoBehaviour
         forceCloseInit = false;
 
         Awake();
-
     }
 
     public void Reboot()
@@ -3086,6 +3107,10 @@ public class ZEDManager : MonoBehaviour
                 }
                 Thread.Sleep(500);
             }
+        }
+        else
+        {
+            Debug.LogWarning("Reboot has failed with error " + err);
         }
 
         if (isCameraAvailable)
@@ -3280,7 +3305,7 @@ public class ZEDManager : MonoBehaviour
             {
                 //Enables tracking and initializes the first position of the camera.
                 if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, estimateInitialPosition, trackingIsStatic,
-                    enableIMUFusion, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
+                    enableIMUFusion, depthMinRange, setGravityAsOrigin, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
                 {
                     isZEDTracked = false;
                     throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));

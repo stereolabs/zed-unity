@@ -223,8 +223,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
+      propertyPath: FPS
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: chunkSize
       value: 32768
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
+      propertyPath: depthMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
@@ -235,6 +245,11 @@ PrefabInstance:
         type: 3}
       propertyPath: showarrig
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
+      propertyPath: resolution
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
@@ -296,7 +311,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &822331332 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1222075980241000, guid: 558a4b76067e3e44089fbed55a2687e6, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1222075980241000, guid: 558a4b76067e3e44089fbed55a2687e6,
+    type: 3}
   m_PrefabInstance: {fileID: 1663354463}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &822331333
@@ -311,11 +327,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
   m_Name:
   m_EditorClassIdentifier:
+  index: -1
+  useLegacySteamVRInput: 0
   deviceToTrack: 0
   latencyCompensation: 78
   correctControllerDrift: 1
   SNHolder:
   zedManager: {fileID: 1344833222}
+  fireBinding:
+    actionPath:
+    needsReinit: 0
+  clickBinding:
+    actionPath:
+    needsReinit: 0
+  backBinding:
+    actionPath:
+    needsReinit: 0
+  grabBinding:
+    actionPath:
+    needsReinit: 0
+  navigateUIBinding:
+    actionPath:
+    needsReinit: 0
   onFireDown:
     m_PersistentCalls:
       m_Calls: []
@@ -827,11 +860,21 @@ MonoBehaviour:
   correctControllerDrift: 1
   SNHolder:
   zedManager: {fileID: 1344833222}
-  fireButton: 2
-  clickButton: 2
-  backButton: 8
-  grabButton: 3
-  navigateUIAxis: 10
+  fireBinding:
+    actionPath:
+    needsReinit: 0
+  clickBinding:
+    actionPath:
+    needsReinit: 0
+  backBinding:
+    actionPath:
+    needsReinit: 0
+  grabBinding:
+    actionPath:
+    needsReinit: 0
+  navigateUIBinding:
+    actionPath:
+    needsReinit: 0
   onFireDown:
     m_PersistentCalls:
       m_Calls: []
