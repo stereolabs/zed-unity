@@ -2167,30 +2167,6 @@ namespace sl
         }
 
         /// <summary>
-        /// List all the connected devices with their associated information.
-        /// This function lists all the cameras available and provides their serial number, models and other information.
-        /// </summary>
-        /// <returns>The device properties for each connected camera</returns>
-        public static sl.DeviceProperties[] GetDeviceList(out int nbDevices)
-        {
-            sl.DeviceProperties[] deviceList = new sl.DeviceProperties[(int)Constant.MAX_CAMERA_PLUGIN];
-            dllz_get_device_list(deviceList, out nbDevices);
-
-            return deviceList;
-        }
-
-        /// <summary>
-        /// Performs an hardware reset of the ZED 2/ZED 2i.
-        /// </summary>
-        /// <param name="serialNumber">Serial number of the camera</param>
-        /// <param name="fullReboot"> Perform a full reboot (Sensors and Video modules)</param>
-        /// <returns>ZED SDK version as a string in the format MAJOR.MINOR.PATCH.</returns>
-        public static sl.ERROR_CODE Reboot(int serialNumber, bool fullReboot = true)
-        {
-            return (sl.ERROR_CODE)dllz_reboot(serialNumber, fullReboot);
-        }
-
-        /// <summary>
         /// Checks if the camera has been initialized and the plugin has been loaded. Throws exceptions otherwise.
         /// </summary>
         private void AssertCameraIsReady()

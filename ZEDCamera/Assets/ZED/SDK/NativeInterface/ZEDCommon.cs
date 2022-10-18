@@ -1904,15 +1904,6 @@ namespace sl
     };
 
     /// <summary>
-    /// Lists of supported skeleton body model
-    /// </summary>
-    public enum BODY_FORMAT
-    {
-        POSE_18,
-        POSE_34,
-    };
-
-    /// <summary>
     /// Object data structure directly from the SDK. Represents a single object detection.
     /// See DetectedObject for an abstracted version with helper functions that make this data easier to use in Unity.
     /// </summary>
