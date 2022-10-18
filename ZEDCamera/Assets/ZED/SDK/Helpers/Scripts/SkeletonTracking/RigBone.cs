@@ -32,8 +32,13 @@ public class RigBone {
       Debug.Log("Avatar is not Humanoid or it is not valid");
       return;
     }
-    isValid = true;
 
+    if (!animator.GetBoneTransform(bone))
+    {
+     Debug.Log("Bone : " + bone + " not found ! ");
+    }
+
+    isValid = true;
     savedValue = animator.GetBoneTransform(bone).localRotation;
   }
   public void set(float a, float x, float y, float z) {

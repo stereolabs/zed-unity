@@ -460,10 +460,10 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 		//Set eye layers to respective eyes.
 		finalCenterEye.stereoTargetEye = StereoTargetEyeMask.Both;
 
-        /// AR Passtrough is recommended in 1280x720 at 60, due to FoV, FPS, etc.
-        /// If not set to this resolution, warn the user.
-        if (zedCamera.ImageWidth != 1280 && zedCamera.ImageHeight != 720)
-            Debug.LogWarning("[ZED AR Passthrough] This resolution is not ideal for a proper AR passthrough experience. Recommended resolution is 1280x720.");
+		/// AR Passtrough is recommended in 1280x720 at 60, due to FoV, FPS, etc.
+		/// If not set to this resolution, warn the user.
+		if (zedCamera.ImageWidth != 1280 && zedCamera.ImageHeight != 720)
+			Debug.LogWarning ("[ZED AR Passthrough] This resolution is not ideal for a proper AR passthrough experience. Recommended resolution is 1280x720.");
 
 		zedReady = true;
 	}

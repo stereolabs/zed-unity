@@ -129,18 +129,8 @@ namespace sl
             
             if (_pointMaterial != null)
             {
-                if (Application.isPlaying)
-                {
-                    Destroy(_pointMaterial);
-                    Destroy(_diskMaterial);
-
-                }
-                else
-                {
-                    DestroyImmediate(_pointMaterial);
-                    DestroyImmediate(_diskMaterial);
-
-                }
+                Destroy(_pointMaterial);
+                Destroy(_diskMaterial);
             }
         }
 

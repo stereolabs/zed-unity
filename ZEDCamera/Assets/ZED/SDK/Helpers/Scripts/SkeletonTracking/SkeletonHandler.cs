@@ -5,7 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-
 public class SkeletonHandler : ScriptableObject
 {
     // For Skeleton Display
@@ -33,7 +32,7 @@ public class SkeletonHandler : ScriptableObject
     JointType_HeelLeft = 32,
     JointType_EyesRight = 30,
     JointType_EyesLeft = 28,
-    JointType_EarRight = 30,
+    JointType_EarRight = 31,
     JointType_EarLeft = 29,
     JointType_SpineBase = 0,
     JointType_SpineNaval = 1,
@@ -171,14 +170,14 @@ public class SkeletonHandler : ScriptableObject
     HumanBodyBones.LeftHand, // Left Wrist
     HumanBodyBones.LastBone, // Left Hand
     HumanBodyBones.LastBone, // Left HandTip
-    HumanBodyBones.LeftThumbDistal,
+    HumanBodyBones.LastBone,
     HumanBodyBones.RightShoulder,
     HumanBodyBones.RightUpperArm,
     HumanBodyBones.RightLowerArm,
     HumanBodyBones.RightHand, // Right Wrist
     HumanBodyBones.LastBone, // Right Hand
     HumanBodyBones.LastBone, // Right HandTip
-    HumanBodyBones.RightThumbDistal,
+    HumanBodyBones.LastBone,
     HumanBodyBones.LeftUpperLeg,
     HumanBodyBones.LeftLowerLeg,
     HumanBodyBones.LeftFoot,
@@ -198,6 +197,7 @@ public class SkeletonHandler : ScriptableObject
     };
 
     private GameObject humanoid;
+    private Animator animator;
     private Dictionary<HumanBodyBones, RigBone> rigBone = null;
     private Dictionary<HumanBodyBones, Quaternion> rigBoneTarget = null;
 
@@ -206,16 +206,21 @@ public class SkeletonHandler : ScriptableObject
     private List<GameObject> sphere = new List<GameObject>();// = GameObject.CreatePrimitive (PrimitiveType.Sphere);
 
     private Vector3 targetBodyPosition = new Vector3(0.0f, 0.0f, 0.0f);
-    public Quaternion targetBodyOrientation = Quaternion.identity;
+    private Quaternion targetBodyOrientation = Quaternion.identity;
 
-    private float heightOffset = 0.5f;
+    [SerializeField] private float _feetOffset = 0.0f;
+    public float FeetOffset {
+        get { return _feetOffset; }
+        set { _feetOffset = value; }
+    }
+
     /// <summary>
-    /// Sets the smooth factor.
+    /// Get Animator;
     /// </summary>
-    /// <param name="smooth">Smooth.</param>
-    public void SetHeightOffset(float offset)
+    /// <returns>Humanoid</returns>
+    public Animator GetAnimator()
     {
-        heightOffset = offset;
+        return animator;
     }
 
     /// <summary>
@@ -248,6 +253,7 @@ public class SkeletonHandler : ScriptableObject
 
                 if (h.GetComponent<Animator>())
                 {
+                    animator = humanoid.GetComponent<Animator>();
                     default_rotations[bone] = humanoid.GetComponent<Animator>().GetBoneTransform(bone).localRotation;
                 }
 
@@ -262,6 +268,7 @@ public class SkeletonHandler : ScriptableObject
         GameObject.Destroy(skeleton);
         rigBone.Clear();
         rigBoneTarget.Clear();
+        default_rotations.Clear();
         Array.Clear(bones, 0, bones.Length);
         Array.Clear(spheres, 0, spheres.Length);
     }
@@ -373,6 +380,116 @@ public class SkeletonHandler : ScriptableObject
         targetBodyPosition = rootPosition;
     }
 
+    /// <summary>
+    /// Function that handles the humanoid position, rotation and bones movement
+    /// </summary>
+    /// <param name="position_center">Position center.</param>
+    private void setHumanPoseControlMirrored(Vector3 rootPosition, Quaternion rootRotation, Quaternion[] jointsRotation)
+    {
+        rootPosition = rootPosition.mirror_x();
+        rootRotation = rootRotation.mirror_x();
+
+        // Store any joint local rotation (if the bone exists)
+        if (rigBone[HumanBodyBones.Hips].transform)
+        {
+            rigBoneTarget[HumanBodyBones.Hips] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.Hips)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.Hips].transform)
+        {
+            rigBoneTarget[HumanBodyBones.Spine] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.Spine)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.UpperChest].transform)
+        {
+            rigBoneTarget[HumanBodyBones.UpperChest] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.UpperChest)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightShoulder].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightShoulder] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftShoulder)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightUpperArm].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightUpperArm] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftUpperArm)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightLowerArm].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightLowerArm] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftLowerArm)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightHand].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightHand] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftHand)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftShoulder].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftShoulder] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightShoulder)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftUpperArm].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftUpperArm] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightUpperArm)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftLowerArm].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftLowerArm] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightLowerArm)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftHand].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftHand] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightHand)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.Neck].transform)
+        {
+            rigBoneTarget[HumanBodyBones.Neck] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.Neck)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.Head].transform)
+        {
+            rigBoneTarget[HumanBodyBones.Head] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.Head)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightUpperLeg].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightUpperLeg] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftUpperLeg)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightLowerLeg].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightLowerLeg] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftLowerLeg)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightFoot].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightFoot] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.LeftFoot)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftUpperLeg].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftUpperLeg] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightUpperLeg)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftLowerLeg].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftLowerLeg] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightLowerLeg)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftFoot].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftFoot] = jointsRotation[Array.IndexOf(humanBone, HumanBodyBones.RightFoot)].mirror_x();
+        }
+
+        // Store global transform (to be applied to the Hips joint).
+        targetBodyOrientation = rootRotation;
+        targetBodyPosition = rootPosition;
+    }
+
     // Init skeleton display
     public void initSkeleton(int person_id)
     {
@@ -397,10 +514,10 @@ public class SkeletonHandler : ScriptableObject
             sphere.GetComponent<Renderer>().material.color = color;
             sphere.transform.localScale = new Vector3(width * 2, width * 2, width * 2);
             sphere.transform.parent = skeleton.transform;
+            sphere.name = sphereList[j].ToString();
             spheres[j] = sphere;
         }
     }
-
 
     // Update skeleton display with new SDK data
     void updateSkeleton()
@@ -449,7 +566,7 @@ public class SkeletonHandler : ScriptableObject
     /// </summary>
     /// <param name="jt">Jt.</param>
     /// <param name="position_center">Position center.</param>
-    public void setControlWithJointPosition(Vector3[] jointsPosition, Quaternion[] jointsRotation, Quaternion rootRotation, bool useAvatar)
+    public void setControlWithJointPosition(Vector3[] jointsPosition, Quaternion[] jointsRotation, Quaternion rootRotation, bool useAvatar, bool _mirrorOnYAxis)
     {
         joints = jointsPosition;
 
@@ -458,7 +575,10 @@ public class SkeletonHandler : ScriptableObject
 
         if (useAvatar)
         {
-            setHumanPoseControl(jointsPosition[0], rootRotation, jointsRotation);
+            if (_mirrorOnYAxis)
+                setHumanPoseControlMirrored(jointsPosition[0], rootRotation, jointsRotation);
+            else
+                setHumanPoseControl(jointsPosition[0], rootRotation, jointsRotation);
         }
         else
         {
@@ -543,9 +663,8 @@ public class SkeletonHandler : ScriptableObject
         {
             var animator = humanoid.GetComponent<Animator>();
             // There is an offset between the joint "Hips" and the equivalent in the ZED SDK. This offset compensates it.
-            Vector3 offset = new Vector3(0, (animator.GetBoneTransform(HumanBodyBones.Hips).position.y - animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position.y), 0);
-            rigBone[HumanBodyBones.Hips].transform.position = targetBodyPosition + offset + new Vector3(0, heightOffset, 0);
-            rigBone[HumanBodyBones.Hips].transform.rotation = targetBodyOrientation;
+            Vector3 hipOffset = new Vector3(0, (animator.GetBoneTransform(HumanBodyBones.Hips).position.y - animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position.y), 0);
+            rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(targetBodyPosition + hipOffset - new Vector3(0, _feetOffset, 0), targetBodyOrientation);
         }
     }
 
@@ -556,7 +675,20 @@ public class SkeletonHandler : ScriptableObject
     {
         MoveAvatar();
     }
+}
 
+public static class TransformExtensions
+{
+    public static Vector3 mirror_x(this Vector3 input)
+    {
+        input.x *= -1f;
+        return input;
+    }
 
-
+    public static Quaternion mirror_x(this Quaternion input)
+    {
+        input.x *= -1f;
+        input.w *= -1f;
+        return input;
+    }
 }

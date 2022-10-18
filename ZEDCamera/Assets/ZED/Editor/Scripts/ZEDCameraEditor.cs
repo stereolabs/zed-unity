@@ -116,6 +116,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty OD_DetectionModel;
     private SerializedProperty OD_MaxRange;
     private SerializedProperty OD_FilteringMode;
+    private SerializedProperty OD_MinimumKPThresh;
     //Object Detection Runtime Prop
     private SerializedProperty OD_VehicleDetectionConfidence;
     private SerializedProperty OD_PersonDetectionConfidence;
@@ -266,6 +267,7 @@ public class ZEDCameraEditor : Editor
         OD_DetectionModel = serializedObject.FindProperty("objectDetectionModel");
         OD_MaxRange = serializedObject.FindProperty("objectDetectionMaxRange");
         OD_FilteringMode = serializedObject.FindProperty("objectDetectionFilteringMode");
+        OD_MinimumKPThresh = serializedObject.FindProperty("minimumKeypointsThreshold");
 
         OD_PersonDetectionConfidence = serializedObject.FindProperty("OD_personDetectionConfidenceThreshold");
         SK_PersonDetectionConfidence = serializedObject.FindProperty("SK_personDetectionConfidenceThreshold");
@@ -380,7 +382,7 @@ public class ZEDCameraEditor : Editor
                 GUI.enabled = !Application.isPlaying;
                 usbFPSProperty.intValue = EditorGUILayout.IntField(cameraFPSLabel, usbFPSProperty.intValue);
 
-                GUIContent cameraSerialNumberLabel = new GUIContent("Serial Number", "Serial number of the camera to open. Set the SN to 0 to open the camera by ID.");
+                GUIContent cameraSerialNumberLabel = new GUIContent("Serial Number", "Serial number of the camera to open. Leave the SN to 0 to open the camera by ID.");
                 GUI.enabled = !Application.isPlaying;
                 usbSNProperty.intValue = EditorGUILayout.IntField(cameraSerialNumberLabel, usbSNProperty.intValue);
                 GUI.enabled = true;
@@ -783,6 +785,9 @@ public class ZEDCameraEditor : Editor
                 GUIContent BodyFittingLabel = new GUIContent("Enable Body Fitting", "Defines if the body fitting will be applied.\r\n\n" +
                 "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
                 OD_BodyFitting.boolValue = EditorGUILayout.Toggle(BodyFittingLabel, OD_BodyFitting.boolValue);
+
+                GUIContent MinKPThresh = new GUIContent("Minimum keypoints threshold", "Filter detections with low number of keypoints detected");
+                OD_MinimumKPThresh.intValue = EditorGUILayout.IntSlider(MinKPThresh, OD_MinimumKPThresh.intValue, 0, 34);
             }
 
             GUIContent MaxRangeLabel = new GUIContent("Max Range", "Defines a upper depth range for detections.");
@@ -868,7 +873,7 @@ public class ZEDCameraEditor : Editor
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
                 OD_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(OD_personDetectionConfidenceThresholdLabel, OD_PersonDetectionConfidence.intValue, 1, 99);
             }
-            else if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.CUSTOM_BOX_OBJECTS) { 
+            else if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.CUSTOM_BOX_OBJECTS) {
             }
             else //SKELETON
             {
@@ -1056,7 +1061,7 @@ public class ZEDCameraEditor : Editor
             GUIContent enalbeIMUFusionLabel = new GUIContent("Visual-Inertial Tracking", "If true, and you are using a ZED2 or ZED Mini, IMU fusion uses data from the camera's IMU to improve tracking results. ");
             enableIMUFusionProperty.boolValue = EditorGUILayout.Toggle(enalbeIMUFusionLabel, enableIMUFusionProperty.boolValue);
 
-            //Whether to enable the ZED SDK's self-calibration feature. 
+            //Whether to enable the ZED SDK's self-calibration feature.
             GUIContent enableselfcaliblabel = new GUIContent("Self-Calibration", "If true, the ZED SDK will subtly adjust the ZED's calibration " +
                 "during runtime to account for heat and other factors. Reasons to disable this are rare. ");
             enableSelfCalibrationProperty.boolValue = EditorGUILayout.Toggle(enableselfcaliblabel, enableSelfCalibrationProperty.boolValue);
@@ -1083,7 +1088,7 @@ public class ZEDCameraEditor : Editor
 
             EditorGUI.indentLevel++;
 
-            //Style for the AR layer box. 
+            //Style for the AR layer box.
             GUIStyle layerboxstyle = new GUIStyle(EditorStyles.numberField);
             layerboxstyle.fixedWidth = 30;
             layerboxstyle.stretchWidth = false;
@@ -1190,7 +1195,7 @@ public class ZEDCameraEditor : Editor
                 "usually be left on. However, in some setups, like when using a custom mount, this can cause tracking errors.");
             setIMUPrior.boolValue = EditorGUILayout.Toggle(setimupriorlabel, manager.setIMUPriorInAR);
 
-            //Fade In At Start toggle. 
+            //Fade In At Start toggle.
             GUIContent fadeinlabel = new GUIContent("Fade In at Start", "When enabled, makes the ZED image fade in from black when the application starts.");
             fadeinonstart.boolValue = EditorGUILayout.Toggle(fadeinlabel, manager.fadeInOnStart);
 

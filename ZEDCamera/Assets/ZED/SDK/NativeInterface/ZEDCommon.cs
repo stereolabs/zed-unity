@@ -85,12 +85,43 @@ namespace sl
     [StructLayout(LayoutKind.Sequential)]
     public struct Pose
     {
+        /// <summary>
+        /// boolean that indicates if tracking is activated or not. You should check that first if something wrong.
+        /// </summary>
         public bool valid;
-        public ulong timestap;
+        /// <summary>
+        /// Timestamp of the pose. This timestamp should be compared with the camera timestamp for synchronization.
+        /// </summary>
+        public ulong timestamp;
+        /// <summary>
+        /// orientation from the pose.
+        /// </summary>
         public Quaternion rotation;
+        /// <summary>
+        /// translation from the pose.
+        /// </summary>
         public Vector3 translation;
+        /// <summary>
+        /// Confidence/Quality of the pose estimation for the target frame.
+        /// A confidence metric of the tracking[0 - 100], 0 means that the tracking is lost, 100 means that the tracking can be fully trusted.
+        /// </summary>
         public int pose_confidence;
-	};
+        /// <summary>
+        /// 6x6 Pose covariance of translation (the first 3 values) and rotation in so3 (the last 3 values)
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 36)]
+        public float[] pose_covariance;
+        /// <summary>
+        /// Twist of the camera available in reference camera, this expresses velocity in free space, broken into its linear and angular parts.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+        public float[] twist;
+        /// <summary>
+        /// Row-major representation of the 6x6 twist covariance matrix of the camera, this expresses the uncertainty of the twist.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 36)]
+        public float[] twist_covariance;
+    };
 
     /// <summary>
     /// Rect structure to define a rectangle or a ROI in pixels
@@ -137,6 +168,73 @@ namespace sl
         /// </summary>
         public int sn;
     };
+
+    /// <summary>
+    /// Streaming device properties
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct StreamingProperties
+    {
+        /// <summary>
+        /// The streaming IP of the device
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+        public string ip;
+        /// <summary>
+        /// The streaming port
+        /// </summary>
+        public ushort port;
+        /// <summary>
+        /// The current bitrate of encoding of the streaming device
+        /// </summary>
+        public int currentBitrate;
+        /// <summary>
+        /// The current codec used for compression in streaming device
+        /// </summary>
+        public sl.STREAMING_CODEC codec;
+    };
+
+    /// <summary>
+    /// Container for information about the current SVO recording process.
+    /// </summary><remarks>
+    /// Mirrors RecordingStatus in the ZED C++ SDK. For more info, visit:
+    /// https://www.stereolabs.com/docs/api/structsl_1_1RecordingStatus.html
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RecordingStatus
+    {
+        /// <summary>
+        /// Recorder status, true if enabled.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool is_recording;
+        /// <summary>
+        /// Recorder status, true if the pause is enabled.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool is_paused;
+        /// <summary>
+        /// Status of the current frame. True if recording was successful, false if frame could not be written.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool status;
+        /// <summary>
+        /// Compression time for the current frame in milliseconds.
+        /// </summary>
+        public double current_compression_time;
+        /// <summary>
+        /// Compression ratio (% of raw size) for the current frame.
+        /// </summary>
+        public double current_compression_ratio;
+        /// <summary>
+        /// Average compression time in millisecond since beginning of recording.
+        /// </summary>
+        public double average_compression_time;
+        /// <summary>
+        /// Compression ratio (% of raw size) since recording was started.
+        /// </summary>
+        public double average_compression_ratio;
+    }
 
     /// <summary>
     /// Full IMU data structure.
@@ -1175,7 +1273,7 @@ namespace sl
     public enum TRACKING_STATE
     {
         /// <summary>
-        /// Tracking is searching for a match from the database to relocate to a previously known position.
+        /// The camera is searching for a previously known position to locate itself.
         /// </summary>
         TRACKING_SEARCH,
         /// <summary>
@@ -1187,9 +1285,13 @@ namespace sl
         /// </summary>
         TRACKING_OFF,
         /// <summary>
-        /// This is the last searching state of the track, the track will be deleted in the next retreiveObject
+        /// Effective FPS is too low to give proper results for motion tracking. Consider using PERFORMANCES parameters (DEPTH_MODE_PERFORMANCE, low camera resolution (VGA,HD720))
         /// </summary>
-        TRACKING_TERMINATE
+        TRACKING_FPS_TOO_LOW,
+        /// <summary>
+        /// The camera is searching for the floor plane to locate itself related to it, the REFERENCE_FRAME::WORLD will be set afterward.
+        /// </summary>
+        TRACKING_SEARCHING_FLOOR_PLANE
     }
 
     /// <summary>
@@ -1429,9 +1531,12 @@ namespace sl
         /// </summary>
         public string sdkVerboseLogFile = "";
         /// <summary>
-        /// True to stabilize the depth map. Recommended.
+        /// This sets the depth stabilizer temporal smoothing strength.
+        /// the depth stabilize smooth range is [0, 100]
+        /// 0 means a low temporal smmoothing behavior(for highly dynamic scene),
+        /// 100 means a high temporal smoothing behavior(for static scene)
         /// </summary>
-        public bool depthStabilization;
+        public float depthStabilization;
 		/// <summary>
 		/// Optional path for searching configuration (calibration) file SNxxxx.conf. (introduced in ZED SDK 2.6)
 		/// </summary>
@@ -1489,7 +1594,7 @@ namespace sl
             this.sdkGPUId = -1;
             this.sdkVerboseLogFile = "";
             this.enableRightSideMeasure = false;
-            this.depthStabilization = true;
+            this.depthStabilization = -1.0f;
 			this.optionalSettingsPath = "";
 			this.sensorsRequired = false;
             this.ipStream = "";
@@ -1748,6 +1853,15 @@ namespace sl
         \brief Defines the filtering mode that should be applied to raw detections.
         */
         public OBJECT_FILTERING_MODE filteringMode;
+        /// <summary>
+        /// When an object is not detected anymore, the SDK will predict its positions during a short period of time before switching its state to SEARCHING.
+        /// It prevents the jittering of the object state when there is a short misdetection.The user can define its own prediction time duration.
+        /// During this time, the object will have OK state even if it is not detected.
+        /// The duration is expressed in seconds.
+        /// The prediction_timeout_s will be clamped to 1 second as the prediction is getting worst with time.
+        /// Set this parameter to 0 to disable SDK predictions.
+        /// </summary>
+        public float predictionTimeout_s;
     };
 
 
@@ -1772,6 +1886,21 @@ namespace sl
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)sl.OBJECT_CLASS.LAST)]
         public int[] object_confidence_threshold;
+        /// <summary>
+        /// Defines the minimum keypoints threshold.
+        /// the SDK will outputs skeletons with more keypoints than this threshold
+        /// it is useful for example to remove unstable fitting results when a skeleton is partially occluded
+        /// </summary>
+        public int minimumKeypointsThreshold;
+    };
+
+    /// <summary>
+    /// Lists of supported skeleton body model
+    /// </summary>
+    public enum BODY_FORMAT
+    {
+        POSE_18,
+        POSE_34,
     };
 
     /// <summary>
@@ -1833,7 +1962,10 @@ namespace sl
         public Vector3 rootWorldPosition; //object root position
         public Vector3 headWorldPosition; //object head position (only for HUMAN detectionModel)
         public Vector3 rootWorldVelocity; //object root velocity
-
+        /// <summary>
+        /// 3D object dimensions: width, height, length. Defined in InitParameters.UNIT, expressed in RuntimeParameters.measure3DReferenceFrame.
+        /// </summary>
+        public Vector3 dimensions;
 
         /// <summary>
         /// The 3D space bounding box. given as array of vertices
@@ -2070,6 +2202,10 @@ namespace sl
         /// </summary>
         PERSON_HEAD_BOX,
         /// <summary>
+        ///  Bounding Box detector specialized in person heads, particulary well suited for crowded environement, the person localization is also improved
+        /// </summary>
+        PERSON_HEAD_BOX_ACCURATE,
+        /// <summary>
         /// For external inference, using your own custom model and/or frameworks. This mode disable the internal inference engine, the 2D bounding box detection must be provided
         /// </summary>
         CUSTOM_BOX_OBJECTS,
@@ -2127,6 +2263,10 @@ namespace sl
         /// </summary>
         PERSON_HEAD_DETECTION,
         /// <summary>
+        /// related to sl.DETECTION_MODEL.PERSON_HEAD
+        /// </summary>
+        PERSON_HEAD_ACCURATE_DETECTION,
+        /// <summary>
         /// related to sl.BatchParameters.enable
         /// </summary>
         REID_ASSOCIATION, // related to
@@ -2164,6 +2304,48 @@ namespace sl
     };
 
     /// <summary>
+    /// ssemantic of human body parts and order keypoints for BODY_FORMAT.POSE_34.
+    /// </summary>
+    public enum BODY_PARTS_POSE_34
+    {
+        PELVIS = 0,
+        NAVAL_SPINE = 1,
+        CHEST_SPINE = 2,
+        NECK = 3,
+        LEFT_CLAVICLE = 4,
+        LEFT_SHOULDER = 5,
+        LEFT_ELBOW = 6,
+        LEFT_WRIST = 7,
+        LEFT_HAND = 8,
+        LEFT_HANDTIP = 9,
+        LEFT_THUMB = 10,
+        RIGHT_CLAVICLE = 11,
+        RIGHT_SHOULDER = 12,
+        RIGHT_ELBOW = 13,
+        RIGHT_WRIST = 14,
+        RIGHT_HAND = 15,
+        RIGHT_HANDTIP = 16,
+        RIGHT_THUMB = 17,
+        LEFT_HIP = 18,
+        LEFT_KNEE = 19,
+        LEFT_ANKLE = 20,
+        LEFT_FOOT = 21,
+        RIGHT_HIP = 22,
+        RIGHT_KNEE = 23,
+        RIGHT_ANKLE = 24,
+        RIGHT_FOOT = 25,
+        HEAD = 26,
+        NOSE = 27,
+        LEFT_EYE = 28,
+        LEFT_EAR = 29,
+        RIGHT_EYE = 30,
+        RIGHT_EAR = 31,
+        LEFT_HEEL = 32,
+        RIGHT_HEEL = 33,
+        LAST = 34
+    };
+
+    /// <summary>
     /// Contains batched data of a detected object
     /// </summary>
     /// <summary>
@@ -2190,7 +2372,7 @@ namespace sl
         /// <summary>
         ///  Defines the object tracking state
         /// </summary>
-        public TRACKING_STATE trackingState = TRACKING_STATE.TRACKING_TERMINATE;
+        public TRACKING_STATE trackingState = TRACKING_STATE.TRACKING_OFF;
         /// <summary>
         /// A sample of 3d position
         /// </summary>
