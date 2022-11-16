@@ -121,55 +121,55 @@ After importing the plugin, pick and try some of the example scenes. Each is des
 
 ### Planetarium
 
-https://user-images.githubusercontent.com/113181784/202196309-d9d1f980-15b5-4672-99cb-59a82b693c5f.mp4
+https://user-images.githubusercontent.com/113181784/202200233-ff0a6777-ab02-4896-aad5-8904b9318443.mp4
 
 A beautiful display of the ZED plugin's basic mixed reality features, viewable with or without a headset. Watch as the planets are properly occluded by the real world. Move your hand under the sun and see its warm glow light up your skin. Move, rotate and scale the planets with the keyboard, or with your VR controller if using the Oculus Integration or SteamVR plugins.
 
 ### Movie Screen
 
-https://user-images.githubusercontent.com/113181784/202196339-f1ed84c9-c051-4078-a1ce-ba2c2812060b.mp4
+https://user-images.githubusercontent.com/113181784/202200467-e66876ea-7bfd-4996-a31c-b6922a1653ea.mp4
 
 Similar to the Planetarium sample, but now playing a 2D movie on a movable, scalable 3D screen. Demonstrates how 2D content can easily be displayed in a 3D, mixed reality scene.
 
 ### Drone Battle
 
-https://user-images.githubusercontent.com/113181784/202196429-0da6efad-b254-4cfe-bfee-a1a7c2e0403b.mp4
+https://user-images.githubusercontent.com/113181784/202200580-78c327a4-7899-4162-adbb-d8318f313519.mp4
 
 Defend yourself from attack drones that spawn around your room and shoot at you. Block lasers with your hand, and shoot back with the spacebar, or VR controllers if using the Oculus Integration or SteamVR plugin. The scripts show how to make use of **ZEDSupportFunctions.cs** to spawn objects in empty areas (**DroneSpawner.cs**) and shoot projectiles that can hit the real *or* virtual world (**Projectile.cs**).
 
 ### Dark Room
 
-https://user-images.githubusercontent.com/113181784/202196451-18585e01-de2e-45ef-8071-00718c57e28a.mp4
+https://user-images.githubusercontent.com/113181784/202200729-966c34de-654e-4c4c-a977-941af3c854b7.mp4
 
 Your office is now a night club! This scene darkens the real world, then casts a laser light show on your walls and floors, complete with tunes and a disco ball. Shows the usefulness of **ZEDManager**'s Camera Brightness feature, and creative ways to use **ZEDLight.cs**.
 
 ### Simple Plane Detection
 
-https://user-images.githubusercontent.com/113181784/202196868-126561a0-9412-48b5-b729-006634f3ea83.mp4
+https://user-images.githubusercontent.com/113181784/202201108-e17debfa-175d-44b3-8be9-afab8c9007b2.mp4
 
 Run the scene and hold down spacebar to see if you're looking at a valid surface where a bunny could stand. Release the spacebar and a bunny will fall from the sky and land on that surface with proper physics.
 
 ### VR Only Plane Detection (requires VR HMD and Oculus/SteamVR plugin)
 
-https://user-images.githubusercontent.com/113181784/202196702-5ea2b806-00cc-4b6e-96ec-88172330a95a.mp4
+https://user-images.githubusercontent.com/113181784/202201329-ac25cb5c-0d8e-4042-b273-5788252731cd.mp4
 
 Aim your controller at the floor and pull the trigger to place a bunny. Then, a baseball bat will appear in your hand. Smack the bunny and send it flying as far as it can go - you'll see the distance once it lands. Shows how plane detection can fit into a proper game, and how to use **ZEDSupportFunctions**'s HitTestOnRay to check for planes using world space.
 
 ### ArUco Marker Detection (Requires OpenCV for Unity package)
 
-https://user-images.githubusercontent.com/113181784/202196971-4d0dcfd5-8804-431a-a7a4-0bbe60f5e58b.mp4
+https://user-images.githubusercontent.com/113181784/202201640-ff353944-0adb-4eba-a672-564d5d475f97.mp4
 
 Print out ArUco markers, put them in view of your ZED, and let the battle begin. Shows how to easily interface the ZED with OpenCV for marker detection using a variety of included scripts. Must have the [OpenCV for Unity](https://assetstore.unity.com/packages/tools/integration/opencv-for-unity-21088) package (trial or full version) imported to use.
 
 ### Greenscreen
 
-https://user-images.githubusercontent.com/113181784/202197003-50f9ff10-2338-4444-9453-d1e3a7af5bc6.mp4
+https://user-images.githubusercontent.com/113181784/202203983-01d323ce-4f57-4ce5-b8cf-f22d891c6319.mp4
 
 Aim your ZED at a greenscreen and hit Play to see your subject standing in a small town in the desert. You'll see that the nearby crates still have all the proper occlusion, but the greenscreen background is replaced with the virtual background. Attach the ZED to a controller or Vive Tracker and specify it in **ZEDControllerTracker** to move the ZED around in your tracked VR space.
 
 ### Mixed Reality Calibration
 
-https://user-images.githubusercontent.com/113181784/202197129-270f455d-3a58-40fb-bf61-39ee69adc031.mp4
+https://user-images.githubusercontent.com/113181784/202201972-7e199704-1057-4a40-a7ac-ca82a5f2ce53.mp4
 
 Use our interactive, in-VR app to calibrate your ZED with a tracked object, like a controller or Vive Tracker, to make capturing mixed reality videos easier than ever.
 
@@ -186,7 +186,7 @@ Use our interactive, in-VR app to calibrate your ZED with a tracked object, like
  - Set the **Directional Light** to point straight down by setting its X Rotation to 90 in its **Transform** component.
  - Run the scene. You'll see the sphere floating in the real world, and casting a shadown below it.
 
-https://user-images.githubusercontent.com/113181784/202197218-360a216e-f637-4926-8d45-830ff79780b3.mp4
+https://user-images.githubusercontent.com/113181784/202202116-8180e1f9-2824-4770-a9b8-5950047c09c8.mp4
 
 ## Adding AR Passthrough
 
@@ -198,7 +198,7 @@ This assume you have a VR headset (Oculus Rift, HTC Vive, HTC Vive Pro or Window
  - Enable **Virtual Reality Supported**. In Unity 2017.1 or 2017.2, this is in the **Other Settings** section. In 2017.3 and above, it's in **XR Settings**.
  - Run the scene and put on the headset.
 
-https://user-images.githubusercontent.com/113181784/202197312-5cd53593-b42f-417f-902c-035128784415.mp4
+https://user-images.githubusercontent.com/113181784/202202362-098952df-2f15-4b41-a6f5-e935319b6447.mp4
 
 #### If using a WMR Headset:
 The ZED Unity plugin supports WMR headsets via SteamVR only, which requires different settings than described in Unity's [WMR Quick Start Guide](https://docs.unity3d.com/Manual/wmr_quick_start.html). If you have trouble getting it to run, make sure that:
@@ -268,7 +268,7 @@ With VR enabled in the Player settings, you can just drag the camera into the sc
 
 Lets you scan your environment into a mesh. Useful for collisions where geometry must be persistent, for building navmeshes that AI can use to navigate, and for saving the meshes for later. It is also how you create a .area file used by the Spatial Memory feature of **ZEDManager**.
 
-https://user-images.githubusercontent.com/113181784/202197451-d738a0dd-3398-4093-a05d-de6572ccb373.mp4
+https://user-images.githubusercontent.com/113181784/202202889-b6da5b54-5133-45eb-a104-4b48e0b240b5.mp4
 
 During runtime, click **Start Spatial Mapping** to start the scan. Once you've scanned enough, hit "Stop Spatial Mapping" to finish the mesh (and save it if needed).
 
@@ -371,7 +371,7 @@ Read more [here](https://docs.stereolabs.com/mixed-reality/unity/lighting/).
 
 Removes green pixels (or pixels of another specified color) from the real world, to make the background visible regardless of depth. Useful for filming a VR user from third-person.
 
-https://user-images.githubusercontent.com/113181784/202197714-13e2d835-10a6-4d01-806e-4690ad5fb85b.mp4
+https://user-images.githubusercontent.com/113181784/202203917-2153ee9a-26de-4f41-b3dc-f5f243b9320a.mp4
 
 **ZEDGreenScreenManager** must be added to the same object as the cameras within the ZED rig. However, a few other changes to the rig are required to make it work, so it's recommended to use the rig prefab in **ZED** -> **Examples** -> **GreenScreen** -> **Prefabs** instead of modifying ZED_Rig_Mono.
 
@@ -396,13 +396,15 @@ Lets you click on the screen or specify screen-space coordinates to detect a fla
 
 Unlike Spatial Mapping, Plane Detection works in real-time, so it's often better for placing objects in the real world, or collisions.
 
-https://user-images.githubusercontent.com/113181784/202197812-9d94db5d-4f4d-49f0-b40e-ae1871287d53.mp4
+https://user-images.githubusercontent.com/113181784/202204267-994a8bf4-f080-4935-b1f4-89960ae6b2a5.mp4
 
 To use, create an empty GameObject and add the **ZEDPlaneDetectionManager** component to it. At runtime, click on the window to check for a plane there. You can also click **Detect** to check for a plane in the scene that represents the floor.
 
  - **Visible in Scene** governs whether you see planes in the Scene window.
  - **Visible in Game** governs whether you see planes in the Game view. Disabling can be useful if you just want planes for collisions.
- - **Override Material** will replace the default wireframe material on created planes with the material you specify.
+ - **Override Material** will replace the default wireframe material
+
+ on created planes with the material you specify.
  - **Add Collider** causes the manager to add a Mesh Collider to planes once spawned, enabling collisions.
 
 See the two included Plane Detection samples to explore further.
