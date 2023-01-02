@@ -496,7 +496,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: objectDetectionMaxRange
-      value: 20
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -516,7 +516,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: minimumKeypointsThreshold
-      value: 0
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}

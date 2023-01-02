@@ -146,7 +146,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	/// <summary>
 	/// Material from the final center plane. Usually a new instance of Mat_ZED_Unlit.
 	/// </summary>
-	[Tooltip("Material from the final right plane. Usually a new instance of Mat_ZED_Unlit. ")]
+	[Tooltip("Material from the final center plane. Usually a new instance of Mat_ZED_Unlit. ")]
 	public Material centerMaterial;
 
 	/// <summary>

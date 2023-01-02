@@ -4,7 +4,7 @@ Shader "ZED/ZED PointCloud"
 {
 	Properties
 	{
-		_MainTex ("Texture", 2D) = "white" {}
+		_ColorTex("Texture", 2D) = "white" {}
 		_Size("Size", Range(0.1,2)) = 2
 	}
 	SubShader
@@ -30,10 +30,7 @@ Shader "ZED/ZED PointCloud"
 				float3 normal : NORMAL;
 				float size : PSIZE;
 			};
-
-			sampler2D _MainTex;
-			float4 _MainTex_ST;
-			
+					
 			sampler2D _XYZTex;
 			sampler2D _ColorTex;
 			float4 _XYZTex_TexelSize;

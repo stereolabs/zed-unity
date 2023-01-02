@@ -1933,7 +1933,7 @@ namespace sl
         {
             sl.ERROR_CODE err = sl.ERROR_CODE.FAILURE;
 
-            err = (sl.ERROR_CODE)dllz_sl_set_region_of_interest(CameraID, roiMask.GetPtr());
+            err = (sl.ERROR_CODE)dllz_sl_set_region_of_interest(CameraID, roiMask.MatPtr);
             return err;
         }
 

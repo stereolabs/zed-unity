@@ -213,41 +213,41 @@ namespace sl
 
 
         [DllImport(nameDll, EntryPoint = "sl_mat_set_value_float")]
-        private static extern int dllz_mat_set_value_float(System.IntPtr ptr, int x, int y, ref float value, int mem);
+        private static extern int dllz_mat_set_value_float(System.IntPtr ptr, int x, int y, float value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_value_float2")]
-        private static extern int dllz_mat_set_value_float2(System.IntPtr ptr, int x, int y, ref float2 value, int mem);
+        private static extern int dllz_mat_set_value_float2(System.IntPtr ptr, int x, int y, float2 value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_value_float3")]
-        private static extern int dllz_mat_set_value_float3(System.IntPtr ptr, int x, int y, ref float3 value, int mem);
+        private static extern int dllz_mat_set_value_float3(System.IntPtr ptr, int x, int y, float3 value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_value_float4")]
-        private static extern int dllz_mat_set_value_float4(System.IntPtr ptr, int x, int y, ref float4 value, int mem);
+        private static extern int dllz_mat_set_value_float4(System.IntPtr ptr, int x, int y, float4 value, int mem);
 
         [DllImport(nameDll, EntryPoint = "sl_mat_set_value_uchar")]
-        private static extern int dllz_mat_set_value_uchar(System.IntPtr ptr, int x, int y, ref byte value, int mem);
+        private static extern int dllz_mat_set_value_uchar(System.IntPtr ptr, int x, int y, byte value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_value_uchar2")]
-        private static extern int dllz_mat_set_value_uchar2(System.IntPtr ptr, int x, int y, ref char2 value, int mem);
+        private static extern int dllz_mat_set_value_uchar2(System.IntPtr ptr, int x, int y, char2 value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_value_uchar3")]
-        private static extern int dllz_mat_set_value_uchar3(System.IntPtr ptr, int x, int y, ref char3 value, int mem);
+        private static extern int dllz_mat_set_value_uchar3(System.IntPtr ptr, int x, int y, char3 value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_value_uchar4")]
-        private static extern int dllz_mat_set_value_uchar4(System.IntPtr ptr, int x, int y, ref char4 value, int mem);
+        private static extern int dllz_mat_set_value_uchar4(System.IntPtr ptr, int x, int y, char4 value, int mem);
 
 
         [DllImport(nameDll, EntryPoint = "sl_mat_set_to_float")]
-        private static extern int dllz_mat_set_to_float(System.IntPtr ptr, ref float value, int mem);
+        private static extern int dllz_mat_set_to_float(System.IntPtr ptr, float value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_to_float2")]
-        private static extern int dllz_mat_set_to_float2(System.IntPtr ptr, ref float2 value, int mem);
+        private static extern int dllz_mat_set_to_float2(System.IntPtr ptr, float2 value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_to_float3")]
-        private static extern int dllz_mat_set_to_float3(System.IntPtr ptr, ref float3 value, int mem);
+        private static extern int dllz_mat_set_to_float3(System.IntPtr ptr, float3 value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_to_float4")]
-        private static extern int dllz_mat_set_to_float4(System.IntPtr ptr, ref float4 value, int mem);
+        private static extern int dllz_mat_set_to_float4(System.IntPtr ptr, float4 value, int mem);
 
         [DllImport(nameDll, EntryPoint = "sl_mat_set_to_uchar")]
-        private static extern int dllz_mat_set_to_uchar(System.IntPtr ptr,  ref byte value, int mem);
+        private static extern int dllz_mat_set_to_uchar(System.IntPtr ptr, byte value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_to_uchar2")]          
-        private static extern int dllz_mat_set_to_uchar2(System.IntPtr ptr, ref char2 value, int mem);
+        private static extern int dllz_mat_set_to_uchar2(System.IntPtr ptr, char2 value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_to_uchar3")]          
-        private static extern int dllz_mat_set_to_uchar3(System.IntPtr ptr, ref char3 value, int mem);
+        private static extern int dllz_mat_set_to_uchar3(System.IntPtr ptr, char3 value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_to_uchar4")]
-        private static extern int dllz_mat_set_to_uchar4(System.IntPtr ptr, ref char4 value, int mem);
+        private static extern int dllz_mat_set_to_uchar4(System.IntPtr ptr, char4 value, int mem);
 
         [DllImport(nameDll, EntryPoint = "sl_mat_update_cpu_from_gpu")]
         private static extern int dllz_mat_update_cpu_from_gpu(System.IntPtr ptr);
@@ -701,7 +701,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref float value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_float(_matInternalPtr, x, y, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_float(_matInternalPtr, x, y, value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_32F_C2)
@@ -713,7 +713,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref float2 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_float2(_matInternalPtr, x, y, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_float2(_matInternalPtr, x, y, value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_32F_C3)
@@ -725,7 +725,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref float3 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_float3(_matInternalPtr, x, y, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_float3(_matInternalPtr, x, y, value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_32F_C4)
@@ -737,7 +737,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, float4 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_float4(_matInternalPtr, x, y, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_float4(_matInternalPtr, x, y, value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_TYPE_8U_C1)
@@ -749,7 +749,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref byte value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar(_matInternalPtr, x, y, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar(_matInternalPtr, x, y, value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_TYPE_8U_C2)
@@ -761,7 +761,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref char2 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar2(_matInternalPtr, x, y, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar2(_matInternalPtr, x, y, value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_TYPE_8U_C3)
@@ -773,7 +773,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref char3 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar3(_matInternalPtr, x, y, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar3(_matInternalPtr, x, y, value, (int)(mem)));
         }
         /// <summary>
         /// Sets a value to a specific point in the matrix. (MAT_TYPE_8U_C4)
@@ -785,7 +785,7 @@ namespace sl
         /// <returns>Error code indicating if the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetValue(int x, int y, ref char4 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar4(_matInternalPtr, x, y, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_value_uchar4(_matInternalPtr, x, y, value, (int)(mem)));
         }
         /***************************************************************************************/
 
@@ -800,7 +800,7 @@ namespace sl
         /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo(ref float value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_to_float(_matInternalPtr, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_to_float(_matInternalPtr, value, (int)(mem)));
         }
 
         /// <summary>
@@ -811,7 +811,7 @@ namespace sl
         /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo(ref float2 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_to_float2(_matInternalPtr, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_to_float2(_matInternalPtr, value, (int)(mem)));
         }
 
         /// <summary>
@@ -822,7 +822,7 @@ namespace sl
         /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo(ref float3 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_to_float3(_matInternalPtr, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_to_float3(_matInternalPtr, value, (int)(mem)));
         }
 
         /// <summary>
@@ -833,7 +833,7 @@ namespace sl
         /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo(ref float4 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_to_float4(_matInternalPtr, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_to_float4(_matInternalPtr, value, (int)(mem)));
         }
 
         /// <summary>
@@ -842,9 +842,9 @@ namespace sl
         /// <param name="value">Value with which to fill the Mat.</param>
         /// <param name="mem">Which buffer to fill - CPU or GPU memory.</param>
         /// <returns>Whether the set was successful, or why it wasn't.</returns>
-        public sl.ERROR_CODE SetTo(ref byte value, sl.ZEDMat.MEM mem)
+        public sl.ERROR_CODE SetTo(byte value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_to_uchar(_matInternalPtr, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_to_uchar(_matInternalPtr, value, (int)(mem)));
         }
 
         /// <summary>
@@ -855,7 +855,7 @@ namespace sl
         /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo(ref char2 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_to_uchar2(_matInternalPtr, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_to_uchar2(_matInternalPtr, value, (int)(mem)));
         }
 
         /// <summary>
@@ -866,7 +866,7 @@ namespace sl
         /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo(ref char3 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_to_uchar3(_matInternalPtr, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_to_uchar3(_matInternalPtr, value, (int)(mem)));
         }
 
         /// <summary>
@@ -877,7 +877,7 @@ namespace sl
         /// <returns>Whether the set was successful, or why it wasn't.</returns>
         public sl.ERROR_CODE SetTo( ref char4 value, sl.ZEDMat.MEM mem)
         {
-            return (sl.ERROR_CODE)(dllz_mat_set_to_uchar4(_matInternalPtr, ref value, (int)(mem)));
+            return (sl.ERROR_CODE)(dllz_mat_set_to_uchar4(_matInternalPtr, value, (int)(mem)));
         }
         /***************************************************************************************/
 
