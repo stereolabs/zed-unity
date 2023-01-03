@@ -2437,4 +2437,50 @@ namespace sl
         /// </summary>
         public float[,] keypointConfidences = new float[(int)Constant.MAX_BATCH_SIZE, 18];
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////// Fusion API ////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CameraIdentifier
+    {
+        public int sn;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct InitFusionParameters
+    {
+        public float maxInputFps;
+        public sl.UNIT coordinateUnits;
+        public sl.COORDINATE_SYSTEM coordinateSystem;
+
+        [MarshalAs(UnmanagedType.U1)]
+        public bool outputPerformanceMetrics;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableSVOMode;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ObjectDetectionFusionParameters
+    {
+        public sl.DETECTION_MODEL detectionModel;
+        public sl.BODY_FORMAT bodyFormat;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableTracking;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableBodyFitting;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ObjectDetectionFusionRuntimeParameters
+    {
+        public sl.DETECTION_MODEL detectionModel;
+        public sl.BODY_FORMAT bodyFormat;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableTracking;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableBodyFitting;
+    }
+
 }// end namespace sl
