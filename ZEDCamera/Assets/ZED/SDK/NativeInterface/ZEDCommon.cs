@@ -2475,12 +2475,19 @@ namespace sl
     [StructLayout(LayoutKind.Sequential)]
     public struct ObjectDetectionFusionRuntimeParameters
     {
-        public sl.DETECTION_MODEL detectionModel;
-        public sl.BODY_FORMAT bodyFormat;
-        [MarshalAs(UnmanagedType.U1)]
-        public bool enableTracking;
-        [MarshalAs(UnmanagedType.U1)]
-        public bool enableBodyFitting;
+        /// <summary>
+        /// if the fused skeleton has less than skeleton_minimum_allowed_keypoints keypoints, it will be discarded. Default is -1.
+        /// </summary>
+        public int skeletonMinimumAllowedKeypoints;
+        /// <summary>
+        /// if a skeleton was detected in less than skeleton_minimum_allowed_camera cameras, it will be discarded
+        /// </summary>
+        public int skeletonMinimumAllowedCamera;
+        /// <summary>
+        /// this value controls the smoothing of the tracked or fitted fused skeleton.
+        /// it is ranged from 0 (low smoothing) and 1 (high smoothing)
+        /// </summary>
+        public float skeletonSmoothing;
     }
 
 }// end namespace sl
