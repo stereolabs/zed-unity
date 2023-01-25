@@ -301,10 +301,12 @@ MonoBehaviour:
   sphereRepereL: {fileID: 5612890687651233437}
   _rootJoint: {fileID: 5980604236534135029}
   ankleHeightOffset: {x: 0, y: 0.102, z: 0}
-  thresholdDistanceToGround: 0.3
+  thresholdEnterGroundedState: 0.15
+  thresholdLeaveGroundedState: 0.2
   raycastDetectionLayers:
     serializedVersion: 2
     m_Bits: 65536
+  lerpIntensity: 0.0002
 --- !u!1 &1594473213823279488
 GameObject:
   m_ObjectHideFlags: 0
@@ -1717,7 +1719,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5910437177361377337}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -2531,7 +2533,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8677569722474851061}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1

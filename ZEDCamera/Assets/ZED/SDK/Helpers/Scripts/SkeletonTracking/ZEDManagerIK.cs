@@ -22,12 +22,23 @@ public class ZEDManagerIK : MonoBehaviour
     public Vector3 ankleHeightOffset = new Vector3(0, 0.102f, 0);
 
     [Tooltip("Distance (between ankle and environment under it) under which a foot is considered on the floor.")]
-    public float thresholdDistanceToGround = .3f;
+    public float thresholdEnterGroundedState = .2f;
+    public float thresholdLeaveGroundedState = .15f;
 
     public LayerMask raycastDetectionLayers;
 
-    private bool floorFoundL = false;
-    private bool floorFoundR = false;
+    private bool groundedL = false;
+    private bool groundedR = false;
+
+    private Vector3 currentPosFootL;
+    private Vector3 currentPosFootR;
+    public float lerpIntensity = 5;
+
+    private Vector3 velocityTargetL = Vector3.zero;
+    private Vector3 velocityTargetR = Vector3.zero;
+
+    private Vector3 normalL = Vector3.up;
+    private Vector3 normalR = Vector3.up;
 
     void Start()
     {
@@ -36,41 +47,29 @@ public class ZEDManagerIK : MonoBehaviour
 
     private void Update()
     {
-        //if (skhandler)
-        //{
-        //    Debug.Log("Updating;");
-        //    Skhandler.Move();
-        //}
-
-        //_rootJoint.position = new Vector3(.6f, 7f, 9f);
     }
 
     private void OnAnimatorMove()
     {
-        //if (skhandler)
-        //{
-        //    Skhandler.Move();
-        //}
-        // _rootJoint.localPosition = new Vector3(0, 10f, 0);
     }
 
     /**
      * a callback for calculating IK
-     * 0) Apply bones rotations 1) Apply root position and rotations. 2) Do Foot IK. ( 4) Do Hand IK )
+     * 1) Apply bones rotations 2) Apply root position and rotations. 3) Do Foot IK.
     */
     void OnAnimatorIK()
     {
         if (skhandler)
         {
-            // 0) Update target positions and rotations, and apply rotations.
+            // 1) Update target positions and rotations, and apply rotations.
             skhandler.Move();
 
-            // 1) Move actor position, effectively moving root position. (root relative position is (0,0,0) in the prefab)
+            // 2) Move actor position, effectively moving root position. (root relative position is (0,0,0) in the prefab)
             // This way, we have root motion and can easily apply effects following the main gameobject's transform.
             transform.position = skhandler.TargetBodyPositionWithHipOffset;
             transform.rotation = skhandler.TargetBodyOrientation;
 
-            // 2) Manage Foot IK
+            // 3) Manage Foot IK
             if (animator)
             {
                 //if the IK is active, set the position and rotation directly to the goal.
@@ -79,68 +78,72 @@ public class ZEDManagerIK : MonoBehaviour
                     // Set the right foot target position and rotation, if one has been assigned
                     if (RightFootTransform != null)
                     {
+                        currentPosFootR = RightFootTransform.position;
+
                         // blend weight
                         animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 1);
                         animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 1);
 
                         Vector3 effectorTargetPos;
 
-                        Ray ray = new Ray(skhandler.joints[SkeletonHandler.JointType_AnkleRight] + (Vector3.up * thresholdDistanceToGround), Vector3.down);
-                        if (Physics.Raycast(ray, out RaycastHit info, 2 * thresholdDistanceToGround, raycastDetectionLayers))
+                        Ray ray = new Ray(skhandler.joints[SkeletonHandler.JointType_AnkleRight] + (Vector3.up * (groundedR ? thresholdLeaveGroundedState : thresholdEnterGroundedState)), Vector3.down);
+                        if (Physics.Raycast(ray, out RaycastHit info, 2 * ( groundedR ? thresholdLeaveGroundedState : thresholdEnterGroundedState), raycastDetectionLayers))
                         {
                             effectorTargetPos = info.point + ankleHeightOffset;
-                            floorFoundR = true;
+                            normalR = info.normal;
+                            groundedR = true;
                         }
                         else
                         {
-                            floorFoundR = false;
+                            groundedR = false;
+                            normalR = animator.GetBoneTransform(HumanBodyBones.RightFoot).up;
                             effectorTargetPos = skhandler.joints[SkeletonHandler.JointType_AnkleRight];
                         }
 
-                        // target position needs to be offset
-                        // v0 is stick on height 0
-                        //effectorTargetPos = new Vector3(
-                        //        skhandler.joints[SkeletonHandler.JointType_AnkleRight].x,
-                        //        0,
-                        //        skhandler.joints[SkeletonHandler.JointType_AnkleRight].z);
-
                         // set IK position and rotation
                         sphereRepereR.position = effectorTargetPos;
+                        //effectorTargetPos = Vector3.Lerp(currentPosFootR,effectorTargetPos, .7f);
+                        //effectorTargetPos = Vector3.SmoothDamp(currentPosFootR,effectorTargetPos, ref velocityTargetR, lerpIntensity);
                         animator.SetIKPosition(AvatarIKGoal.RightFoot, effectorTargetPos);
-                        animator.SetIKRotation(AvatarIKGoal.RightFoot, RightFootTransform.rotation);
+                        animator.SetIKRotation(
+                             AvatarIKGoal.RightFoot,
+                             Quaternion.FromToRotation(
+                                 animator.GetBoneTransform(HumanBodyBones.RightFoot).up, normalL) * animator.GetBoneTransform(HumanBodyBones.RightFoot).rotation);
                     }
                     // Set the left foot target position and rotation, if one has been assigned
                     if (LeftFootTransform != null)
                     {
+                        currentPosFootL = LeftFootTransform.position;
+
                         // blend weight
                         animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 1);
                         animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, 1);
 
                         Vector3 effectorTargetPos;
 
-                        Ray ray = new Ray(skhandler.joints[SkeletonHandler.JointType_AnkleLeft] + (Vector3.up * thresholdDistanceToGround), Vector3.down);
-                        if (Physics.Raycast(ray, out RaycastHit info, 2 * thresholdDistanceToGround, raycastDetectionLayers))
+                        Ray ray = new Ray(skhandler.joints[SkeletonHandler.JointType_AnkleLeft] + (Vector3.up * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState)), Vector3.down);
+                        if (Physics.Raycast(ray, out RaycastHit info, 2 * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState), raycastDetectionLayers))
                         {
                             effectorTargetPos = info.point + ankleHeightOffset;
-                            floorFoundL = true;
+                            normalL = info.normal;
+                            groundedL = true;
                         }
                         else
                         {
-                            floorFoundL = false;
+                            groundedL = false;
+                            normalL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).up;
                             effectorTargetPos = skhandler.joints[SkeletonHandler.JointType_AnkleLeft];
                         }
 
-                        // target position needs to be offset
-                        // v0 is stick on height 0
-                        //Vector3 effectorTargetPos = new Vector3(
-                        //        skhandler.joints[SkeletonHandler.JointType_AnkleLeft].x,
-                        //        0,
-                        //        skhandler.joints[SkeletonHandler.JointType_AnkleLeft].z);
-
                         // set IK position and rotation
                         sphereRepereL.position = effectorTargetPos;
+                        //effectorTargetPos = Vector3.Lerp(currentPosFootL, effectorTargetPos, .7f);
+                        //effectorTargetPos = Vector3.SmoothDamp(currentPosFootL, effectorTargetPos, ref velocityTargetL, lerpIntensity);
                         animator.SetIKPosition(AvatarIKGoal.LeftFoot, effectorTargetPos);
-                        animator.SetIKRotation(AvatarIKGoal.LeftFoot, LeftFootTransform.rotation);
+                        animator.SetIKRotation(
+                            AvatarIKGoal.LeftFoot, 
+                            Quaternion.FromToRotation(
+                                animator.GetBoneTransform(HumanBodyBones.LeftFoot).up, normalL) * animator.GetBoneTransform(HumanBodyBones.LeftFoot).rotation);
                     }
 
                 }
@@ -162,18 +165,14 @@ public class ZEDManagerIK : MonoBehaviour
      */
     private void LateUpdate()
     {
-        //Debug.Log("LU begin: rootjoint: " + _rootJoint.position);
-        //animator.GetBoneTransform(HumanBodyBones.Spine).position = new Vector3(.6f, 7f, 9f);
-        //_rootJoint.position = skhandler.TargetBodyPosition;
-        // transform.position = skhandler.TargetBodyPosition;
     }
 
     private void OnDrawGizmos()
     {
-        if (floorFoundR) { Gizmos.color = Color.green; } else { Gizmos.color = Color.red; }
-        Gizmos.DrawLine(RightFootTransform.position + (Vector3.up * thresholdDistanceToGround), RightFootTransform.position - (Vector3.up * thresholdDistanceToGround));
+        if (groundedR) { Gizmos.color = Color.green; } else { Gizmos.color = Color.red; }
+        Gizmos.DrawLine(RightFootTransform.position + (Vector3.up * thresholdEnterGroundedState), RightFootTransform.position - (Vector3.up * thresholdEnterGroundedState));
 
-        if (floorFoundL) { Gizmos.color = Color.green; } else { Gizmos.color = Color.red; }
-        Gizmos.DrawLine(LeftFootTransform.position + (Vector3.up * thresholdDistanceToGround), LeftFootTransform.position - (Vector3.up * thresholdDistanceToGround));
+        if (groundedL) { Gizmos.color = Color.green; } else { Gizmos.color = Color.red; }
+        Gizmos.DrawLine(LeftFootTransform.position + (Vector3.up * thresholdEnterGroundedState), LeftFootTransform.position - (Vector3.up * thresholdEnterGroundedState));
     }
 }
