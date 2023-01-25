@@ -4,12 +4,11 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using UnityEngine.UI;
 
 public class SkeletonHandler : ScriptableObject
 {
     // For Skeleton Display
-    private const int
+    public const int
     // JointType
     JointType_Head = 26,
     JointType_Neck = 3,
@@ -207,14 +206,21 @@ public class SkeletonHandler : ScriptableObject
     private List<GameObject> sphere = new List<GameObject>();// = GameObject.CreatePrimitive (PrimitiveType.Sphere);
 
     private Vector3 targetBodyPosition = new Vector3(0.0f, 0.0f, 0.0f);
+    private Vector3 targetBodyPositionWithHipOffset = new Vector3(0.0f, 0.0f, 0.0f);
     private Quaternion targetBodyOrientation = Quaternion.identity;
+
+    private bool usingAvatar = true;
 
     [SerializeField] private float _feetOffset = 0.0f;
     public float FeetOffset {
         get { return _feetOffset; }
         set { _feetOffset = value; }
     }
-    
+
+    public Dictionary<HumanBodyBones, Quaternion> RigBoneTarget { get => rigBoneTarget; set => rigBoneTarget = value; }
+    public Quaternion TargetBodyOrientation { get => targetBodyOrientation; set => targetBodyOrientation = value; }
+    public Vector3 TargetBodyPositionWithHipOffset { get => targetBodyPositionWithHipOffset; set => targetBodyPositionWithHipOffset = value; }
+
     /// <summary>
     /// Get Animator;
     /// </summary>
@@ -227,10 +233,12 @@ public class SkeletonHandler : ScriptableObject
     /// <summary>
     /// Create the avatar control
     /// </summary>
-    /// <param name="h">The height.</param>
+    /// <param name="h">The humanoid GameObject prefab.</param>
     public void Create(GameObject h)
     {
         humanoid = (GameObject)Instantiate(h, Vector3.zero, Quaternion.identity);
+
+        humanoid.GetComponent<ZEDManagerIK>().Skhandler = this;
 
         var invisiblelayer = LayerMask.NameToLayer("tagInvisibleToZED");
         //humanoid.layer = invisiblelayer;
@@ -255,7 +263,7 @@ public class SkeletonHandler : ScriptableObject
                 if (h.GetComponent<Animator>())
                 {
                     animator = humanoid.GetComponent<Animator>();
-                    default_rotations[bone] = humanoid.GetComponent<Animator>().GetBoneTransform(bone).localRotation;
+                    default_rotations[bone] = animator.GetBoneTransform(bone).localRotation;
                 }
 
             }
@@ -275,7 +283,8 @@ public class SkeletonHandler : ScriptableObject
     }
 
     /// <summary>
-    /// Function that handles the humanoid position, rotation and bones movement
+    /// Function that handles the humanoid position, rotation and bones movement.
+    /// Fills the rigBoneTarget map with rotations from the SDK. They can then be applied to the corresponding bones.
     /// </summary>
     /// <param name="position_center">Position center.</param>
     private void setHumanPoseControl(Vector3 rootPosition, Quaternion rootRotation, Quaternion[] jointsRotation)
@@ -383,6 +392,7 @@ public class SkeletonHandler : ScriptableObject
 
     /// <summary>
     /// Function that handles the humanoid position, rotation and bones movement
+    /// Fills the rigBoneTarget map with rotations from the SDK. They can then be applied to the corresponding bones.
     /// </summary>
     /// <param name="position_center">Position center.</param>
     private void setHumanPoseControlMirrored(Vector3 rootPosition, Quaternion rootRotation, Quaternion[] jointsRotation)
@@ -564,6 +574,7 @@ public class SkeletonHandler : ScriptableObject
 
     /// <summary>
     /// Sets the avatar control with joint position.
+    /// Called on camera's OnObjectDetection event.
     /// </summary>
     /// <param name="jt">Jt.</param>
     /// <param name="position_center">Position center.</param>
@@ -573,6 +584,7 @@ public class SkeletonHandler : ScriptableObject
 
         humanoid.SetActive(useAvatar);
         skeleton.SetActive(!useAvatar);
+        usingAvatar = useAvatar;
 
         if (useAvatar)
         {
@@ -643,7 +655,7 @@ public class SkeletonHandler : ScriptableObject
             }
         }
 
-        PropagateRestPoseRotations(0, rigBone, default_rotations[0], false);
+        // PropagateRestPoseRotations(0, rigBone, default_rotations[0], false);
 
         for (int i = 0; i < humanBone.Length; i++)
         {
@@ -652,12 +664,15 @@ public class SkeletonHandler : ScriptableObject
                 if (parentsIdx[i] != -1)
                 {
                     Quaternion newRotation = rigBoneTarget[humanBone[i]] * rigBone[humanBone[i]].transform.localRotation;
-                    rigBone[humanBone[i]].transform.localRotation = newRotation;
+                    // rigBone[humanBone[i]].transform.localRotation = newRotation;
+
+                    // update animator bones.
+                    animator.SetBoneLocalRotation(humanBone[i], newRotation);
                 }
 
             }
         }
-        PropagateRestPoseRotations(0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
+        // PropagateRestPoseRotations(0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
 
         // Apply global transform
         if (rigBone[HumanBodyBones.Hips].transform)
@@ -665,7 +680,9 @@ public class SkeletonHandler : ScriptableObject
             var animator = humanoid.GetComponent<Animator>();
             // There is an offset between the joint "Hips" and the equivalent in the ZED SDK. This offset compensates it.
             Vector3 hipOffset = new Vector3(0, (animator.GetBoneTransform(HumanBodyBones.Hips).position.y - animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position.y), 0);
-            rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(targetBodyPosition + hipOffset - new Vector3(0, _feetOffset, 0), targetBodyOrientation);
+            // Vector3 hipOffset = new Vector3(0,2,0);
+            // rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(targetBodyPosition + hipOffset - new Vector3(0, _feetOffset, 0), targetBodyOrientation);
+            TargetBodyPositionWithHipOffset = targetBodyPosition + hipOffset - new Vector3(0, _feetOffset, 0);
         }
     }
 
@@ -674,7 +691,10 @@ public class SkeletonHandler : ScriptableObject
     /// </summary>
     public void Move()
     {
-        MoveAvatar();
+        if (usingAvatar)
+        {
+            MoveAvatar();
+        }
     }
 }
 
@@ -693,5 +713,3 @@ public static class TransformExtensions
         return input;
     }
 }
-
-

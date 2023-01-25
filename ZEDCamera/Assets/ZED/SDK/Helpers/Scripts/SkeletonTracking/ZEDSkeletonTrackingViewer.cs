@@ -182,13 +182,13 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
                 Debug.Log("<b><color=green> Switch to Skeleton mode</color></b>");
         }
 
-        if (useAvatar)
-        {
-            foreach (var skelet in avatarControlList)
-            {
-                skelet.Value.Move();
-            }
-        }
+        //if (useAvatar)
+        //{
+        //    foreach (var skelet in avatarControlList)
+        //    {
+        //        skelet.Value.Move();
+        //    }
+        //}
 
         UpdateViewCameraPosition();
     }
