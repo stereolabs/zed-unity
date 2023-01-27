@@ -235,6 +235,7 @@ GameObject:
   - component: {fileID: 2211000310592067681}
   - component: {fileID: 5210420427815617051}
   - component: {fileID: 6920532435147924670}
+  - component: {fileID: 8038840070172855552}
   m_Layer: 0
   m_Name: ybot_hands_closed
   m_TagString: Untagged
@@ -273,7 +274,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 7d59d5ae183bf5f4d9a5e0d075c1d978, type: 3}
   m_Controller: {fileID: 9100000, guid: 0f92df3c2e41e7e4e8ecb7034c0ad1c2, type: 2}
-  m_CullingMode: 1
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
@@ -296,20 +297,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableIK: 1
   filterMovementsOnGround: 1
-  LeftFootTransform: {fileID: 4160523210669777339}
-  RightFootTransform: {fileID: 1248769263213320694}
-  sphereRepereR: {fileID: 4049448695640032917}
-  sphereRepereL: {fileID: 5612890687651233437}
-  _rootJoint: {fileID: 5980604236534135029}
-  ankleHeightOffset: {x: 0, y: 0.102, z: 0}
   thresholdEnterGroundedState: 0.17
   thresholdLeaveGroundedState: 0.18
+  groundedFreeDistance: 0.15
   raycastDetectionLayers:
     serializedVersion: 2
     m_Bits: 65536
-  groundedFreeDistance: 0.15
+  LeftFootTransform: {fileID: 4160523210669777339}
+  RightFootTransform: {fileID: 1248769263213320694}
+  _rootJoint: {fileID: 5980604236534135029}
+  ankleHeightOffset: {x: 0, y: 0.102, z: 0}
   objectDetectionFrequency: 30
   lerpLatency: 3
+--- !u!114 &8038840070172855552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1577629577426895579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de97d242c6a58054885e66d2b56fe4c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  manualOffset: {x: 0, y: 1, z: 0}
+  automaticOffset: 0
 --- !u!1 &1594473213823279488
 GameObject:
   m_ObjectHideFlags: 0
