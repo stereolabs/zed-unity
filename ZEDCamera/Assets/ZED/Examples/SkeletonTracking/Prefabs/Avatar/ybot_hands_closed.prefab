@@ -295,7 +295,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableIK: 1
-  filterMovementsOnGround: 0
+  filterMovementsOnGround: 1
   LeftFootTransform: {fileID: 4160523210669777339}
   RightFootTransform: {fileID: 1248769263213320694}
   sphereRepereR: {fileID: 4049448695640032917}
@@ -309,7 +309,7 @@ MonoBehaviour:
     m_Bits: 65536
   groundedFreeDistance: 0.15
   objectDetectionFrequency: 30
-  lerpLatency: 1.2
+  lerpLatency: 3
 --- !u!1 &1594473213823279488
 GameObject:
   m_ObjectHideFlags: 0

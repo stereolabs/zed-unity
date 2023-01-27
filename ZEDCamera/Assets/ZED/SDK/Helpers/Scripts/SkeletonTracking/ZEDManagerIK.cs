@@ -68,7 +68,7 @@ public class ZEDManagerIK : MonoBehaviour
     public float objectDetectionFrequency = 30f;
 
     [Tooltip("Latency of lerp. 1=no latency; 0=instant movement, no lerp;")]
-    public float lerpLatency = 1.2f;
+    public float lerpLatency = 3f;
 
     void Start()
     {
@@ -170,7 +170,7 @@ public class ZEDManagerIK : MonoBehaviour
                             normalL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).up;
                         }
                         // update current effector position because next Move() will reset it to the skeleton pose
-                        curEffectorPosR = effectorTargetPos;
+                        curEffectorPosL = effectorTargetPos;
 
                         // set IK position and rotation
                         animator.SetIKPosition(AvatarIKGoal.LeftFoot, effectorTargetPos);
@@ -247,7 +247,9 @@ public class ZEDManagerIK : MonoBehaviour
     // Checks distance to filter feet parasite movements on floor.
     public void PoseWasUpdated()
     {
-        startLerpPosL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
+        //startLerpPosL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
+        startLerpPosL = curEffectorPosL;
+
         targetLerpPosL = skhandler.joints[SkeletonHandler.JointType_AnkleLeft];
         if (filterMovementsOnGround)
         {
@@ -256,7 +258,9 @@ public class ZEDManagerIK : MonoBehaviour
                 : skhandler.joints[SkeletonHandler.JointType_AnkleLeft];
         }
 
-        startLerpPosR = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
+        // startLerpPosR = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
+        startLerpPosR = curEffectorPosR;
+
         targetLerpPosR = skhandler.joints[SkeletonHandler.JointType_AnkleRight];
         if (filterMovementsOnGround)
         {
