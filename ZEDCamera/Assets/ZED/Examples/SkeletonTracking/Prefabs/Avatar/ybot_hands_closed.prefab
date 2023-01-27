@@ -294,19 +294,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90982a9a211eb694ea6d767b43787f56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ikActive: 1
+  enableIK: 1
+  filterMovementsOnGround: 0
   LeftFootTransform: {fileID: 4160523210669777339}
   RightFootTransform: {fileID: 1248769263213320694}
   sphereRepereR: {fileID: 4049448695640032917}
   sphereRepereL: {fileID: 5612890687651233437}
   _rootJoint: {fileID: 5980604236534135029}
   ankleHeightOffset: {x: 0, y: 0.102, z: 0}
-  thresholdEnterGroundedState: 0.15
-  thresholdLeaveGroundedState: 0.2
+  thresholdEnterGroundedState: 0.17
+  thresholdLeaveGroundedState: 0.18
   raycastDetectionLayers:
     serializedVersion: 2
     m_Bits: 65536
-  groundedFreeDistance: 0.4
+  groundedFreeDistance: 0.15
   objectDetectionFrequency: 30
   lerpLatency: 1.2
 --- !u!1 &1594473213823279488

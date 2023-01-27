@@ -8,7 +8,12 @@ public class ZEDManagerIK : MonoBehaviour
 {
     protected Animator animator;
 
-    public bool ikActive = false;
+    [Tooltip("Enable foot IK (feet on ground when near it)")]
+    public bool enableIK = true;
+
+    [Tooltip("EXPERIMENTAL: Filter feet movements caused by root offset when the feet should not be moving.")]
+    public bool filterMovementsOnGround = false;
+
     public Transform LeftFootTransform = null;
     public Transform RightFootTransform = null;
 
@@ -25,7 +30,6 @@ public class ZEDManagerIK : MonoBehaviour
     [Tooltip("Distance (between ankle and environment under it) under which a foot is considered on the floor.")]
     public float thresholdEnterGroundedState = .14f;
     public float thresholdLeaveGroundedState = .18f;
-
     public LayerMask raycastDetectionLayers;
 
     private bool groundedL = false;
@@ -33,11 +37,6 @@ public class ZEDManagerIK : MonoBehaviour
 
     private Vector3 currentPosFootL;
     private Vector3 currentPosFootR;
-    //public float dampReachTime = .01f;
-    //public float dampMaxSpeed = 1f;
-
-    //public Vector3 velocityTargetL = Vector3.zero;
-    //public Vector3 velocityTargetR = Vector3.zero;
 
     private Vector3 normalL = Vector3.up;
     private Vector3 normalR = Vector3.up;
@@ -46,9 +45,6 @@ public class ZEDManagerIK : MonoBehaviour
     private Vector3 currentGroundedPosR = Vector3.zero;
     public float groundedFreeDistance = .05f;
 
-    private bool freeL = true;
-    private bool freeR = true;
-
     /**
      * LERP DATA FOR IK TARGETS
      */
@@ -56,14 +52,12 @@ public class ZEDManagerIK : MonoBehaviour
     private Vector3 targetLerpPosL;
     // necessary because Move() will reset it
     private Vector3 curEffectorPosL;
-    private float lastTValLerpL;
     private float curTValL;
 
     private Vector3 startLerpPosR;
     private Vector3 targetLerpPosR;
     // necessary because Move() will reset it
     private Vector3 curEffectorPosR;
-    private float lastTValLerpR;
     private float curTValR;
 
     private float totalLerpTime;
@@ -75,9 +69,6 @@ public class ZEDManagerIK : MonoBehaviour
 
     [Tooltip("Latency of lerp. 1=no latency; 0=instant movement, no lerp;")]
     public float lerpLatency = 1.2f;
-
-    // true if new targets (OnObjectDetection from camera)
-    private bool poseWasUpdated = true;
 
     void Start()
     {
@@ -107,7 +98,7 @@ public class ZEDManagerIK : MonoBehaviour
             if (animator)
             {
                 //if the IK is active, set the position and rotation directly to the goal.
-                if (ikActive)
+                if (enableIK)
                 {
                     // Set the right foot target position and rotation, if one has been assigned
                     if (RightFootTransform != null)
@@ -118,124 +109,76 @@ public class ZEDManagerIK : MonoBehaviour
 
                         // init/prepare values
                         currentPosFootR = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
-                        float rayHitHeight = float.MinValue;
+                        // float rayHitHeight = float.MinValue;
                         Vector3 effectorTargetPos;
 
                         // move foot target
-                        effectorTargetPos = AccumulateLerpVec3(startLerpPosR,targetLerpPosR,ref curTValR, ref curLerpTimeR);
-                        Debug.Log("OAIK lerptime: " + curLerpTimeR + " / tval: " + curTValR);
+                        effectorTargetPos = AccumulateLerpVec3(startLerpPosR, targetLerpPosR, ref curTValR, ref curLerpTimeR);
+                        // Debug.Log("OAIK lerptime: " + curLerpTimeR + " / tval: " + curTValR);
 
                         Ray ray = new Ray(effectorTargetPos + (Vector3.up * (groundedR ? thresholdLeaveGroundedState : thresholdEnterGroundedState)), Vector3.down);
-                        if (Physics.Raycast(ray, out RaycastHit hit, 2 * ( groundedR ? thresholdLeaveGroundedState : thresholdEnterGroundedState), raycastDetectionLayers))
+                        if (Physics.Raycast(ray, out RaycastHit hit, 2 * (groundedR ? thresholdLeaveGroundedState : thresholdEnterGroundedState), raycastDetectionLayers))
                         {
                             // get floor height to adjust foot height if it appears under floor
                             //rayHitHeight = hit.point.y + ankleHeightOffset.y;
 
-                            //
                             effectorTargetPos = hit.point + ankleHeightOffset;
                             normalR = hit.normal;
                             groundedR = true;
-
-                            /*if(HorizontalDist(effectorTargetPos,currentGroundedPosR) < groundedFreeDistance)
-                            {
-                                effectorTargetPos = currentGroundedPosR;
-                                freeR = false;
-                            } else
-                            {
-
-                                currentGroundedPosR = effectorTargetPos;
-                                freeR = true;
-                            }*/
                         }
                         else
                         {
-
-                            //freeR = true;
                             groundedR = false;
                             normalR = animator.GetBoneTransform(HumanBodyBones.RightFoot).up;
-                            //effectorTargetPos = skhandler.joints[SkeletonHandler.JointType_AnkleRight];
                         }
-
-                        // set IK position and rotation
-
-                        //sphereRepereR.position = effectorTargetPos;
-                        //sphereRepereR.position = currentPosFootR;
-                        //sphereRepereL.position = effectorTargetPos;
-
-                        //effectorTargetPos = Vector3.Lerp(currentPosFootR, effectorTargetPos, SpecialLerp(totLerpTime, ref curLerpTime,maxLerpSpeed));
-                        //effectorTargetPos = Vector3.Lerp(currentPosFootR, effectorTargetPos, flatLerpValue);
-
-                        //effectorTargetPos = LerpDepOnDist(effectorTargetPos,currentPosFootR,lerpMinTvalDistance,lerpMinTval, true);
-
-                        // prevent foot from going below ground
-                        //if(effectorTargetPos.y < rayHitHeight) { effectorTargetPos.Set(effectorTargetPos.x, rayHitHeight, effectorTargetPos.z); }
-
                         // update current effector position because next Move() will reset it to the skeleton pose
                         curEffectorPosR = effectorTargetPos;
 
-                        //effectorTargetPos = Vector3.SmoothDamp(currentPosFootR,effectorTargetPos, ref velocityTargetR, dampReachTime, dampMaxSpeed);
+                        // set IK position and rotation
                         animator.SetIKPosition(AvatarIKGoal.RightFoot, effectorTargetPos);
                         animator.SetIKRotation(
                              AvatarIKGoal.RightFoot,
                              Quaternion.FromToRotation(
                                  animator.GetBoneTransform(HumanBodyBones.RightFoot).up, normalL) * animator.GetBoneTransform(HumanBodyBones.RightFoot).rotation);
                     }
-                    // Set the left foot target position and rotation, if one has been assigned
+                    // Set the right foot target position and rotation, if one has been assigned
                     if (LeftFootTransform != null)
                     {
-                        float rayHitHeight = float.MinValue;
-
-                        currentPosFootL = LeftFootTransform.position;
-
                         // blend weight
                         animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 1);
                         animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, 1);
 
+                        // init/prepare values
+                        currentPosFootL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
+                        // float rayHitHeight = float.MinValue;
                         Vector3 effectorTargetPos;
 
-                        Ray ray = new Ray(skhandler.joints[SkeletonHandler.JointType_AnkleLeft] + (Vector3.up * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState)), Vector3.down);
-                        if (Physics.Raycast(ray, out RaycastHit info, 2 * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState), raycastDetectionLayers))
-                        {
-                            rayHitHeight = info.point.y + ankleHeightOffset.y;
+                        // move foot target
+                        effectorTargetPos = AccumulateLerpVec3(startLerpPosL, targetLerpPosL, ref curTValL, ref curLerpTimeL);
+                        // Debug.Log("OAIK lerptime: " + curLerpTimeL + " / tval: " + curTValL);
 
-                            effectorTargetPos = info.point + ankleHeightOffset;
-                            normalL = info.normal;
+                        Ray ray = new Ray(effectorTargetPos + (Vector3.up * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState)), Vector3.down);
+                        if (Physics.Raycast(ray, out RaycastHit hit, 2 * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState), raycastDetectionLayers))
+                        {
+                            effectorTargetPos = hit.point + ankleHeightOffset;
+                            normalL = hit.normal;
                             groundedL = true;
-                            if (HorizontalDist(effectorTargetPos, currentGroundedPosL) < groundedFreeDistance)
-                            {
-                                freeL = false;
-                                effectorTargetPos = currentGroundedPosL;
-                            } else
-                            {
-                                freeL = true;
-                                currentGroundedPosL = effectorTargetPos;
-                            }
                         }
                         else
                         {
-                            freeL = true;
                             groundedL = false;
                             normalL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).up;
-                            effectorTargetPos = skhandler.joints[SkeletonHandler.JointType_AnkleLeft];
                         }
+                        // update current effector position because next Move() will reset it to the skeleton pose
+                        curEffectorPosR = effectorTargetPos;
 
                         // set IK position and rotation
-                        //sphereRepereL.position = effectorTargetPos;
-                        //effectorTargetPos = Vector3.Lerp(currentPosFootL, effectorTargetPos, .7f);
-                        //effectorTargetPos = Vector3.SmoothDamp(currentPosFootL, effectorTargetPos, ref velocityTargetL, .5f);
-
-                        //effectorTargetPos = LerpDepOnDist(effectorTargetPos, currentPosFootL, lerpMinTvalDistance, lerpMinTval, freeL);
-
-                        // prevent foot from going below ground
-                        if (effectorTargetPos.y < rayHitHeight) { effectorTargetPos.Set(effectorTargetPos.x, rayHitHeight, effectorTargetPos.z); }
-
                         animator.SetIKPosition(AvatarIKGoal.LeftFoot, effectorTargetPos);
                         animator.SetIKRotation(
-                            AvatarIKGoal.LeftFoot, 
-                            Quaternion.FromToRotation(
-                                animator.GetBoneTransform(HumanBodyBones.LeftFoot).up, normalL) * animator.GetBoneTransform(HumanBodyBones.LeftFoot).rotation);
+                             AvatarIKGoal.LeftFoot,
+                             Quaternion.FromToRotation(
+                                 animator.GetBoneTransform(HumanBodyBones.LeftFoot).up, normalR) * animator.GetBoneTransform(HumanBodyBones.LeftFoot).rotation);
                     }
-
                 }
 
                 //if the IK is not active, set the position and rotation of the hand and head back to the original position
@@ -306,19 +249,21 @@ public class ZEDManagerIK : MonoBehaviour
     {
         startLerpPosL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
         targetLerpPosL = skhandler.joints[SkeletonHandler.JointType_AnkleLeft];
-        targetLerpPosL = (groundedL && HorizontalDist(startLerpPosL, targetLerpPosL) < groundedFreeDistance) 
-            ? startLerpPosL 
-            : skhandler.joints[SkeletonHandler.JointType_AnkleLeft];
-        lastTValLerpL = 0f;
+        if (filterMovementsOnGround)
+        {
+            targetLerpPosL = (groundedL && HorizontalDist(startLerpPosL, targetLerpPosL) < groundedFreeDistance)
+                ? startLerpPosL
+                : skhandler.joints[SkeletonHandler.JointType_AnkleLeft];
+        }
 
         startLerpPosR = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
         targetLerpPosR = skhandler.joints[SkeletonHandler.JointType_AnkleRight];
-        targetLerpPosR = (groundedR && HorizontalDist(startLerpPosR, targetLerpPosR) < groundedFreeDistance)
-            ? startLerpPosR
-            : skhandler.joints[SkeletonHandler.JointType_AnkleRight];
-        lastTValLerpR = 0f;
-
-        poseWasUpdated = true;
+        if (filterMovementsOnGround)
+        {
+            targetLerpPosR = (groundedR && HorizontalDist(startLerpPosR, targetLerpPosR) < groundedFreeDistance)
+                ? startLerpPosR
+                : skhandler.joints[SkeletonHandler.JointType_AnkleRight];
+        }
 
         // define totallerptime = 1/ODFrequency
         // reset curlerptime
@@ -328,7 +273,7 @@ public class ZEDManagerIK : MonoBehaviour
         curTValR = 0;
         totalLerpTime = 1 / objectDetectionFrequency;
         totalLerpTime *= lerpLatency;
-        Debug.Log("---------------------------------- totalLerpTime: " + totalLerpTime);
+        // Debug.Log("---------------------------------- totalLerpTime: " + totalLerpTime);
     }
 
     private Vector3 AccumulateLerpVec3(Vector3 startPos, Vector3 targetPos, ref float curTVal, ref float currentLerpTime)
