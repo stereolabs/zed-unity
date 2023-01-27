@@ -8,30 +8,40 @@ public class ZEDManagerIK : MonoBehaviour
 {
     protected Animator animator;
 
+    #region inspector vars
+
+    [Header("IK SETTINGS")]
     [Tooltip("Enable foot IK (feet on ground when near it)")]
     public bool enableIK = true;
-
-    [Tooltip("EXPERIMENTAL: Filter feet movements caused by root offset when the feet should not be moving.")]
+    [Tooltip("EXPERIMENTAL: Filter feet movements caused by root offset when the feet should not be moving (on floor).")]
     public bool filterMovementsOnGround = false;
-
-    public Transform LeftFootTransform = null;
-    public Transform RightFootTransform = null;
-
-    public Transform sphereRepereR = null;
-    public Transform sphereRepereL = null;
-
-    public Transform _rootJoint; 
-
-    private SkeletonHandler skhandler = null;
-
-    public SkeletonHandler Skhandler { get => skhandler; set => skhandler = value; }
-    public Vector3 ankleHeightOffset = new Vector3(0, 0.102f, 0);
-
     [Tooltip("Distance (between ankle and environment under it) under which a foot is considered on the floor.")]
     public float thresholdEnterGroundedState = .14f;
+    [Tooltip("Distance (between ankle and environment under it) under which a foot is considered on the floor. Used to check if the foot is still on the floor.")]
     public float thresholdLeaveGroundedState = .18f;
+    [Tooltip("Radius of movements filtered when the filterMovementsOnGround parameter is enabled.")]
+    public float groundedFreeDistance = .05f;
+    [Tooltip("Layers detected as floor for the IK")]
     public LayerMask raycastDetectionLayers;
 
+    [Header("RIG SETTINGS")]
+    public Transform LeftFootTransform = null;
+    public Transform RightFootTransform = null;
+    public Transform _rootJoint;
+    public Vector3 ankleHeightOffset = new Vector3(0, 0.102f, 0);
+    
+    [Header("SMOOTHING SETTINGS")]
+    [Tooltip("Frequency of reception of new OD data, in FPS")]
+    public float objectDetectionFrequency = 30f;
+    [Tooltip("Latency of interpolation. 1=no latency; 0=instant movement, no lerp;")]
+    public float lerpLatency = 3f;
+
+    #endregion
+
+    #region vars
+
+    private SkeletonHandler skhandler = null;
+    public SkeletonHandler Skhandler { get => skhandler; set => skhandler = value; }
     private bool groundedL = false;
     private bool groundedR = false;
 
@@ -43,7 +53,6 @@ public class ZEDManagerIK : MonoBehaviour
 
     private Vector3 currentGroundedPosL = Vector3.zero;
     private Vector3 currentGroundedPosR = Vector3.zero;
-    public float groundedFreeDistance = .05f;
 
     /**
      * LERP DATA FOR IK TARGETS
@@ -64,11 +73,7 @@ public class ZEDManagerIK : MonoBehaviour
     private float curLerpTimeL;
     private float curLerpTimeR;
 
-    [Tooltip("Frequency of reception of new OD data, in FPS")]
-    public float objectDetectionFrequency = 30f;
-
-    [Tooltip("Latency of lerp. 1=no latency; 0=instant movement, no lerp;")]
-    public float lerpLatency = 3f;
+    #endregion
 
     void Start()
     {
