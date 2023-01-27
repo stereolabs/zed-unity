@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(HeightOffsetter))]
 public class ZEDManagerIK : MonoBehaviour
 {
     protected Animator animator;
+    private HeightOffsetter heightOffsetter;
 
     #region inspector vars
 
@@ -78,6 +80,7 @@ public class ZEDManagerIK : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
+        heightOffsetter = GetComponent<HeightOffsetter>();
         currentGroundedPosL = LeftFootTransform.position;
         currentGroundedPosR = RightFootTransform.position;
     }
@@ -98,6 +101,8 @@ public class ZEDManagerIK : MonoBehaviour
             // This way, we have root motion and can easily apply effects following the main gameobject's transform.
             transform.position = skhandler.TargetBodyPositionWithHipOffset;
             transform.rotation = skhandler.TargetBodyOrientation;
+
+            heightOffsetter.ApplyOffset();
 
             // 3) Manage Foot IK
             if (animator)
