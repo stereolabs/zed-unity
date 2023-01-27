@@ -7,6 +7,7 @@ using System;
 
 public class SkeletonHandler : ScriptableObject
 {
+    #region const_variables
     // For Skeleton Display
     public const int
     // JointType
@@ -196,7 +197,12 @@ public class SkeletonHandler : ScriptableObject
    // HumanBodyBones.LastBone, // Right Heel
     };
 
+    #endregion
+
+    #region vars
+
     private GameObject humanoid;
+    private ZEDManagerIK zedik = null;
     private Animator animator;
     private Dictionary<HumanBodyBones, RigBone> rigBone = null;
     private Dictionary<HumanBodyBones, Quaternion> rigBoneTarget = null;
@@ -221,6 +227,8 @@ public class SkeletonHandler : ScriptableObject
     public Quaternion TargetBodyOrientation { get => targetBodyOrientation; set => targetBodyOrientation = value; }
     public Vector3 TargetBodyPositionWithHipOffset { get => targetBodyPositionWithHipOffset; set => targetBodyPositionWithHipOffset = value; }
 
+    #endregion
+
     /// <summary>
     /// Get Animator;
     /// </summary>
@@ -238,7 +246,8 @@ public class SkeletonHandler : ScriptableObject
     {
         humanoid = (GameObject)Instantiate(h, Vector3.zero, Quaternion.identity);
 
-        humanoid.GetComponent<ZEDManagerIK>().Skhandler = this;
+        zedik = humanoid.GetComponent<ZEDManagerIK>();
+        zedik.Skhandler = this;
 
         var invisiblelayer = LayerMask.NameToLayer("tagInvisibleToZED");
         //humanoid.layer = invisiblelayer;
@@ -585,6 +594,8 @@ public class SkeletonHandler : ScriptableObject
         humanoid.SetActive(useAvatar);
         skeleton.SetActive(!useAvatar);
         usingAvatar = useAvatar;
+
+        zedik.PoseWasUpdated();
 
         if (useAvatar)
         {
