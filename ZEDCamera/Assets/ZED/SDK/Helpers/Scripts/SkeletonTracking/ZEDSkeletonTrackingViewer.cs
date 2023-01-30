@@ -2,6 +2,7 @@
 
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 #if ZED_URP
 using UnityEngine.Rendering.Universal;
@@ -182,14 +183,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
                 Debug.Log("<b><color=green> Switch to Skeleton mode</color></b>");
         }
 
-        //if (useAvatar)
-        //{
-        //    foreach (var skelet in avatarControlList)
-        //    {
-        //        skelet.Value.Move();
-        //    }
-        //}
-
         UpdateViewCameraPosition();
     }
      
@@ -203,28 +196,17 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	{
         Vector3[] worldJointsPos = new Vector3[34];
         Quaternion[] worldJointsRot = new Quaternion[34];
-   
+        float[] confs = new float[34];
+
         for (int i = 0; i < 34; i++)
         {
             worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
             worldJointsRot[i] = data.localOrientationPerJoint[i].normalized;
+            confs[i] = data.keypointConfidence[i];
         }
 
         handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, zedManager.GetZedRootTansform().rotation * data.globalRootOrientation, useAvatar, mirrorMode);
-
-        if (handler.GetAnimator())
-        {
-            if (data.keypointConfidence[(int)sl.BODY_PARTS_POSE_34.LEFT_ANKLE] != 0 && data.keypointConfidence[(int)sl.BODY_PARTS_POSE_34.RIGHT_ANKLE] != 0)
-            {
-                if (handler.GetAnimator().GetBoneTransform(HumanBodyBones.LeftToes) && handler.GetAnimator().GetBoneTransform(HumanBodyBones.RightToes))
-                {
-                    float leftFootHeight = handler.GetAnimator().GetBoneTransform(HumanBodyBones.LeftToes).position.y;
-                    float rightFootHeight = handler.GetAnimator().GetBoneTransform(HumanBodyBones.RightToes).position.y;
-                    handler.FeetOffset = alpha * Mathf.Min(leftFootHeight, rightFootHeight) + (1 - alpha) * handler.FeetOffset;
-                    //Debug.Log(handler.FeetOffset);
-                }
-            }
-        }
+        handler.confidences = confs;
     }
 
     void UpdateViewCameraPosition()

@@ -38,12 +38,15 @@ public class ZEDManagerIK : MonoBehaviour
     [Tooltip("Latency of interpolation. 1=no latency; 0=instant movement, no lerp;")]
     public float lerpLatency = 3f;
 
+    public float gizmoSize = .15f;
+
     #endregion
 
     #region vars
 
     private SkeletonHandler skhandler = null;
     public SkeletonHandler Skhandler { get => skhandler; set => skhandler = value; }
+
     private bool groundedL = false;
     private bool groundedR = false;
 
@@ -55,6 +58,9 @@ public class ZEDManagerIK : MonoBehaviour
 
     private Vector3 currentGroundedPosL = Vector3.zero;
     private Vector3 currentGroundedPosR = Vector3.zero;
+
+    private Vector3 rootHeightOffset = Vector3.zero;
+    public Vector3 RootHeightOffset { get => rootHeightOffset; set => rootHeightOffset = value; }
 
     /**
      * LERP DATA FOR IK TARGETS
@@ -102,7 +108,14 @@ public class ZEDManagerIK : MonoBehaviour
             transform.position = skhandler.TargetBodyPositionWithHipOffset;
             transform.rotation = skhandler.TargetBodyOrientation;
 
-            heightOffsetter.ApplyOffset();
+            // height offset management
+            heightOffsetter.ComputeRootHeightOffset(
+            skhandler.confidences[SkeletonHandler.JointType_AnkleLeft],
+            skhandler.confidences[SkeletonHandler.JointType_AnkleRight],
+            animator.GetBoneTransform(HumanBodyBones.LeftFoot).position,
+            animator.GetBoneTransform(HumanBodyBones.RightFoot).position,
+            ankleHeightOffset.y);
+            transform.position += rootHeightOffset;
 
             // 3) Manage Foot IK
             if (animator)
@@ -119,19 +132,14 @@ public class ZEDManagerIK : MonoBehaviour
 
                         // init/prepare values
                         currentPosFootR = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
-                        // float rayHitHeight = float.MinValue;
                         Vector3 effectorTargetPos;
 
                         // move foot target
                         effectorTargetPos = AccumulateLerpVec3(startLerpPosR, targetLerpPosR, ref curTValR, ref curLerpTimeR);
-                        // Debug.Log("OAIK lerptime: " + curLerpTimeR + " / tval: " + curTValR);
 
                         Ray ray = new Ray(effectorTargetPos + (Vector3.up * (groundedR ? thresholdLeaveGroundedState : thresholdEnterGroundedState)), Vector3.down);
                         if (Physics.Raycast(ray, out RaycastHit hit, 2 * (groundedR ? thresholdLeaveGroundedState : thresholdEnterGroundedState), raycastDetectionLayers))
                         {
-                            // get floor height to adjust foot height if it appears under floor
-                            //rayHitHeight = hit.point.y + ankleHeightOffset.y;
-
                             effectorTargetPos = hit.point + ankleHeightOffset;
                             normalR = hit.normal;
                             groundedR = true;
@@ -160,12 +168,10 @@ public class ZEDManagerIK : MonoBehaviour
 
                         // init/prepare values
                         currentPosFootL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
-                        // float rayHitHeight = float.MinValue;
                         Vector3 effectorTargetPos;
 
                         // move foot target
                         effectorTargetPos = AccumulateLerpVec3(startLerpPosL, targetLerpPosL, ref curTValL, ref curLerpTimeL);
-                        // Debug.Log("OAIK lerptime: " + curLerpTimeL + " / tval: " + curTValL);
 
                         Ray ray = new Ray(effectorTargetPos + (Vector3.up * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState)), Vector3.down);
                         if (Physics.Raycast(ray, out RaycastHit hit, 2 * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState), raycastDetectionLayers))
@@ -257,7 +263,6 @@ public class ZEDManagerIK : MonoBehaviour
     // Checks distance to filter feet parasite movements on floor.
     public void PoseWasUpdated()
     {
-        //startLerpPosL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
         startLerpPosL = curEffectorPosL;
 
         targetLerpPosL = skhandler.joints[SkeletonHandler.JointType_AnkleLeft];
@@ -267,8 +272,8 @@ public class ZEDManagerIK : MonoBehaviour
                 ? startLerpPosL
                 : skhandler.joints[SkeletonHandler.JointType_AnkleLeft];
         }
-
-        // startLerpPosR = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
+        targetLerpPosL += rootHeightOffset - ankleHeightOffset;
+        
         startLerpPosR = curEffectorPosR;
 
         targetLerpPosR = skhandler.joints[SkeletonHandler.JointType_AnkleRight];
@@ -278,6 +283,7 @@ public class ZEDManagerIK : MonoBehaviour
                 ? startLerpPosR
                 : skhandler.joints[SkeletonHandler.JointType_AnkleRight];
         }
+        targetLerpPosR += rootHeightOffset - ankleHeightOffset;
 
         // define totallerptime = 1/ODFrequency
         // reset curlerptime
@@ -287,7 +293,6 @@ public class ZEDManagerIK : MonoBehaviour
         curTValR = 0;
         totalLerpTime = 1 / objectDetectionFrequency;
         totalLerpTime *= lerpLatency;
-        // Debug.Log("---------------------------------- totalLerpTime: " + totalLerpTime);
     }
 
     private Vector3 AccumulateLerpVec3(Vector3 startPos, Vector3 targetPos, ref float curTVal, ref float currentLerpTime)
@@ -308,7 +313,8 @@ public class ZEDManagerIK : MonoBehaviour
         Gizmos.DrawLine(LeftFootTransform.position + (Vector3.up * thresholdEnterGroundedState), LeftFootTransform.position - (Vector3.up * thresholdEnterGroundedState));
 
         Gizmos.color = Color.blue;
+        Gizmos.DrawCube(curEffectorPosL, new Vector3(gizmoSize, gizmoSize, gizmoSize));
         Gizmos.color = Color.magenta;
-        Gizmos.color = Color.yellow;
+        Gizmos.DrawCube(curEffectorPosR, new Vector3(gizmoSize, gizmoSize, gizmoSize));
     }
 }

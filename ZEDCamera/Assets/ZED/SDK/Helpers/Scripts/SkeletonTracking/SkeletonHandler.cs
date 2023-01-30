@@ -118,11 +118,6 @@ public class SkeletonHandler : ScriptableObject
     new Color(194.0f / 255.0f, 72.0f / 255.0f, 113.0f / 255.0f)
     };
 
-    public Vector3[] joints = new Vector3[jointCount];
-    GameObject skeleton;
-    public GameObject[] bones;
-    public GameObject[] spheres;
-
     // Index of bone parent
     private static readonly int[] parentsIdx = new int[]{
         -1,
@@ -200,6 +195,12 @@ public class SkeletonHandler : ScriptableObject
     #endregion
 
     #region vars
+
+    public Vector3[] joints = new Vector3[jointCount];
+    public float[] confidences = new float[jointCount];
+    GameObject skeleton;
+    public GameObject[] bones;
+    public GameObject[] spheres;
 
     private GameObject humanoid;
     private ZEDManagerIK zedik = null;
@@ -675,7 +676,6 @@ public class SkeletonHandler : ScriptableObject
                 if (parentsIdx[i] != -1)
                 {
                     Quaternion newRotation = rigBoneTarget[humanBone[i]] * rigBone[humanBone[i]].transform.localRotation;
-                    // rigBone[humanBone[i]].transform.localRotation = newRotation;
 
                     // update animator bones.
                     animator.SetBoneLocalRotation(humanBone[i], newRotation);
@@ -691,9 +691,7 @@ public class SkeletonHandler : ScriptableObject
             var animator = humanoid.GetComponent<Animator>();
             // There is an offset between the joint "Hips" and the equivalent in the ZED SDK. This offset compensates it.
             Vector3 hipOffset = new Vector3(0, (animator.GetBoneTransform(HumanBodyBones.Hips).position.y - animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position.y), 0);
-            // Vector3 hipOffset = new Vector3(0,2,0);
-            // rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(targetBodyPosition + hipOffset - new Vector3(0, _feetOffset, 0), targetBodyOrientation);
-            TargetBodyPositionWithHipOffset = targetBodyPosition + hipOffset - new Vector3(0, _feetOffset, 0);
+            TargetBodyPositionWithHipOffset = targetBodyPosition + hipOffset;
         }
     }
 
