@@ -83,6 +83,10 @@ public class ZEDManagerIK : MonoBehaviour
 
     #endregion
 
+    private Vector3 bluecubepos = Vector3.zero;
+    private Vector3 grincubepos = Vector3.zero;
+    private Vector3 blakcubepos = Vector3.zero;
+
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -108,14 +112,24 @@ public class ZEDManagerIK : MonoBehaviour
             transform.position = skhandler.TargetBodyPositionWithHipOffset;
             transform.rotation = skhandler.TargetBodyOrientation;
 
-            // height offset management
+            bluecubepos = RightFootTransform.position;
+
+            //// height offset management
             heightOffsetter.ComputeRootHeightOffset(
             skhandler.confidences[SkeletonHandler.JointType_AnkleLeft],
             skhandler.confidences[SkeletonHandler.JointType_AnkleRight],
-            animator.GetBoneTransform(HumanBodyBones.LeftFoot).position,
-            animator.GetBoneTransform(HumanBodyBones.RightFoot).position,
+            //animator.GetBoneTransform(HumanBodyBones.LeftFoot).position,
+            //animator.GetBoneTransform(HumanBodyBones.RightFoot).position, 
+            grincubepos/* + ankleHeightOffset*/,
+            //LeftFootTransform.position,
+            //RightFootTransform.position, 
+            blakcubepos/* + ankleHeightOffset*/,
             ankleHeightOffset.y);
-            transform.position += rootHeightOffset;
+
+            transform.position += 2*rootHeightOffset;
+
+            grincubepos = LeftFootTransform.position;
+            blakcubepos = RightFootTransform.position;
 
             // 3) Manage Foot IK
             if (animator)
@@ -312,9 +326,18 @@ public class ZEDManagerIK : MonoBehaviour
         if (groundedL) { Gizmos.color = Color.green; } else { Gizmos.color = Color.red; }
         Gizmos.DrawLine(LeftFootTransform.position + (Vector3.up * thresholdEnterGroundedState), LeftFootTransform.position - (Vector3.up * thresholdEnterGroundedState));
 
+        //Gizmos.color = Color.blue;
+        //Gizmos.DrawCube(curEffectorPosL, new Vector3(gizmoSize, gizmoSize, gizmoSize));
+        //Gizmos.color = Color.magenta;
+        //Gizmos.DrawCube(curEffectorPosR, new Vector3(gizmoSize, gizmoSize, gizmoSize));
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawCube(grincubepos, new Vector3(gizmoSize+.05f, gizmoSize + .05f, gizmoSize + .05f));
+
         Gizmos.color = Color.blue;
-        Gizmos.DrawCube(curEffectorPosL, new Vector3(gizmoSize, gizmoSize, gizmoSize));
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawCube(curEffectorPosR, new Vector3(gizmoSize, gizmoSize, gizmoSize));
+        Gizmos.DrawCube(bluecubepos, new Vector3(gizmoSize, gizmoSize, gizmoSize));
+
+        Gizmos.color = Color.black;
+        Gizmos.DrawCube(blakcubepos, new Vector3(gizmoSize, gizmoSize, gizmoSize));
     }
 }

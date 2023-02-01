@@ -31,6 +31,9 @@ public class HeightOffsetter : MonoBehaviour
     public void ComputeRootHeightOffset(float confFootL, float confFootR, Vector3 animPosFootL, Vector3 animPosFootR, float footHeightOffset)
     {
         Vector3 offsetToApply = new Vector3(0,curFeetOffset,0);
+
+        yellowCubeL = animPosFootR/* - new Vector3(0, footHeightOffset, 0)*/;
+
         if (automaticOffset)
         {
             // if both feet are visible/detected, attempt to correct the height of the skeleton's root
@@ -40,27 +43,33 @@ public class HeightOffsetter : MonoBehaviour
                 bool rayUnderFootHitL = Physics.Raycast(rayL, out RaycastHit hitL, findFloorDistance*2, layersToHit);
                 Ray rayR = new Ray(animPosFootR + (Vector3.up * findFloorDistance), Vector3.down);
                 bool rayUnderFootHitR = Physics.Raycast(rayR, out RaycastHit hitR, findFloorDistance*2, layersToHit);
-
-                yellowCubeL = animPosFootR;
                 cyanCubeR = hitR.point;
-                redCubeR = new Vector3(cyanCubeR.x, transform.position.y, cyanCubeR.z);
+                // redCubeR = new Vector3(cyanCubeR.x, transform.position.y, cyanCubeR.z);
 
                 float footFloorDistanceL = 0;
                 float footFloorDistanceR = 0;
 
-                // "Oriented distance" between the soles and the ground (can be negative)
-                if (rayUnderFootHitL) { footFloorDistanceL = (animPosFootL - new Vector3(0, footHeightOffset, 0) - hitL.point).y; }
-                if (rayUnderFootHitR) { footFloorDistanceR = (animPosFootR - new Vector3(0, footHeightOffset, 0) - hitR.point).y; }
+                //// "Oriented distance" between the soles and the ground (can be negative)
+                //if (rayUnderFootHitL) { footFloorDistanceL = (animPosFootL - new Vector3(0, footHeightOffset, 0) - hitL.point).y; }
+                //if (rayUnderFootHitR) { footFloorDistanceR = (animPosFootR - new Vector3(0, footHeightOffset, 0) - hitR.point).y; }
+                if (rayUnderFootHitL) { footFloorDistanceL = animPosFootL.y - footHeightOffset - hitL.point.y; }
+                if (rayUnderFootHitR) { footFloorDistanceR = animPosFootR.y - footHeightOffset - hitR.point.y; }
+
+                //Debug.Log("ffdL[" + footFloorDistanceL + "] ffdR[" + footFloorDistanceR + "] sum["+ (footHeightOffset+curFeetOffset) + "] fho[" + footHeightOffset + "] cfo:" + curFeetOffset);
 
                 float minFootFloorDistance = 0;
+                float thresholdHeight = -1* /*(footHeightOffset + */curFeetOffset/*)*/;
+                //Debug.Log(thresholdHeight + " / " + footFloorDistanceL + " / " + footFloorDistanceR);
 
                 // If both feet are under the ground, use the max value instead of the min value.
+                //if (footFloorDistanceL < thresholdHeight && footFloorDistanceR < thresholdHeight)
                 if (footFloorDistanceL < 0 && footFloorDistanceR < 0)
                 {
                     minFootFloorDistance = Mathf.Min(Mathf.Abs(footFloorDistanceL), Mathf.Abs(footFloorDistanceR));
                     curFeetOffset = feetAlpha * minFootFloorDistance + (1 - feetAlpha) * curFeetOffset;
                 }
                 else if (footFloorDistanceL > 0 && footFloorDistanceR > 0)
+                //else if (footFloorDistanceL > thresholdHeight && footFloorDistanceR > thresholdHeight)
                 {
                     minFootFloorDistance = Mathf.Min(Mathf.Abs(footFloorDistanceL), Mathf.Abs(footFloorDistanceR));
 
@@ -74,10 +83,12 @@ public class HeightOffsetter : MonoBehaviour
                     // Continuous adjustment: The feet offset is the min element of this buffer.
                     minFootFloorDistance = -1 * MinOfLinkedList(ref feetOffsetBuffer);
                     curFeetOffset = feetAlpha * minFootFloorDistance + (1 - feetAlpha) * curFeetOffset;
+                    //Debug.Log(curFeetOffset + " / " + confFootL + " / " + confFootR);
                 }
                 else
                 {
-                    minFootFloorDistance = Mathf.Min(Mathf.Abs(footFloorDistanceL), Mathf.Abs(footFloorDistanceR));
+                    minFootFloorDistance = -1 * Mathf.Min(footFloorDistanceL, footFloorDistanceR);
+                    //minFootFloorDistance = Mathf.Min(Mathf.Abs(footFloorDistanceL), Mathf.Abs(footFloorDistanceR));
                     curFeetOffset = feetAlpha * minFootFloorDistance + (1 - feetAlpha) * curFeetOffset;
                 }
 
@@ -110,13 +121,15 @@ public class HeightOffsetter : MonoBehaviour
         return min;
     }
 
+    // public void MaybeComputeRootHeightOffset(Vector3 pelvisPosition)
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawCube(yellowCubeL, new Vector3(gizmoSize,gizmoSize,gizmoSize));
         Gizmos.color = Color.cyan;
         Gizmos.DrawCube(cyanCubeR, new Vector3(gizmoSize, gizmoSize, gizmoSize));
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(redCubeR, new Vector3(gizmoSize, gizmoSize, gizmoSize));
+        //Gizmos.color = Color.red;
+        //Gizmos.DrawCube(redCubeR, new Vector3(gizmoSize, gizmoSize, gizmoSize));
     }
 }
