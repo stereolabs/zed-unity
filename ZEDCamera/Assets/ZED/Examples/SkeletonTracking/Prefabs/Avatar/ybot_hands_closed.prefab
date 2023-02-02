@@ -295,7 +295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90982a9a211eb694ea6d767b43787f56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableIK: 1
+  enableFootIK: 1
   filterMovementsOnGround: 1
   thresholdEnterGroundedState: 0.2
   thresholdLeaveGroundedState: 0.3

@@ -32,22 +32,22 @@ public class HeightOffsetter : MonoBehaviour
     }
 
     // Moves the actor to get 
-    public void ComputeRootHeightOffset(float confFootL, float confFootR, Vector3 animPosFootL, Vector3 animPosFootR, float ankleHeightOffset)
+    public void ComputeRootHeightOffset(float confFootL, float confFootR, Vector3 prevPosFootL, Vector3 prevPosFootR, float ankleHeightOffset)
     {
         Vector3 offsetToApply = new Vector3(0,curheightOffset,0);
 
-        yellowCubeL = animPosFootR - new Vector3(0, ankleHeightOffset - curheightOffset, 0);
-        redCubeR = animPosFootR;
+        //yellowCubeL = prevPosFootR - new Vector3(0, ankleHeightOffset - curheightOffset, 0);
+        //redCubeR = prevPosFootR;
 
         if (automaticOffset)
         {
             // if both feet are visible/detected, attempt to correct the height of the skeleton's root
             if (!float.IsNaN(confFootL) && !float.IsNaN(confFootR) && confFootL > 0 && confFootR > 0)
             {
-                Ray rayL = new Ray(animPosFootL + (Vector3.up * findFloorDistance), Vector3.down);
+                Ray rayL = new Ray(prevPosFootL + (Vector3.up * findFloorDistance), Vector3.down);
                 debutLigneL = rayL.origin;
                 bool rayUnderFootHitL = Physics.Raycast(rayL, out RaycastHit hitL, findFloorDistance*2, layersToHit);
-                Ray rayR = new Ray(animPosFootR + (Vector3.up * findFloorDistance), Vector3.down);
+                Ray rayR = new Ray(prevPosFootR + (Vector3.up * findFloorDistance), Vector3.down);
                 debutLigneR = rayR.origin;
                 bool rayUnderFootHitR = Physics.Raycast(rayR, out RaycastHit hitR, findFloorDistance*2, layersToHit);
                 cyanCubeR = hitR.point;
@@ -59,10 +59,10 @@ public class HeightOffsetter : MonoBehaviour
                 //// "Oriented distance" between the soles and the ground (can be negative)
                 //if (rayUnderFootHitL) { footFloorDistanceL = (animPosFootL - new Vector3(0, footHeightOffset, 0) - hitL.point).y; }
                 //if (rayUnderFootHitR) { footFloorDistanceR = (animPosFootR - new Vector3(0, footHeightOffset, 0) - hitR.point).y; }
-                if (rayUnderFootHitL) { footFloorDistanceL = animPosFootL.y - ankleHeightOffset - curheightOffset - hitL.point.y; }
-                if (rayUnderFootHitR) { footFloorDistanceR = animPosFootR.y - ankleHeightOffset - curheightOffset - hitR.point.y; }
-                magentaCube = new Vector3(animPosFootR.x, footFloorDistanceR, animPosFootR.z);
-                magentaCube += new Vector3(0,animPosFootR.y,0);
+                if (rayUnderFootHitL) { footFloorDistanceL = (prevPosFootL.y/* - ankleHeightOffset*//* + curheightOffset*/) - hitL.point.y; }
+                if (rayUnderFootHitR) { footFloorDistanceR = (prevPosFootR.y/* - ankleHeightOffset*//* + curheightOffset*/) - hitR.point.y; }
+                magentaCube = new Vector3(prevPosFootR.x, footFloorDistanceR, prevPosFootR.z);
+                magentaCube += new Vector3(0,prevPosFootR.y,0);
 
                 //Debug.Log("ffdL[" + footFloorDistanceL + "] ffdR[" + footFloorDistanceR + "] sum["+ (footHeightOffset+curFeetOffset) + "] fho[" + footHeightOffset + "] cfo:" + curFeetOffset);
 

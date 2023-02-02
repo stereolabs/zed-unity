@@ -14,7 +14,7 @@ public class ZEDManagerIK : MonoBehaviour
 
     [Header("IK SETTINGS")]
     [Tooltip("Enable foot IK (feet on ground when near it)")]
-    public bool enableIK = true;
+    public bool enableFootIK = true;
     [Tooltip("EXPERIMENTAL: Filter feet movements caused by root offset when the feet should not be moving (on floor).")]
     public bool filterMovementsOnGround = false;
     [Tooltip("Distance (between ankle and environment under it) under which a foot is considered on the floor.")]
@@ -129,19 +129,21 @@ public class ZEDManagerIK : MonoBehaviour
             heightOffsetter.ComputeRootHeightOffset(
             skhandler.confidences[SkeletonHandler.JointType_AnkleLeft],
             skhandler.confidences[SkeletonHandler.JointType_AnkleRight],
-            //animator.GetBoneTransform(HumanBodyBones.LeftFoot).position,
-            //animator.GetBoneTransform(HumanBodyBones.RightFoot).position, 
-            grincubepos/* + ankleHeightOffset*/,
-            blakcubepos/* + ankleHeightOffset*/,
+            animator.GetBoneTransform(HumanBodyBones.LeftFoot).position,
+            animator.GetBoneTransform(HumanBodyBones.RightFoot).position, 
+            //grincubepos/* + ankleHeightOffset*/,
+            //blakcubepos/* + ankleHeightOffset*/,
             //LeftFootTransform.position,
             //RightFootTransform.position, 
             ankleHeightOffset.y);
 
-            //transform.position += rootHeightOffset;
-            transform.position += rootHeightOffset;
-            //heightOffsetter.MaybeComputeRootHeightOffset(grincubepos, blakcubepos);
+            /** 
+             * DEBUG: Apply twice
+             */
+            transform.position += rootHeightOffset + ankleHeightOffset;
 
             gizCurStaBeforeRay = transform.position;
+            gizCurTarBeforeRay = gizCurStaBeforeRay + rootHeightOffset;
 
             grincubepos = LeftFootTransform.position;
             blakcubepos = RightFootTransform.position;
@@ -150,7 +152,7 @@ public class ZEDManagerIK : MonoBehaviour
             if (animator)
             {
                 //if the IK is active, set the position and rotation directly to the goal.
-                if (enableIK)
+                if (enableFootIK)
                 {
                     // Set the right foot target position and rotation, if one has been assigned
                     if (RightFootTransform != null)
@@ -238,10 +240,10 @@ public class ZEDManagerIK : MonoBehaviour
                     animator.SetIKPosition(AvatarIKGoal.LeftFoot, targetLerpPosL);
                     animator.SetIKRotation(AvatarIKGoal.LeftFoot, LeftFootTransform.rotation);
 
-                    animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 1);
-                    animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 1);
-                    animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot,  1);
-                    animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot,  1);
+                    animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 0);
+                    animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 0);
+                    animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot,  0);
+                    animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot,  0);
                 }
             }
         }
@@ -287,7 +289,7 @@ public class ZEDManagerIK : MonoBehaviour
         }
         // targetLerpPosR += targetLerpPosMultiplier*rootHeightOffset;
 
-        gizCurTarBeforeRay = targetLerpPosR;
+        // gizCurTarBeforeRay = targetLerpPosR;
 
         // define totallerptime = 1/ODFrequency
         // reset curlerptime
@@ -332,16 +334,19 @@ public class ZEDManagerIK : MonoBehaviour
         //Gizmos.color = Color.green;
         //Gizmos.DrawCube(grincubepos, new Vector3(gizmoSize+.05f, gizmoSize + .05f, gizmoSize + .05f));
 
-        Gizmos.color = Color.blue;
-        Gizmos.DrawCube(bluecubepos, new Vector3(gizmoSize, gizmoSize, gizmoSize));
+        //Gizmos.color = Color.blue;
+        //Gizmos.DrawCube(bluecubepos, new Vector3(gizmoSize, gizmoSize, gizmoSize));
 
         //Gizmos.color = Color.black;
         //Gizmos.DrawCube(blakcubepos, new Vector3(gizmoSize, gizmoSize, gizmoSize));
         Gizmos.color = colorGizmoCurrEffector;
         Gizmos.DrawCube(gizCurEffBeforeRay, new Vector3(gizmoSize, .1f, gizmoSize));
-        //Gizmos.color = colorGizmoCurrTarget;
-        //Gizmos.DrawCube(gizCurTarBeforeRay, new Vector3(gizmoSize, .08f, gizmoSize));
         Gizmos.color = colorGizmoCurrStart;
         Gizmos.DrawCube(gizCurStaBeforeRay, new Vector3(gizmoSize, .09f, gizmoSize));
+        Gizmos.color = colorGizmoCurrTarget;
+        Gizmos.DrawCube(gizCurTarBeforeRay, new Vector3(gizmoSize, .08f, gizmoSize));
+
+        Gizmos.color = new Color(1,0.4f,1);
+        Gizmos.DrawLine(gizCurEffBeforeRay, gizCurStaBeforeRay);
     }
 }
