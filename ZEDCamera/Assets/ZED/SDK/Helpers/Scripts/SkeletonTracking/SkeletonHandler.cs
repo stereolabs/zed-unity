@@ -593,10 +593,7 @@ public class SkeletonHandler : ScriptableObject
         joints = jointsPosition;
 
         humanoid.SetActive(useAvatar);
-        skeleton.SetActive(useAvatar);
-        // display both for debug
-        //skeleton.SetActive(!useAvatar);
-        usingAvatar = useAvatar;
+        skeleton.SetActive(!useAvatar);
 
         zedik.PoseWasUpdated();
 
@@ -606,9 +603,6 @@ public class SkeletonHandler : ScriptableObject
                 setHumanPoseControlMirrored(jointsPosition[0], rootRotation, jointsRotation);
             else
                 setHumanPoseControl(jointsPosition[0], rootRotation, jointsRotation);
-
-            // display both for debug
-            updateSkeleton();
         }
         else
         {

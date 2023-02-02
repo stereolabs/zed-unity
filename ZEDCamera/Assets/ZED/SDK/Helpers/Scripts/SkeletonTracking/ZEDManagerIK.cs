@@ -86,6 +86,15 @@ public class ZEDManagerIK : MonoBehaviour
     private Vector3 bluecubepos = Vector3.zero;
     private Vector3 grincubepos = Vector3.zero;
     private Vector3 blakcubepos = Vector3.zero;
+    private Vector3 gizCurEffBeforeRay = Vector3.zero;
+    private Vector3 gizCurTarBeforeRay = Vector3.zero;
+    private Vector3 gizCurStaBeforeRay = Vector3.zero;
+
+    [Header("Debug")]
+    public float targetLerpPosMultiplier = 1f;
+    public Color colorGizmoCurrEffector = Color.white;
+    public Color colorGizmoCurrTarget = Color.gray;
+    public Color colorGizmoCurrStart = Color.black;
 
     void Start()
     {
@@ -103,16 +112,18 @@ public class ZEDManagerIK : MonoBehaviour
     {
         if (skhandler)
         {
+            bluecubepos = transform.position;
+
             // 1) Update target positions and rotations, and apply rotations.
             // This needs to be called each frame, else there will be a jitter between the resting and correct poses of the skeleton.
             skhandler.Move();
 
             // 2) Move actor position, effectively moving root position. (root relative position is (0,0,0) in the prefab)
             // This way, we have root motion and can easily apply effects following the main gameobject's transform.
-            transform.position = skhandler.TargetBodyPositionWithHipOffset;
+            transform.position = skhandler.TargetBodyPositionWithHipOffset/* + rootHeightOffset*/;
             transform.rotation = skhandler.TargetBodyOrientation;
 
-            bluecubepos = RightFootTransform.position;
+            gizCurEffBeforeRay = transform.position;
 
             //// height offset management
             heightOffsetter.ComputeRootHeightOffset(
@@ -121,12 +132,16 @@ public class ZEDManagerIK : MonoBehaviour
             //animator.GetBoneTransform(HumanBodyBones.LeftFoot).position,
             //animator.GetBoneTransform(HumanBodyBones.RightFoot).position, 
             grincubepos/* + ankleHeightOffset*/,
+            blakcubepos/* + ankleHeightOffset*/,
             //LeftFootTransform.position,
             //RightFootTransform.position, 
-            blakcubepos/* + ankleHeightOffset*/,
             ankleHeightOffset.y);
 
-            transform.position += 2*rootHeightOffset;
+            //transform.position += rootHeightOffset;
+            transform.position += rootHeightOffset;
+            //heightOffsetter.MaybeComputeRootHeightOffset(grincubepos, blakcubepos);
+
+            gizCurStaBeforeRay = transform.position;
 
             grincubepos = LeftFootTransform.position;
             blakcubepos = RightFootTransform.position;
@@ -163,8 +178,11 @@ public class ZEDManagerIK : MonoBehaviour
                             groundedR = false;
                             normalR = animator.GetBoneTransform(HumanBodyBones.RightFoot).up;
                         }
+                        //Debug.Log("groundedR: " + groundedR);
+
                         // update current effector position because next Move() will reset it to the skeleton pose
                         curEffectorPosR = effectorTargetPos;
+                        blakcubepos = curEffectorPosR;
 
                         // set IK position and rotation
                         animator.SetIKPosition(AvatarIKGoal.RightFoot, effectorTargetPos);
@@ -201,6 +219,7 @@ public class ZEDManagerIK : MonoBehaviour
                         }
                         // update current effector position because next Move() will reset it to the skeleton pose
                         curEffectorPosL = effectorTargetPos;
+                        grincubepos = curEffectorPosL;
 
                         // set IK position and rotation
                         animator.SetIKPosition(AvatarIKGoal.LeftFoot, effectorTargetPos);
@@ -214,62 +233,29 @@ public class ZEDManagerIK : MonoBehaviour
                 //if the IK is not active, set the position and rotation of the hand and head back to the original position
                 else
                 {
-                    animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 0);
-                    animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 0);
-                    animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 0);
-                    animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, 0);
+                    animator.SetIKPosition(AvatarIKGoal.RightFoot, targetLerpPosR);
+                    animator.SetIKRotation(AvatarIKGoal.RightFoot, RightFootTransform.rotation);
+                    animator.SetIKPosition(AvatarIKGoal.LeftFoot, targetLerpPosL);
+                    animator.SetIKRotation(AvatarIKGoal.LeftFoot, LeftFootTransform.rotation);
+
+                    animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 1);
+                    animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 1);
+                    animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot,  1);
+                    animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot,  1);
                 }
             }
         }
-    }
-
-    private float SpecialLerp(float totalTime, ref float currentTime, float maxSpeed)
-    {
-        currentTime += Time.deltaTime;
-
-        float t = currentTime / totalTime;
-
-        return Mathf.Sin(t * Mathf.PI * 0.5f);
-    }
-
-    private Vector3 LerpDepOnDist(Vector3 targetEffectorPos, Vector3 currentBonePos, float distVitMin, float minTVal, bool freeFoot)
-    {
-        Vector3 effectorPosWithLerp = currentBonePos;
-
-        if (freeFoot)
-        {
-            float tval = 0;
-            float tvalmax = 1f;
-
-            float dist = Vector3.Distance(targetEffectorPos, currentBonePos);
-            if (dist >= distVitMin)
-            {
-                tval = minTVal;
-            }
-            else
-            {
-                try
-                {
-                    tval = (dist / distVitMin);
-                    //tval = Mathf.Cos(tval * Mathf.PI * 0.5f);
-                    tval = tvalmax - (tvalmax - minTVal) * (dist / distVitMin);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
-                }
-            }
-
-            effectorPosWithLerp = Vector3.Lerp(currentBonePos, targetEffectorPos, tval);
-        }
-        
-        return effectorPosWithLerp;
     }
 
     // computes distance between the projections of vec1 and vec2 on an horizontal plane
     private float HorizontalDist(Vector3 vec1, Vector3 vec2)
     {
-        return Vector2.Distance(new Vector2(vec1.x, vec1.z), new Vector2(vec2.x, vec2.z));
+        float d = Vector2.Distance(new Vector2(vec1.x, vec1.z), new Vector2(vec2.x, vec2.z));
+        if(d <= groundedFreeDistance)
+        {
+            Debug.Log("DISTH = " + d + " / "+ vec1 + " / "+ vec2);
+        }
+        return d;
     }
 
     // Should be called each time the skeleton data is changed in the handler
@@ -277,27 +263,31 @@ public class ZEDManagerIK : MonoBehaviour
     // Checks distance to filter feet parasite movements on floor.
     public void PoseWasUpdated()
     {
+        Debug.LogWarning("POSE WAS UPDATED");
         startLerpPosL = curEffectorPosL;
 
-        targetLerpPosL = skhandler.joints[SkeletonHandler.JointType_AnkleLeft];
+        targetLerpPosL = skhandler.joints[SkeletonHandler.JointType_AnkleLeft] + targetLerpPosMultiplier * rootHeightOffset;
         if (filterMovementsOnGround)
         {
             targetLerpPosL = (groundedL && HorizontalDist(startLerpPosL, targetLerpPosL) < groundedFreeDistance)
                 ? startLerpPosL
-                : skhandler.joints[SkeletonHandler.JointType_AnkleLeft];
+                : targetLerpPosL;
         }
-        targetLerpPosL += rootHeightOffset - ankleHeightOffset;
+        // targetLerpPosL += targetLerpPosMultiplier * rootHeightOffset;
         
         startLerpPosR = curEffectorPosR;
+        gizCurStaBeforeRay = startLerpPosR;
 
-        targetLerpPosR = skhandler.joints[SkeletonHandler.JointType_AnkleRight];
+        targetLerpPosR = skhandler.joints[SkeletonHandler.JointType_AnkleRight] + targetLerpPosMultiplier * rootHeightOffset;
         if (filterMovementsOnGround)
         {
             targetLerpPosR = (groundedR && HorizontalDist(startLerpPosR, targetLerpPosR) < groundedFreeDistance)
                 ? startLerpPosR
-                : skhandler.joints[SkeletonHandler.JointType_AnkleRight];
+                : targetLerpPosR;
         }
-        targetLerpPosR += rootHeightOffset - ankleHeightOffset;
+        // targetLerpPosR += targetLerpPosMultiplier*rootHeightOffset;
+
+        gizCurTarBeforeRay = targetLerpPosR;
 
         // define totallerptime = 1/ODFrequency
         // reset curlerptime
@@ -311,11 +301,19 @@ public class ZEDManagerIK : MonoBehaviour
 
     private Vector3 AccumulateLerpVec3(Vector3 startPos, Vector3 targetPos, ref float curTVal, ref float currentLerpTime)
     {
-        currentLerpTime += Time.deltaTime;
-        float t = currentLerpTime / totalLerpTime;
-        t = (Mathf.Sin(t * Mathf.PI * 0.5f));
-        curTVal = t;
-        return Vector3.Lerp(startPos, targetPos, t);
+        if(Vector3.Distance(startPos,targetPos) > .00001f)
+        {
+            currentLerpTime += Time.deltaTime;
+            float t = currentLerpTime / totalLerpTime;
+            t = Mathf.Clamp(t, 0, 1);
+            t = (Mathf.Sin(t * Mathf.PI * 0.5f));
+            curTVal = t;
+            return Vector3.Lerp(startPos, targetPos, t);
+        }
+        else
+        {
+            return startPos;
+        }
     }
 
     private void OnDrawGizmos()
@@ -331,13 +329,19 @@ public class ZEDManagerIK : MonoBehaviour
         //Gizmos.color = Color.magenta;
         //Gizmos.DrawCube(curEffectorPosR, new Vector3(gizmoSize, gizmoSize, gizmoSize));
 
-        Gizmos.color = Color.green;
-        Gizmos.DrawCube(grincubepos, new Vector3(gizmoSize+.05f, gizmoSize + .05f, gizmoSize + .05f));
+        //Gizmos.color = Color.green;
+        //Gizmos.DrawCube(grincubepos, new Vector3(gizmoSize+.05f, gizmoSize + .05f, gizmoSize + .05f));
 
         Gizmos.color = Color.blue;
         Gizmos.DrawCube(bluecubepos, new Vector3(gizmoSize, gizmoSize, gizmoSize));
 
-        Gizmos.color = Color.black;
-        Gizmos.DrawCube(blakcubepos, new Vector3(gizmoSize, gizmoSize, gizmoSize));
+        //Gizmos.color = Color.black;
+        //Gizmos.DrawCube(blakcubepos, new Vector3(gizmoSize, gizmoSize, gizmoSize));
+        Gizmos.color = colorGizmoCurrEffector;
+        Gizmos.DrawCube(gizCurEffBeforeRay, new Vector3(gizmoSize, .1f, gizmoSize));
+        //Gizmos.color = colorGizmoCurrTarget;
+        //Gizmos.DrawCube(gizCurTarBeforeRay, new Vector3(gizmoSize, .08f, gizmoSize));
+        Gizmos.color = colorGizmoCurrStart;
+        Gizmos.DrawCube(gizCurStaBeforeRay, new Vector3(gizmoSize, .09f, gizmoSize));
     }
 }
