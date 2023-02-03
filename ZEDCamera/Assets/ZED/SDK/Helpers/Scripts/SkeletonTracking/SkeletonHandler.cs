@@ -666,7 +666,7 @@ public class SkeletonHandler : ScriptableObject
             }
         }
 
-        PropagateRestPoseRotations(0, rigBone, default_rotations[0], false);
+        //PropagateRestPoseRotations(0, rigBone, default_rotations[0], false);
 
         for (int i = 0; i < humanBone.Length; i++)
         {
@@ -682,7 +682,7 @@ public class SkeletonHandler : ScriptableObject
 
             }
         }
-        PropagateRestPoseRotations(0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
+        //PropagateRestPoseRotations(0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
 
         // Apply global transform
         if (rigBone[HumanBodyBones.Hips].transform)

@@ -90,6 +90,13 @@ public class ZEDManagerIK : MonoBehaviour
     private Vector3 gizAnkleRPlusHeightOffset = Vector3.zero;
     private Vector3 gizAnkleRAfterMove = Vector3.zero;
 
+    private Vector3 hipRPosBeforMove = Vector3.zero;
+    private Vector3 kneeRPosBeforMove = Vector3.zero;
+    private Vector3 ankleRPosBeforMove = Vector3.zero;
+    private Vector3 ankleLPosBeforMove = Vector3.zero;
+    private Vector3 footRPosBeforMove = Vector3.zero;
+
+
     [Header("Debug")]
     public float targetLerpPosMultiplier = 1f;
     public Color colorAnkleRBeforeMove = Color.white;
@@ -125,18 +132,27 @@ public class ZEDManagerIK : MonoBehaviour
 
             //gizAnkleRBeforeMove = animator.GetBoneTransform(HumanBodyBones.Hips).position;
             gizAnkleRBeforeMove = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
+            gizAnkleRBeforeMove = new Vector3(gizAnkleRBeforeMove.x, ankleRPosBeforMove.y, gizAnkleRBeforeMove.z);
+            //hipRPosBeforMove    = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg).position;
+            //kneeRPosBeforMove   = animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).position;
+            //ankleRPosBeforMove  = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
+            //footRPosBeforMove   = RightFootTransform.position;
 
             //// height offset management
             heightOffsetter.ComputeRootHeightOffset(
             skhandler.confidences[SkeletonHandler.JointType_AnkleLeft],
             skhandler.confidences[SkeletonHandler.JointType_AnkleRight],
-            animator.GetBoneTransform(HumanBodyBones.LeftFoot).position,
-            animator.GetBoneTransform(HumanBodyBones.RightFoot).position, 
+            //animator.GetBoneTransform(HumanBodyBones.LeftFoot).position,
+            //animator.GetBoneTransform(HumanBodyBones.RightFoot).position, 
+            ankleLPosBeforMove,
+            ankleRPosBeforMove,
+
             //grincubepos/* + ankleHeightOffset*/,
             //blakcubepos/* + ankleHeightOffset*/,
             //LeftFootTransform.position,
             //RightFootTransform.position, 
             ankleHeightOffset.y);
+            Debug.Log("jpp: " + rootHeightOffset);
 
             /** 
              * DEBUG: Apply twice
@@ -238,10 +254,10 @@ public class ZEDManagerIK : MonoBehaviour
                 //if the IK is not active, set the position and rotation of the hand and head back to the original position
                 else
                 {
-                    animator.SetIKPosition(AvatarIKGoal.RightFoot, targetLerpPosR);
-                    animator.SetIKRotation(AvatarIKGoal.RightFoot, RightFootTransform.rotation);
-                    animator.SetIKPosition(AvatarIKGoal.LeftFoot, targetLerpPosL);
-                    animator.SetIKRotation(AvatarIKGoal.LeftFoot, LeftFootTransform.rotation);
+                    //animator.SetIKPosition(AvatarIKGoal.RightFoot, targetLerpPosR);
+                    //animator.SetIKRotation(AvatarIKGoal.RightFoot, RightFootTransform.rotation);
+                    //animator.SetIKPosition(AvatarIKGoal.LeftFoot, targetLerpPosL);
+                    //animator.SetIKRotation(AvatarIKGoal.LeftFoot, LeftFootTransform.rotation);
 
                     animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 0);
                     animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 0);
@@ -279,7 +295,7 @@ public class ZEDManagerIK : MonoBehaviour
                 : targetLerpPosL;
         }
         // targetLerpPosL += targetLerpPosMultiplier * rootHeightOffset;
-        
+
         startLerpPosR = curEffectorPosR;
         //gizAnkleRAfterMove = startLerpPosR;
 
@@ -321,6 +337,17 @@ public class ZEDManagerIK : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        //hipRPosBeforMove = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg).position;
+        //kneeRPosBeforMove = animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).position;
+        //footRPosBeforMove = RightFootTransform.position;
+        ankleRPosBeforMove = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
+        ankleLPosBeforMove = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
+        //ankleRPosBeforMove = animator.GetBoneTransform(HumanBodyBones.RightToes).position;
+        //ankleLPosBeforMove = animator.GetBoneTransform(HumanBodyBones.LeftToes).position;
+    }
+
     private void OnDrawGizmos()
     {
         if (groundedR) { Gizmos.color = Color.green; } else { Gizmos.color = Color.red; }
@@ -351,5 +378,12 @@ public class ZEDManagerIK : MonoBehaviour
 
         Gizmos.color = new Color(1,0.4f,1);
         Gizmos.DrawLine(gizAnkleRBeforeMove, gizAnkleRAfterMove);
+
+        Gizmos.color = colorAnkleRBeforeMove;
+        //Gizmos.DrawSphere(hipRPosBeforMove  , .1f);
+        //Gizmos.DrawSphere(kneeRPosBeforMove , .1f);
+        Gizmos.DrawSphere(ankleRPosBeforMove, .1f);
+        Gizmos.color = Color.black;
+        Gizmos.DrawSphere(ankleLPosBeforMove, .1f);
     }
 }

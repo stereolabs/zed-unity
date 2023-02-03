@@ -63,8 +63,8 @@ public class HeightOffsetter : MonoBehaviour
                 //// "Oriented distance" between the soles and the ground (can be negative)
                 //if (rayUnderFootHitL) { footFloorDistanceL = (animPosFootL - new Vector3(0, footHeightOffset, 0) - hitL.point).y; }
                 //if (rayUnderFootHitR) { footFloorDistanceR = (animPosFootR - new Vector3(0, footHeightOffset, 0) - hitR.point).y; }
-                if (rayUnderFootHitL) { footFloorDistanceL = (animPosFootL.y/* - ankleHeightOffset*//* + curheightOffset*/) - hitL.point.y; finLigneL = hitL.point; }
-                if (rayUnderFootHitR) { footFloorDistanceR = (animPosFootR.y/* - ankleHeightOffset*//* + curheightOffset*/) - hitR.point.y; finLigneR = hitR.point; }
+                if (rayUnderFootHitL) { footFloorDistanceL = (animPosFootL.y - ankleHeightOffset - curheightOffset) - hitL.point.y; finLigneL = hitL.point; }
+                if (rayUnderFootHitR) { footFloorDistanceR = (animPosFootR.y - ankleHeightOffset - curheightOffset) - hitR.point.y; finLigneR = hitR.point; }
                 magentaCube = new Vector3(animPosFootR.x, footFloorDistanceR, animPosFootR.z);
                 magentaCube += new Vector3(0,animPosFootR.y,0);
 
@@ -172,10 +172,10 @@ public class HeightOffsetter : MonoBehaviour
         //Gizmos.DrawCube(magentaCube, new Vector3(gizmoSize, gizmoSize, gizmoSize));
 
         Gizmos.color = Color.magenta;
-        Gizmos.DrawLine(debutLigneL, finLigneL);
+        //Gizmos.DrawLine(debutLigneL, finLigneL);
         Gizmos.DrawSphere(finLigneL, 0.03f);
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(debutLigneR, finLigneR);
+        //Gizmos.DrawLine(debutLigneR, finLigneR);
         Gizmos.DrawSphere(finLigneR, 0.03f);
     }
 }

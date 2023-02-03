@@ -295,11 +295,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90982a9a211eb694ea6d767b43787f56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableFootIK: 0
+  enableFootIK: 1
   filterMovementsOnGround: 1
-  thresholdEnterGroundedState: 0.2
-  thresholdLeaveGroundedState: 0.3
-  groundedFreeDistance: 0.15
+  thresholdEnterGroundedState: 0.15
+  thresholdLeaveGroundedState: 0.2
+  groundedFreeDistance: 0.1
   raycastDetectionLayers:
     serializedVersion: 2
     m_Bits: 65536
@@ -326,7 +326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de97d242c6a58054885e66d2b56fe4c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manualOffset: {x: 0, y: 0, z: 0}
+  manualOffset: {x: 0, y: -0.1, z: 0}
   automaticOffset: 1
   findFloorDistance: 2
   layersToHit:
