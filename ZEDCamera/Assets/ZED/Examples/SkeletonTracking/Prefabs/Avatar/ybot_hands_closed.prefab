@@ -295,7 +295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90982a9a211eb694ea6d767b43787f56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableFootIK: 1
+  enableFootIK: 0
   filterMovementsOnGround: 1
   thresholdEnterGroundedState: 0.2
   thresholdLeaveGroundedState: 0.3
@@ -309,11 +309,11 @@ MonoBehaviour:
   ankleHeightOffset: {x: 0, y: 0.102, z: 0}
   objectDetectionFrequency: 30
   lerpLatency: 3
-  gizmoSize: 0.13
+  gizmoSize: 0.5
   targetLerpPosMultiplier: 1
-  colorGizmoCurrEffector: {r: 1, g: 0, b: 0.89550066, a: 1}
-  colorGizmoCurrTarget: {r: 0, g: 0.09055519, b: 1, a: 1}
-  colorGizmoCurrStart: {r: 1, g: 0.6184442, b: 0, a: 1}
+  colorAnkleRBeforeMove: {r: 0.9154093, g: 1, b: 0, a: 1}
+  colorAnkleRPlusHeightOffset: {r: 0.98929596, g: 0, b: 1, a: 1}
+  colorAnkleRAfterMove: {r: 0, g: 0.9230871, b: 1, a: 1}
 --- !u!114 &8038840070172855552
 MonoBehaviour:
   m_ObjectHideFlags: 0

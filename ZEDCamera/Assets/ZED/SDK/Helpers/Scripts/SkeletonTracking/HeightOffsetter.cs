@@ -25,6 +25,8 @@ public class HeightOffsetter : MonoBehaviour
 
     private Vector3 debutLigneL = Vector3.zero;
     private Vector3 debutLigneR = Vector3.zero;
+    private Vector3 finLigneL = Vector3.zero;
+    private Vector3 finLigneR = Vector3.zero;
 
     private void Start()
     {
@@ -32,7 +34,7 @@ public class HeightOffsetter : MonoBehaviour
     }
 
     // Moves the actor to get 
-    public void ComputeRootHeightOffset(float confFootL, float confFootR, Vector3 prevPosFootL, Vector3 prevPosFootR, float ankleHeightOffset)
+    public void ComputeRootHeightOffset(float confFootL, float confFootR, Vector3 animPosFootL, Vector3 animPosFootR, float ankleHeightOffset)
     {
         Vector3 offsetToApply = new Vector3(0,curheightOffset,0);
 
@@ -44,10 +46,10 @@ public class HeightOffsetter : MonoBehaviour
             // if both feet are visible/detected, attempt to correct the height of the skeleton's root
             if (!float.IsNaN(confFootL) && !float.IsNaN(confFootR) && confFootL > 0 && confFootR > 0)
             {
-                Ray rayL = new Ray(prevPosFootL + (Vector3.up * findFloorDistance), Vector3.down);
+                Ray rayL = new Ray(animPosFootL + (Vector3.up * findFloorDistance), Vector3.down);
                 debutLigneL = rayL.origin;
                 bool rayUnderFootHitL = Physics.Raycast(rayL, out RaycastHit hitL, findFloorDistance*2, layersToHit);
-                Ray rayR = new Ray(prevPosFootR + (Vector3.up * findFloorDistance), Vector3.down);
+                Ray rayR = new Ray(animPosFootR + (Vector3.up * findFloorDistance), Vector3.down);
                 debutLigneR = rayR.origin;
                 bool rayUnderFootHitR = Physics.Raycast(rayR, out RaycastHit hitR, findFloorDistance*2, layersToHit);
                 cyanCubeR = hitR.point;
@@ -55,14 +57,16 @@ public class HeightOffsetter : MonoBehaviour
 
                 float footFloorDistanceL = 0;
                 float footFloorDistanceR = 0;
+                finLigneL = debutLigneL;
+                finLigneR = debutLigneR;
 
                 //// "Oriented distance" between the soles and the ground (can be negative)
                 //if (rayUnderFootHitL) { footFloorDistanceL = (animPosFootL - new Vector3(0, footHeightOffset, 0) - hitL.point).y; }
                 //if (rayUnderFootHitR) { footFloorDistanceR = (animPosFootR - new Vector3(0, footHeightOffset, 0) - hitR.point).y; }
-                if (rayUnderFootHitL) { footFloorDistanceL = (prevPosFootL.y/* - ankleHeightOffset*//* + curheightOffset*/) - hitL.point.y; }
-                if (rayUnderFootHitR) { footFloorDistanceR = (prevPosFootR.y/* - ankleHeightOffset*//* + curheightOffset*/) - hitR.point.y; }
-                magentaCube = new Vector3(prevPosFootR.x, footFloorDistanceR, prevPosFootR.z);
-                magentaCube += new Vector3(0,prevPosFootR.y,0);
+                if (rayUnderFootHitL) { footFloorDistanceL = (animPosFootL.y/* - ankleHeightOffset*//* + curheightOffset*/) - hitL.point.y; finLigneL = hitL.point; }
+                if (rayUnderFootHitR) { footFloorDistanceR = (animPosFootR.y/* - ankleHeightOffset*//* + curheightOffset*/) - hitR.point.y; finLigneR = hitR.point; }
+                magentaCube = new Vector3(animPosFootR.x, footFloorDistanceR, animPosFootR.z);
+                magentaCube += new Vector3(0,animPosFootR.y,0);
 
                 //Debug.Log("ffdL[" + footFloorDistanceL + "] ffdR[" + footFloorDistanceR + "] sum["+ (footHeightOffset+curFeetOffset) + "] fho[" + footHeightOffset + "] cfo:" + curFeetOffset);
 
@@ -167,9 +171,11 @@ public class HeightOffsetter : MonoBehaviour
         //Gizmos.color = Color.magenta;
         //Gizmos.DrawCube(magentaCube, new Vector3(gizmoSize, gizmoSize, gizmoSize));
 
-        //Gizmos.color = Color.magenta;
-        //Gizmos.DrawLine( debutLigneL + (Vector3.up * findFloorDistance), debutLigneL + (Vector3.down * findFloorDistance));
-        //Gizmos.color = Color.red;
-        //Gizmos.DrawLine( debutLigneR + (Vector3.up * findFloorDistance), debutLigneR + (Vector3.down * findFloorDistance));
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawLine(debutLigneL, finLigneL);
+        Gizmos.DrawSphere(finLigneL, 0.03f);
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(debutLigneR, finLigneR);
+        Gizmos.DrawSphere(finLigneR, 0.03f);
     }
 }

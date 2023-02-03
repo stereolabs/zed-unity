@@ -86,15 +86,15 @@ public class ZEDManagerIK : MonoBehaviour
     private Vector3 bluecubepos = Vector3.zero;
     private Vector3 grincubepos = Vector3.zero;
     private Vector3 blakcubepos = Vector3.zero;
-    private Vector3 gizCurEffBeforeRay = Vector3.zero;
-    private Vector3 gizCurTarBeforeRay = Vector3.zero;
-    private Vector3 gizCurStaBeforeRay = Vector3.zero;
+    private Vector3 gizAnkleRBeforeMove = Vector3.zero;
+    private Vector3 gizAnkleRPlusHeightOffset = Vector3.zero;
+    private Vector3 gizAnkleRAfterMove = Vector3.zero;
 
     [Header("Debug")]
     public float targetLerpPosMultiplier = 1f;
-    public Color colorGizmoCurrEffector = Color.white;
-    public Color colorGizmoCurrTarget = Color.gray;
-    public Color colorGizmoCurrStart = Color.black;
+    public Color colorAnkleRBeforeMove = Color.white;
+    public Color colorAnkleRPlusHeightOffset = Color.gray;
+    public Color colorAnkleRAfterMove = Color.black;
 
     void Start()
     {
@@ -123,7 +123,8 @@ public class ZEDManagerIK : MonoBehaviour
             transform.position = skhandler.TargetBodyPositionWithHipOffset/* + rootHeightOffset*/;
             transform.rotation = skhandler.TargetBodyOrientation;
 
-            gizCurEffBeforeRay = transform.position;
+            //gizAnkleRBeforeMove = animator.GetBoneTransform(HumanBodyBones.Hips).position;
+            gizAnkleRBeforeMove = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
 
             //// height offset management
             heightOffsetter.ComputeRootHeightOffset(
@@ -142,8 +143,10 @@ public class ZEDManagerIK : MonoBehaviour
              */
             transform.position += rootHeightOffset + ankleHeightOffset;
 
-            gizCurStaBeforeRay = transform.position;
-            gizCurTarBeforeRay = gizCurStaBeforeRay + rootHeightOffset;
+            //gizAnkleRAfterMove = animator.GetBoneTransform(HumanBodyBones.Hips).position;
+            gizAnkleRAfterMove = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
+            gizAnkleRPlusHeightOffset = gizAnkleRAfterMove + rootHeightOffset;
+            //gizAnkleRPlusHeightOffset = gizAnkleRAfterMove + rootHeightOffset;
 
             grincubepos = LeftFootTransform.position;
             blakcubepos = RightFootTransform.position;
@@ -278,7 +281,7 @@ public class ZEDManagerIK : MonoBehaviour
         // targetLerpPosL += targetLerpPosMultiplier * rootHeightOffset;
         
         startLerpPosR = curEffectorPosR;
-        gizCurStaBeforeRay = startLerpPosR;
+        //gizAnkleRAfterMove = startLerpPosR;
 
         targetLerpPosR = skhandler.joints[SkeletonHandler.JointType_AnkleRight] + targetLerpPosMultiplier * rootHeightOffset;
         if (filterMovementsOnGround)
@@ -339,14 +342,14 @@ public class ZEDManagerIK : MonoBehaviour
 
         //Gizmos.color = Color.black;
         //Gizmos.DrawCube(blakcubepos, new Vector3(gizmoSize, gizmoSize, gizmoSize));
-        Gizmos.color = colorGizmoCurrEffector;
-        Gizmos.DrawCube(gizCurEffBeforeRay, new Vector3(gizmoSize, .1f, gizmoSize));
-        Gizmos.color = colorGizmoCurrStart;
-        Gizmos.DrawCube(gizCurStaBeforeRay, new Vector3(gizmoSize, .09f, gizmoSize));
-        Gizmos.color = colorGizmoCurrTarget;
-        Gizmos.DrawCube(gizCurTarBeforeRay, new Vector3(gizmoSize, .08f, gizmoSize));
+        Gizmos.color = colorAnkleRBeforeMove;
+        Gizmos.DrawCube(gizAnkleRBeforeMove, new Vector3(gizmoSize, .1f, gizmoSize));
+        Gizmos.color = colorAnkleRAfterMove;
+        Gizmos.DrawCube(gizAnkleRAfterMove, new Vector3(gizmoSize, .08f, gizmoSize));
+        Gizmos.color = colorAnkleRPlusHeightOffset;
+        Gizmos.DrawCube(gizAnkleRPlusHeightOffset, new Vector3(gizmoSize, .06f, gizmoSize));
 
         Gizmos.color = new Color(1,0.4f,1);
-        Gizmos.DrawLine(gizCurEffBeforeRay, gizCurStaBeforeRay);
+        Gizmos.DrawLine(gizAnkleRBeforeMove, gizAnkleRAfterMove);
     }
 }
