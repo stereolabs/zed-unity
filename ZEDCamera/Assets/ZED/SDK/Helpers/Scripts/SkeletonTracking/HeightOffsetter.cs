@@ -44,7 +44,7 @@ public class HeightOffsetter : MonoBehaviour
         if (automaticOffset)
         {
             // if both feet are visible/detected, attempt to correct the height of the skeleton's root
-            if (!float.IsNaN(confFootL) && !float.IsNaN(confFootR) && confFootL > 0 && confFootR > 0)
+            if (!float.IsNaN(confFootL) && !float.IsNaN(confFootR) /*&& confFootL > 0 && confFootR > 0*/)
             {
                 Ray rayL = new Ray(animPosFootL + (Vector3.up * findFloorDistance), Vector3.down);
                 debutLigneL = rayL.origin;
@@ -171,11 +171,11 @@ public class HeightOffsetter : MonoBehaviour
         //Gizmos.color = Color.magenta;
         //Gizmos.DrawCube(magentaCube, new Vector3(gizmoSize, gizmoSize, gizmoSize));
 
-        Gizmos.color = Color.magenta;
-        //Gizmos.DrawLine(debutLigneL, finLigneL);
-        Gizmos.DrawSphere(finLigneL, 0.03f);
-        Gizmos.color = Color.red;
-        //Gizmos.DrawLine(debutLigneR, finLigneR);
-        Gizmos.DrawSphere(finLigneR, 0.03f);
+        //Gizmos.color = Color.magenta;
+        ////Gizmos.DrawLine(debutLigneL, finLigneL);
+        //Gizmos.DrawSphere(finLigneL, 0.03f);
+        //Gizmos.color = Color.red;
+        ////Gizmos.DrawLine(debutLigneR, finLigneR);
+        //Gizmos.DrawSphere(finLigneR, 0.03f);
     }
 }
