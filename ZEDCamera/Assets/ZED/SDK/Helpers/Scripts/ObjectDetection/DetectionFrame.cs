@@ -26,7 +26,7 @@ public class DetectionFrame
     }
 
     /// <summary>
-    /// Timestamp of when the object detection module finished detecting the frame. (TODO: Verify.)
+    /// Timestamp of when the object detection module finished detecting the frame.
     /// </summary>
     public ulong timestamp
     {
