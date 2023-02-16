@@ -841,6 +841,10 @@ namespace sl
         /// </summary>
         SVO_UNSUPPORTED_COMPRESSION,
         /// <summary>
+        /// SVO end of file has been reached, and no frame will be available until the SVO position is reset.*/
+        /// </summary>
+        END_OF_SVOFILE_REACHED,
+        /// <summary>
         /// The requested coordinate system is not available.
         /// </summary>
         INVALID_COORDINATE_SYSTEM,
@@ -897,10 +901,6 @@ namespace sl
         /// Your ZED cannot be opened. Try replugging it to another USB port or flipping the USB-C connector (if using ZED Mini).
         /// </summary>
         CAMERA_DETECTION_ISSUE,
-        /// <summary>
-        /// The Camera is already in use by another process.
-        /// </summary>
-        CAMERA_ALREADY_IN_USE,
         /// <summary>
         /// No GPU found or CUDA is unable to list it. Can be a driver/reboot issue.
         /// </summary>
