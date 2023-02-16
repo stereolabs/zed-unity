@@ -25,20 +25,21 @@ public class ZEDManagerIK : MonoBehaviour
     public float groundedFreeDistance = .05f;
     [Tooltip("Layers detected as floor for the IK")]
     public LayerMask raycastDetectionLayers;
+    [Range(0f, 1f)]
+    public float ikApplicationRatio = 1f;
 
     [Header("RIG SETTINGS")]
     public Transform LeftFootTransform = null;
     public Transform RightFootTransform = null;
     public Transform _rootJoint;
     public Vector3 ankleHeightOffset = new Vector3(0, 0.102f, 0);
-    
+    public ZEDSkeletonTrackingViewer bodyTrackingManager;
+
     [Header("SMOOTHING SETTINGS")]
     [Tooltip("Frequency of reception of new OD data, in FPS")]
     public float objectDetectionFrequency = 30f;
     [Tooltip("Latency of interpolation. 1=no latency; 0=instant movement, no lerp;")]
     public float lerpLatency = 3f;
-
-    public float gizmoSize = .15f;
 
     #endregion
 
@@ -61,6 +62,7 @@ public class ZEDManagerIK : MonoBehaviour
 
     private Vector3 rootHeightOffset = Vector3.zero;
     public Vector3 RootHeightOffset { get => rootHeightOffset; set => rootHeightOffset = value; }
+    public bool HeightOffsetStabilized { get => heightOffsetStabilized; set => heightOffsetStabilized = value; }
 
     /**
      * LERP DATA FOR IK TARGETS
@@ -81,21 +83,20 @@ public class ZEDManagerIK : MonoBehaviour
     private float curLerpTimeL;
     private float curLerpTimeR;
 
-    #endregion
-
-    private Vector3 bluecubepos = Vector3.zero;
-    private Vector3 grincubepos = Vector3.zero;
-    private Vector3 blakcubepos = Vector3.zero;
-    private Vector3 gizAnkleRBeforeMove = Vector3.zero;
-    private Vector3 gizAnkleRPlusHeightOffset = Vector3.zero;
-    private Vector3 gizAnkleRAfterMove = Vector3.zero;
-
-    private Vector3 hipRPosBeforMove = Vector3.zero;
-    private Vector3 kneeRPosBeforMove = Vector3.zero;
     private Vector3 ankleRPosBeforMove = Vector3.zero;
     private Vector3 ankleLPosBeforMove = Vector3.zero;
-    private Vector3 footRPosBeforMove = Vector3.zero;
 
+    #endregion
+
+
+    [SerializeField]
+    [Tooltip("Number of frames when both feet are visible used to stabilize the automatic offset")]
+    private int nbCalibrationFrames = 150;
+    private int curCalibrationFrames = -1;
+    [SerializeField]
+    private bool heightOffsetStabilized = false;
+    [SerializeField]
+    private bool footIKLockedForCalib = false;
 
     [Header("Debug")]
     public float targetLerpPosMultiplier = 1f;
@@ -103,12 +104,22 @@ public class ZEDManagerIK : MonoBehaviour
     public Color colorAnkleRPlusHeightOffset = Color.gray;
     public Color colorAnkleRAfterMove = Color.black;
 
+    private void Awake()
+    {
+        bodyTrackingManager = (ZEDSkeletonTrackingViewer)FindObjectOfType(typeof(ZEDSkeletonTrackingViewer));
+        if (bodyTrackingManager == null)
+        {
+            Debug.LogError("ZEDManagerIK: No body tracking manager loaded!");
+        }
+        heightOffsetter = GetComponent<HeightOffsetter>();
+    }
+
     void Start()
     {
         animator = GetComponent<Animator>();
-        heightOffsetter = GetComponent<HeightOffsetter>();
         currentGroundedPosL = LeftFootTransform.position;
         currentGroundedPosR = RightFootTransform.position;
+        footIKLockedForCalib = true;
     }
 
     /**
@@ -119,66 +130,36 @@ public class ZEDManagerIK : MonoBehaviour
     {
         if (skhandler)
         {
-            bluecubepos = transform.position;
-
             // 1) Update target positions and rotations, and apply rotations.
             // This needs to be called each frame, else there will be a jitter between the resting and correct poses of the skeleton.
             skhandler.Move();
 
             // 2) Move actor position, effectively moving root position. (root relative position is (0,0,0) in the prefab)
             // This way, we have root motion and can easily apply effects following the main gameobject's transform.
-            transform.position = skhandler.TargetBodyPositionWithHipOffset/* + rootHeightOffset*/;
+            transform.position = skhandler.TargetBodyPositionWithHipOffset;
             transform.rotation = skhandler.TargetBodyOrientation;
 
-            //gizAnkleRBeforeMove = animator.GetBoneTransform(HumanBodyBones.Hips).position;
-            gizAnkleRBeforeMove = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
-            gizAnkleRBeforeMove = new Vector3(gizAnkleRBeforeMove.x, ankleRPosBeforMove.y, gizAnkleRBeforeMove.z);
-            //hipRPosBeforMove    = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg).position;
-            //kneeRPosBeforMove   = animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).position;
-            //ankleRPosBeforMove  = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
-            //footRPosBeforMove   = RightFootTransform.position;
-
             //// height offset management
-            heightOffsetter.ComputeRootHeightOffset(
+            heightOffsetter.ComputeRootHeightOffsetXFrames(
             skhandler.confidences[SkeletonHandler.JointType_AnkleLeft],
             skhandler.confidences[SkeletonHandler.JointType_AnkleRight],
-            //animator.GetBoneTransform(HumanBodyBones.LeftFoot).position,
-            //animator.GetBoneTransform(HumanBodyBones.RightFoot).position, 
             ankleLPosBeforMove,
             ankleRPosBeforMove,
-
-            //grincubepos/* + ankleHeightOffset*/,
-            //blakcubepos/* + ankleHeightOffset*/,
-            //LeftFootTransform.position,
-            //RightFootTransform.position, 
             ankleHeightOffset.y);
-            Debug.Log("jpp: " + rootHeightOffset);
-
-            /** 
-             * DEBUG: Apply twice
-             */
             transform.position += rootHeightOffset + ankleHeightOffset;
-
-            //gizAnkleRAfterMove = animator.GetBoneTransform(HumanBodyBones.Hips).position;
-            gizAnkleRAfterMove = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
-            gizAnkleRPlusHeightOffset = gizAnkleRAfterMove + rootHeightOffset;
-            //gizAnkleRPlusHeightOffset = gizAnkleRAfterMove + rootHeightOffset;
-
-            grincubepos = LeftFootTransform.position;
-            blakcubepos = RightFootTransform.position;
 
             // 3) Manage Foot IK
             if (animator)
             {
                 //if the IK is active, set the position and rotation directly to the goal.
-                if (enableFootIK)
+                if (enableFootIK && !footIKLockedForCalib)
                 {
                     // Set the right foot target position and rotation, if one has been assigned
                     if (RightFootTransform != null)
                     {
                         // blend weight
-                        animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 1);
-                        animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 1);
+                        animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, ikApplicationRatio);
+                        animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, ikApplicationRatio);
 
                         // init/prepare values
                         currentPosFootR = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
@@ -190,34 +171,35 @@ public class ZEDManagerIK : MonoBehaviour
                         Ray ray = new Ray(effectorTargetPos + (Vector3.up * (groundedR ? thresholdLeaveGroundedState : thresholdEnterGroundedState)), Vector3.down);
                         if (Physics.Raycast(ray, out RaycastHit hit, 2 * (groundedR ? thresholdLeaveGroundedState : thresholdEnterGroundedState), raycastDetectionLayers))
                         {
-                            effectorTargetPos = hit.point + ankleHeightOffset;
+                            effectorTargetPos = CustomInterp(startLerpPosR, hit.point + ankleHeightOffset, ref curLerpTimeR);
                             normalR = hit.normal;
                             groundedR = true;
+                            animator.SetIKRotation(
+                              AvatarIKGoal.RightFoot,
+                              Quaternion.FromToRotation(
+                                  animator.GetBoneTransform(HumanBodyBones.RightFoot).up, normalL) * animator.GetBoneTransform(HumanBodyBones.RightFoot).rotation);
                         }
                         else
                         {
                             groundedR = false;
                             normalR = animator.GetBoneTransform(HumanBodyBones.RightFoot).up;
+                            animator.SetIKRotation(
+                                 AvatarIKGoal.RightFoot,
+                                 animator.GetBoneTransform(HumanBodyBones.RightFoot).rotation);
                         }
-                        //Debug.Log("groundedR: " + groundedR);
 
                         // update current effector position because next Move() will reset it to the skeleton pose
                         curEffectorPosR = effectorTargetPos;
-                        blakcubepos = curEffectorPosR;
 
                         // set IK position and rotation
                         animator.SetIKPosition(AvatarIKGoal.RightFoot, effectorTargetPos);
-                        animator.SetIKRotation(
-                             AvatarIKGoal.RightFoot,
-                             Quaternion.FromToRotation(
-                                 animator.GetBoneTransform(HumanBodyBones.RightFoot).up, normalL) * animator.GetBoneTransform(HumanBodyBones.RightFoot).rotation);
                     }
                     // Set the right foot target position and rotation, if one has been assigned
                     if (LeftFootTransform != null)
                     {
                         // blend weight
-                        animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 1);
-                        animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, 1);
+                        animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, ikApplicationRatio);
+                        animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, ikApplicationRatio);
 
                         // init/prepare values
                         currentPosFootL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
@@ -229,40 +211,37 @@ public class ZEDManagerIK : MonoBehaviour
                         Ray ray = new Ray(effectorTargetPos + (Vector3.up * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState)), Vector3.down);
                         if (Physics.Raycast(ray, out RaycastHit hit, 2 * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState), raycastDetectionLayers))
                         {
-                            effectorTargetPos = hit.point + ankleHeightOffset;
+                            effectorTargetPos = CustomInterp(startLerpPosL, hit.point + ankleHeightOffset, ref curLerpTimeL);
                             normalL = hit.normal;
                             groundedL = true;
+                            animator.SetIKRotation(
+                                 AvatarIKGoal.LeftFoot,
+                                 Quaternion.FromToRotation(
+                                     animator.GetBoneTransform(HumanBodyBones.LeftFoot).up, normalR) * animator.GetBoneTransform(HumanBodyBones.LeftFoot).rotation);
                         }
                         else
                         {
                             groundedL = false;
-                            normalL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).up;
+                            normalL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).up; animator.SetIKRotation(
+                              AvatarIKGoal.LeftFoot,
+                              animator.GetBoneTransform(HumanBodyBones.LeftFoot).rotation);
                         }
                         // update current effector position because next Move() will reset it to the skeleton pose
                         curEffectorPosL = effectorTargetPos;
-                        grincubepos = curEffectorPosL;
 
                         // set IK position and rotation
                         animator.SetIKPosition(AvatarIKGoal.LeftFoot, effectorTargetPos);
-                        animator.SetIKRotation(
-                             AvatarIKGoal.LeftFoot,
-                             Quaternion.FromToRotation(
-                                 animator.GetBoneTransform(HumanBodyBones.LeftFoot).up, normalR) * animator.GetBoneTransform(HumanBodyBones.LeftFoot).rotation);
+
                     }
                 }
 
                 //if the IK is not active, set the position and rotation of the hand and head back to the original position
                 else
                 {
-                    //animator.SetIKPosition(AvatarIKGoal.RightFoot, targetLerpPosR);
-                    //animator.SetIKRotation(AvatarIKGoal.RightFoot, RightFootTransform.rotation);
-                    //animator.SetIKPosition(AvatarIKGoal.LeftFoot, targetLerpPosL);
-                    //animator.SetIKRotation(AvatarIKGoal.LeftFoot, LeftFootTransform.rotation);
-
                     animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 0);
                     animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 0);
-                    animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot,  0);
-                    animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot,  0);
+                    animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 0);
+                    animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, 0);
                 }
             }
         }
@@ -271,12 +250,7 @@ public class ZEDManagerIK : MonoBehaviour
     // computes distance between the projections of vec1 and vec2 on an horizontal plane
     private float HorizontalDist(Vector3 vec1, Vector3 vec2)
     {
-        float d = Vector2.Distance(new Vector2(vec1.x, vec1.z), new Vector2(vec2.x, vec2.z));
-        if(d <= groundedFreeDistance)
-        {
-            Debug.Log("DISTH = " + d + " / "+ vec1 + " / "+ vec2);
-        }
-        return d;
+        return Vector2.Distance(new Vector2(vec1.x, vec1.z), new Vector2(vec2.x, vec2.z));
     }
 
     // Should be called each time the skeleton data is changed in the handler
@@ -284,31 +258,54 @@ public class ZEDManagerIK : MonoBehaviour
     // Checks distance to filter feet parasite movements on floor.
     public void PoseWasUpdated()
     {
-        Debug.LogWarning("POSE WAS UPDATED");
         startLerpPosL = curEffectorPosL;
 
-        targetLerpPosL = skhandler.joints[SkeletonHandler.JointType_AnkleLeft] + targetLerpPosMultiplier * rootHeightOffset;
+        try
+        {
+            targetLerpPosL = bodyTrackingManager.mirrorMode ?
+                skhandler.joints[SkeletonHandler.JointType_AnkleLeft] + rootHeightOffset :
+                skhandler.joints[SkeletonHandler.JointType_AnkleLeft] + rootHeightOffset;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e.Message);
+        }
+
         if (filterMovementsOnGround)
         {
             targetLerpPosL = (groundedL && HorizontalDist(startLerpPosL, targetLerpPosL) < groundedFreeDistance)
                 ? startLerpPosL
                 : targetLerpPosL;
         }
-        // targetLerpPosL += targetLerpPosMultiplier * rootHeightOffset;
 
         startLerpPosR = curEffectorPosR;
-        //gizAnkleRAfterMove = startLerpPosR;
 
-        targetLerpPosR = skhandler.joints[SkeletonHandler.JointType_AnkleRight] + targetLerpPosMultiplier * rootHeightOffset;
+        try
+        {
+            targetLerpPosR = bodyTrackingManager.mirrorMode ?
+                skhandler.joints[SkeletonHandler.JointType_AnkleRight] + rootHeightOffset :
+                skhandler.joints[SkeletonHandler.JointType_AnkleRight] + rootHeightOffset;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e.Message);
+        }
+
         if (filterMovementsOnGround)
         {
             targetLerpPosR = (groundedR && HorizontalDist(startLerpPosR, targetLerpPosR) < groundedFreeDistance)
                 ? startLerpPosR
                 : targetLerpPosR;
         }
-        // targetLerpPosR += targetLerpPosMultiplier*rootHeightOffset;
 
-        // gizCurTarBeforeRay = targetLerpPosR;
+        if (bodyTrackingManager && bodyTrackingManager.mirrorMode)
+        {
+            Vector3 vL = targetLerpPosL;
+            Vector3 vR = targetLerpPosR;
+
+            targetLerpPosL = vR.mirror_x();
+            targetLerpPosR = vL.mirror_x();
+        }
 
         // define totallerptime = 1/ODFrequency
         // reset curlerptime
@@ -318,11 +315,20 @@ public class ZEDManagerIK : MonoBehaviour
         curTValR = 0;
         totalLerpTime = 1 / objectDetectionFrequency;
         totalLerpTime *= lerpLatency;
+
+        if (!HeightOffsetStabilized && heightOffsetter.automaticOffset
+            && skhandler.confidences[SkeletonHandler.JointType_AnkleLeft] > 0
+            && skhandler.confidences[SkeletonHandler.JointType_AnkleRight] > 0)
+        {
+            curCalibrationFrames++;
+            heightOffsetStabilized = curCalibrationFrames > nbCalibrationFrames;
+            footIKLockedForCalib = !(HeightOffsetStabilized && enableFootIK);
+        }
     }
 
     private Vector3 AccumulateLerpVec3(Vector3 startPos, Vector3 targetPos, ref float curTVal, ref float currentLerpTime)
     {
-        if(Vector3.Distance(startPos,targetPos) > .00001f)
+        if (Vector3.Distance(startPos, targetPos) > .00001f)
         {
             currentLerpTime += Time.deltaTime;
             float t = currentLerpTime / totalLerpTime;
@@ -337,53 +343,46 @@ public class ZEDManagerIK : MonoBehaviour
         }
     }
 
+    private Vector3 CustomInterp(Vector3 startPos, Vector3 targetPos, ref float currentLerpTime)
+    {
+        if (Vector3.Distance(startPos, targetPos) > .00001f)
+        {
+            float t = currentLerpTime / totalLerpTime;
+            t = Mathf.Clamp(t, 0, 1);
+            t = (Mathf.Sin(t * Mathf.PI * 0.5f));
+            return Vector3.Lerp(startPos, targetPos, t);
+        }
+        else
+        {
+            return startPos;
+        }
+    }
+
     private void LateUpdate()
     {
-        //hipRPosBeforMove = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg).position;
-        //kneeRPosBeforMove = animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).position;
-        //footRPosBeforMove = RightFootTransform.position;
         ankleRPosBeforMove = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
         ankleLPosBeforMove = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
-        //ankleRPosBeforMove = animator.GetBoneTransform(HumanBodyBones.RightToes).position;
-        //ankleLPosBeforMove = animator.GetBoneTransform(HumanBodyBones.LeftToes).position;
     }
 
-    private void OnDrawGizmos()
+    private void Update()
     {
-        if (groundedR) { Gizmos.color = Color.green; } else { Gizmos.color = Color.red; }
-        Gizmos.DrawLine(RightFootTransform.position + (Vector3.up * thresholdEnterGroundedState), RightFootTransform.position - (Vector3.up * thresholdEnterGroundedState));
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            enableFootIK = !enableFootIK;
+        }
 
-        if (groundedL) { Gizmos.color = Color.green; } else { Gizmos.color = Color.red; }
-        Gizmos.DrawLine(LeftFootTransform.position + (Vector3.up * thresholdEnterGroundedState), LeftFootTransform.position - (Vector3.up * thresholdEnterGroundedState));
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            filterMovementsOnGround = !filterMovementsOnGround;
+        }
 
-        //Gizmos.color = Color.blue;
-        //Gizmos.DrawCube(curEffectorPosL, new Vector3(gizmoSize, gizmoSize, gizmoSize));
-        //Gizmos.color = Color.magenta;
-        //Gizmos.DrawCube(curEffectorPosR, new Vector3(gizmoSize, gizmoSize, gizmoSize));
-
-        //Gizmos.color = Color.green;
-        //Gizmos.DrawCube(grincubepos, new Vector3(gizmoSize+.05f, gizmoSize + .05f, gizmoSize + .05f));
-
-        //Gizmos.color = Color.blue;
-        //Gizmos.DrawCube(bluecubepos, new Vector3(gizmoSize, gizmoSize, gizmoSize));
-
-        //Gizmos.color = Color.black;
-        //Gizmos.DrawCube(blakcubepos, new Vector3(gizmoSize, gizmoSize, gizmoSize));
-        Gizmos.color = colorAnkleRBeforeMove;
-        Gizmos.DrawCube(gizAnkleRBeforeMove, new Vector3(gizmoSize, .1f, gizmoSize));
-        Gizmos.color = colorAnkleRAfterMove;
-        Gizmos.DrawCube(gizAnkleRAfterMove, new Vector3(gizmoSize, .08f, gizmoSize));
-        Gizmos.color = colorAnkleRPlusHeightOffset;
-        Gizmos.DrawCube(gizAnkleRPlusHeightOffset, new Vector3(gizmoSize, .06f, gizmoSize));
-
-        Gizmos.color = new Color(1,0.4f,1);
-        Gizmos.DrawLine(gizAnkleRBeforeMove, gizAnkleRAfterMove);
-
-        Gizmos.color = colorAnkleRBeforeMove;
-        //Gizmos.DrawSphere(hipRPosBeforMove  , .1f);
-        //Gizmos.DrawSphere(kneeRPosBeforMove , .1f);
-        Gizmos.DrawSphere(ankleRPosBeforMove, .1f);
-        Gizmos.color = Color.black;
-        Gizmos.DrawSphere(ankleLPosBeforMove, .1f);
+        // reset automatic height offset calibration
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            curCalibrationFrames = 0;
+            heightOffsetStabilized = false;
+            footIKLockedForCalib = true;
+        }
     }
+
 }

@@ -298,17 +298,20 @@ MonoBehaviour:
   enableFootIK: 1
   filterMovementsOnGround: 1
   thresholdEnterGroundedState: 0.15
-  thresholdLeaveGroundedState: 0.2
-  groundedFreeDistance: 0.1
+  thresholdLeaveGroundedState: 0.18
+  groundedFreeDistance: 0.15
   raycastDetectionLayers:
     serializedVersion: 2
     m_Bits: 65536
+  ikApplicationRatio: 1
   LeftFootTransform: {fileID: 4160523210669777339}
   RightFootTransform: {fileID: 1248769263213320694}
+  SphereLTransform: {fileID: 5612890687651233437}
+  SphereRTransform: {fileID: 4049448695640032917}
   _rootJoint: {fileID: 5980604236534135029}
   ankleHeightOffset: {x: 0, y: 0.102, z: 0}
   objectDetectionFrequency: 30
-  lerpLatency: 3
+  lerpLatency: 1
   gizmoSize: 0.5
   targetLerpPosMultiplier: 1
   colorAnkleRBeforeMove: {r: 0.9154093, g: 1, b: 0, a: 1}
@@ -326,7 +329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de97d242c6a58054885e66d2b56fe4c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manualOffset: {x: 0, y: -0.1, z: 0}
+  manualOffset: {x: 0, y: 0, z: 0}
   automaticOffset: 1
   findFloorDistance: 2
   layersToHit:
@@ -1715,7 +1718,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4049448695640032917
 Transform:
   m_ObjectHideFlags: 0
@@ -1723,9 +1726,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5910437177361377337}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
+  m_LocalRotation: {x: 1.3930912e-15, y: -0, z: -1.9173727e-23, w: 1}
+  m_LocalPosition: {x: 0.1, y: -0.49999997, z: 0.4}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2211000310592067681}
@@ -2529,7 +2532,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5612890687651233437
 Transform:
   m_ObjectHideFlags: 0
@@ -2537,9 +2540,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8677569722474851061}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
+  m_LocalRotation: {x: 1.393092e-15, y: 1.7763568e-15, z: -1.9173725e-23, w: 1}
+  m_LocalPosition: {x: -0.1, y: -0.49999997, z: 0.4}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2211000310592067681}
