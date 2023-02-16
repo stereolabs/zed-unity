@@ -665,7 +665,7 @@ public class SkeletonHandler : ScriptableObject
             var animator = humanoid.GetComponent<Animator>();
             // There is an offset between the joint "Hips" and the equivalent in the ZED SDK. This offset compensates it.
             Vector3 hipOffset = new Vector3(0, (animator.GetBoneTransform(HumanBodyBones.Hips).position.y - animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg).position.y), 0);
-            rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(targetBodyPosition + hipOffset - new Vector3(0, _feetOffset, 0), targetBodyOrientation);
+            rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(targetBodyPosition + hipOffset - new Vector3(0, _feetOffset, 0), targetBodyOrientation * default_rotations[HumanBodyBones.Hips]);
         }
     }
 

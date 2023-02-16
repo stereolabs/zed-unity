@@ -7,6 +7,7 @@ using OpenCVForUnity.CoreModule;
 using OpenCVForUnity.ArucoModule;
 using OpenCVForUnity.UnityUtils;
 using OpenCVForUnity.Calib3dModule;
+using OpenCVForUnity.ObjdetectModule;
 
 /// <summary>
 /// Whenever the ZED grabs/captures an image, uses OpenCV to detect ArUCO markers, calculates their
@@ -90,7 +91,7 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
         }
     }
 
-    
+
     void Start()
     {
         //We'll listen for updates from a ZEDToOpenCVRetriever, which will call an event whenever it has a new image from the ZED. 
@@ -101,18 +102,25 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
     /// <summary>
     /// Looks for markers in the most recent ZED image, and updates all registered MarkerObjects accordingly. 
     /// </summary>
-    private void ImageUpdated(Camera cam, Mat camMat, Mat iamgeMat)
+    private void ImageUpdated(Camera cam, Mat camMat, Mat imageMat)
     {
-        Dictionary predict = Aruco.getPredefinedDictionary((int)markerDictionary); //Load the selected pre-defined dictionary. 
+
+        //Dictionary predict = Aruco.getPredefinedDictionary((int)markerDictionary); //Load the selected pre-defined dictionary. 
+
+        Dictionary predict = Objdetect.getPredefinedDictionary((int)markerDictionary); //Load the selected pre-defined dictionary. 
 
         //Create empty structures to hold the output of Aruco.detectMarkers. 
         List<Mat> corners = new List<Mat>();
         Mat ids = new Mat();
-        DetectorParameters detectparams = DetectorParameters.create();
+
+        //DetectorParameters detectparams = DetectorParameters.create();
+        DetectorParameters detectparams = new DetectorParameters();
         List<Mat> rejectedpoints = new List<Mat>(); //There is no overload for detectMarkers that will take camMat without this also. 
 
         //Call OpenCV to tell us which markers were detected, and give their 2D positions. 
-        Aruco.detectMarkers(iamgeMat, predict, corners, ids, detectparams, rejectedpoints, camMat);
+        //Aruco.detectMarkers(imageMat, predict, corners, ids, detectparams, rejectedpoints, camMat);
+        ArucoDetector arucoDetector = new ArucoDetector(predict, detectparams);
+        arucoDetector.detectMarkers(imageMat, corners, ids);
 
         //Make matrices to hold the output rotations and translations of each detected marker. 
         Mat rotvectors = new Mat();
@@ -140,7 +148,7 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
         //We'll go through every ID that's been registered into registered Markers, and see if we found any markers in the scene with that ID. 
         Dictionary<int, List<sl.Pose>> detectedWorldPoses = new Dictionary<int, List<sl.Pose>>(); //Key is marker ID, value is world space poses.
         //foreach (int id in registeredMarkers.Keys) 
-        for(int index = 0; index < transvectors.rows(); index++)
+        for (int index = 0; index < transvectors.rows(); index++)
         {
             int id = (int)ids.get(index, 0)[0];
             if (!registeredMarkers.ContainsKey(id) || registeredMarkers[id].Count == 0) continue; //Don't waste time if the list is empty. Can happen if markers are added, then removed. 
@@ -160,10 +168,10 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
                 double[] flip = rotvectors.get(index, 0);
                 flip[1] = -flip[1];
                 rotvectors.put(index, 0, flip);
-                
+
                 //Convert this rotation vector to a 3x3 matrix, which will hold values we can use in Unity. 
                 Mat rotmatrix = new Mat();
-                Calib3d.Rodrigues(rotvectors.row(index), rotmatrix); 
+                Calib3d.Rodrigues(rotvectors.row(index), rotmatrix);
 
                 //This new 3x3 matrix holds a vector pointing right in the first column, a vector pointing up in the second, 
                 //and a vector pointing forward in the third column. Rows 0, 1 and 2 are the X, Y and Z values of each vector. 
@@ -181,12 +189,12 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
                 Quaternion rot = Quaternion.LookRotation(forward, up);
 
                 //Compensate for flip on Z axis. 
-                rot *= Quaternion.Euler(0, 0, 180); 
+                rot *= Quaternion.Euler(0, 0, 180);
 
                 //Convert from local space to world space by multiplying the camera's world rotation with it. 
                 Quaternion worldrot = cam.transform.rotation * rot;
 
-                if(!detectedWorldPoses.ContainsKey(id))
+                if (!detectedWorldPoses.ContainsKey(id))
                 {
                     detectedWorldPoses.Add(id, new List<sl.Pose>());
                 }
@@ -203,7 +211,7 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
         if (OnMarkersDetected != null) OnMarkersDetected.Invoke(detectedWorldPoses);
 
         //foreach (int detectedid in detectedWorldPoses.Keys)
-        foreach(int key in registeredMarkers.Keys)
+        foreach (int key in registeredMarkers.Keys)
         {
             if (detectedWorldPoses.ContainsKey(key))
             {
@@ -221,13 +229,38 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
             }
         }
     }
-   
+
 
     /// <summary>
     /// Enum of OpenCV pre-defined dictionary indexes. Used for calling Aruco.getPredefinedDictionary().  
     /// Allows for listing the dictionaries in Unity's inspector. 
     /// </summary>
     public enum PreDefinedmarkerDictionary
+    {
+        DICT_4X4_50 = Objdetect.DICT_4X4_50,
+        DICT_4X4_100 = Objdetect.DICT_4X4_100,
+        DICT_4X4_250 = Objdetect.DICT_4X4_250,
+        DICT_4X4_1000 = Objdetect.DICT_4X4_1000,
+        DICT_5X5_50 = Objdetect.DICT_5X5_50,
+        DICT_5X5_100 = Objdetect.DICT_5X5_100,
+        DICT_5X5_250 = Objdetect.DICT_5X5_250,
+        DICT_5X5_1000 = Objdetect.DICT_5X5_1000,
+        DICT_6X6_50 = Objdetect.DICT_6X6_50,
+        DICT_6X6_100 = Objdetect.DICT_6X6_100,
+        DICT_6X6_250 = Objdetect.DICT_6X6_250,
+        DICT_6X6_1000 = Objdetect.DICT_6X6_1000,
+        DICT_7X7_50 = Objdetect.DICT_7X7_50,
+        DICT_7X7_100 = Objdetect.DICT_7X7_100,
+        DICT_7X7_250 = Objdetect.DICT_7X7_250,
+        DICT_7X7_1000 = Objdetect.DICT_7X7_1000,
+        DICT_ARUCO_ORIGINAL = Objdetect.DICT_ARUCO_ORIGINAL,
+        DICT_APRILTAG_16h5 = Objdetect.DICT_APRILTAG_16h5,
+        DICT_APRILTAG_25h9 = Objdetect.DICT_APRILTAG_25h9,
+        DICT_APRILTAG_36h10 = Objdetect.DICT_APRILTAG_36h10,
+        DICT_APRILTAG_36h11 = Objdetect.DICT_APRILTAG_36h11
+    }
+
+    /*public enum PreDefinedmarkerDictionary
     {
         DICT_4X4_50 = Aruco.DICT_4X4_50,
         DICT_4X4_100 = Aruco.DICT_4X4_100,
@@ -251,6 +284,8 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
         DICT_APRILTAG_36h10 = Aruco.DICT_APRILTAG_36h10,
         DICT_APRILTAG_36h11 = Aruco.DICT_APRILTAG_36h11
     }
+    */
+
 }
 
 #endif

@@ -68,8 +68,8 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     [Tooltip("Mirror the animation.")]
     public bool mirrorMode;
 
-    public Dictionary<int,SkeletonHandler> avatarControlList;
-
+    private Dictionary<int, SkeletonHandler> avatarControlList;
+    public Dictionary<int, SkeletonHandler> AvatarControlList { get => avatarControlList; }
     private float alpha = 0.1f;
 
     /// <summary>
@@ -94,7 +94,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 #endif
 
             zedManager.OnZEDReady += OnZEDReady;
-            zedManager.OnObjectDetection += updateSkeletonData;
+            zedManager.OnObjectDetection += UpdateSkeletonData;
 		}
 
         if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM )
@@ -121,7 +121,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     {
         if (zedManager)
         {
-            zedManager.OnObjectDetection -= updateSkeletonData;
+            zedManager.OnObjectDetection -= UpdateSkeletonData;
             zedManager.OnZEDReady -= OnZEDReady;
         }
     }
@@ -131,7 +131,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// <summary>
 	/// Updates the skeleton data from ZEDCamera call and send it to Skeleton Handler script.
 	/// </summary>
-    private void updateSkeletonData(DetectionFrame dframe)
+    private void UpdateSkeletonData(DetectionFrame dframe)
     {
 		List<int> remainingKeyList = new List<int>(avatarControlList.Keys);
 		List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showON, showSEARCHING, showOFF);
