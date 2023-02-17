@@ -651,7 +651,7 @@ PrefabInstance:
         type: 3}
       propertyPath: Avatar
       value: 
-      objectReference: {fileID: 1577629577426895579, guid: b2033efe657eddf4bbe61be41cc051bd,
+      objectReference: {fileID: 6726762613959325157, guid: b2033efe657eddf4bbe61be41cc051bd,
         type: 3}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
         type: 3}
