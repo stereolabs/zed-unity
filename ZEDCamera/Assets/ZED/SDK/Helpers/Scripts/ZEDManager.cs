@@ -1468,6 +1468,13 @@ public class ZEDManager : MonoBehaviour
         get { return imageTimeStamp; }
     }
 
+
+    private int svoPosition = -1;
+    public int SVOPosition
+    {
+        get { return svoPosition; }
+    }
+
     /// <summary>
     /// Whether the grabbing thread should grab a new frame from the ZED SDK.
     /// True unless the last grabbed frame hasn't been applied yet, or the ZED isn't initialized.
@@ -2417,6 +2424,7 @@ public class ZEDManager : MonoBehaviour
                 zedCamera.RetrieveTextures(); //Tell the wrapper to compute the textures.
                 zedCamera.UpdateTextures(); //Tell the wrapper to update the textures.
                 imageTimeStamp = zedCamera.GetImagesTimeStamp();
+                svoPosition = zedCamera.GetSVOPosition();
             }
 
             //For external module ... Trigger the capture done event.
