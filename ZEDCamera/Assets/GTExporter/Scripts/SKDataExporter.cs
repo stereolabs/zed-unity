@@ -134,6 +134,8 @@ public class SKDataExporter : MonoBehaviour
         metaData.TargetFPS = (int)zedCamera.GetRequestedCameraFPS();
         metaData.InvalidValue = InvalidValue;
         metaData.IsMicroseconds = IsMicroSeconds;
+        metaData.ImageHeight = zedManager.zedCamera.ImageHeight;
+        metaData.ImageWidth = zedManager.zedCamera.ImageWidth;
 
         data.SetMetaData(metaData);
 
