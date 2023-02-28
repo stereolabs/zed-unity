@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using sl;
 
@@ -8,20 +7,20 @@ using sl;
 /// Holds metadata about the frame and camera, and provides helper functions for filtering out the detected objects. 
 /// <para>This is provided when subscribed to the ZEDManager.OnObjectDetection event.</para>
 /// </summary><remarks>
-/// This is a higher level version of sl.ObjectsFrame, which comes directly from the ZED SDK and doesn't follow Unity conventions. 
+/// This is a higher level version of sl.Objects, which comes directly from the ZED SDK and doesn't follow Unity conventions. 
 /// </remarks>
-public class DetectionFrame
+public class ObjectDetectionFrame
 {
-    private ObjectsFrameSDK objectsFrame;
+    private Objects objects;
     /// <summary>
     /// The raw ObjectsFrame object that this object is an abstraction of - ObjectsFrame comes 
     /// directly from the SDk and doesn't follow Unity conventions. 
     /// </summary>
-    public ObjectsFrameSDK rawObjectsFrame
+    public Objects rawObjects
     {
         get
         {
-            return objectsFrame;
+            return objects;
         }
     }
 
@@ -32,7 +31,7 @@ public class DetectionFrame
     {
         get
         {
-            return objectsFrame.timestamp;
+            return objects.timestamp;
         }
     }
 
@@ -56,7 +55,7 @@ public class DetectionFrame
     {
         get
         {
-            return objectsFrame.numObject;
+            return objects.nbObjects;
         }
     }
 
@@ -83,18 +82,18 @@ public class DetectionFrame
     /// </summary>
     /// <param name="oframe">Raw sl.ObjectsFrame object from the SDK, that this object is an abstraction of.</param>
     /// <param name="detectingmanager">ZEDManager that represents the camera that detected this frame.</param>
-    public DetectionFrame(ObjectsFrameSDK oframe, ZEDManager detectingmanager)
+    public ObjectDetectionFrame(Objects oframe, ZEDManager detectingmanager)
     {
-        objectsFrame = oframe;
+        objects = oframe;
         detectingZEDManager = detectingmanager;
         frameDetected = Time.frameCount;
 
         Vector3 campos = detectingmanager.GetLeftCameraTransform().position;
         Quaternion camrot = detectingmanager.GetLeftCameraTransform().rotation;
 
-        for (int i = 0; i < oframe.numObject; i++)
+        for (int i = 0; i < oframe.nbObjects; i++)
         {
-            DetectedObject dobj = new DetectedObject(oframe.objectData[i], detectingmanager, campos, camrot);
+            DetectedObject dobj = new DetectedObject(oframe.objectList[i], detectingmanager, campos, camrot);
             detObjects.Add(dobj);
         }
     }
@@ -119,18 +118,17 @@ public class DetectionFrame
 
             switch (dobj.trackingState)
             {
-                case OBJECT_TRACK_STATE.OK:
+                case OBJECT_TRACKING_STATE.OK:
                     if (tracking_ok) filteredobjects.Add(dobj);
                     break;
-                case OBJECT_TRACK_STATE.SEARCHING:
+                case OBJECT_TRACKING_STATE.SEARCHING:
                     if (tracking_searching) filteredobjects.Add(dobj);
                     break;
-                case OBJECT_TRACK_STATE.OFF:
+                case OBJECT_TRACKING_STATE.OFF:
                     if (tracking_off) filteredobjects.Add(dobj);
                     break;
             }
         }
-
         return filteredobjects;
     }
 

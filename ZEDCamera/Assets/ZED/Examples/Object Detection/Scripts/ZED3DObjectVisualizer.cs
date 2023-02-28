@@ -168,7 +168,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
     /// in that object's actual 3D location within the world. 
     /// <para>Called from ZEDManager.OnObjectDetection each time there's a new detection frame available.</para> 
     /// </summary>
-    private void Visualize3DBoundingBoxes(DetectionFrame dframe)
+    private void Visualize3DBoundingBoxes(ObjectDetectionFrame dframe)
     {
         //Get a list of all active IDs from last frame, and we'll remove each box that's visible this frame. 
         //At the end, we'll clear the remaining boxes, as those are objects no longer visible to the ZED. 
@@ -372,7 +372,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
     {
         //Test bbox orientation.
         Transform camtrans = dobj.detectingZEDManager.GetLeftCameraTransform();
-        Vector3[] corners = dobj.rawObjectData.worldBoundingBox;
+        Vector3[] corners = dobj.rawObjectData.boundingBox;
         Vector3[] rotcorners = new Vector3[8];
         //Vector3[] corners3d = new Vector3[8];
         Vector3[] corners3d = dobj.Get3DWorldCorners();

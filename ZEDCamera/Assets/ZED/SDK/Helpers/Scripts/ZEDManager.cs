@@ -116,6 +116,18 @@ public class ZEDManager : MonoBehaviour
     /// Optional opencv calib file
     /// </summary>
     public string opencvCalibFile = "";
+    /// <summary>
+    ///  Define a timeout in seconds after which an error is reported if the \ref open() command fails.
+    /// </summary>
+    [HideInInspector]
+    public float openTimeoutSec = 5.0f;
+
+    /// <summary>
+    /// Define the behavior of the automatic camera recovery during grab() function call. When async is enabled and there's an issue with the communication with the camera
+    /// the grab() will exit after a short period and return the ERROR_CODE::CAMERA_REBOOTING warning.
+    /// </summary>
+    [HideInInspector]
+    public bool  asyncGrabRecovery = false;
 
     /// <summary>
     /// SVO loop back option
@@ -384,36 +396,30 @@ public class ZEDManager : MonoBehaviour
     public sl.DETECTION_MODEL objectDetectionModel = sl.DETECTION_MODEL.MULTI_CLASS_BOX;
 
     /// <summary>
-    /// Defines if the body fitting will be applied
-    /// </summary>
-    [HideInInspector]
-    public bool objectDetectionBodyFitting = true;
-
-    /// <summary>
     /// Defines a upper depth range for detections.
     /// </summary>
     [HideInInspector]
     public float objectDetectionMaxRange = 40.0f;
 
     /// <summary>
+    /// When an object is not detected anymore, the SDK will predict its positions during a short period of time before its state switched to SEARCHING.
+    /// It prevents the jittering of the object state when there is a short misdetection. The user can define its own prediction time duration.
+    /// </summary>
+    [HideInInspector]
+    public float objectDetectionPredictionTimeout = 0.2f;
+
+    /// <summary>
+    /// Allow inference to run at a lower precision to improve runtime and memory usage, 
+    /// it might increase the initial optimization time and could include downloading calibration data or calibration cache and slightly reduce the accuracy
+    /// </summary>
+    [HideInInspector]
+    public bool objectDetectionAllowReducedPrecisionInference = false;
+
+    /// <summary>
     /// Defines a upper depth range for detections.
     /// </summary>
     [HideInInspector]
     public sl.OBJECT_FILTERING_MODE objectDetectionFilteringMode = sl.OBJECT_FILTERING_MODE.NMS3D;
-
-    [HideInInspector]
-    public sl.BODY_FORMAT objectDetectionBodyFormat = sl.BODY_FORMAT.POSE_34;
-
-    [HideInInspector]
-    public int minimumKeypointsThreshold = 0;
-
-    /// <summary>
-    /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
-    /// where the SDK is 80% sure or greater will appear in the list of detected objects.
-    /// </summary>
-    [HideInInspector]
-    public int SK_personDetectionConfidenceThreshold = 50;
-
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
@@ -427,42 +433,42 @@ public class ZEDManager : MonoBehaviour
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
     /// </summary>
     [HideInInspector]
-    public int vehicleDetectionConfidenceThreshold = 60;
+    public int OD_vehicleDetectionConfidenceThreshold = 60;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
     /// </summary>
     [HideInInspector]
-    public int bagDetectionConfidenceThreshold = 60;
+    public int OD_bagDetectionConfidenceThreshold = 60;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
     /// </summary>
     [HideInInspector]
-    public int animalDetectionConfidenceThreshold = 60;
+    public int OD_animalDetectionConfidenceThreshold = 60;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
     /// </summary>
     [HideInInspector]
-    public int electronicsDetectionConfidenceThreshold = 60;
+    public int OD_electronicsDetectionConfidenceThreshold = 60;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
     /// </summary>
     [HideInInspector]
-    public int fruitVegetableDetectionConfidenceThreshold = 60;
+    public int OD_fruitVegetableDetectionConfidenceThreshold = 60;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
     /// where the SDK is 80% sure or greater will appear in the list of detected objects.
     /// </summary>
     [HideInInspector]
-    public int sportDetectionConfidenceThreshold = 60;
+    public int OD_sportDetectionConfidenceThreshold = 60;
 
     /// <summary>
     /// Whether to detect people during object detection.
@@ -528,12 +534,12 @@ public class ZEDManager : MonoBehaviour
     /// Last object detection frame detected by the SDK. This data comes straight from the C++ SDK; see detectionFrame for an abstracted version
     /// with many helper functions for use inside Unity.
     /// </summary>
-    private sl.ObjectsFrameSDK objectsFrameSDK = new sl.ObjectsFrameSDK();
+    private sl.Objects objects = new sl.Objects();
     /// <summary>
     /// Last object detection frame detected by the SDK. This data comes straight from the C++ SDK; see GetDetectionFrame for an abstracted version
     /// with many helper functions for use inside Unity.
     /// </summary>
-    public sl.ObjectsFrameSDK GetSDKObjectsFrame { get { return objectsFrameSDK; } }
+    public sl.Objects GetSLObjects { get { return objects; } }
     /// <summary>
     /// Timestamp of the most recent object frame fully processed. This is used to calculate the FPS of the object detection module.
     /// </summary>
@@ -546,32 +552,188 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Last object detection frame detected by the SDK, in the form of a DetectionFrame instance which has many helper functions for use in Unity.
     /// </summary>
-    private DetectionFrame detectionFrame;
+    private ObjectDetectionFrame objectDetectionFrame;
     /// <summary>
     /// Last object detection frame detected by the SDK, in the form of a DetectionFrame instance which has many helper functions for use in Unity.
     /// </summary>
-    public DetectionFrame GetDetectionFrame { get { return detectionFrame; } }
+    public ObjectDetectionFrame GetObjectDetectionFrame { get { return objectDetectionFrame; } }
     /// <summary>
     /// Delegate for events that take an object detection frame straight from the SDK (not abstracted).
     /// </summary>
-    public delegate void onNewDetectionTriggerSDKDelegate(sl.ObjectsFrameSDK objFrame);
+    public delegate void onNewObjectDetectionTriggerSDKDelegate(sl.Objects objs);
     /// <summary>
     /// Event that's called whenever the Object Detection module detects a new frame.
     /// Includes data straight from the C++ SDK. See OnObjectDetection/DetectionFrame for an abstracted version that has many helper functions
     /// that makes it easier to use in Unity.
     /// </summary>
-    public event onNewDetectionTriggerSDKDelegate OnObjectDetection_SDKData;
+    public event onNewObjectDetectionTriggerSDKDelegate OnObjectDetection_SDKData;
     /// <summary>
     /// Delegate for events that take an object detection frame, in the form of a DetectionFrame object which has helper functions.
     /// </summary>
-    public delegate void onNewDetectionTriggerDelegate(DetectionFrame objFrame);
+    public delegate void onNewObjectDetectionTriggerDelegate(ObjectDetectionFrame objFrame);
     /// <summary>
     /// Event that's called whenever the Object Detection module detects a new frame.
     /// Supplies data in the form of a DetectionFrame instance, which has many helper functions for use in Unity.
     /// </summary>
-    public event onNewDetectionTriggerDelegate OnObjectDetection;
+    public event onNewObjectDetectionTriggerDelegate OnObjectDetection;
 
-    private sl.dll_ObjectDetectionRuntimeParameters od_runtime_params = new sl.dll_ObjectDetectionRuntimeParameters();
+    private sl.ObjectDetectionRuntimeParameters objectDetectionRuntimeParameters = new sl.ObjectDetectionRuntimeParameters();
+
+    /////////////////////////////////////////////////////////////////////////
+    ////////////////////////  Body Tracking /////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Sync the Object on the image.
+    /// </summary>
+    [HideInInspector]
+    public bool bodyTrackingImageSyncMode = false;
+
+    /// <summary>
+    /// Whether to track objects across multiple frames using the ZED's position relative to the floor.
+    /// Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.
+    /// </summary>
+    [HideInInspector]
+    public bool bodyTrackingTracking = true;
+
+    /// <summary>
+    /// Whether to calculate 2D masks for each object, showing exactly which pixels within the 2D bounding box are the object.
+    /// Requires more performance, so do not enable unless needed.
+    /// </summary>
+    [HideInInspector]
+    public bool bodyTracking2DMask = false;
+
+    /// <summary>
+    /// Choose what detection model to use in the Object detection module
+    /// </summary>
+    [HideInInspector]
+    public sl.DETECTION_MODEL bodyTrackingModel = sl.DETECTION_MODEL.MULTI_CLASS_BOX;
+
+    /// <summary>
+    /// Defines a upper depth range for detections.
+    /// </summary>
+    [HideInInspector]
+    public float bodyTrackingMaxRange = 40.0f;
+
+    /// <summary>
+    /// When an object is not detected anymore, the SDK will predict its positions during a short period of time before its state switched to SEARCHING.
+    /// It prevents the jittering of the object state when there is a short misdetection. The user can define its own prediction time duration.
+    /// </summary>
+    [HideInInspector]
+    public float bodyTrackingPredictionTimeout = 0.2f;
+
+    /// <summary>
+    /// Allow inference to run at a lower precision to improve runtime and memory usage, 
+    /// it might increase the initial optimization time and could include downloading calibration data or calibration cache and slightly reduce the accuracy
+    /// </summary>
+    [HideInInspector]
+    public bool bodyTrackingAllowReducedPrecisionInference = false;
+
+    /// <summary>
+    /// Defines a upper depth range for detections.
+    /// </summary>
+    [HideInInspector]
+    public sl.OBJECT_FILTERING_MODE bodyTrackingFilteringMode = sl.OBJECT_FILTERING_MODE.NMS3D;
+
+    /// <summary>
+    /// Defines if the body fitting will be applied
+    /// </summary>
+    [HideInInspector]
+    public bool enableBodyFitting = true;
+
+    /// <summary>
+    ///  Defines the body format output by the sdk when \ref retrieveBodies is called.
+    /// </summary>
+    [HideInInspector]
+    public sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.BODY_38;
+
+    /// <summary>
+    ///  Defines the body selection output by the sdk when \ref retrieveBodies is called.
+    /// </summary>
+    [HideInInspector]
+    public sl.BODY_KEYPOINTS_SELECTION bodySelection = sl.BODY_KEYPOINTS_SELECTION.FULL;
+
+    /// <summary>
+    /// Defines the minimum keypoints threshold.
+    /// the SDK will outputs skeleton with more keypoints than this threshold.
+    /// </summary>
+    [HideInInspector]
+    public int minimumKeypointsThreshold = 0;
+
+    /// <summary>
+    /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
+    /// where the SDK is 80% sure or greater will appear in the list of detected objects.
+    /// </summary>
+    [HideInInspector]
+    public int bodyTrackingConfidenceThreshold = 60;
+
+    /// <summary>
+    /// Whether the body tracking module has been activated successfully.
+    /// </summary>
+    private bool bodyTrackingRunning = false;
+    /// <summary>
+    /// Whether the body tracking module has been activated successfully.
+    /// </summary>
+    public bool IsBodyTrackingRunning { get { return bodyTrackingRunning; } }
+
+    /// <summary>
+    /// Set to true when there is not a fresh frame of detected bodies waiting for processing, meaning we can retrieve the next one.
+    /// </summary>
+    private bool requestBodiesframe = true;
+    /// <summary>
+    /// Set to true when a new frame of detected bodies has been retrieved in the image acquisition thread, ready for the main thread to process.
+    /// </summary>
+    private bool newbodiesframeready = false;
+
+    /// <summary>
+    /// Last body tracking frame detected by the SDK. This data comes straight from the C++ SDK; see bodyTrackingFrame for an abstracted version
+    /// with many helper functions for use inside Unity.
+    /// </summary>
+    private sl.Bodies bodies = new sl.Bodies();
+    /// <summary>
+    /// Last body tracking frame detected by the SDK. This data comes straight from the C++ SDK; see GetBodyTrackingFrame for an abstracted version
+    /// with many helper functions for use inside Unity.
+    /// </summary>
+    public sl.Bodies GetSLBodies { get { return bodies; } }
+    /// <summary>
+    /// Timestamp of the most recent body frame fully processed. This is used to calculate the FPS of the body tracking module.
+    /// </summary>
+    private ulong lastBodyFrameTimeStamp = 0;
+    /// <summary>
+    /// Frame rate at which the body tracking module is running. Only reports performance; changing this value has no effect on detection.
+    /// </summary>
+    private float bodyTrackingModuleFPS = 15.0f;
+
+    /// <summary>
+    /// Last body tracking frame detected by the SDK, in the form of a BodyTrackingFrame instance which has many helper functions for use in Unity.
+    /// </summary>
+    private BodyTrackingFrame bodyTrackingFrame;
+    /// <summary>
+    /// Last body tracking frame detected by the SDK, in the form of a DetectionFrame instance which has many helper functions for use in Unity.
+    /// </summary>
+    public BodyTrackingFrame GetBodyTrackingFrame { get { return bodyTrackingFrame; } }
+
+    /// <summary>
+    /// Delegate for events that take an body tracking frame straight from the SDK (not abstracted).
+    /// </summary>
+    public delegate void onNewBodyTrackingTriggerSDKDelegate(sl.Bodies bodies);
+    /// <summary>
+    /// Event that's called whenever the Body tracking module detects a new frame.
+    /// Includes data straight from the C++ SDK. See OnBodyTracking/BodyTrackingFrame for an abstracted version that has many helper functions
+    /// that makes it easier to use in Unity.
+    /// </summary>
+    public event onNewBodyTrackingTriggerSDKDelegate OnBodyTracking_SDKData;
+    /// <summary>
+    /// Delegate for events that take an body tracking frame, in the form of a BodyTrackingFrame object which has helper functions.
+    /// </summary>
+    public delegate void onNewBodyTrackingTriggerDelegate(BodyTrackingFrame bodyFrame);
+    /// <summary>
+    /// Event that's called whenever the Object Detection module detects a new frame.
+    /// Supplies data in the form of a DetectionFrame instance, which has many helper functions for use in Unity.
+    /// </summary>
+    public event onNewBodyTrackingTriggerDelegate OnBodyTracking;
+
+    private sl.BodyTrackingRuntimeParameters bodyTrackingRuntimeParams = new sl.BodyTrackingRuntimeParameters();
 
     /////////////////////////////////////////////////////////////////////////
     ///////////////////////////// Rendering ///////////////////////////////////
@@ -1079,7 +1241,10 @@ public class ZEDManager : MonoBehaviour
     /// Object detection framerate
     /// </summary>
     [ReadOnly("Object Detection FPS")] [HideInInspector] public string objectDetectionFPS = "-";
-
+    /// <summary>
+    /// Body Tracking framerate
+    /// </summary>
+    [ReadOnly("Body Tracking FPS")] [HideInInspector] public string bodyTrackingFPS = "-";
 
 
 
@@ -1164,13 +1329,6 @@ public class ZEDManager : MonoBehaviour
 	/// Orientation of the camera (zedRigRoot) when the scene starts. Not used in Stereo AR.
     /// </summary>
 	private Quaternion initialRotation = Quaternion.identity;
-    /// <summary>
-    /// Sensing mode: STANDARD or FILL. FILL corrects for missing depth values.
-    /// Almost always better to use FILL, since we need depth without holes for proper occlusion.
-    /// </summary>
-    [SerializeField]
-    [HideInInspector]
-    public sl.SENSING_MODE sensingMode = sl.SENSING_MODE.FILL;
     /// <summary>
     /// Rotation offset used to retrieve the tracking with a rotational offset.
     /// </summary>
@@ -1428,6 +1586,9 @@ public class ZEDManager : MonoBehaviour
     [SerializeField]
     [HideInInspector]
     private bool objectDetectionFoldoutOpen = false;
+    [SerializeField]
+    [HideInInspector]
+    private bool bodyTrackingFoldoutOpen = false;
     [SerializeField]
     [HideInInspector]
     private bool recordingFoldoutOpen = false;
@@ -1739,6 +1900,11 @@ public class ZEDManager : MonoBehaviour
             StopObjectDetection();
         }
 
+        if (IsBodyTrackingRunning)
+        {
+            StopBodyTracking();
+        }
+
 #if !ZED_HDRP && !ZED_URP
         ClearRendering();
 #endif
@@ -1829,6 +1995,8 @@ public class ZEDManager : MonoBehaviour
         initParameters.enableImageEnhancement = enableImageEnhancement;
         initParameters.cameraDisableSelfCalib = !enableSelfCalibration;
         initParameters.optionalOpencvCalibrationFile = opencvCalibFile;
+        initParameters.openTimeoutSec = openTimeoutSec;
+        initParameters.asyncGrabRecovery = asyncGrabRecovery;
 
         //Check if this rig is a stereo rig. Will set isStereoRig accordingly.
         CheckStereoMode();
@@ -1948,7 +2116,7 @@ public class ZEDManager : MonoBehaviour
             initQuittingHandle.WaitOne(0); //Makes sure we haven't been turned off early, which only happens in Destroy() from OnApplicationQuit().
             if (forceCloseInit) break;
 
-            lastInitStatus = zedCamera.Init(ref initParameters);
+            lastInitStatus = zedCamera.Open(ref initParameters);
             timeout++;
             numberTriesOpening++;
         } while (lastInitStatus != sl.ERROR_CODE.SUCCESS);
@@ -2169,7 +2337,6 @@ public class ZEDManager : MonoBehaviour
     {
 
         runtimeParameters = new sl.RuntimeParameters();
-        runtimeParameters.sensingMode = sensingMode;
         runtimeParameters.enableDepth = true;
         runtimeParameters.confidenceThreshold = confidenceThreshold;
         runtimeParameters.textureConfidenceThreshold = textureConfidenceThreshold;
@@ -2181,8 +2348,6 @@ public class ZEDManager : MonoBehaviour
         {
             if (zedCamera == null)
                 return;
-
-            if (runtimeParameters.sensingMode != sensingMode) runtimeParameters.sensingMode = sensingMode;
 
             AcquireImages();
         }
@@ -2237,6 +2402,12 @@ public class ZEDManager : MonoBehaviour
                     if (objectDetectionRunning && objectDetectionImageSyncMode == true && requestobjectsframe)
                     {
                         RetrieveObjectDetectionFrame();
+                    }
+
+                    //Update body tracking here if using object sync.
+                    if (bodyTrackingRunning && bodyTrackingImageSyncMode == true && requestBodiesframe)
+                    {
+                        RetrieveBodyTrackingFrame();
                     }
 
                     //Get position of camera
@@ -2294,7 +2465,6 @@ public class ZEDManager : MonoBehaviour
             {
                 zedCamera.GetInternalIMUOrientation(ref initialRotation, sl.TIME_REFERENCE.IMAGE);
             }
-
 
             if (err != sl.ERROR_CODE.SUCCESS)
                 Debug.LogWarning("Failed to estimate initial camera position");
@@ -2426,8 +2596,7 @@ public class ZEDManager : MonoBehaviour
             //SVO and loop back ? --> reset position if needed
             if (zedCamera.GetInputType() == sl.INPUT_TYPE.INPUT_TYPE_SVO && svoLoopBack)
             {
-                int maxSVOFrame = zedCamera.GetSVONumberOfFrames();
-                if (zedCamera.GetSVOPosition() >= maxSVOFrame - (svoRealTimeMode ? 2 : 1))
+                if (ZEDGrabError == sl.ERROR_CODE.END_OF_SVOFILE_REACHED)
                 {
                     zedCamera.SetSVOPosition(0);
                     if (enableTracking)
@@ -2535,7 +2704,8 @@ public class ZEDManager : MonoBehaviour
 
         UpdateHmdPose(); //Store the HMD's pose at the current timestamp.
         UpdateTracking(); //Apply position/rotation changes to zedRigRoot.
-        UpdateObjectsDetection(); //Update od if activated
+        UpdateObjectDetection(); //Update od if activated
+        UpdateBodiesTracking(); // Update bt if actived
         UpdateMapping(); //Update mapping if activated
 
         /// If in Unity Editor, update the ZEDManager status list
@@ -2698,6 +2868,11 @@ public class ZEDManager : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     #region OBJECT_DETECTION
 
+    void OptimizeModel(sl.AI_MODELS model)
+    {
+        sl.ZEDCamera.OptimizeAIModel(model);
+    }
+
     /// <summary>
     /// True when the object detection coroutine is in the process of starting.
     /// Used to prevent object detection from being launched multiple times at once, which causes instability.
@@ -2712,8 +2887,8 @@ public class ZEDManager : MonoBehaviour
         sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel));
         if (!AiModelStatus.optimized)
         {
-           // Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
-           // return;
+            // Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
+            // return;
         }
         //We start a coroutine so we can delay actually starting the detection.
         //This is because the main thread is locked for awhile when you call this, appearing like a freeze.
@@ -2751,46 +2926,36 @@ public class ZEDManager : MonoBehaviour
 
             pauseSVOReading = oldpausestate;
 
-            sl.dll_ObjectDetectionParameters od_param = new sl.dll_ObjectDetectionParameters();
+            sl.ObjectDetectionParameters od_param = new sl.ObjectDetectionParameters();
             od_param.imageSync = objectDetectionImageSyncMode;
-            od_param.enableObjectTracking = objectDetectionTracking;
-            od_param.enable2DMask = objectDetection2DMask;
+            od_param.enableTracking = objectDetectionTracking;
+            od_param.enableSegmentation = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
             od_param.maxRange = objectDetectionMaxRange;
             od_param.filteringMode = objectDetectionFilteringMode;
-            if (objectDetectionBodyFormat == sl.BODY_FORMAT.POSE_34 && objectDetectionBodyFitting == false && (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
-                                                                                || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST))
-            {
-                Debug.LogWarning("sl.BODY_FORMAT.POSE_34 is chosen, Skeleton Tracking will automatically enable body fitting");
-                objectDetectionBodyFitting = true;
-            }
-            od_param.bodyFormat = objectDetectionBodyFormat;
-            od_param.enableBodyFitting = objectDetectionBodyFitting;
 
-            od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
-            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM) ? SK_personDetectionConfidenceThreshold : OD_personDetectionConfidenceThreshold;
-            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehicleDetectionConfidenceThreshold;
-            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.BAG] = bagDetectionConfidenceThreshold;
-            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ANIMAL] = animalDetectionConfidenceThreshold;
-            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ELECTRONICS] = electronicsDetectionConfidenceThreshold;
-            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = fruitVegetableDetectionConfidenceThreshold;
-            od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.SPORT] = sportDetectionConfidenceThreshold;
-            od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
+            objectDetectionRuntimeParameters.objectConfidenceThreshold = new int[(int)sl.OBJECT_CLASS.LAST];
+            objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.PERSON] = OD_personDetectionConfidenceThreshold;
+            objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.VEHICLE] = OD_vehicleDetectionConfidenceThreshold;
+            objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.BAG] = OD_bagDetectionConfidenceThreshold;
+            objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.ANIMAL] = OD_animalDetectionConfidenceThreshold;
+            objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.ELECTRONICS] = OD_electronicsDetectionConfidenceThreshold;
+            objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = OD_fruitVegetableDetectionConfidenceThreshold;
+            objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.SPORT] = OD_sportDetectionConfidenceThreshold;
+            objectDetectionRuntimeParameters.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
 
-            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
-            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.VEHICLE] = Convert.ToInt32(objectClassVehicleFilter);
-            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.BAG] = Convert.ToInt32(objectClassBagFilter);
-            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
-            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
-            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
-            od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.SPORT] = Convert.ToInt32(objectClassSportFilter);
-
-            od_runtime_params.minimumKeypointsThreshold = minimumKeypointsThreshold;
+            objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
+            objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.VEHICLE] = Convert.ToInt32(objectClassVehicleFilter);
+            objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.BAG] = Convert.ToInt32(objectClassBagFilter);
+            objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
+            objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
+            objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
+            objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.SPORT] = Convert.ToInt32(objectClassSportFilter);
 
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
             watch.Start();
 
-            sl.ERROR_CODE err = zedCamera.EnableObjectsDetection(ref od_param);
+            sl.ERROR_CODE err = zedCamera.EnableObjectDetection(ref od_param);
             if (err == sl.ERROR_CODE.SUCCESS)
             {
                 Debug.Log("Object Detection module started in " + watch.Elapsed.Seconds + " seconds.");
@@ -2815,7 +2980,7 @@ public class ZEDManager : MonoBehaviour
     {
         if (zedCamera != null && running)
         {
-            zedCamera.DisableObjectsDetection();
+            zedCamera.DisableObjectDetection();
             objectDetectionRunning = false;
         }
     }
@@ -2823,27 +2988,25 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Updates the objects detection by triggering the detection event
     /// </summary>
-    public void UpdateObjectsDetection()
+    public void UpdateObjectDetection()
     {
         if (!objectDetectionRunning) return;
 
         //Update the runtime parameters in case the user made changes.
-        od_runtime_params.object_confidence_threshold = new int[(int)sl.OBJECT_CLASS.LAST];
-        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.PERSON] = (objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE || objectDetectionModel == sl.DETECTION_MODEL.HUMAN_BODY_FAST) ? SK_personDetectionConfidenceThreshold : OD_personDetectionConfidenceThreshold;
-        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.VEHICLE] = vehicleDetectionConfidenceThreshold;
-        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.BAG] = bagDetectionConfidenceThreshold;
-        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ANIMAL] = animalDetectionConfidenceThreshold;
-        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.ELECTRONICS] = electronicsDetectionConfidenceThreshold;
-        od_runtime_params.object_confidence_threshold[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = fruitVegetableDetectionConfidenceThreshold;
-        od_runtime_params.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
-        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
-        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.VEHICLE] = Convert.ToInt32(objectClassVehicleFilter);
-        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.BAG] = Convert.ToInt32(objectClassBagFilter);
-        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
-        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
-        od_runtime_params.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
-
-        od_runtime_params.minimumKeypointsThreshold = minimumKeypointsThreshold;
+        objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.PERSON] = OD_personDetectionConfidenceThreshold;
+        objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.VEHICLE] = OD_vehicleDetectionConfidenceThreshold;
+        objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.BAG] = OD_bagDetectionConfidenceThreshold;
+        objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.ANIMAL] = OD_animalDetectionConfidenceThreshold;
+        objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.ELECTRONICS] = OD_electronicsDetectionConfidenceThreshold;
+        objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = OD_fruitVegetableDetectionConfidenceThreshold;
+        objectDetectionRuntimeParameters.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
+        objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
+        objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.VEHICLE] = Convert.ToInt32(objectClassVehicleFilter);
+        objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.BAG] = Convert.ToInt32(objectClassBagFilter);
+        objectDetectionRuntimeParameters.objectConfidenceThreshold = new int[(int)sl.OBJECT_CLASS.LAST];
+        objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
+        objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
+        objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
 
         if (objectDetectionImageSyncMode == false) RetrieveObjectDetectionFrame(); //If true, this is called in the AcquireImages function in the image acquisition thread.
 
@@ -2851,23 +3014,23 @@ public class ZEDManager : MonoBehaviour
         {
             lock (zedCamera.grabLock)
             {
-                float objdetect_fps = 1000000000.0f / (objectsFrameSDK.timestamp - lastObjectFrameTimeStamp);
+                float objdetect_fps = 1000000000.0f / (objects.timestamp - lastObjectFrameTimeStamp);
                 objDetectionModuleFPS = (objDetectionModuleFPS + objdetect_fps) / 2.0f;
                 objectDetectionFPS = objDetectionModuleFPS.ToString("F1") + " FPS";
-                lastObjectFrameTimeStamp = objectsFrameSDK.timestamp;
+                lastObjectFrameTimeStamp = objects.timestamp;
                 ///Trigger the event that holds the raw data, and pass the whole objects frame.
                 if (OnObjectDetection_SDKData != null)
                 {
-                    OnObjectDetection_SDKData(objectsFrameSDK);
+                    OnObjectDetection_SDKData(objects);
                 }
 
                 //If there are any subscribers to the non-raw data, create that data and publish the event.
                 if (OnObjectDetection != null)
                 {
-                    DetectionFrame oldoframe = detectionFrame; //Cache so we can clean it up once we're done setting up the new one.
+                    ObjectDetectionFrame oldoframe = objectDetectionFrame; //Cache so we can clean it up once we're done setting up the new one.
                     //DetectionFrame oframe = new DetectionFrame(objectsFrame, this);
-                    detectionFrame = new DetectionFrame(objectsFrameSDK, this);
-                    OnObjectDetection(detectionFrame);
+                    objectDetectionFrame = new ObjectDetectionFrame(objects, this);
+                    OnObjectDetection(objectDetectionFrame);
                     if (oldoframe != null) oldoframe.CleanUpAllObjects();
                 }
 
@@ -2884,22 +3047,22 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     private void RetrieveObjectDetectionFrame()
     {
-        sl.ObjectsFrameSDK oframebuffer = new sl.ObjectsFrameSDK();
+        sl.Objects objsbuffer = new sl.Objects();
 
-        sl.ERROR_CODE res = zedCamera.RetrieveObjectsDetectionData(ref od_runtime_params, ref oframebuffer);
-        if (res == sl.ERROR_CODE.SUCCESS && oframebuffer.isNew != 0)
+        sl.ERROR_CODE res = zedCamera.RetrieveObjects(ref objectDetectionRuntimeParameters, ref objsbuffer);
+        if (res == sl.ERROR_CODE.SUCCESS && objsbuffer.isNew != 0)
         {
             if (objectDetection2DMask)
             {
                 //Release memory from masks.
-                for (int i = 0; i < objectsFrameSDK.numObject; i++)
+                for (int i = 0; i < objects.nbObjects; i++)
                 {
-                    sl.ZEDMat oldmat = new sl.ZEDMat(objectsFrameSDK.objectData[i].mask);
+                    sl.ZEDMat oldmat = new sl.ZEDMat(objects.objectList[i].mask);
                     oldmat.Free();
                 }
             }
 
-            objectsFrameSDK = oframebuffer;
+            objects = objsbuffer;
 
             requestobjectsframe = false;
             newobjectsframeready = true;
@@ -2915,7 +3078,199 @@ public class ZEDManager : MonoBehaviour
         if (zedCamera != null)
         {
             if (objectDetectionRunning)
-                zedCamera.PauseObjectsDetection(state);
+                zedCamera.PauseObjectDetection(state);
+        }
+    }
+    #endregion
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////// BODY TRACKING REGION  ////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#region BODY_TRACKING
+
+    /// <summary>
+    /// True when the body tracking coroutine is in the process of starting.
+    /// </summary>
+    private bool btIsStarting = false;
+    /// <summary>
+    /// Starts the ZED body tracking.
+    /// <para>Note: This will lock the main thread for a moment, which may appear to be a freeze.</para>
+    /// </summary>
+    public void StartBodyTracking()
+    {
+        sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel));
+        if (!AiModelStatus.optimized)
+        {
+            // Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
+            // return;
+        }
+        //We start a coroutine so we can delay actually starting the detection.
+        //This is because the main thread is locked for awhile when you call this, appearing like a freeze.
+        //This time lets us deliver a log message to the user indicating that this is expected.
+        StartCoroutine(startBodyTracking());
+    }
+
+    /// <summary>
+    /// <summary>
+    /// Starts the object detection module after a two-frame delay, allowing us to deliver a log message
+    /// to the user indicating that what appears to be a freeze is actually expected and will pass.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator startBodyTracking()
+    {
+        if (btIsStarting == true)
+        {
+            Debug.LogError("Tried to start Body Tracking while it was already starting. Do you have two scripts trying to start it?");
+            yield break;
+        }
+        if (bodyTrackingRunning)
+        {
+            Debug.LogWarning("Tried to start Body Tracking while it was already running.");
+        }
+
+        if (zedCamera != null)
+        {
+            odIsStarting = true;
+            Debug.LogWarning("Starting Body Tracking. This may take a moment.");
+
+            bool oldpausestate = pauseSVOReading; //The two frame delay will cause you to miss some SVO frames if playing back from an SVO, unless we pause.
+            pauseSVOReading = true;
+
+            yield return null;
+
+            pauseSVOReading = oldpausestate;
+
+            sl.BodyTrackingParameters bt_param = new sl.BodyTrackingParameters();
+            bt_param.instanceModuleID = 0;
+            bt_param.imageSync = bodyTrackingImageSyncMode;
+            bt_param.enableTracking = bodyTrackingTracking;
+            bt_param.enableSegmentation = bodyTracking2DMask;
+            bt_param.detectionModel = bodyTrackingModel;
+            bt_param.maxRange = bodyTrackingMaxRange;
+            bt_param.bodyFormat = bodyFormat;
+            bt_param.enableBodyFitting = enableBodyFitting;
+            bt_param.bodySelection = bodySelection;
+            bt_param.allowReducedPrecisionInference = bodyTrackingAllowReducedPrecisionInference;
+            bt_param.predictionTimeout_s = bodyTrackingPredictionTimeout;
+
+            bodyTrackingRuntimeParams.detectionConfidenceThreshold = bodyTrackingConfidenceThreshold;
+            bodyTrackingRuntimeParams.minimumKeypointsThreshold = minimumKeypointsThreshold;
+
+            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
+            watch.Start();
+
+            sl.ERROR_CODE err = zedCamera.EnableBodyTracking(ref bt_param);
+            if (err == sl.ERROR_CODE.SUCCESS)
+            {
+                Debug.Log("Body Tracking module started in " + watch.Elapsed.Seconds + " seconds.");
+                bodyTrackingRunning = true;
+            }
+            else
+            {
+                Debug.Log("Body Tracking failed to start. (Error: " + err + " )");
+                bodyTrackingRunning = false;
+            }
+
+            watch.Stop();
+
+            btIsStarting = false;
+        }
+    }
+
+    /// <summary>
+    /// Stops the body tracking module.
+    /// </summary>
+    public void StopBodyTracking()
+    {
+        if (zedCamera != null && running)
+        {
+            zedCamera.DisableBodyTracking();
+            bodyTrackingRunning = false;
+        }
+    }
+
+    /// <summary>
+    /// Updates the body tracking by triggering the detection event
+    /// </summary>
+    public void UpdateBodiesTracking()
+    {
+        if (!bodyTrackingRunning) return;
+
+        //Update the runtime parameters in case the user made changes.
+        bodyTrackingRuntimeParams.detectionConfidenceThreshold = bodyTrackingConfidenceThreshold;
+        bodyTrackingRuntimeParams.minimumKeypointsThreshold = minimumKeypointsThreshold;
+
+        if (bodyTrackingImageSyncMode == false) RetrieveBodyTrackingFrame(); //If true, this is called in the AcquireImages function in the image acquisition thread.
+
+        if (newbodiesframeready)
+        {
+            lock (zedCamera.grabLock)
+            {
+                float bodyTracking_fps = 1000000000.0f / (objects.timestamp - lastObjectFrameTimeStamp);
+                bodyTrackingModuleFPS = (bodyTrackingModuleFPS + bodyTracking_fps) / 2.0f;
+                bodyTrackingFPS = bodyTrackingModuleFPS.ToString("F1") + " FPS";
+                lastBodyFrameTimeStamp = bodies.timestamp;
+                ///Trigger the event that holds the raw data, and pass the whole objects frame.
+                if (OnBodyTracking_SDKData != null)
+                {
+                    OnBodyTracking_SDKData(bodies);
+                }
+
+                //If there are any subscribers to the non-raw data, create that data and publish the event.
+                if (OnBodyTracking != null)
+                {
+                    BodyTrackingFrame oldBodyframe = bodyTrackingFrame; //Cache so we can clean it up once we're done setting up the new one.
+                    //DetectionFrame oframe = new DetectionFrame(objectsFrame, this);
+                    bodyTrackingFrame = new BodyTrackingFrame(bodies, this);
+                    OnBodyTracking(bodyTrackingFrame);
+                    if (oldBodyframe != null) oldBodyframe.CleanUpAllBodies();
+                }
+
+                //Now that all events have been sent out, it's safe to let the image acquisition thread detect more objects.
+                requestBodiesframe = true;
+                newbodiesframeready = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Requests the latest body tracking frame information. If it's new, it'll fill the bodyFrame object
+    /// with the new frame info, set requestobjectsframe to false, and set newbodiesframeready to true.
+    /// </summary>
+    private void RetrieveBodyTrackingFrame()
+    {
+        sl.Bodies bodiesbuffer = new sl.Bodies();
+
+        sl.ERROR_CODE res = zedCamera.RetrieveBodies(ref bodyTrackingRuntimeParams, ref bodiesbuffer);
+        if (res == sl.ERROR_CODE.SUCCESS && bodiesbuffer.isNew != 0)
+        {
+            if (bodyTracking2DMask)
+            {
+                //Release memory from masks.
+                for (int i = 0; i < bodies.nbBodies; i++)
+                {
+                    sl.ZEDMat oldmat = new sl.ZEDMat(bodies.bodyList[i].mask);
+                    oldmat.Free();
+                }
+            }
+
+            bodies = bodiesbuffer;
+
+            requestBodiesframe = false;
+            newbodiesframeready = true;
+        }
+    }
+
+    /// <summary>
+    /// Switchs the state of the body tracking pause.
+    /// </summary>
+    /// <param name="state">If set to <c>true</c> state, the body tracking will pause. It will resume otherwise</param>
+    public void SwitchBodyTrackingPauseState(bool state)
+    {
+        if (zedCamera != null)
+        {
+            if (bodyTrackingRunning)
+                zedCamera.PauseBodyTracking(state);
         }
     }
     #endregion
