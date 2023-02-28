@@ -2596,7 +2596,8 @@ public class ZEDManager : MonoBehaviour
             //SVO and loop back ? --> reset position if needed
             if (zedCamera.GetInputType() == sl.INPUT_TYPE.INPUT_TYPE_SVO && svoLoopBack)
             {
-                if (ZEDGrabError == sl.ERROR_CODE.END_OF_SVOFILE_REACHED)
+                int maxSVOFrame = zedCamera.GetSVONumberOfFrames();
+                if (zedCamera.GetSVOPosition() >= maxSVOFrame - (svoRealTimeMode ? 2 : 1))
                 {
                     zedCamera.SetSVOPosition(0);
                     if (enableTracking)
