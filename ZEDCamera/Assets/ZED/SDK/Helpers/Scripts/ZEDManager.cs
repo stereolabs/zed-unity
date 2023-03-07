@@ -2888,8 +2888,8 @@ public class ZEDManager : MonoBehaviour
         sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel));
         if (!AiModelStatus.optimized)
         {
-            // Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
-            // return;
+            Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
+            return;
         }
         //We start a coroutine so we can delay actually starting the detection.
         //This is because the main thread is locked for awhile when you call this, appearing like a freeze.
@@ -3102,8 +3102,8 @@ public class ZEDManager : MonoBehaviour
         sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel));
         if (!AiModelStatus.optimized)
         {
-            // Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
-            // return;
+            Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
+            return;
         }
         //We start a coroutine so we can delay actually starting the detection.
         //This is because the main thread is locked for awhile when you call this, appearing like a freeze.
