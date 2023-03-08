@@ -63,7 +63,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     /// Avatar game object
     /// </summary>
     [Tooltip("3D Rigged model.")]
-    public GameObject Avatar;
+    public GameObject avatar; 
 
     [Space(5)]
     [Tooltip("Mirror the animation.")]
@@ -149,7 +149,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 			{
 				SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
                 Vector3 spawnPosition = zedManager.GetZedRootTansform().TransformPoint(dbody.rawBodyData.position);
-                handler.Create(Avatar);
+                handler.Create(avatar);
                 handler.initSkeleton(person_id);
                 avatarControlList.Add(person_id, handler);
                 UpdateAvatarControl(handler, dbody.rawBodyData);
