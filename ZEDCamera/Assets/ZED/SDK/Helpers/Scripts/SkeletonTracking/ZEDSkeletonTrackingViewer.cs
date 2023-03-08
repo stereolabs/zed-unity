@@ -98,7 +98,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 #endif
 
             zedManager.OnZEDReady += OnZEDReady;
-            zedManager.OnBodyTracking += updateSkeletonData;
+            zedManager.OnBodyTracking += UpdateSkeletonData;
 		}
 
         if (zedManager.bodyTrackingModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.bodyTrackingModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE || zedManager.bodyTrackingModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM )
@@ -119,7 +119,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     {
         if (zedManager)
         {
-            zedManager.OnBodyTracking -= updateSkeletonData;
+            zedManager.OnBodyTracking -= UpdateSkeletonData;
             zedManager.OnZEDReady -= OnZEDReady;
         }
     }
@@ -127,7 +127,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// <summary>
 	/// Updates the skeleton data from ZEDCamera call and send it to Skeleton Handler script.
 	/// </summary>
-    private void UpdateSkeletonData(DetectionFrame dframe)
+    private void UpdateSkeletonData(BodyTrackingFrame dframe)
     {
 		List<int> remainingKeyList = new List<int>(avatarControlList.Keys);
 		List<DetectedBody> newbodies = dframe.GetFilteredObjectList(showON, showSEARCHING, showOFF);
