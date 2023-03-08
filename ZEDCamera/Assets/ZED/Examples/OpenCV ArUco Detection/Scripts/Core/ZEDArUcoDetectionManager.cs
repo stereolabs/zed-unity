@@ -91,7 +91,7 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
         }
     }
 
-    
+
     void Start()
     {
         //We'll listen for updates from a ZEDToOpenCVRetriever, which will call an event whenever it has a new image from the ZED. 
@@ -104,16 +104,11 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
     /// </summary>
     private void ImageUpdated(Camera cam, Mat camMat, Mat imageMat)
     {
-
-        //Dictionary predict = Aruco.getPredefinedDictionary((int)markerDictionary); //Load the selected pre-defined dictionary. 
-
         Dictionary predict = Objdetect.getPredefinedDictionary((int)markerDictionary); //Load the selected pre-defined dictionary. 
 
         //Create empty structures to hold the output of Aruco.detectMarkers. 
         List<Mat> corners = new List<Mat>();
         Mat ids = new Mat();
-
-        //DetectorParameters detectparams = DetectorParameters.create();
         DetectorParameters detectparams = new DetectorParameters();
         List<Mat> rejectedpoints = new List<Mat>(); //There is no overload for detectMarkers that will take camMat without this also. 
 
@@ -148,7 +143,7 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
         //We'll go through every ID that's been registered into registered Markers, and see if we found any markers in the scene with that ID. 
         Dictionary<int, List<sl.Pose>> detectedWorldPoses = new Dictionary<int, List<sl.Pose>>(); //Key is marker ID, value is world space poses.
         //foreach (int id in registeredMarkers.Keys) 
-        for(int index = 0; index < transvectors.rows(); index++)
+        for (int index = 0; index < transvectors.rows(); index++)
         {
             int id = (int)ids.get(index, 0)[0];
             if (!registeredMarkers.ContainsKey(id) || registeredMarkers[id].Count == 0) continue; //Don't waste time if the list is empty. Can happen if markers are added, then removed. 
@@ -168,10 +163,10 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
                 double[] flip = rotvectors.get(index, 0);
                 flip[1] = -flip[1];
                 rotvectors.put(index, 0, flip);
-                
+
                 //Convert this rotation vector to a 3x3 matrix, which will hold values we can use in Unity. 
                 Mat rotmatrix = new Mat();
-                Calib3d.Rodrigues(rotvectors.row(index), rotmatrix); 
+                Calib3d.Rodrigues(rotvectors.row(index), rotmatrix);
 
                 //This new 3x3 matrix holds a vector pointing right in the first column, a vector pointing up in the second, 
                 //and a vector pointing forward in the third column. Rows 0, 1 and 2 are the X, Y and Z values of each vector. 
@@ -189,12 +184,12 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
                 Quaternion rot = Quaternion.LookRotation(forward, up);
 
                 //Compensate for flip on Z axis. 
-                rot *= Quaternion.Euler(0, 0, 180); 
+                rot *= Quaternion.Euler(0, 0, 180);
 
                 //Convert from local space to world space by multiplying the camera's world rotation with it. 
                 Quaternion worldrot = cam.transform.rotation * rot;
 
-                if(!detectedWorldPoses.ContainsKey(id))
+                if (!detectedWorldPoses.ContainsKey(id))
                 {
                     detectedWorldPoses.Add(id, new List<sl.Pose>());
                 }
@@ -211,7 +206,7 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
         if (OnMarkersDetected != null) OnMarkersDetected.Invoke(detectedWorldPoses);
 
         //foreach (int detectedid in detectedWorldPoses.Keys)
-        foreach(int key in registeredMarkers.Keys)
+        foreach (int key in registeredMarkers.Keys)
         {
             if (detectedWorldPoses.ContainsKey(key))
             {
@@ -229,7 +224,7 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
             }
         }
     }
-   
+
 
     /// <summary>
     /// Enum of OpenCV pre-defined dictionary indexes. Used for calling Aruco.getPredefinedDictionary().  
@@ -258,6 +253,7 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
         DICT_APRILTAG_25h9 = Objdetect.DICT_APRILTAG_25h9,
         DICT_APRILTAG_36h10 = Objdetect.DICT_APRILTAG_36h10,
         DICT_APRILTAG_36h11 = Objdetect.DICT_APRILTAG_36h11
+<<<<<<< HEAD
     }
 
     /*public enum PreDefinedmarkerDictionary
@@ -283,6 +279,8 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
         DICT_APRILTAG_25h9 = Aruco.DICT_APRILTAG_25h9,
         DICT_APRILTAG_36h10 = Aruco.DICT_APRILTAG_36h10,
         DICT_APRILTAG_36h11 = Aruco.DICT_APRILTAG_36h11
+=======
+>>>>>>> v4.0
     }
     */
 

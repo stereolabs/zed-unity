@@ -381,6 +381,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -405,6 +406,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114833973883948664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -474,6 +476,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -498,6 +501,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &114346753093240460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -571,10 +575,13 @@ MonoBehaviour:
   cameraID: 0
   depthMode: 1
   inputType: 0
-  resolution: 2
+  resolution: 1
   FPS: 60
+  serialNumber: 0
   svoInputFileName: 
   opencvCalibFile: 
+  openTimeoutSec: 5
+  asyncGrabRecovery: 0
   svoLoopBack: 1
   svoRealTimeMode: 0
   currentFrame: 0
@@ -600,21 +607,37 @@ MonoBehaviour:
   objectDetectionTracking: 1
   objectDetection2DMask: 0
   objectDetectionModel: 0
-  bodyFitting: 0
-  maxRange: 40
-  SK_personDetectionConfidenceThreshold: 50
+  objectDetectionMaxRange: 40
+  objectDetectionPredictionTimeout: 0.2
+  objectDetectionAllowReducedPrecisionInference: 0
+  objectDetectionFilteringMode: 1
   OD_personDetectionConfidenceThreshold: 60
-  vehicleDetectionConfidenceThreshold: 60
-  bagDetectionConfidenceThreshold: 60
-  animalDetectionConfidenceThreshold: 60
-  electronicsDetectionConfidenceThreshold: 60
-  fruitVegetableDetectionConfidenceThreshold: 60
+  OD_vehicleDetectionConfidenceThreshold: 60
+  OD_bagDetectionConfidenceThreshold: 60
+  OD_animalDetectionConfidenceThreshold: 60
+  OD_electronicsDetectionConfidenceThreshold: 60
+  OD_fruitVegetableDetectionConfidenceThreshold: 60
+  OD_sportDetectionConfidenceThreshold: 60
   objectClassPersonFilter: 1
   objectClassVehicleFilter: 1
   objectClassBagFilter: 1
   objectClassAnimalFilter: 1
   objectClassElectronicsFilter: 1
   objectClassFruitVegetableFilter: 1
+  objectClassSportFilter: 1
+  bodyTrackingImageSyncMode: 1
+  bodyTrackingTracking: 1
+  bodyTracking2DMask: 0
+  bodyTrackingModel: 8
+  bodyTrackingMaxRange: 40
+  bodyTrackingPredictionTimeout: 0.2
+  bodyTrackingAllowReducedPrecisionInference: 0
+  bodyTrackingFilteringMode: 1
+  enableBodyFitting: 1
+  bodyFormat: 0
+  bodySelection: 0
+  minimumKeypointsThreshold: 0
+  bodyTrackingConfidenceThreshold: 60
   depthOcclusion: 1
   postProcessing: 1
   m_cameraBrightness: 100
@@ -642,6 +665,8 @@ MonoBehaviour:
   enableRightDepthMeasure: 0
   showarrig: 0
   enableIMUFusion: 1
+  depthMinRange: -1
+  setGravityAsOrigin: 1
   enableSelfCalibration: 1
   videoSettingsInitMode: 0
   videoBrightness: 4
@@ -665,7 +690,8 @@ MonoBehaviour:
   HMDDevice: '-'
   trackingState: '-'
   objectDetectionFPS: '-'
-  sensingMode: 1
+  bodyTrackingFPS: '-'
+  ZEDGrabError: 1
   setIMUPriorInAR: 1
   allowARPassThrough: 1
   gravityRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -676,6 +702,7 @@ MonoBehaviour:
   advancedPanelOpen: 0
   spatialMappingFoldoutOpen: 0
   objectDetectionFoldoutOpen: 0
+  bodyTrackingFoldoutOpen: 0
   recordingFoldoutOpen: 0
   streamingOutFoldoutOpen: 0
   camControlFoldoutOpen: 0
@@ -749,6 +776,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -773,3 +801,4 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}

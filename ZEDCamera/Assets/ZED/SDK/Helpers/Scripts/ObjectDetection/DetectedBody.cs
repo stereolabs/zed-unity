@@ -5,24 +5,24 @@ using sl;
 using System;
 
 /// <summary>
-/// Represents a single object detected by the ZED Object Detection module. 
-/// Provides various functions for knowing where the object is in the world (position) and how much space it takes up (bounds).
-/// <para>It's listed in a DetectionFrame, which is included as the argument in the ZEDManager.OnObjectDetection event.</para>
+/// Represents a single body detected by the ZED Body Tracking module. 
+/// Provides various functions for knowing where the body is in the world (position) and how much space it takes up (bounds).
+/// <para>It's listed in a BodyTrackingFrame, which is included as the argument in the ZEDManager.OnBodyTracking event.</para>
 /// </summary><remarks>
-/// This is a higher level version of sl.ObjectData, which comes directly from the ZED SDK and doesn't follow Unity conventions. 
+/// This is a higher level version of sl.BodyData, which comes directly from the ZED SDK and doesn't follow Unity conventions. 
 /// </remarks>
-public class DetectedObject
+public class DetectedBody
 {
-    private ObjectData objectData;
+    private BodyData bodyData;
     /// <summary>
-    /// The raw ObjectData object that this instance is an abstraction of - ObjectData's data comes
+    /// The raw bodyData object that this instance is an abstraction of - bodyData's data comes
     /// directly from the SDK and doesn't follow Unity conventions. 
     /// </summary>
-    public ObjectData rawObjectData
+    public BodyData rawBodyData
     {
         get
         {
-            return objectData;
+            return bodyData;
         }
     }
 
@@ -34,29 +34,7 @@ public class DetectedObject
     {
         get
         {
-            return objectData.id;
-        }
-    }
-
-    /// <summary>
-    /// Class of object that was detected (person, vehicle, etc.)
-    /// </summary>
-    public OBJECT_CLASS label
-    {
-        get
-        {
-            return objectData.label;
-        }
-    }
-
-    /// <summary>
-    /// SubClass of object that was detected  
-    /// </summary>
-    public OBJECT_SUBCLASS subLabel
-    {
-        get
-        {
-            return objectData.subLabel;
+            return bodyData.id;
         }
     }
 
@@ -69,7 +47,7 @@ public class DetectedObject
     {
         get
         {
-            return objectData.trackingState;
+            return bodyData.trackingState;
         }
     }
 
@@ -80,7 +58,7 @@ public class DetectedObject
     {
         get
         {
-            return objectData.actionState;
+            return bodyData.actionState;
         }
     }
 
@@ -94,7 +72,7 @@ public class DetectedObject
     {
         get
         {
-            return objectData.confidence;
+            return bodyData.confidence;
         }
     }
 
@@ -130,18 +108,18 @@ public class DetectedObject
     /// This is necessary because detections are frozen in a particular frame, and results should not change
     /// in subsequent frames when the camera moves. 
     /// </summary>
-    /// <param name="odata">Raw sl.ObjectData data that this instance represents.</param>
+    /// <param name="odata">Raw sl.bodyData data that this instance represents.</param>
     /// <param name="viewingmanager">ZEDManager assigned to the ZED camera that detected the object.</param>
     /// <param name="campos">World position of the left ZED camera when the object was detected.</param>
     /// <param name="camrot">World rotation of the left ZED camera when the object was detected.</param>
-    public DetectedObject(ObjectData odata, ZEDManager viewingmanager, Vector3 campos, Quaternion camrot)
+    public DetectedBody(BodyData bdata, ZEDManager viewingmanager, Vector3 campos, Quaternion camrot)
     {
-        objectData = odata;
+        bodyData = bdata;
         detectingZEDManager = viewingmanager;
         camPositionAtDetection = campos;
         camRotationAtDetection = camrot;
 
-        maskMat = new ZEDMat(odata.mask);
+        maskMat = new ZEDMat(bdata.mask);
         //maskTexture = ZEDMatToTexture_CPU(maskMat);
 
     }
@@ -149,7 +127,7 @@ public class DetectedObject
     /// <summary>
     /// Returns the pixel positions of the four corners of the object's 2D bounding box on the image. 
     /// <para>Like most of Unity, the Y values are relative to the bottom of the image, which is unlike the 
-    /// raw imageBoundingBox data from the ObjectData struct.</para>
+    /// raw imageBoundingBox data from the bodyData struct.</para>
     ///  0 ------- 1
     ///  |   obj   |
     ///  3-------- 2
@@ -172,8 +150,8 @@ public class DetectedObject
         for (int i = 0; i < 4; i++)
         {
             Vector2 rawcoord;
-            rawcoord.x = objectData.boundingBox2D[i].x * scaleForCanvasUnityError + cxoffset;
-            rawcoord.y = detectingZEDManager.zedCamera.ImageHeight - objectData.boundingBox2D[i].y + cyoffset;
+            rawcoord.x = bodyData.boundingBox2D[i].x * scaleForCanvasUnityError + cxoffset;
+            rawcoord.y = detectingZEDManager.zedCamera.ImageHeight - bodyData.boundingBox2D[i].y + cyoffset;
             
 
 #if UNITY_2018_1_OR_NEWER
@@ -190,7 +168,7 @@ public class DetectedObject
     /// <summary>
     /// Returns the viewport positions of the four corners of the object's 2D bounding box on the capturing camera. 
     /// <para>Like most of Unity, the Y values are relative to the bottom of the image, which is unlike the 
-    /// raw imageBoundingBox data from the ObjectData struct.</para>
+    /// raw imageBoundingBox data from the bodyData struct.</para>
     ///  0 ------- 1
     ///  |   obj   |
     ///  3-------- 2
@@ -235,8 +213,8 @@ public class DetectedObject
     public Vector3 Get3DWorldPosition()
     {
         //Get the center of the transformed bounding box. 
-        float ypos = (localToWorld(objectData.boundingBox[0]).y - localToWorld(objectData.boundingBox[4]).y) / 2f + localToWorld(objectData.boundingBox[4]).y;
-        Vector3 transformedroot = localToWorld(objectData.position);
+        float ypos = (localToWorld(bodyData.boundingBox[0]).y - localToWorld(bodyData.boundingBox[4]).y) / 2f + localToWorld(bodyData.boundingBox[4]).y;
+        Vector3 transformedroot = localToWorld(bodyData.position);
 
         return new Vector3(transformedroot.x, ypos, transformedroot.z);
     }
@@ -268,7 +246,7 @@ public class DetectedObject
     /// </summary>
     public Bounds Get3DWorldBounds()
     {
-        Vector3[] worldcorners = objectData.boundingBox;
+        Vector3[] worldcorners = bodyData.boundingBox;
 
         Quaternion pitchrot = GetRotationWithoutYaw();
 
@@ -301,7 +279,7 @@ public class DetectedObject
 
         for (int i = 0; i < 8; i++)
         {
-            worldspacecorners[i] = localToWorld(objectData.boundingBox[i]);
+            worldspacecorners[i] = localToWorld(bodyData.boundingBox[i]);
         }
 
         return worldspacecorners;
@@ -363,9 +341,9 @@ public class DetectedObject
     }
 
     /// <summary>
-    /// Transforms 3D points provided from the raw ObjectData values to world space. 
+    /// Transforms 3D points provided from the raw bodyData values to world space. 
     /// </summary>
-    /// <param name="localPos">Any 3D position provided from the raw ObjectData object, like world position or the 3D bbox corners.</param>
+    /// <param name="localPos">Any 3D position provided from the raw bodyData object, like world position or the 3D bbox corners.</param>
     /// <returns>The given position, but in world space.</returns>
     private Vector3 localToWorld(Vector3 localPos)
     {

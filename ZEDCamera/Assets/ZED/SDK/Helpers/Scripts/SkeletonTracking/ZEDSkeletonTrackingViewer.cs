@@ -31,7 +31,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// </summary>
 	[Header("Game Control")]
 
-    public bool startObjectDetectionAutomatically = true;
+    public bool startBodyTrackingAutomatically = true;
 
     /// <summary>
     /// Vizualisation mode. Use a 3D model or only display the skeleton
@@ -98,33 +98,28 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 #endif
 
             zedManager.OnZEDReady += OnZEDReady;
-            zedManager.OnObjectDetection += UpdateSkeletonData;
+            zedManager.OnBodyTracking += updateSkeletonData;
 		}
 
-        if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE || zedManager.objectDetectionModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM )
+        if (zedManager.bodyTrackingModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.bodyTrackingModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE || zedManager.bodyTrackingModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM )
         {
             Debug.LogWarning("MULTI_CLASS_BOX model can't be used for skeleton tracking, please use either HUMAN_BODY_FAST or HUMAN_BODY_ACCURATE");
         }
 
-        if (zedManager.objectDetectionBodyFormat == sl.BODY_FORMAT.POSE_18)
-        {
-            Debug.LogWarning(" BODY_FORMAT must be set to POSE_34 to animate 3D Avatars !");
-            return;
-        }
     }
 
     private void OnZEDReady()
     {
-        if (startObjectDetectionAutomatically && !zedManager.IsObjectDetectionRunning)
+        if (startBodyTrackingAutomatically && !zedManager.IsBodyTrackingRunning)
         {
-            zedManager.StartObjectDetection();
+            zedManager.StartBodyTracking();
         }
     }
 	private void OnDestroy()
     {
         if (zedManager)
         {
-            zedManager.OnObjectDetection -= UpdateSkeletonData;
+            zedManager.OnBodyTracking -= updateSkeletonData;
             zedManager.OnZEDReady -= OnZEDReady;
         }
     }
@@ -135,16 +130,17 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     private void UpdateSkeletonData(DetectionFrame dframe)
     {
 		List<int> remainingKeyList = new List<int>(avatarControlList.Keys);
-		List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showON, showSEARCHING, showOFF);
- 		foreach (DetectedObject dobj in newobjects)
+		List<DetectedBody> newbodies = dframe.GetFilteredObjectList(showON, showSEARCHING, showOFF);
+
+ 		foreach (DetectedBody dbody in newbodies)
         {
-			int person_id = dobj.rawObjectData.id;
+			int person_id = dbody.rawBodyData.id;
 
 			//Avatar controller already exist --> update position
 			if (avatarControlList.ContainsKey(person_id))
 			{
 				SkeletonHandler handler = avatarControlList[person_id];
-				UpdateAvatarControl(handler,dobj.rawObjectData);
+				UpdateAvatarControl(handler, dbody.rawBodyData);
 
 				// remove keys from list
 				remainingKeyList.Remove(person_id);
@@ -152,11 +148,11 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 			else
 			{
 				SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
-                Vector3 spawnPosition = zedManager.GetZedRootTansform().TransformPoint(dobj.rawObjectData.rootWorldPosition);
+                Vector3 spawnPosition = zedManager.GetZedRootTansform().TransformPoint(dbody.rawBodyData.position);
                 handler.Create(Avatar);
                 handler.initSkeleton(person_id);
                 avatarControlList.Add(person_id, handler);
-                UpdateAvatarControl(handler, dobj.rawObjectData);
+                UpdateAvatarControl(handler, dbody.rawBodyData);
 			}
 		}
 
@@ -175,7 +171,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
             useAvatar = !useAvatar;
             if (useAvatar)
             {
-                if (zedManager.objectDetectionBodyFitting)
+                if (zedManager.enableBodyFitting)
                     Debug.Log("<b><color=green> Switch to Avatar mode</color></b>");
 
             }
@@ -191,7 +187,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// </summary>
 	/// <param name="handler">Handler.</param>
 	/// <param name="p">P.</param>
-	private void UpdateAvatarControl(SkeletonHandler handler, sl.ObjectDataSDK data)
+	private void UpdateAvatarControl(SkeletonHandler handler, sl.BodyData data)
 	{
         Vector3[] worldJointsPos = new Vector3[34];
         Quaternion[] worldJointsRot = new Quaternion[34];
@@ -199,13 +195,27 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
         for (int i = 0; i < 34; i++)
         {
-            worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.skeletonJointPosition[i]);
+            worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.keypoint[i]);
             worldJointsRot[i] = data.localOrientationPerJoint[i].normalized;
             confs[i] = data.keypointConfidence[i];
         }
 
         handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, zedManager.GetZedRootTansform().rotation * data.globalRootOrientation, useAvatar, mirrorMode);
         handler.confidences = confs;
+
+        if (handler.GetAnimator())
+        {
+            if (data.keypointConfidence[(int)sl.BODY_PARTS_POSE_38.LEFT_ANKLE] != 0 && data.keypointConfidence[(int)sl.BODY_PARTS_POSE_38.RIGHT_ANKLE] != 0)
+            {
+                if (handler.GetAnimator().GetBoneTransform(HumanBodyBones.LeftToes) && handler.GetAnimator().GetBoneTransform(HumanBodyBones.RightToes))
+                {
+                    float leftFootHeight = handler.GetAnimator().GetBoneTransform(HumanBodyBones.LeftToes).position.y;
+                    float rightFootHeight = handler.GetAnimator().GetBoneTransform(HumanBodyBones.RightToes).position.y;
+                    handler.FeetOffset = alpha * Mathf.Min(leftFootHeight, rightFootHeight) + (1 - alpha) * handler.FeetOffset;
+                    //Debug.Log(handler.FeetOffset);
+                }
+            }
+        }
     }
 
     void UpdateViewCameraPosition()
