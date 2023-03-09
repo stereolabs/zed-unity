@@ -296,7 +296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enableFootIK: 1
-  filterMovementsOnGround: 1
+  filterMovementsOnGround: 0
   thresholdEnterGroundedState: 0.15
   thresholdLeaveGroundedState: 0.18
   groundedFreeDistance: 0.15
@@ -306,13 +306,14 @@ MonoBehaviour:
   ikApplicationRatio: 1
   LeftFootTransform: {fileID: 4160523210669777339}
   RightFootTransform: {fileID: 1248769263213320694}
-  SphereLTransform: {fileID: 5612890687651233437}
-  SphereRTransform: {fileID: 4049448695640032917}
   _rootJoint: {fileID: 5980604236534135029}
   ankleHeightOffset: {x: 0, y: 0.102, z: 0}
-  objectDetectionFrequency: 30
+  bodyTrackingManager: {fileID: 0}
+  bodyTrackingFrequency: 30
   lerpLatency: 1
-  gizmoSize: 0.5
+  nbCalibrationFrames: 150
+  heightOffsetStabilized: 0
+  footIKLockedForCalib: 0
   targetLerpPosMultiplier: 1
   colorAnkleRBeforeMove: {r: 0.9154093, g: 1, b: 0, a: 1}
   colorAnkleRPlusHeightOffset: {r: 0.98929596, g: 0, b: 1, a: 1}
@@ -335,7 +336,6 @@ MonoBehaviour:
   layersToHit:
     serializedVersion: 2
     m_Bits: 65536
-  gizmoSize: 0.1
   bufferSize: 30
 --- !u!1 &1594473213823279488
 GameObject:
