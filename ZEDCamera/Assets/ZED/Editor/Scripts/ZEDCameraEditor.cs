@@ -49,7 +49,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty enableTrackingProperty;
     private SerializedProperty enableSMProperty;
     private SerializedProperty pathSMProperty;
-    private SerializedProperty estimateIPProperty;
+    private SerializedProperty floorAsOriginProperty;
     private SerializedProperty trackingIsStaticProperty;
 
     //Rendering Prop
@@ -258,7 +258,7 @@ public class ZEDCameraEditor : Editor
         enableTrackingProperty = serializedObject.FindProperty("enableTracking");
         enableSMProperty = serializedObject.FindProperty("enableSpatialMemory");
         pathSMProperty = serializedObject.FindProperty("pathSpatialMemory");
-        estimateIPProperty = serializedObject.FindProperty("estimateInitialPosition");
+        floorAsOriginProperty = serializedObject.FindProperty("setFloorAsOrigin");
         trackingIsStaticProperty = serializedObject.FindProperty("trackingIsStatic");
 
 
@@ -311,13 +311,12 @@ public class ZEDCameraEditor : Editor
         BT_FilteringMode = serializedObject.FindProperty("bodyTrackingFilteringMode");
         BT_PredictionTimeout = serializedObject.FindProperty("bodyTrackingPredictionTimeout");
         BT_AllowReducedPrecisionInference = serializedObject.FindProperty("bodyTrackingAllowReducedPrecisionInference");
-        BT_MinimumKPThresh = serializedObject.FindProperty("bodyTrackingThreshold");
+        BT_MinimumKPThresh = serializedObject.FindProperty("bodyTrackingMinimumKPThreshold");
         BT_BodyFitting = serializedObject.FindProperty("bodyFitting");
         BT_BodyFormat = serializedObject.FindProperty("bodyFormat");
         BT_BodySelection = serializedObject.FindProperty("bodySelection");
 
         BT_Confidence = serializedObject.FindProperty("bodyTrackingConfidenceThreshold");
-        BT_MinimumKPThresh = serializedObject.FindProperty("minimumKeypointThreshold");
 
         //Recording Serialized Properties
         svoOutputFileNameProperty = serializedObject.FindProperty("svoOutputFileName");
@@ -571,7 +570,7 @@ public class ZEDCameraEditor : Editor
         ///  Motion Tracking layout  /////////////////////////////////
         /////////////////////////////////////////////////////////////
         GUILayout.Space(10);
-        EditorGUILayout.LabelField("Motion Tracking", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("ZED Positional Tracking", EditorStyles.boldLabel);
         GUILayout.Space(5);
         EditorGUI.indentLevel++;
         GUIContent enableTrackingLabel = new GUIContent("Enable Tracking", "If enabled, the ZED will move/rotate itself using its own inside-out tracking. " +
@@ -586,8 +585,8 @@ public class ZEDCameraEditor : Editor
         ".area files are created by scanning a scene with ZEDSpatialMappingManager and saving the scan.");
         pathSMProperty.stringValue = EditorGUILayout.TextField(pathSMlabel, pathSMProperty.stringValue);
 
-        GUIContent estimateIPPropertyLabel = new GUIContent("Estimate Initial Position", "Estimate initial position by detecting the floor. Leave it false if using VR Headset");
-        estimateIPProperty.boolValue = EditorGUILayout.Toggle(estimateIPPropertyLabel, estimateIPProperty.boolValue);
+        GUIContent floorAsOriginPropertyLabel = new GUIContent("Set Floor As Origin", "Estimate initial position by detecting the floor. Leave it false if using VR Headset");
+        floorAsOriginProperty.boolValue = EditorGUILayout.Toggle(floorAsOriginPropertyLabel, floorAsOriginProperty.boolValue);
 
         GUIContent trackingIsStaticPropertyLabel = new GUIContent("Tracking Is Static", "If true, tracking is enabled but doesn't move after initializing. " +
             "Can be useful for stationary cameras where you still need tracking enabled, such as in Object Detection.");
@@ -1021,6 +1020,10 @@ public class ZEDCameraEditor : Editor
             EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
             GUILayout.Space(5);
             EditorGUI.indentLevel++;
+
+            GUIContent BodyTrackingMinKeypointsLabel = new GUIContent("Minimum Visible Keypoints", "Minimum number of keypoints tracked by the SDK on a body to report it" +
+            "as a body.\r\n\nTweak this value depending on your application. Keep in mind that some parts of the body have a lot of keypoints (e.g. hands and face).");
+            BT_MinimumKPThresh.intValue = EditorGUILayout.IntSlider(BodyTrackingMinKeypointsLabel, BT_MinimumKPThresh.intValue, 1, 70);
 
             GUIContent BodyTrackingConfidenceLabel = new GUIContent("Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
             "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");

@@ -271,7 +271,7 @@ public class ZEDManager : MonoBehaviour
     /// Estimate initial position by detecting the floor.
     /// </summary>
     [HideInInspector]
-    public bool estimateInitialPosition = true;
+    public bool setFloorAsOrigin = true;
 
     /// <summary>
     /// If true, tracking is enabled but doesn't move after initializing.
@@ -658,7 +658,7 @@ public class ZEDManager : MonoBehaviour
     /// the SDK will outputs skeleton with more keypoints than this threshold.
     /// </summary>
     [HideInInspector]
-    public int minimumKeypointsThreshold = 0;
+    public int bodyTrackingMinimumKPThreshold = 0;
 
     /// <summary>
     /// Detection sensitivity. Represents how sure the SDK must be that an object exists to report it. Ex: If the threshold is 80, then only objects
@@ -2458,7 +2458,7 @@ public class ZEDManager : MonoBehaviour
             trackerThread = new Thread(EnableTrackingThreaded);
             trackerThread.Start();
         }
-        else if (estimateInitialPosition)
+        else if (setFloorAsOrigin)
         {
             sl.ERROR_CODE err = zedCamera.EstimateInitialPosition(ref initialRotation, ref initialPosition);
             if (zedCamera.GetCameraModel() != sl.MODEL.ZED)
@@ -2508,7 +2508,7 @@ public class ZEDManager : MonoBehaviour
             }
 
             sl.ERROR_CODE err = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
-                enablePoseSmoothing, estimateInitialPosition, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, pathSpatialMemory));
+                enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, pathSpatialMemory));
 
             //Now enable the tracking with the proper parameters.
             if (!(enableTracking = (err == sl.ERROR_CODE.SUCCESS)))
@@ -3154,7 +3154,7 @@ public class ZEDManager : MonoBehaviour
             bt_param.predictionTimeout_s = bodyTrackingPredictionTimeout;
 
             bodyTrackingRuntimeParams.detectionConfidenceThreshold = bodyTrackingConfidenceThreshold;
-            bodyTrackingRuntimeParams.minimumKeypointsThreshold = minimumKeypointsThreshold;
+            bodyTrackingRuntimeParams.minimumKeypointsThreshold = bodyTrackingMinimumKPThreshold;
 
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
             watch.Start();
@@ -3198,7 +3198,7 @@ public class ZEDManager : MonoBehaviour
 
         //Update the runtime parameters in case the user made changes.
         bodyTrackingRuntimeParams.detectionConfidenceThreshold = bodyTrackingConfidenceThreshold;
-        bodyTrackingRuntimeParams.minimumKeypointsThreshold = minimumKeypointsThreshold;
+        bodyTrackingRuntimeParams.minimumKeypointsThreshold = bodyTrackingMinimumKPThreshold;
 
         if (bodyTrackingImageSyncMode == false) RetrieveBodyTrackingFrame(); //If true, this is called in the AcquireImages function in the image acquisition thread.
 
@@ -3658,7 +3658,7 @@ public class ZEDManager : MonoBehaviour
             if (zedCamera.IsCameraReady && !isTrackingEnable && enableTracking)
             {
                 //Enables tracking and initializes the first position of the camera.
-                if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, estimateInitialPosition, trackingIsStatic,
+                if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic,
                     enableIMUFusion, depthMinRange, setGravityAsOrigin, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
                 {
                     isZEDTracked = false;
