@@ -5,7 +5,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(HeightOffsetter))]
-public class ZEDManagerIK : MonoBehaviour
+public class ZEDSkeletonAnimator : MonoBehaviour
 {
     protected Animator animator;
     private HeightOffsetter heightOffsetter;
@@ -37,7 +37,7 @@ public class ZEDManagerIK : MonoBehaviour
 
     [Header("SMOOTHING SETTINGS")]
     [Tooltip("Frequency of reception of new OD data, in FPS")]
-    public float objectDetectionFrequency = 30f;
+    public float bodyTrackingFrequency = 30f;
     [Tooltip("Latency of interpolation. 1=no latency; 0=instant movement, no lerp;")]
     public float lerpLatency = 3f;
 
@@ -86,9 +86,6 @@ public class ZEDManagerIK : MonoBehaviour
     private Vector3 ankleRPosBeforMove = Vector3.zero;
     private Vector3 ankleLPosBeforMove = Vector3.zero;
 
-    #endregion
-
-
     [SerializeField]
     [Tooltip("Number of frames when both feet are visible used to stabilize the automatic offset")]
     private int nbCalibrationFrames = 150;
@@ -103,6 +100,8 @@ public class ZEDManagerIK : MonoBehaviour
     public Color colorAnkleRBeforeMove = Color.white;
     public Color colorAnkleRPlusHeightOffset = Color.gray;
     public Color colorAnkleRAfterMove = Color.black;
+
+    #endregion
 
     private void Awake()
     {
@@ -122,31 +121,37 @@ public class ZEDManagerIK : MonoBehaviour
         footIKLockedForCalib = true;
     }
 
-    /**
-     * a callback for calculating IK
-     * 1) Apply bones rotations 2) Apply root position and rotations. 3) Do Foot IK.
-    */
+    /// <summary>
+    /// Applies the current local rotations of the rig to the animator.
+    /// </summary>
+    void ApplyAllRigRotationsOnAnimator()
+    {
+        foreach (var bone in skhandler.RigBoneTarget)
+        {
+            animator.SetBoneLocalRotation(bone.Key, bone.Value);
+        }
+    }
+
+    /// <summary> 
+    /// Computes Foot IK.
+    /// 1) Apply bones rotations to animator 2) Apply root position and rotations. 3) Do Foot IK.
+    /// </summary>
     void OnAnimatorIK()
     {
         if (skhandler)
         {
-            // 1) Update target positions and rotations, and apply rotations.
-            // This needs to be called each frame, else there will be a jitter between the resting and correct poses of the skeleton.
-            skhandler.Move();
+            // 1) Update target positions and rotations.
+            ApplyAllRigRotationsOnAnimator();
 
             // 2) Move actor position, effectively moving root position. (root relative position is (0,0,0) in the prefab)
             // This way, we have root motion and can easily apply effects following the main gameobject's transform.
             transform.position = skhandler.TargetBodyPositionWithHipOffset;
             transform.rotation = skhandler.TargetBodyOrientation;
 
-            //// height offset management
-            heightOffsetter.ComputeRootHeightOffsetXFrames(
-            skhandler.confidences[SkeletonHandler.JointType_AnkleLeft],
-            skhandler.confidences[SkeletonHandler.JointType_AnkleRight],
-            ankleLPosBeforMove,
-            ankleRPosBeforMove,
-            ankleHeightOffset.y);
-            transform.position += rootHeightOffset + ankleHeightOffset;
+            if (footIKLockedForCalib)
+            {
+                ManageHeightOffset();
+            }
 
             // 3) Manage Foot IK
             if (animator)
@@ -154,6 +159,8 @@ public class ZEDManagerIK : MonoBehaviour
                 //if the IK is active, set the position and rotation directly to the goal.
                 if (enableFootIK && !footIKLockedForCalib)
                 {
+                    ManageHeightOffset();
+
                     // Set the right foot target position and rotation, if one has been assigned
                     if (RightFootTransform != null)
                     {
@@ -175,9 +182,9 @@ public class ZEDManagerIK : MonoBehaviour
                             normalR = hit.normal;
                             groundedR = true;
                             animator.SetIKRotation(
-                              AvatarIKGoal.RightFoot,
-                              Quaternion.FromToRotation(
-                                  animator.GetBoneTransform(HumanBodyBones.RightFoot).up, normalL) * animator.GetBoneTransform(HumanBodyBones.RightFoot).rotation);
+                                 AvatarIKGoal.RightFoot,
+                                 Quaternion.FromToRotation(
+                                     animator.GetBoneTransform(HumanBodyBones.RightFoot).up, normalL) * animator.GetBoneTransform(HumanBodyBones.RightFoot).rotation);
                         }
                         else
                         {
@@ -193,6 +200,7 @@ public class ZEDManagerIK : MonoBehaviour
 
                         // set IK position and rotation
                         animator.SetIKPosition(AvatarIKGoal.RightFoot, effectorTargetPos);
+
                     }
                     // Set the right foot target position and rotation, if one has been assigned
                     if (LeftFootTransform != null)
@@ -222,9 +230,10 @@ public class ZEDManagerIK : MonoBehaviour
                         else
                         {
                             groundedL = false;
-                            normalL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).up; animator.SetIKRotation(
-                              AvatarIKGoal.LeftFoot,
-                              animator.GetBoneTransform(HumanBodyBones.LeftFoot).rotation);
+                            normalL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).up;
+                            animator.SetIKRotation(
+                                 AvatarIKGoal.LeftFoot,
+                                 animator.GetBoneTransform(HumanBodyBones.LeftFoot).rotation);
                         }
                         // update current effector position because next Move() will reset it to the skeleton pose
                         curEffectorPosL = effectorTargetPos;
@@ -253,18 +262,41 @@ public class ZEDManagerIK : MonoBehaviour
         return Vector2.Distance(new Vector2(vec1.x, vec1.z), new Vector2(vec2.x, vec2.z));
     }
 
-    // Should be called each time the skeleton data is changed in the handler
-    // prepares new lerp data.
-    // Checks distance to filter feet parasite movements on floor.
-    public void PoseWasUpdated()
+    /// <summary>
+    /// Should be called each time the skeleton data is changed in the handler
+    /// prepares new lerp data.
+    /// Checks distance to filter feet parasite movements on floor.
+    /// </summary>
+    public void PoseWasUpdatedIK()
     {
+        float confAnkleLeft = 0;
+        float confAnkleRight = 0;
+
+        if (skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_38)
+        {
+            confAnkleLeft = skhandler.confidences38[SkeletonHandler.JointType_LEFT_ANKLE];
+            confAnkleRight = skhandler.confidences38[SkeletonHandler.JointType_RIGHT_ANKLE];
+        }
+        else if (skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_70)
+        {
+            confAnkleLeft = skhandler.confidences70[SkeletonHandler.JointType_LEFT_ANKLE];
+            confAnkleRight = skhandler.confidences70[SkeletonHandler.JointType_RIGHT_ANKLE];
+        }
+        else
+        {
+            Debug.LogError("Error: PoseWasUpdated: Invalid body model.");
+        }
+
         startLerpPosL = curEffectorPosL;
 
         try
         {
-            targetLerpPosL = bodyTrackingManager.mirrorMode ?
-                skhandler.joints[SkeletonHandler.JointType_AnkleLeft] + rootHeightOffset :
-                skhandler.joints[SkeletonHandler.JointType_AnkleLeft] + rootHeightOffset;
+            targetLerpPosL = skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_38
+                ? skhandler.joints38[SkeletonHandler.JointType_LEFT_ANKLE]
+                : (skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_70
+                    ? skhandler.joints70[SkeletonHandler.JointType_LEFT_ANKLE]
+                    : Vector3.zero);
+            targetLerpPosL += rootHeightOffset;
         }
         catch (Exception e)
         {
@@ -282,9 +314,12 @@ public class ZEDManagerIK : MonoBehaviour
 
         try
         {
-            targetLerpPosR = bodyTrackingManager.mirrorMode ?
-                skhandler.joints[SkeletonHandler.JointType_AnkleRight] + rootHeightOffset :
-                skhandler.joints[SkeletonHandler.JointType_AnkleRight] + rootHeightOffset;
+            targetLerpPosR = skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_38
+                ? skhandler.joints38[SkeletonHandler.JointType_RIGHT_ANKLE]
+                : (skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_70
+                    ? skhandler.joints70[SkeletonHandler.JointType_RIGHT_ANKLE]
+                    : Vector3.zero);
+            targetLerpPosR += rootHeightOffset;
         }
         catch (Exception e)
         {
@@ -313,12 +348,12 @@ public class ZEDManagerIK : MonoBehaviour
         curLerpTimeR = 0;
         curTValL = 0;
         curTValR = 0;
-        totalLerpTime = 1 / objectDetectionFrequency;
+        totalLerpTime = 1 / bodyTrackingFrequency;
         totalLerpTime *= lerpLatency;
 
         if (!HeightOffsetStabilized && heightOffsetter.automaticOffset
-            && skhandler.confidences[SkeletonHandler.JointType_AnkleLeft] > 0
-            && skhandler.confidences[SkeletonHandler.JointType_AnkleRight] > 0)
+            && confAnkleLeft > 0
+            && confAnkleRight > 0)
         {
             curCalibrationFrames++;
             heightOffsetStabilized = curCalibrationFrames > nbCalibrationFrames;
@@ -362,6 +397,44 @@ public class ZEDManagerIK : MonoBehaviour
     {
         ankleRPosBeforMove = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
         ankleLPosBeforMove = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
+
+        if (!enableFootIK)
+        {
+            ManageHeightOffset();
+        }
+    }
+
+    /// <summary>
+    /// Utility function to compute and apply the height offset from the height offset manager to the body.
+    /// </summary>
+    private void ManageHeightOffset()
+    {
+        float confAnkleLeft = 0;
+        float confAnkleRight = 0;
+
+        if (skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_38)
+        {
+            confAnkleLeft = skhandler.confidences38[SkeletonHandler.JointType_LEFT_ANKLE];
+            confAnkleRight = skhandler.confidences38[SkeletonHandler.JointType_RIGHT_ANKLE];
+        }
+        else if (skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_70)
+        {
+            confAnkleLeft = skhandler.confidences70[SkeletonHandler.JointType_LEFT_ANKLE];
+            confAnkleRight = skhandler.confidences70[SkeletonHandler.JointType_RIGHT_ANKLE];
+        }
+        else
+        {
+            Debug.LogError("Error: OnAnimatorIK: Invalid body model.");
+        }
+
+        //// height offset management
+        rootHeightOffset = heightOffsetter.ComputeRootHeightOffsetXFrames(
+        confAnkleLeft,
+        confAnkleRight,
+        ankleLPosBeforMove,
+        ankleRPosBeforMove,
+        ankleHeightOffset.y);
+        transform.position += rootHeightOffset + ankleHeightOffset;
     }
 
     private void Update()

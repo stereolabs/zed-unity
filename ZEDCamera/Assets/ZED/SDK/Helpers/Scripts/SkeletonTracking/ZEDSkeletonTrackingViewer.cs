@@ -14,7 +14,9 @@ using UnityEngine.Rendering.Universal;
 [DisallowMultipleComponent]
 public class ZEDSkeletonTrackingViewer : MonoBehaviour
 {
-	/// <summary>
+    #region vars
+
+    /// <summary>
     /// The scene's ZEDManager.
     /// If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DSkeletonVisualizer commponents in the scene.
     /// </summary>
@@ -42,6 +44,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     /// </summary>
     [Tooltip("Display 3D avatar. If set to false, only display bones and joint")]
     public bool useAvatar = true;
+    public SkeletonHandler.BODY_MODEL bodyModel = SkeletonHandler.BODY_MODEL.BODY_38;
 
     [Space(5)]
     [Header("State Filters")]
@@ -63,7 +66,20 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     /// Avatar game object
     /// </summary>
     [Tooltip("3D Rigged model.")]
-    public GameObject avatar; 
+    public GameObject avatar;
+    public Material skeletonBaseMaterial;
+
+    [Space(20)]
+    [Tooltip("Display bones and joints along 3D avatar")]
+    [SerializeField]
+    private bool displayDebugSkeleton = false;
+    public static bool DisplayDebugSkeleton = false;
+    [SerializeField]
+    private Vector3 offsetDebugSkeleton = new Vector3(1f, 0f, 0f);
+    public static Vector3 OffsetDebugSkeleton = new Vector3(1f, 0f, 0f);
+    [SerializeField]
+    private bool logFusionMetrics = false;
+    public static bool LogFusionMetrics = false;
 
     [Space(5)]
     [Tooltip("Mirror the animation.")]
@@ -72,8 +88,9 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     private Dictionary<int,SkeletonHandler> avatarControlList;
     public Dictionary<int, SkeletonHandler> AvatarControlList { get => avatarControlList;}
 
+    //private float alpha = 0.1f;
 
-    private float alpha = 0.1f;
+    #endregion
 
     /// <summary>
     /// Start this instance.
@@ -149,8 +166,8 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 			{
 				SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
                 Vector3 spawnPosition = zedManager.GetZedRootTansform().TransformPoint(dbody.rawBodyData.position);
-                handler.Create(avatar);
-                handler.initSkeleton(person_id);
+                handler.Create(avatar, bodyModel);
+                handler.InitSkeleton(person_id, new Material(skeletonBaseMaterial));
                 avatarControlList.Add(person_id, handler);
                 UpdateAvatarControl(handler, dbody.rawBodyData);
 			}
@@ -165,7 +182,11 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     }
 
 	public void Update()
-	{
+    {
+        DisplayDebugSkeleton = displayDebugSkeleton;
+        OffsetDebugSkeleton = offsetDebugSkeleton;
+        LogFusionMetrics = logFusionMetrics;
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             useAvatar = !useAvatar;
@@ -179,6 +200,16 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
                 Debug.Log("<b><color=green> Switch to Skeleton mode</color></b>");
         }
 
+        // Adjust the 3D avatar to the bones rotations from the SDK each frame.
+        // These rotations are stored, and updated each time data is received from Fusion.
+        if (useAvatar)
+        {
+            foreach (var skelet in avatarControlList)
+            {
+                skelet.Value.Move();
+            }
+        }
+
         UpdateViewCameraPosition();
     }
      
@@ -189,33 +220,41 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	/// <param name="p">P.</param>
 	private void UpdateAvatarControl(SkeletonHandler handler, sl.BodyData data)
 	{
-        Vector3[] worldJointsPos = new Vector3[34];
-        Quaternion[] worldJointsRot = new Quaternion[34];
-        float[] confs = new float[34];
+        Vector3[] worldJointsPos; 
+        Quaternion[] worldJointsRot;
+        switch (bodyModel)
+        {
+            case SkeletonHandler.BODY_MODEL.BODY_38:
+                worldJointsPos = new Vector3[38];
+                worldJointsRot = new Quaternion[38];
+                break;
+            case SkeletonHandler.BODY_MODEL.BODY_70:
+                worldJointsPos = new Vector3[70];
+                worldJointsRot = new Quaternion[70];
+                break;
+            default:
+                Debug.LogError("Invalid body model, defaulting to 38");
+                worldJointsPos = new Vector3[38];
+                worldJointsRot = new Quaternion[38];
+                break;
+        }
 
-        for (int i = 0; i < 34; i++)
+
+        for (int i = 0; i < worldJointsPos.Length; i++)
         {
             worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.keypoint[i]);
             worldJointsRot[i] = data.localOrientationPerJoint[i].normalized;
-            confs[i] = data.keypointConfidence[i];
         }
 
-        handler.setControlWithJointPosition(worldJointsPos, worldJointsRot, zedManager.GetZedRootTansform().rotation * data.globalRootOrientation, useAvatar, mirrorMode);
-        handler.confidences = confs;
-
-        if (handler.GetAnimator())
+        if (data.localOrientationPerJoint.Length > 0 && data.keypoint.Length > 0 && data.keypointConfidence.Length > 0)
         {
-            if (data.keypointConfidence[(int)sl.BODY_PARTS_POSE_38.LEFT_ANKLE] != 0 && data.keypointConfidence[(int)sl.BODY_PARTS_POSE_38.RIGHT_ANKLE] != 0)
-            {
-                if (handler.GetAnimator().GetBoneTransform(HumanBodyBones.LeftToes) && handler.GetAnimator().GetBoneTransform(HumanBodyBones.RightToes))
-                {
-                    float leftFootHeight = handler.GetAnimator().GetBoneTransform(HumanBodyBones.LeftToes).position.y;
-                    float rightFootHeight = handler.GetAnimator().GetBoneTransform(HumanBodyBones.RightToes).position.y;
-                    handler.FeetOffset = alpha * Mathf.Min(leftFootHeight, rightFootHeight) + (1 - alpha) * handler.FeetOffset;
-                    //Debug.Log(handler.FeetOffset);
-                }
-            }
+            handler.SetConfidences(data.keypointConfidence);
+            handler.SetControlWithJointPosition(
+                handler.SkBodyModel, worldJointsPos,
+                worldJointsRot, data.globalRootOrientation,
+                useAvatar, mirrorMode);
         }
+
     }
 
     void UpdateViewCameraPosition()
