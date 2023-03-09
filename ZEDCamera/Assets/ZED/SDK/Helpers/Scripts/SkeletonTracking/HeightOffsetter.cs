@@ -6,7 +6,7 @@ public class HeightOffsetter : MonoBehaviour
 {
     #region vars
 
-    private ZEDSkeletonAnimator zedik = null;
+    private ZEDSkeletonAnimator zedSkeletonAnimator = null;
 
     [Header("Main settings")]
 
@@ -53,7 +53,7 @@ public class HeightOffsetter : MonoBehaviour
 
     private void Start()
     {
-        zedik = GetComponent<ZEDSkeletonAnimator>();
+        zedSkeletonAnimator = GetComponent<ZEDSkeletonAnimator>();
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public class HeightOffsetter : MonoBehaviour
     /// </summary>
     public void ComputeRootHeightOffset()
     {
-        zedik.RootHeightOffset = manualOffset;
+        zedSkeletonAnimator.RootHeightOffset = manualOffset;
     }
 
     /// <summary>
