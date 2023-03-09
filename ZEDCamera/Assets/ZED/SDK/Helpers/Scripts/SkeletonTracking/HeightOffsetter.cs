@@ -4,19 +4,53 @@ using UnityEngine;
 
 public class HeightOffsetter : MonoBehaviour
 {
+    #region vars
+
     private ZEDSkeletonAnimator zedik = null;
 
+    [Header("Main settings")]
+
+    [Tooltip("Height offset applied to transform each frame.")]
     public Vector3 manualOffset = Vector3.zero;
+
+    [Tooltip("Automatic offset adjustment: Finds an automatic offset that sets both feet above ground, and at least one foot on the ground.")]
     public bool automaticOffset = false;
-    public float findFloorDistance = 2f;
-    public LayerMask layersToHit;
-    private float feetAlpha = .1f;
-    private float curheightOffset = 0f;
 
-    private LinkedList<float> feetOffsetBuffer = new LinkedList<float>();
+    [Tooltip("Number of camera grabs on which both feet are visible that will be used to stabilize the automatic offset." +
+        "\nThis is technically a countdown at the end of which the automatic offset will be set.")]
+    public int nbCalibrationFrames = 150;
+    private int curCalibrationFrames = -1;
+    private float currentheightOffset = 0f;
+
+    [Tooltip("This value is used to store the minimal offset when both feet are above  the ground, to allow jumping." +
+        "\nThe value used for the offset is the minimal distance between the feet and the ground stored in the list of size \"buffersize\"." +
+        "\nThis list is a queue update every frame (not every grab).")]
     public int bufferSize = 120;
+    private LinkedList<float> feetOffsetBuffer = new LinkedList<float>();
 
-    float zStep = 0.1f;
+    [Header("Finding the ground")]
+
+    [Tooltip("Max height difference between feet and floor that will trigger the application of the offset." +
+        "\nIf the floor is further than this value, above or under, the height will not be offset.")]
+    public float findFloorDistance = 2f;
+    [Tooltip("Which layers to use when searching the floor above or under.")]
+    public LayerMask layersToHit;
+
+    [Header("Keyboard controls")]
+    public KeyCode increaseOffsetKey = KeyCode.UpArrow;
+    public KeyCode decreaseOffsetKey = KeyCode.DownArrow;
+    [Tooltip("Restart the automatic offset procedure.")]
+    public KeyCode resetOffsetKey = KeyCode.O;
+    [Tooltip("Step in increase/decrease of offset.")]
+    public float offsetStep = 0.1f;
+
+    private readonly float feetAlpha = .1f;
+
+#endregion
+
+    public int CurCalibrationFrames { get => curCalibrationFrames; set => curCalibrationFrames = value; }
+    public float CurrentheightOffset { get => currentheightOffset; set => currentheightOffset = value; }
+
     private void Start()
     {
         zedik = GetComponent<ZEDSkeletonAnimator>();
@@ -28,38 +62,38 @@ public class HeightOffsetter : MonoBehaviour
     /// </summary>
     /// <param name="confFootL">Current confidence for the left foot.</param>
     /// <param name="confFootR">Current confidence for the right foot.</param>
-    /// <param name="animPosFootL">Current position of the left foot.</param>
-    /// <param name="animPosFootR">Current position of the right foot.</param>
+    /// <param name="lastPosFootL">Position of the left foot at the end of last frame.</param>
+    /// <param name="lastPosFootR">Position of the right foot at the end of last frame.</param>
     /// <param name="ankleHeightOffset">Height (Y) difference between the "Foot" bone of the animator and the sole of the foot.</param>
-    public Vector3 ComputeRootHeightOffsetXFrames(float confFootL, float confFootR, Vector3 animPosFootL, Vector3 animPosFootR, float ankleHeightOffset)
+    public Vector3 ComputeRootHeightOffsetXFrames(float confFootL, float confFootR, Vector3 lastPosFootL, Vector3 lastPosFootR, float ankleHeightOffset)
     {
-        Vector3 offsetToApply = new Vector3(0, curheightOffset, 0);
+        Vector3 offsetToApply = new Vector3(0, CurrentheightOffset, 0);
 
         if (automaticOffset)
         {
             // if both feet are visible/detected, attempt to correct the height of the skeleton's root
             if (!float.IsNaN(confFootL) && !float.IsNaN(confFootR) && !zedik.HeightOffsetStabilized)
             {
-                Ray rayL = new Ray(animPosFootL + (Vector3.up * findFloorDistance), Vector3.down);
+                Ray rayL = new Ray(lastPosFootL + (Vector3.up * findFloorDistance), Vector3.down);
                 bool rayUnderFootHitL = Physics.Raycast(rayL, out RaycastHit hitL, findFloorDistance * 2, layersToHit);
-                Ray rayR = new Ray(animPosFootR + (Vector3.up * findFloorDistance), Vector3.down);
+                Ray rayR = new Ray(lastPosFootR + (Vector3.up * findFloorDistance), Vector3.down);
                 bool rayUnderFootHitR = Physics.Raycast(rayR, out RaycastHit hitR, findFloorDistance * 2, layersToHit);
 
                 float footFloorDistanceL = 0;
                 float footFloorDistanceR = 0;
 
                 //// "Oriented distance" between the soles and the ground (can be negative)
-                if (rayUnderFootHitL) { footFloorDistanceL = (animPosFootL.y - ankleHeightOffset - curheightOffset) - hitL.point.y; }
-                if (rayUnderFootHitR) { footFloorDistanceR = (animPosFootR.y - ankleHeightOffset - curheightOffset) - hitR.point.y; }
+                if (rayUnderFootHitL) { footFloorDistanceL = (lastPosFootL.y - ankleHeightOffset - CurrentheightOffset) - hitL.point.y; }
+                if (rayUnderFootHitR) { footFloorDistanceR = (lastPosFootR.y - ankleHeightOffset - CurrentheightOffset) - hitR.point.y; }
 
                 float minFootFloorDistance = 0;
-                float thresholdHeight = -1 * curheightOffset;
+                float thresholdHeight = -1 * CurrentheightOffset;
 
                 // If both feet are under the ground, use the max value instead of the min value.
                 if (footFloorDistanceL < 0 && footFloorDistanceR < 0)
                 {
                     minFootFloorDistance = Mathf.Min(Mathf.Abs(footFloorDistanceL), Mathf.Abs(footFloorDistanceR));
-                    curheightOffset = feetAlpha * minFootFloorDistance + (1 - feetAlpha) * curheightOffset;
+                    CurrentheightOffset = feetAlpha * minFootFloorDistance + (1 - feetAlpha) * CurrentheightOffset;
                 }
                 else if (footFloorDistanceL >= 0 && footFloorDistanceR >= 0)
                 {
@@ -74,15 +108,15 @@ public class HeightOffsetter : MonoBehaviour
 
                     // Continuous adjustment: The feet offset is the min element of this buffer.
                     minFootFloorDistance = -1 * MinOfLinkedList(ref feetOffsetBuffer);
-                    curheightOffset = feetAlpha * minFootFloorDistance + (1 - feetAlpha) * curheightOffset;
+                    CurrentheightOffset = feetAlpha * minFootFloorDistance + (1 - feetAlpha) * CurrentheightOffset;
                 }
                 else
                 {
                     minFootFloorDistance = -1 * Mathf.Min(footFloorDistanceL, footFloorDistanceR);
-                    curheightOffset = feetAlpha * minFootFloorDistance + (1 - feetAlpha) * curheightOffset;
+                    CurrentheightOffset = feetAlpha * minFootFloorDistance + (1 - feetAlpha) * CurrentheightOffset;
                 }
             }
-            offsetToApply = new Vector3(0, curheightOffset, 0);
+            offsetToApply = new Vector3(0, CurrentheightOffset, 0);
         }
         else
         {
@@ -122,16 +156,16 @@ public class HeightOffsetter : MonoBehaviour
     /// </summary>
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(increaseOffsetKey))
         {
-            manualOffset.y += zStep;
+            manualOffset.y += offsetStep;
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        else if (Input.GetKeyDown(decreaseOffsetKey))
         {
-            manualOffset.y -= zStep;
+            manualOffset.y -= offsetStep;
         }
 
-        if (Input.GetKeyDown(KeyCode.O))
+        if (Input.GetKeyDown(resetOffsetKey))
         {
             automaticOffset = !automaticOffset;
         }

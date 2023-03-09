@@ -16,7 +16,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     [Tooltip("Enable foot IK (feet on ground when near it)")]
     public bool enableFootIK = true;
     [Tooltip("EXPERIMENTAL: Filter feet movements caused by root offset when the feet should not be moving (on floor).")]
-    public bool filterMovementsOnGround = false;
+    public bool filterSlidingMovementsOnGround = false;
     [Tooltip("Distance (between ankle and environment under it) under which a foot is considered on the floor.")]
     public float thresholdEnterGroundedState = .14f;
     [Tooltip("Distance (between ankle and environment under it) under which a foot is considered on the floor. Used to check if the foot is still on the floor.")]
@@ -25,21 +25,26 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     public float groundedFreeDistance = .05f;
     [Tooltip("Layers detected as floor for the IK")]
     public LayerMask raycastDetectionLayers;
+    [Tooltip("Coefficient of application of foot IK, position-wise.")]
     [Range(0f, 1f)]
-    public float ikApplicationRatio = 1f;
+    public float ikPositionApplicationRatio = 1f;
+    [Tooltip("Coefficient of application of foot IK, rotation-wise.")]
+    [Range(0f, 1f)]
+    public float ikRotationApplicationRatio = 1f;
 
     [Header("RIG SETTINGS")]
     public Transform LeftFootTransform = null;
     public Transform RightFootTransform = null;
-    public Transform _rootJoint;
     public Vector3 ankleHeightOffset = new Vector3(0, 0.102f, 0);
     public ZEDSkeletonTrackingViewer bodyTrackingManager;
 
-    [Header("SMOOTHING SETTINGS")]
-    [Tooltip("Frequency of reception of new OD data, in FPS")]
-    public float bodyTrackingFrequency = 30f;
-    [Tooltip("Latency of interpolation. 1=no latency; 0=instant movement, no lerp;")]
-    public float lerpLatency = 3f;
+    // Expected frequency of reception of new Body Tracking data, in FPS
+    private float bodyTrackingFrequency = 30f;
+
+    // Factor for the interpolation duration.
+    // 0=>instant movement, no lerp; 1=>Rotation of the SDK should be done between two frames. 
+    // More=>Interpolation will be longer, latency grow but movements will be smoother.
+    private float smoothingFactor = 3f;
 
     #endregion
 
@@ -87,10 +92,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     private Vector3 ankleLPosBeforMove = Vector3.zero;
 
     [SerializeField]
-    [Tooltip("Number of frames when both feet are visible used to stabilize the automatic offset")]
-    private int nbCalibrationFrames = 150;
-    private int curCalibrationFrames = -1;
-    [SerializeField]
     private bool heightOffsetStabilized = false;
     [SerializeField]
     private bool footIKLockedForCalib = false;
@@ -100,6 +101,13 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     public Color colorAnkleRBeforeMove = Color.white;
     public Color colorAnkleRPlusHeightOffset = Color.gray;
     public Color colorAnkleRAfterMove = Color.black;
+
+    #endregion
+
+    #region debug vars
+
+    private Vector3 posStartRay = Vector3.zero;
+    private Vector3 posHitRay = Vector3.zero;
 
     #endregion
 
@@ -118,7 +126,9 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         animator = GetComponent<Animator>();
         currentGroundedPosL = LeftFootTransform.position;
         currentGroundedPosR = RightFootTransform.position;
-        footIKLockedForCalib = true;
+        footIKLockedForCalib = heightOffsetter.automaticOffset;
+        bodyTrackingFrequency = ZEDSkeletonTrackingViewer.BodyTrackingFrequency;
+        smoothingFactor = ZEDSkeletonTrackingViewer.SmoothingFactor;
     }
 
     /// <summary>
@@ -165,8 +175,9 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                     if (RightFootTransform != null)
                     {
                         // blend weight
-                        animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, ikApplicationRatio);
-                        animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, ikApplicationRatio);
+                        animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, ikPositionApplicationRatio);
+                        animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, ikRotationApplicationRatio);
+                        animator.SetIKHintPositionWeight(AvatarIKHint.RightKnee, 1);
 
                         // init/prepare values
                         currentPosFootR = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
@@ -202,12 +213,13 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         animator.SetIKPosition(AvatarIKGoal.RightFoot, effectorTargetPos);
 
                     }
-                    // Set the right foot target position and rotation, if one has been assigned
+                    // Set the left foot target position and rotation, if one has been assigned
                     if (LeftFootTransform != null)
                     {
                         // blend weight
-                        animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, ikApplicationRatio);
-                        animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, ikApplicationRatio);
+                        animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, ikPositionApplicationRatio);
+                        animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, ikRotationApplicationRatio);
+                        animator.SetIKHintPositionWeight(AvatarIKHint.LeftKnee, 1);
 
                         // init/prepare values
                         currentPosFootL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
@@ -216,9 +228,14 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         // move foot target
                         effectorTargetPos = AccumulateLerpVec3(startLerpPosL, targetLerpPosL, ref curTValL, ref curLerpTimeL);
 
+                        posStartRay = effectorTargetPos + (Vector3.up * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState));
+                        posHitRay = posStartRay + (Vector3.down * 2 * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState));
+
                         Ray ray = new Ray(effectorTargetPos + (Vector3.up * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState)), Vector3.down);
                         if (Physics.Raycast(ray, out RaycastHit hit, 2 * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState), raycastDetectionLayers))
                         {
+                            posHitRay = hit.point;
+                            colorAnkleRAfterMove = Color.white;
                             effectorTargetPos = CustomInterp(startLerpPosL, hit.point + ankleHeightOffset, ref curLerpTimeL);
                             normalL = hit.normal;
                             groundedL = true;
@@ -229,6 +246,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         }
                         else
                         {
+                            colorAnkleRAfterMove = Color.black;
                             groundedL = false;
                             normalL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).up;
                             animator.SetIKRotation(
@@ -251,6 +269,8 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                     animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 0);
                     animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 0);
                     animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, 0);
+                    animator.SetIKHintPositionWeight(AvatarIKHint.RightKnee, 0);
+                    animator.SetIKHintPositionWeight(AvatarIKHint.LeftKnee, 0);
                 }
             }
         }
@@ -303,10 +323,10 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             Debug.LogError(e.Message);
         }
 
-        if (filterMovementsOnGround)
+        if (filterSlidingMovementsOnGround)
         {
             targetLerpPosL = (groundedL && HorizontalDist(startLerpPosL, targetLerpPosL) < groundedFreeDistance)
-                ? startLerpPosL
+                ? new Vector3(startLerpPosL.x, targetLerpPosL.y, startLerpPosL.z)
                 : targetLerpPosL;
         }
 
@@ -326,10 +346,10 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             Debug.LogError(e.Message);
         }
 
-        if (filterMovementsOnGround)
+        if (filterSlidingMovementsOnGround)
         {
             targetLerpPosR = (groundedR && HorizontalDist(startLerpPosR, targetLerpPosR) < groundedFreeDistance)
-                ? startLerpPosR
+                ? new Vector3(startLerpPosR.x, targetLerpPosR.y, startLerpPosR.z)
                 : targetLerpPosR;
         }
 
@@ -349,14 +369,14 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         curTValL = 0;
         curTValR = 0;
         totalLerpTime = 1 / bodyTrackingFrequency;
-        totalLerpTime *= lerpLatency;
+        totalLerpTime *= smoothingFactor;
 
         if (!HeightOffsetStabilized && heightOffsetter.automaticOffset
             && confAnkleLeft > 0
             && confAnkleRight > 0)
         {
-            curCalibrationFrames++;
-            heightOffsetStabilized = curCalibrationFrames > nbCalibrationFrames;
+            heightOffsetter.CurCalibrationFrames++;
+            heightOffsetStabilized = heightOffsetter.CurCalibrationFrames > heightOffsetter.nbCalibrationFrames;
             footIKLockedForCalib = !(HeightOffsetStabilized && enableFootIK);
         }
     }
@@ -439,6 +459,9 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
     private void Update()
     {
+        bodyTrackingFrequency = ZEDSkeletonTrackingViewer.BodyTrackingFrequency;
+        smoothingFactor = ZEDSkeletonTrackingViewer.SmoothingFactor;
+
         if (Input.GetKeyDown(KeyCode.I))
         {
             enableFootIK = !enableFootIK;
@@ -446,16 +469,25 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            filterMovementsOnGround = !filterMovementsOnGround;
+            filterSlidingMovementsOnGround = !filterSlidingMovementsOnGround;
         }
 
         // reset automatic height offset calibration
         if (Input.GetKeyDown(KeyCode.R))
         {
-            curCalibrationFrames = 0;
+            heightOffsetter.CurCalibrationFrames = 0;
             heightOffsetStabilized = false;
             footIKLockedForCalib = true;
         }
     }
 
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = groundedL ? Color.red : Color.green;
+        Gizmos.DrawSphere(targetLerpPosL, .10f);
+        Gizmos.color = colorAnkleRBeforeMove;
+        Gizmos.DrawCube(posStartRay, new Vector3(.25f, .05f, .25f));
+        Gizmos.color = colorAnkleRAfterMove;
+        Gizmos.DrawSphere(posHitRay, .05f);
+    }
 }

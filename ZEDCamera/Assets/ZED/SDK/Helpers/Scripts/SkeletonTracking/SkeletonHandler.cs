@@ -1834,7 +1834,7 @@ public class SkeletonHandler : ScriptableObject
                     }
                 }
 
-                //PropagateRestPoseRotations(body_model, 0, rigBone, default_rotations[0], false);
+                PropagateRestPoseRotations(body_model, 0, rigBone, default_rotations[0], false);
 
                 for (int i = 0; i < humanBones70.Length; i++)
                 {

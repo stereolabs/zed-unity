@@ -85,6 +85,17 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     [Tooltip("Mirror the animation.")]
     public bool mirrorMode;
 
+    [Header("MOVEMENT SMOOTHING SETTINGS")]
+    [Tooltip("Expected frequency of reception of new Body Tracking data, in FPS")]
+    [SerializeField]
+    private float bodyTrackingFrequency = 30f;
+    public static float BodyTrackingFrequency = 30f;
+    [Tooltip("Factor for the interpolation duration. " +
+        "\n0=>instant movement, no lerp; 1=>Rotation of the SDK should be done between two frames. More=>Interpolation will be longer, latency grow but movements will be smoother.")]
+    [SerializeField]
+    private float smoothingFactor = 3f;
+    public static float SmoothingFactor = 3f;
+
     private Dictionary<int,SkeletonHandler> avatarControlList;
     public Dictionary<int, SkeletonHandler> AvatarControlList { get => avatarControlList;}
 
@@ -185,7 +196,9 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     {
         DisplayDebugSkeleton = displayDebugSkeleton;
         OffsetDebugSkeleton = offsetDebugSkeleton;
-        LogFusionMetrics = logFusionMetrics;
+        LogFusionMetrics = logFusionMetrics;    
+        BodyTrackingFrequency = bodyTrackingFrequency;    
+        SmoothingFactor = smoothingFactor;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
