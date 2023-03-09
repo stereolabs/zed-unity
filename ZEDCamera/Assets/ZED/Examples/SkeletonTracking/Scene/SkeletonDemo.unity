@@ -595,7 +595,7 @@ PrefabInstance:
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: avatar
       value: 
-      objectReference: {fileID: 9118140948381514423, guid: bc814fadc039fe94099273e678b5903a, type: 3}
+      objectReference: {fileID: 5426183247939467289, guid: f7f70635b6d1fb548929e02343b71c73, type: 3}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: showOFF
       value: 1

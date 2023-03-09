@@ -38,6 +38,11 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     public Vector3 ankleHeightOffset = new Vector3(0, 0.102f, 0);
     public ZEDSkeletonTrackingViewer bodyTrackingManager;
 
+    [Header("Keyboard controls")]
+    public KeyCode toggleFootIK = KeyCode.I;
+    public KeyCode toggleFilterSlidingMovementsOnGround = KeyCode.F;
+    public KeyCode resetAutomaticOffset = KeyCode.R;
+
     // Expected frequency of reception of new Body Tracking data, in FPS
     private float bodyTrackingFrequency = 30f;
 
@@ -96,15 +101,15 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     [SerializeField]
     private bool footIKLockedForCalib = false;
 
+    #endregion
+
+    #region debug vars
+
     [Header("Debug")]
     public float targetLerpPosMultiplier = 1f;
     public Color colorAnkleRBeforeMove = Color.white;
     public Color colorAnkleRPlusHeightOffset = Color.gray;
     public Color colorAnkleRAfterMove = Color.black;
-
-    #endregion
-
-    #region debug vars
 
     private Vector3 posStartRay = Vector3.zero;
     private Vector3 posHitRay = Vector3.zero;
@@ -462,18 +467,19 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         bodyTrackingFrequency = ZEDSkeletonTrackingViewer.BodyTrackingFrequency;
         smoothingFactor = ZEDSkeletonTrackingViewer.SmoothingFactor;
 
-        if (Input.GetKeyDown(KeyCode.I))
+        /// KEY INPUTS
+        if (Input.GetKeyDown(toggleFootIK))
         {
             enableFootIK = !enableFootIK;
         }
 
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(toggleFilterSlidingMovementsOnGround))
         {
             filterSlidingMovementsOnGround = !filterSlidingMovementsOnGround;
         }
 
         // reset automatic height offset calibration
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(resetAutomaticOffset))
         {
             heightOffsetter.CurCalibrationFrames = 0;
             heightOffsetStabilized = false;

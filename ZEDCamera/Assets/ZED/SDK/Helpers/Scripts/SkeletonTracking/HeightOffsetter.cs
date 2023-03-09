@@ -39,8 +39,8 @@ public class HeightOffsetter : MonoBehaviour
     [Header("Keyboard controls")]
     public KeyCode increaseOffsetKey = KeyCode.UpArrow;
     public KeyCode decreaseOffsetKey = KeyCode.DownArrow;
-    [Tooltip("Restart the automatic offset procedure.")]
-    public KeyCode resetOffsetKey = KeyCode.O;
+    [Tooltip("Toggle Manual/Automatic offset.")]
+    public KeyCode toggleAutomaticOffsetKey = KeyCode.O;
     [Tooltip("Step in increase/decrease of offset.")]
     public float offsetStep = 0.1f;
 
@@ -165,7 +165,7 @@ public class HeightOffsetter : MonoBehaviour
             manualOffset.y -= offsetStep;
         }
 
-        if (Input.GetKeyDown(resetOffsetKey))
+        if (Input.GetKeyDown(toggleAutomaticOffsetKey))
         {
             automaticOffset = !automaticOffset;
         }
