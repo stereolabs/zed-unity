@@ -147,7 +147,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
         zedManager.OnObjectDetection += Visualize3DBoundingBoxes;
         zedManager.OnZEDReady += OnZEDReady;
 
-        if (zedManager.estimateInitialPosition == false && transformBoxToTouchFloor == true)
+        if (zedManager.setFloorAsOrigin == false && transformBoxToTouchFloor == true)
         {
             Debug.Log("Estimate initial position is set to false. Then, transformBoxToTouchFloor is disable.");
             transformBoxToTouchFloor = false;
