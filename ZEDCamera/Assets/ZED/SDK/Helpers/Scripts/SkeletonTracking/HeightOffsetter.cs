@@ -72,7 +72,7 @@ public class HeightOffsetter : MonoBehaviour
         if (automaticOffset)
         {
             // if both feet are visible/detected, attempt to correct the height of the skeleton's root
-            if (!float.IsNaN(confFootL) && !float.IsNaN(confFootR) && !zedik.HeightOffsetStabilized)
+            if (!float.IsNaN(confFootL) && confFootL > 0 && !float.IsNaN(confFootR) && confFootR > 0 && !zedSkeletonAnimator.HeightOffsetStabilized)
             {
                 Ray rayL = new Ray(lastPosFootL + (Vector3.up * findFloorDistance), Vector3.down);
                 bool rayUnderFootHitL = Physics.Raycast(rayL, out RaycastHit hitL, findFloorDistance * 2, layersToHit);
