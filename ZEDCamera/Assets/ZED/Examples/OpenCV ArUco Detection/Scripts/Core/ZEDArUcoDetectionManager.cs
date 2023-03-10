@@ -253,7 +253,6 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
         DICT_APRILTAG_25h9 = Objdetect.DICT_APRILTAG_25h9,
         DICT_APRILTAG_36h10 = Objdetect.DICT_APRILTAG_36h10,
         DICT_APRILTAG_36h11 = Objdetect.DICT_APRILTAG_36h11
-<<<<<<< HEAD
     }
 
     /*public enum PreDefinedmarkerDictionary
@@ -279,8 +278,7 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
         DICT_APRILTAG_25h9 = Aruco.DICT_APRILTAG_25h9,
         DICT_APRILTAG_36h10 = Aruco.DICT_APRILTAG_36h10,
         DICT_APRILTAG_36h11 = Aruco.DICT_APRILTAG_36h11
-=======
->>>>>>> v4.0
+
     }
     */
 
