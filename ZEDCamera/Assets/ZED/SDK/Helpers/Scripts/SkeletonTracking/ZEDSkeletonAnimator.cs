@@ -297,12 +297,17 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         float confAnkleLeft = 0;
         float confAnkleRight = 0;
 
-        if (skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_38)
+        if (skhandler.SkBodyModel == sl.BODY_FORMAT.BODY_34)
+        {
+            confAnkleLeft = skhandler.confidences34[SkeletonHandler.JointType_LEFT_ANKLE];
+            confAnkleRight = skhandler.confidences34[SkeletonHandler.JointType_RIGHT_ANKLE];
+        }
+        else if (skhandler.SkBodyModel == sl.BODY_FORMAT.BODY_38)
         {
             confAnkleLeft = skhandler.confidences38[SkeletonHandler.JointType_LEFT_ANKLE];
             confAnkleRight = skhandler.confidences38[SkeletonHandler.JointType_RIGHT_ANKLE];
         }
-        else if (skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_70)
+        else if (skhandler.SkBodyModel == sl.BODY_FORMAT.BODY_70)
         {
             confAnkleLeft = skhandler.confidences70[SkeletonHandler.JointType_LEFT_ANKLE];
             confAnkleRight = skhandler.confidences70[SkeletonHandler.JointType_RIGHT_ANKLE];
@@ -316,11 +321,22 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
         try
         {
-            targetLerpPosL = skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_38
-                ? skhandler.joints38[SkeletonHandler.JointType_LEFT_ANKLE]
-                : (skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_70
-                    ? skhandler.joints70[SkeletonHandler.JointType_LEFT_ANKLE]
-                    : Vector3.zero);
+            switch (skhandler.SkBodyModel)
+            {
+                case sl.BODY_FORMAT.BODY_34:
+                    targetLerpPosL = skhandler.joints34[SkeletonHandler.JointType_LEFT_ANKLE];
+                    break;
+                case sl.BODY_FORMAT.BODY_38:
+                    targetLerpPosL = skhandler.joints38[SkeletonHandler.JointType_LEFT_ANKLE];
+                    break;
+                case sl.BODY_FORMAT.BODY_70:
+                    targetLerpPosL = skhandler.joints70[SkeletonHandler.JointType_LEFT_ANKLE];
+                    break;
+                default:
+                    targetLerpPosL = Vector3.zero;
+                    break;
+            }
+
             targetLerpPosL += rootHeightOffset;
         }
         catch (Exception e)
@@ -339,11 +355,21 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
         try
         {
-            targetLerpPosR = skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_38
-                ? skhandler.joints38[SkeletonHandler.JointType_RIGHT_ANKLE]
-                : (skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_70
-                    ? skhandler.joints70[SkeletonHandler.JointType_RIGHT_ANKLE]
-                    : Vector3.zero);
+            switch (skhandler.SkBodyModel)
+            {
+                case sl.BODY_FORMAT.BODY_34:
+                    targetLerpPosR = skhandler.joints34[SkeletonHandler.JointType_RIGHT_ANKLE];
+                    break;
+                case sl.BODY_FORMAT.BODY_38:
+                    targetLerpPosR = skhandler.joints38[SkeletonHandler.JointType_RIGHT_ANKLE];
+                    break;
+                case sl.BODY_FORMAT.BODY_70:
+                    targetLerpPosR = skhandler.joints70[SkeletonHandler.JointType_RIGHT_ANKLE];
+                    break;
+                default:
+                    targetLerpPosR = Vector3.zero;
+                    break;
+            }
             targetLerpPosR += rootHeightOffset;
         }
         catch (Exception e)
@@ -437,12 +463,17 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         float confAnkleLeft = 0;
         float confAnkleRight = 0;
 
-        if (skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_38)
+        if (skhandler.SkBodyModel == sl.BODY_FORMAT.BODY_34)
+        {
+            confAnkleLeft = skhandler.confidences34[SkeletonHandler.JointType_LEFT_ANKLE];
+            confAnkleRight = skhandler.confidences34[SkeletonHandler.JointType_RIGHT_ANKLE];
+        }
+        else if (skhandler.SkBodyModel == sl.BODY_FORMAT.BODY_38)
         {
             confAnkleLeft = skhandler.confidences38[SkeletonHandler.JointType_LEFT_ANKLE];
             confAnkleRight = skhandler.confidences38[SkeletonHandler.JointType_RIGHT_ANKLE];
         }
-        else if (skhandler.SkBodyModel == SkeletonHandler.BODY_MODEL.BODY_70)
+        else if (skhandler.SkBodyModel == sl.BODY_FORMAT.BODY_70)
         {
             confAnkleLeft = skhandler.confidences70[SkeletonHandler.JointType_LEFT_ANKLE];
             confAnkleRight = skhandler.confidences70[SkeletonHandler.JointType_RIGHT_ANKLE];

@@ -1906,6 +1906,7 @@ namespace sl
     /// </summary>
     public enum BODY_FORMAT
     {
+        BODY_34,
         BODY_38,
         BODY_70,
     };

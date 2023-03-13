@@ -94,7 +94,38 @@ public class SkeletonHandler : ScriptableObject
         JointType_70_RIGHT_HAND_PINKY_2 = 67,
         JointType_70_RIGHT_HAND_PINKY_3 = 68,
         JointType_70_RIGHT_HAND_PINKY_4 = 69,
-        JointType_70_COUNT = 70;
+        JointType_70_COUNT = 70,
+        // --------- Body34
+        JointType_34_Head = 26,
+        JointType_34_Neck = 3,
+        JointType_34_ClavicleRight = 11,
+        JointType_34_ShoulderRight = 12,
+        JointType_34_ElbowRight = 13,
+        JointType_34_WristRight = 14,
+        JointType_34_ClavicleLeft = 4,
+        JointType_34_ShoulderLeft = 5,
+        JointType_34_ElbowLeft = 6,
+        JointType_34_WristLeft = 7,
+        JointType_34_HipRight = 22,
+        JointType_34_KneeRight = 23,
+        JointType_34_AnkleRight = 24,
+        JointType_34_FootRight = 25,
+        JointType_34_HeelRight = 33,
+        JointType_34_HipLeft = 18,
+        JointType_34_KneeLeft = 19,
+        JointType_34_AnkleLeft = 20,
+        JointType_34_FootLeft = 21,
+        JointType_34_HeelLeft = 32,
+        JointType_34_EyesRight = 30,
+        JointType_34_EyesLeft = 28,
+        JointType_34_EarRight = 31,
+        JointType_34_EarLeft = 29,
+        JointType_34_SpineBase = 0,
+        JointType_34_SpineNaval = 1,
+        JointType_34_SpineChest = 2,
+        JointType_34_Nose = 27,
+        jointType_34_Count = 34;
+
 
     // List of bones (pair of joints) for BODY_38. Used for Skeleton mode.
     private static readonly int[] bonesList38 = new int[] {
@@ -214,6 +245,41 @@ public class SkeletonHandler : ScriptableObject
     JointType_RIGHT_ANKLE, JointType_RIGHT_HEEL,
     JointType_RIGHT_ANKLE, JointType_RIGHT_BIG_TOE,
     JointType_RIGHT_ANKLE, JointType_RIGHT_SMALL_TOE
+    };
+
+    // List of bones (pair of joints) for BODY_34. Used for Skeleton mode.
+    private static readonly int[] bonesList34 = new int[] {
+    // Torso
+        JointType_34_SpineBase, JointType_34_HipRight,
+        JointType_34_HipLeft, JointType_34_SpineBase,
+        JointType_34_SpineBase, JointType_34_SpineNaval,
+        JointType_34_SpineNaval, JointType_34_SpineChest,
+        JointType_34_SpineChest, JointType_34_Neck,
+        JointType_34_EarRight, JointType_34_EyesRight,
+        JointType_34_EarLeft, JointType_34_EyesLeft,
+        JointType_34_EyesRight, JointType_34_Nose,
+        JointType_34_EyesLeft, JointType_34_Nose,
+        JointType_34_Nose, JointType_34_Neck,
+    // left
+        JointType_34_SpineChest, JointType_34_ClavicleLeft,
+        JointType_34_ClavicleLeft, JointType_34_ShoulderLeft,
+        JointType_34_ShoulderLeft, JointType_34_ElbowLeft,         // LeftUpperArm
+        JointType_34_ElbowLeft, JointType_34_WristLeft,            // LeftLowerArm
+        JointType_34_HipLeft, JointType_34_KneeLeft,               // LeftUpperLeg
+        JointType_34_KneeLeft, JointType_34_AnkleLeft,             // LeftLowerLeg6
+        JointType_34_AnkleLeft, JointType_34_FootLeft,
+        JointType_34_AnkleLeft, JointType_34_HeelLeft,
+        JointType_34_FootLeft, JointType_34_HeelLeft,
+    // right
+        JointType_34_SpineChest, JointType_34_ClavicleRight,
+        JointType_34_ClavicleRight, JointType_34_ShoulderRight,
+        JointType_34_ShoulderRight, JointType_34_ElbowRight,       // RightUpperArm
+        JointType_34_ElbowRight, JointType_34_WristRight,          // RightLowerArm
+        JointType_34_HipRight, JointType_34_KneeRight,             // RightUpperLeg
+        JointType_34_KneeRight, JointType_34_AnkleRight,           // RightLowerLeg
+        JointType_34_AnkleRight, JointType_34_FootRight,
+        JointType_34_AnkleRight, JointType_34_HeelRight,
+        JointType_34_FootRight, JointType_34_HeelRight
     };
 
     // List of joint that will be rendered as a sphere in the Skeleton mode.
@@ -336,7 +402,39 @@ public class SkeletonHandler : ScriptableObject
         JointType_70_RIGHT_HAND_PINKY_2,
         JointType_70_RIGHT_HAND_PINKY_3,
         JointType_70_RIGHT_HAND_PINKY_4
-};
+    };
+
+    // List of joint that will be rendered as a sphere in the Skeleton mode.
+    // These are the joints with a rotation information (not the hands in order to not clutter the display)
+    private static readonly int[] sphereList34 = new int[] {
+        JointType_34_SpineBase,
+        JointType_34_SpineNaval,
+        JointType_34_SpineChest,
+        JointType_34_Neck,
+        JointType_34_HipLeft,
+        JointType_34_HipRight,
+        JointType_34_ClavicleLeft,
+        JointType_34_ShoulderLeft,
+        JointType_34_ElbowLeft,
+        JointType_34_WristLeft,
+        JointType_34_KneeLeft,
+        JointType_34_AnkleLeft,
+        JointType_34_FootLeft,
+        JointType_34_HeelLeft,
+        JointType_34_ClavicleRight,
+        JointType_34_ShoulderRight,
+        JointType_34_ElbowRight,
+        JointType_34_WristRight,
+        JointType_34_KneeRight,
+        JointType_34_AnkleRight,
+        JointType_34_FootRight,
+        JointType_34_HeelRight,
+        JointType_34_EyesLeft,
+        JointType_34_EyesRight,
+        JointType_34_EarRight,
+        JointType_34_EarLeft,
+        JointType_34_Nose
+    };
 
     // List of available colors for Skeletons
     private Color[] colors = new Color[]{
@@ -468,6 +566,43 @@ public class SkeletonHandler : ScriptableObject
         52
     };
 
+    // Indexes of bones' parents for BODY_34 
+    private static readonly int[] parentsIdx_34 = new int[]
+    {
+        -1,
+        0,
+        1,
+        2,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        7,
+        2,
+        11,
+        12,
+        13,
+        14,
+        15,
+        14,
+        0,
+        18,
+        19,
+        20,
+        0,
+        22,
+        23,
+        24,
+        3,
+        26,
+        26,
+        26,
+        26,
+        26
+    };
+
     // Bones output by the ZED SDK (in this order)
     private static HumanBodyBones[] humanBones38 = new HumanBodyBones[] {
     HumanBodyBones.Hips,
@@ -588,20 +723,54 @@ public class SkeletonHandler : ScriptableObject
     HumanBodyBones.LastBone, // Right Hand Pinky Tip
     HumanBodyBones.LastBone // Last
     };
+
+    // Bones output by the ZED SDK (in this order)
+    private static HumanBodyBones[] humanBones34 = new HumanBodyBones[] {
+    HumanBodyBones.Hips,
+    HumanBodyBones.Spine,
+    HumanBodyBones.UpperChest,
+    HumanBodyBones.Neck,
+    HumanBodyBones.LeftShoulder,
+    HumanBodyBones.LeftUpperArm,
+    HumanBodyBones.LeftLowerArm,
+    HumanBodyBones.LeftHand, // Left Wrist
+    HumanBodyBones.LastBone, // Left Hand
+    HumanBodyBones.LastBone, // Left HandTip
+    HumanBodyBones.LastBone,
+    HumanBodyBones.RightShoulder,
+    HumanBodyBones.RightUpperArm,
+    HumanBodyBones.RightLowerArm,
+    HumanBodyBones.RightHand, // Right Wrist
+    HumanBodyBones.LastBone, // Right Hand
+    HumanBodyBones.LastBone, // Right HandTip
+    HumanBodyBones.LastBone,
+    HumanBodyBones.LeftUpperLeg,
+    HumanBodyBones.LeftLowerLeg,
+    HumanBodyBones.LeftFoot,
+    HumanBodyBones.LeftToes,
+    HumanBodyBones.RightUpperLeg,
+    HumanBodyBones.RightLowerLeg,
+    HumanBodyBones.RightFoot,
+    HumanBodyBones.RightToes,
+    HumanBodyBones.Head,
+    HumanBodyBones.LastBone, // Nose
+    HumanBodyBones.LastBone, // Left Eye
+    HumanBodyBones.LastBone, // Left Ear
+    HumanBodyBones.LastBone, // Right Eye
+    HumanBodyBones.LastBone, // Right Ear
+   // HumanBodyBones.LastBone, // Left Heel
+   // HumanBodyBones.LastBone, // Right Heel
+    };
     #endregion
 
     #region vars
 
-    public enum BODY_MODEL
-    {
-        BODY_38 = 0,
-        BODY_70 = 1
-    };
+    private sl.BODY_FORMAT skBodyModel = sl.BODY_FORMAT.BODY_38;
 
-    private BODY_MODEL skBodyModel = BODY_MODEL.BODY_38;
-
+    public Vector3[] joints34 = new Vector3[jointType_34_Count];
     public Vector3[] joints38 = new Vector3[JointType_38_COUNT];
     public Vector3[] joints70 = new Vector3[JointType_70_COUNT];
+    public float[] confidences34 = new float[jointType_34_Count];
     public float[] confidences38 = new float[JointType_38_COUNT];
     public float[] confidences70 = new float[JointType_70_COUNT];
     GameObject skeleton;
@@ -633,7 +802,7 @@ public class SkeletonHandler : ScriptableObject
     public Dictionary<HumanBodyBones, Quaternion> RigBoneTarget { get => rigBoneTarget; set => rigBoneTarget = value; }
     public Quaternion TargetBodyOrientation { get => targetBodyOrientation; set => targetBodyOrientation = value; }
     public Vector3 TargetBodyPositionWithHipOffset { get => targetBodyPositionWithHipOffset; set => targetBodyPositionWithHipOffset = value; }
-    public BODY_MODEL SkBodyModel { get => skBodyModel; set => skBodyModel = value; }
+    public sl.BODY_FORMAT SkBodyModel { get => skBodyModel; set => skBodyModel = value; }
 
     #endregion
 
@@ -651,7 +820,7 @@ public class SkeletonHandler : ScriptableObject
     /// </summary>
     /// <param name="h">The humanoid GameObject prefab.</param>
     /// <param name="body_model">The Body model to apply (38 or 70 bones).</param>
-    public void Create(GameObject h, BODY_MODEL body_model)
+    public void Create(GameObject h, sl.BODY_FORMAT body_model)
     {
         humanoid = (GameObject)Instantiate(h, Vector3.zero, Quaternion.identity);
         animator = humanoid.GetComponent<Animator>();
@@ -669,7 +838,24 @@ public class SkeletonHandler : ScriptableObject
 
         switch (body_model)
         {
-            case BODY_MODEL.BODY_38:
+            case sl.BODY_FORMAT.BODY_34:
+                foreach (HumanBodyBones bone in humanBones34)
+                {
+                    if (bone != HumanBodyBones.LastBone)
+                    {
+                        rigBone[bone] = new RigBone(humanoid, bone);
+
+                        if (h.GetComponent<Animator>())
+                        {
+                            // Store rest pose rotations
+                            default_rotations[bone] = animator.GetBoneTransform(bone).localRotation;
+                        }
+
+                    }
+                    rigBoneTarget[bone] = Quaternion.identity;
+                }
+                break;
+            case sl.BODY_FORMAT.BODY_38:
                 foreach (HumanBodyBones bone in humanBones38)
                 {
                     if (bone != HumanBodyBones.LastBone)
@@ -686,7 +872,7 @@ public class SkeletonHandler : ScriptableObject
                     rigBoneTarget[bone] = Quaternion.identity;
                 }
                 break;
-            case BODY_MODEL.BODY_70:
+            case sl.BODY_FORMAT.BODY_70:
                 foreach (HumanBodyBones bone in humanBones70)
                 {
                     if (bone != HumanBodyBones.LastBone)
@@ -720,6 +906,115 @@ public class SkeletonHandler : ScriptableObject
         Array.Clear(spheres, 0, spheres.Length);
     }
 
+    /// <summary>
+    /// Function that handles the humanoid position, rotation and bones movement.
+    /// Fills the rigBoneTarget map with rotations from the SDK. They can then be applied to the corresponding bones.
+    /// </summary>
+    /// <param name="rootPosition">Position to apply to the root of the 3D avatar.</param>
+    /// <param name="rootRotation">Global rotation of the detected body.</param>
+    /// <param name="jointsRotation">Array of rotations ordered following humanBones34.</param>
+    private void SetHumanPoseControlBody34(Vector3 rootPosition, Quaternion rootRotation, Quaternion[] jointsRotation)
+    {
+        // Store any joint local rotation (if the bone exists)
+        if (rigBone[HumanBodyBones.Hips].transform)
+        {
+            rigBoneTarget[HumanBodyBones.Hips] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.Hips)];
+        }
+
+        if (rigBone[HumanBodyBones.Hips].transform)
+        {
+            rigBoneTarget[HumanBodyBones.Spine] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.Spine)];
+        }
+
+        if (rigBone[HumanBodyBones.UpperChest].transform)
+        {
+            rigBoneTarget[HumanBodyBones.UpperChest] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.UpperChest)];
+        }
+
+        if (rigBone[HumanBodyBones.RightShoulder].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightShoulder] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightShoulder)];
+        }
+
+        if (rigBone[HumanBodyBones.RightUpperArm].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightUpperArm] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightUpperArm)];
+        }
+
+        if (rigBone[HumanBodyBones.RightLowerArm].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightLowerArm] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightLowerArm)];
+        }
+
+        if (rigBone[HumanBodyBones.RightHand].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightHand] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightHand)];
+        }
+
+        if (rigBone[HumanBodyBones.LeftShoulder].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftShoulder] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftShoulder)];
+        }
+
+        if (rigBone[HumanBodyBones.LeftUpperArm].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftUpperArm] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftUpperArm)];
+        }
+
+        if (rigBone[HumanBodyBones.LeftLowerArm].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftLowerArm] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftLowerArm)];
+        }
+
+        if (rigBone[HumanBodyBones.LeftHand].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftHand] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftHand)];
+        }
+
+        if (rigBone[HumanBodyBones.Neck].transform)
+        {
+            rigBoneTarget[HumanBodyBones.Neck] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.Neck)];
+        }
+
+        if (rigBone[HumanBodyBones.Head].transform)
+        {
+            //rigBoneTarget[HumanBodyBones.Head] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.Head)];
+        }
+
+        if (rigBone[HumanBodyBones.RightUpperLeg].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightUpperLeg] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightUpperLeg)];
+        }
+
+        if (rigBone[HumanBodyBones.RightLowerLeg].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightLowerLeg] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightLowerLeg)];
+        }
+
+        if (rigBone[HumanBodyBones.RightFoot].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightFoot] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightFoot)];
+        }
+
+        if (rigBone[HumanBodyBones.LeftUpperLeg].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftUpperLeg] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftUpperLeg)];
+        }
+
+        if (rigBone[HumanBodyBones.LeftLowerLeg].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftLowerLeg] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftLowerLeg)];
+        }
+
+        if (rigBone[HumanBodyBones.LeftFoot].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftFoot] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftFoot)];
+        }
+
+        // Store global transform (to be applied to the Hips joint).
+        targetBodyOrientation = rootRotation;
+        targetBodyPosition = rootPosition;
+    }
 
     /// <summary>
     /// Function that handles the humanoid position, rotation and bones movement.
@@ -1088,6 +1383,120 @@ public class SkeletonHandler : ScriptableObject
         if (rigBone[HumanBodyBones.RightLittleDistal].transform)
         {
             rigBoneTarget[HumanBodyBones.RightLittleDistal] = jointsRotation[Array.IndexOf(humanBones70, HumanBodyBones.RightLittleDistal)];
+        }
+
+        // Store global transform (to be applied to the Hips joint).
+        targetBodyOrientation = rootRotation;
+        targetBodyPosition = rootPosition;
+    }
+
+    /// <summary>
+    /// Function that handles the humanoid position, rotation and bones movement
+    /// Fills the rigBoneTarget map with rotations from the SDK. They can then be applied to the corresponding bones.
+    /// This function mirrors the rotations.
+    /// </summary>
+    /// <param name="rootPosition">Position to apply to the root of the 3D avatar.</param>
+    /// <param name="rootRotation">Global rotation of the detected body.</param>
+    /// <param name="jointsRotation">Array of rotations ordered following humanBones34.</param>
+    private void SetHumanPoseControlMirrored34(Vector3 rootPosition, Quaternion rootRotation, Quaternion[] jointsRotation)
+    {
+        rootPosition = rootPosition.mirror_x();
+        rootRotation = rootRotation.mirror_x();
+
+        // Store any joint local rotation (if the bone exists)
+        if (rigBone[HumanBodyBones.Hips].transform)
+        {
+            rigBoneTarget[HumanBodyBones.Hips] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.Hips)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.Hips].transform)
+        {
+            rigBoneTarget[HumanBodyBones.Spine] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.Spine)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.UpperChest].transform)
+        {
+            rigBoneTarget[HumanBodyBones.UpperChest] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.UpperChest)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightShoulder].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightShoulder] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftShoulder)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightUpperArm].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightUpperArm] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftUpperArm)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightLowerArm].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightLowerArm] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftLowerArm)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightHand].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightHand] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftHand)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftShoulder].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftShoulder] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightShoulder)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftUpperArm].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftUpperArm] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightUpperArm)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftLowerArm].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftLowerArm] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightLowerArm)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftHand].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftHand] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightHand)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.Neck].transform)
+        {
+            rigBoneTarget[HumanBodyBones.Neck] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.Neck)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.Head].transform)
+        {
+            rigBoneTarget[HumanBodyBones.Head] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.Head)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightUpperLeg].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightUpperLeg] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftUpperLeg)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightLowerLeg].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightLowerLeg] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftLowerLeg)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.RightFoot].transform)
+        {
+            rigBoneTarget[HumanBodyBones.RightFoot] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.LeftFoot)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftUpperLeg].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftUpperLeg] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightUpperLeg)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftLowerLeg].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftLowerLeg] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightLowerLeg)].mirror_x();
+        }
+
+        if (rigBone[HumanBodyBones.LeftFoot].transform)
+        {
+            rigBoneTarget[HumanBodyBones.LeftFoot] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.RightFoot)].mirror_x();
         }
 
         // Store global transform (to be applied to the Hips joint).
@@ -1488,12 +1897,17 @@ public class SkeletonHandler : ScriptableObject
         int[] curSphereList;
         switch (skBodyModel)
         {
-            case BODY_MODEL.BODY_38:
+            case sl.BODY_FORMAT.BODY_34:
+                bones = new GameObject[bonesList34.Length / 2];
+                spheres = new GameObject[sphereList34.Length];
+                curSphereList = sphereList34;
+                break;
+            case sl.BODY_FORMAT.BODY_38:
                 bones = new GameObject[bonesList38.Length / 2];
                 spheres = new GameObject[sphereList38.Length];
                 curSphereList = sphereList38;
                 break;
-            case BODY_MODEL.BODY_70:
+            case sl.BODY_FORMAT.BODY_70:
                 bones = new GameObject[bonesList70.Length / 2];
                 spheres = new GameObject[sphereList70.Length];
                 curSphereList = sphereList70;
@@ -1537,13 +1951,50 @@ public class SkeletonHandler : ScriptableObject
     /// </summary>
     /// <param name="body_model">38 or 70 keypoints.</param>
     /// <param name="offsetDebug">In case the "displayDebugSkeleton" option is enabled in the ZEDSkeletonTrackingManager, the skeleton will be displayed with this offset.</param>
-    void UpdateSkeleton(BODY_MODEL body_model, Vector3 offsetDebug)
+    void UpdateSkeleton(sl.BODY_FORMAT body_model, Vector3 offsetDebug)
     {
         float width = 0.025f;
 
         switch (body_model)
         {
-            case BODY_MODEL.BODY_38:
+            case sl.BODY_FORMAT.BODY_34:
+                for (int j = 0; j < spheres.Length; j++)
+                {
+                    if (sl.ZEDCommon.IsVector3NaN(joints34[sphereList34[j]]))
+                    {
+                        spheres[j].transform.position = Vector3.zero + offsetDebug;
+                        spheres[j].SetActive(false);
+                    }
+                    else
+                    {
+                        spheres[j].transform.position = joints34[sphereList34[j]] + offsetDebug;
+                        spheres[j].SetActive(true);
+                    }
+                }
+
+                for (int i = 0; i < bones.Length; i++)
+                {
+                    Vector3 start = spheres[Array.IndexOf(sphereList34, bonesList34[2 * i])].transform.position;
+                    Vector3 end = spheres[Array.IndexOf(sphereList34, bonesList34[2 * i + 1])].transform.position;
+
+                    if (start == Vector3.zero || end == Vector3.zero)
+                    {
+                        bones[i].SetActive(false);
+                        continue;
+                    }
+
+                    bones[i].SetActive(true);
+                    Vector3 offset = end - start;
+                    Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
+                    Vector3 position = start + (offset / 2.0f);
+
+                    bones[i].transform.position = position;
+                    bones[i].transform.up = offset;
+                    bones[i].transform.localScale = scale;
+
+                }
+                break;
+            case    sl.BODY_FORMAT.BODY_38:
                 for (int j = 0; j < spheres.Length; j++)
                 {
                     if (sl.ZEDCommon.IsVector3NaN(joints38[sphereList38[j]]))
@@ -1580,7 +2031,7 @@ public class SkeletonHandler : ScriptableObject
 
                 }
                 break;
-            case BODY_MODEL.BODY_70:
+            case sl.BODY_FORMAT.BODY_70:
                 for (int j = 0; j < spheres.Length; j++)
                 {
                     if (sl.ZEDCommon.IsVector3NaN(joints70[sphereList70[j]]))
@@ -1634,11 +2085,38 @@ public class SkeletonHandler : ScriptableObject
     /// <param name="rootRotation">The global root orientation from the ZED SDK.</param>
     /// <param name="useAvatar">If the 3D avatar should be displayed (and if the corresponding data should be updated).</param>
     /// <param name="_mirrorOnYAxis">Mirror the 3D avatars or not.</param>
-    public void SetControlWithJointPosition(BODY_MODEL body_model, Vector3[] jointsPosition, Quaternion[] jointsRotation, Quaternion rootRotation, bool useAvatar, bool _mirrorOnYAxis)
+    public void SetControlWithJointPosition(sl.BODY_FORMAT body_model, Vector3[] jointsPosition, Quaternion[] jointsRotation, Quaternion rootRotation, bool useAvatar, bool _mirrorOnYAxis)
     {
         switch (body_model)
         {
-            case BODY_MODEL.BODY_38:
+            case sl.BODY_FORMAT.BODY_34:
+                joints34 = jointsPosition;
+
+                humanoid.SetActive(useAvatar);
+                skeleton.SetActive(!useAvatar || ZEDSkeletonTrackingViewer.DisplayDebugSkeleton);
+                usingAvatar = useAvatar;
+
+                if (useAvatar)
+                {
+                    if (_mirrorOnYAxis)
+                        SetHumanPoseControlMirrored34(jointsPosition[0], rootRotation, jointsRotation);
+                    else
+                        SetHumanPoseControlBody34(jointsPosition[0], rootRotation, jointsRotation);
+
+                    if (ZEDSkeletonTrackingViewer.DisplayDebugSkeleton)
+                    {
+                        UpdateSkeleton(body_model, ZEDSkeletonTrackingViewer.OffsetDebugSkeleton);
+                    }
+                }
+                else
+                {
+                    UpdateSkeleton(body_model, Vector3.zero);
+                }
+
+                zedSkeletonAnimator.PoseWasUpdatedIK();
+                break;
+
+            case sl.BODY_FORMAT.BODY_38:
                 joints38 = jointsPosition;
 
                 humanoid.SetActive(useAvatar);
@@ -1665,7 +2143,7 @@ public class SkeletonHandler : ScriptableObject
                 zedSkeletonAnimator.PoseWasUpdatedIK();
                 break;
 
-            case BODY_MODEL.BODY_70:
+            case sl.BODY_FORMAT.BODY_70:
                 joints70 = jointsPosition;
 
                 humanoid.SetActive(useAvatar);
@@ -1700,9 +2178,46 @@ public class SkeletonHandler : ScriptableObject
     /// <summary>
     /// Utility function to apply the rest pose to the bones.
     /// </summary>
-    void PropagateRestPoseRotations(BODY_MODEL body_model, int parentIdx, Dictionary<HumanBodyBones, RigBone> outPose, Quaternion restPosRot, bool inverse)
+    void PropagateRestPoseRotations(sl.BODY_FORMAT body_model, int parentIdx, Dictionary<HumanBodyBones, RigBone> outPose, Quaternion restPosRot, bool inverse)
     {
-        if (body_model == BODY_MODEL.BODY_38)
+        if (body_model == sl.BODY_FORMAT.BODY_34)
+        {
+            for (int i = 0; i < humanBones34.Length; i++)
+            {
+                if (humanBones34[i] != HumanBodyBones.LastBone && outPose[humanBones34[i]].transform)
+                {
+                    Transform outPoseTransform = outPose[humanBones34[i]].transform;
+
+                    if (parentsIdx_34[i] == parentIdx)
+                    {
+                        Quaternion restPoseRotation = default_rotations[humanBones34[i]];
+                        Quaternion restPoseRotChild = new Quaternion();
+
+                        if (parentsIdx_34[i] != -1)
+                        {
+                            Quaternion jointRotation = restPosRot * outPoseTransform.localRotation;
+                            outPoseTransform.localRotation = jointRotation;
+
+                            if (!inverse)
+                            {
+                                restPoseRotChild = restPosRot * restPoseRotation;
+                            }
+                            else
+                            {
+                                restPoseRotChild = Quaternion.Inverse(restPoseRotation) * restPosRot;
+                            }
+                        }
+                        else
+                        {
+                            restPoseRotChild = restPosRot;
+                        }
+
+                        PropagateRestPoseRotations(body_model, i, outPose, restPoseRotChild, inverse);
+                    }
+                }
+            }
+        }
+        else if (body_model == sl.BODY_FORMAT.BODY_38)
         {
             for (int i = 0; i < humanBones38.Length; i++)
             {
@@ -1739,7 +2254,7 @@ public class SkeletonHandler : ScriptableObject
                 }
             }
         }
-        else if (body_model == BODY_MODEL.BODY_70)
+        else if (body_model == sl.BODY_FORMAT.BODY_70)
         {
             for (int i = 0; i < humanBones70.Length; i++)
             {
@@ -1788,11 +2303,40 @@ public class SkeletonHandler : ScriptableObject
     /// This method does not use the animator, and instead directly sets the rotations of the bones transforms.
     /// </summary>
     /// <param name="body_model">Body model in use.</param>
-    private void MoveAvatar(BODY_MODEL body_model)
+    private void MoveAvatar(sl.BODY_FORMAT body_model)
     {
         switch (body_model)
         {
-            case BODY_MODEL.BODY_38:
+            case sl.BODY_FORMAT.BODY_34:
+                // Put in Ref Pose
+                foreach (HumanBodyBones bone in humanBones34)
+                {
+                    if (bone != HumanBodyBones.LastBone)
+                    {
+                        if (rigBone[bone].transform)
+                        {
+                            rigBone[bone].transform.localRotation = default_rotations[bone];
+                        }
+                    }
+                }
+
+                PropagateRestPoseRotations(body_model, 0, rigBone, default_rotations[0], false);
+
+                for (int i = 0; i < humanBones34.Length; i++)
+                {
+                    if (humanBones34[i] != HumanBodyBones.LastBone && rigBone[humanBones34[i]].transform)
+                    {
+                        if (parentsIdx_38[i] != -1)
+                        {
+                            Quaternion newRotation = rigBoneTarget[humanBones34[i]] * rigBone[humanBones34[i]].transform.localRotation;
+                            rigBone[humanBones34[i]].transform.localRotation = newRotation;
+                        }
+                    }
+                }
+                PropagateRestPoseRotations(body_model, 0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
+                break;
+
+            case sl.BODY_FORMAT.BODY_38:
                 // Put in Ref Pose
                 foreach (HumanBodyBones bone in humanBones38)
                 {
@@ -1821,7 +2365,7 @@ public class SkeletonHandler : ScriptableObject
                 PropagateRestPoseRotations(body_model, 0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
                 break;
 
-            case BODY_MODEL.BODY_70:
+            case sl.BODY_FORMAT.BODY_70:
                 // Put in Ref Pose
                 foreach (HumanBodyBones bone in humanBones70)
                 {
@@ -1874,10 +2418,13 @@ public class SkeletonHandler : ScriptableObject
     {
         switch (skBodyModel)
         {
-            case BODY_MODEL.BODY_38:
+            case sl.BODY_FORMAT.BODY_34:
+                confidences34 = confidences;
+                break;
+            case sl.BODY_FORMAT.BODY_38:
                 confidences38 = confidences;
                 break;
-            case BODY_MODEL.BODY_70:
+            case sl.BODY_FORMAT.BODY_70:
                 confidences70 = confidences;
                 break;
             default:

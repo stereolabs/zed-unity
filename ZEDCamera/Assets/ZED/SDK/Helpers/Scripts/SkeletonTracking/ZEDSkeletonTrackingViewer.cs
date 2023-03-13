@@ -44,7 +44,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     /// </summary>
     [Tooltip("Display 3D avatar. If set to false, only display bones and joint")]
     public bool useAvatar = true;
-    public SkeletonHandler.BODY_MODEL bodyModel = SkeletonHandler.BODY_MODEL.BODY_38;
+    public sl.BODY_FORMAT bodyModel = sl.BODY_FORMAT.BODY_38;
 
     [Space(5)]
     [Header("State Filters")]
@@ -237,11 +237,15 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         Quaternion[] worldJointsRot;
         switch (bodyModel)
         {
-            case SkeletonHandler.BODY_MODEL.BODY_38:
+            case sl.BODY_FORMAT.BODY_34:
+                worldJointsPos = new Vector3[34];
+                worldJointsRot = new Quaternion[34];
+                break;
+            case sl.BODY_FORMAT.BODY_38:
                 worldJointsPos = new Vector3[38];
                 worldJointsRot = new Quaternion[38];
                 break;
-            case SkeletonHandler.BODY_MODEL.BODY_70:
+            case sl.BODY_FORMAT.BODY_70:
                 worldJointsPos = new Vector3[70];
                 worldJointsRot = new Quaternion[70];
                 break;
