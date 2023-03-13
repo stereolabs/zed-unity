@@ -1913,7 +1913,7 @@ public class SkeletonHandler : ScriptableObject
                 curSphereList = sphereList70;
                 break;
             default:
-                Debug.LogError("Error! InitSkeleton: Invalid body model. Assuming Body38.");
+                Debug.LogError("Error! InitSkeleton: Invalid body model, select at least BODY_34 to use a 3D avatar. Assuming Body38.");
                 bones = new GameObject[bonesList38.Length / 2];
                 spheres = new GameObject[sphereList38.Length];
                 curSphereList = sphereList38;
@@ -2428,7 +2428,7 @@ public class SkeletonHandler : ScriptableObject
                 confidences70 = confidences;
                 break;
             default:
-                Debug.LogError("Error: SetConfidences: Invalid body model.");
+                Debug.LogError("Error: SetConfidences: Invalid body model, select at least BODY_34 to use a 3D avatar.");
                 break;
         }
     }

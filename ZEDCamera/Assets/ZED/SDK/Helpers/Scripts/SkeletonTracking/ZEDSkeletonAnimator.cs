@@ -314,7 +314,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Error: PoseWasUpdated: Invalid body model.");
+            Debug.LogError("Error: PoseWasUpdated: Invalid body model, select at least BODY_34 to use a 3D avatar.");
         }
 
         startLerpPosL = curEffectorPosL;
@@ -480,7 +480,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Error: OnAnimatorIK: Invalid body model.");
+            Debug.LogError("Error: OnAnimatorIK: Invalid body model, select at least BODY_34 to use a 3D avatar.");
         }
 
         //// height offset management

@@ -250,7 +250,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
                 worldJointsRot = new Quaternion[70];
                 break;
             default:
-                Debug.LogError("Invalid body model, defaulting to 38");
+                Debug.LogError("Invalid body model, select at least BODY_34 to use a 3D avatar, defaulting to 38");
                 worldJointsPos = new Vector3[38];
                 worldJointsRot = new Quaternion[38];
                 break;
