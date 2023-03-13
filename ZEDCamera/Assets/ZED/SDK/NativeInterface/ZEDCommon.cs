@@ -2514,7 +2514,7 @@ namespace sl
         /// <summary>
         /// related to sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE
         /// </summary>
-        HUMAN_BODY_ACCURATE_DETECTION, // 
+        HUMAN_BODY_ACCURATE_DETECTION,
         /// <summary>
         /// related to sl.DETECTION_MODEL.PERSON_HEAD
         /// </summary>
@@ -2526,7 +2526,11 @@ namespace sl
         /// <summary>
         /// related to sl.BatchParameters.enable
         /// </summary>
-        REID_ASSOCIATION, // related to 
+        REID_ASSOCIATION,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.NEURAL_FAST
+        /// </summary>
+        NEURAL_FAST_DEPTH,
         /// <summary>
         /// related to sl.DETECTION_MODEL.NEURAL
         /// </summary>

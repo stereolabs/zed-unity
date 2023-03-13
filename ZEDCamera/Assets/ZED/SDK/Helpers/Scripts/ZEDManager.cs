@@ -127,7 +127,7 @@ public class ZEDManager : MonoBehaviour
     /// the grab() will exit after a short period and return the ERROR_CODE::CAMERA_REBOOTING warning.
     /// </summary>
     [HideInInspector]
-    public bool  asyncGrabRecovery = false;
+    public bool asyncGrabRecovery = false;
 
     /// <summary>
     /// SVO loop back option
@@ -1452,6 +1452,11 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     private sl.ERROR_CODE lastInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
     public sl.ERROR_CODE LastInitStatus { get { return lastInitStatus; } }
+
+    private sl.ERROR_CODE optimStatus = sl.ERROR_CODE.FAILURE;
+
+    private float optimTimeout_S = 600;
+
     /// <summary>
     /// State of the ZED initialization thread.
     /// </summary>
@@ -2128,6 +2133,31 @@ public class ZEDManager : MonoBehaviour
 
     private System.Collections.IEnumerator InitZED()
     {
+        if (initParameters.depthMode == sl.DEPTH_MODE.NEURAL)
+        {
+            var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_DEPTH)); //Assign thread.
+            threadOptim.Start();
+
+            while (optimStatus != sl.ERROR_CODE.SUCCESS)
+            {
+                Debug.LogWarning("Optimizing neural model ... The process can take few minutes....");
+                yield return new WaitForSeconds(5.0f);
+            }
+            threadOptim.Join();
+        }
+        else if (initParameters.depthMode == sl.DEPTH_MODE.NEURAL_FAST)
+        {
+            var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_FAST_DEPTH)); //Assign thread.
+            threadOptim.Start();
+
+            while (optimStatus != sl.ERROR_CODE.SUCCESS)
+            {
+                Debug.LogWarning("Optimizing neural fast ... The process can take few minutes....");
+                yield return new WaitForSeconds(5.0f);
+            }
+            threadOptim.Join();
+        }
+
         zedReady = false;
         if (!openingLaunched)
         {
@@ -2868,9 +2898,11 @@ public class ZEDManager : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     #region OBJECT_DETECTION
 
-    void OptimizeModel(sl.AI_MODELS model)
+
+    public void OptimizeModel(sl.AI_MODELS model)
     {
-        sl.ZEDCamera.OptimizeAIModel(model);
+        optimStatus = sl.ERROR_CODE.FAILURE;
+        optimStatus = sl.ZEDCamera.OptimizeAIModel(model);
     }
 
     /// <summary>
@@ -2887,8 +2919,8 @@ public class ZEDManager : MonoBehaviour
         sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel));
         if (!AiModelStatus.optimized)
         {
-            Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
-            return;
+            Debug.LogWarning("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. The process can take few minutes....");
+            //return;
         }
         //We start a coroutine so we can delay actually starting the detection.
         //This is because the main thread is locked for awhile when you call this, appearing like a freeze.
@@ -2914,17 +2946,31 @@ public class ZEDManager : MonoBehaviour
             Debug.LogWarning("Tried to start Object Detection while it was already running.");
         }
 
+        bool oldpausestate = pauseSVOReading;
+        pauseSVOReading = true;
+
+        System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
+        watch.Start();
+
+        var threadOptim = new Thread(() => OptimizeModel(sl.ZEDCamera.cvtDetection(objectDetectionModel))); //Assign thread.
+        threadOptim.Start();
+
+        while (optimStatus != sl.ERROR_CODE.SUCCESS)
+        {
+            if (watch.Elapsed.TotalSeconds > optimTimeout_S) Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
+            Debug.LogWarning("Optimizing AI Model  : " + sl.ZEDCamera.cvtDetection(objectDetectionModel) + "... The process can take few minutes.... " + watch.Elapsed.TotalSeconds + " sec");
+            yield return new WaitForSeconds(5.0f);
+        }
+
+        threadOptim.Join();
+
+        pauseSVOReading = oldpausestate;
+
         if (zedCamera != null)
         {
             odIsStarting = true;
             Debug.LogWarning("Starting Object Detection. This may take a moment.");
 
-            bool oldpausestate = pauseSVOReading; //The two frame delay will cause you to miss some SVO frames if playing back from an SVO, unless we pause.
-            pauseSVOReading = true;
-
-            yield return null;
-
-            pauseSVOReading = oldpausestate;
 
             sl.ObjectDetectionParameters od_param = new sl.ObjectDetectionParameters();
             od_param.imageSync = objectDetectionImageSyncMode;
@@ -2951,9 +2997,6 @@ public class ZEDManager : MonoBehaviour
             objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
             objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
             objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.SPORT] = Convert.ToInt32(objectClassSportFilter);
-
-            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
-            watch.Start();
 
             sl.ERROR_CODE err = zedCamera.EnableObjectDetection(ref od_param);
             if (err == sl.ERROR_CODE.SUCCESS)
@@ -3101,8 +3144,7 @@ public class ZEDManager : MonoBehaviour
         sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel));
         if (!AiModelStatus.optimized)
         {
-            Debug.LogError("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. Use the ZED Diagnostic tool to download/optimze all the AI model you plan to use.");
-            return;
+            Debug.LogWarning("The Model * " + objectDetectionModel.ToString() + "  has not been downloaded/optimized. The process can take few minutes....");
         }
         //We start a coroutine so we can delay actually starting the detection.
         //This is because the main thread is locked for awhile when you call this, appearing like a freeze.
@@ -3128,17 +3170,30 @@ public class ZEDManager : MonoBehaviour
             Debug.LogWarning("Tried to start Body Tracking while it was already running.");
         }
 
+        System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
+        watch.Start();
+
+        bool oldpausestate = pauseSVOReading;
+        pauseSVOReading = true;
+
+        var threadOptim = new Thread(() => OptimizeModel(sl.ZEDCamera.cvtDetection(bodyTrackingModel))); //Assign thread.
+        threadOptim.Start();
+
+        while (optimStatus != sl.ERROR_CODE.SUCCESS)
+        {
+            if (watch.Elapsed.TotalSeconds > optimTimeout_S) Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
+            Debug.LogWarning("Optimizing AI Model  : " + sl.ZEDCamera.cvtDetection(bodyTrackingModel) + "... The process can take few minutes.... " + watch.Elapsed.TotalSeconds + " sec");
+            yield return new WaitForSeconds(5.0f);
+        }
+
+        threadOptim.Join();
+
+        pauseSVOReading = oldpausestate;
+
         if (zedCamera != null)
         {
             odIsStarting = true;
             Debug.LogWarning("Starting Body Tracking. This may take a moment.");
-
-            bool oldpausestate = pauseSVOReading; //The two frame delay will cause you to miss some SVO frames if playing back from an SVO, unless we pause.
-            pauseSVOReading = true;
-
-            yield return null;
-
-            pauseSVOReading = oldpausestate;
 
             sl.BodyTrackingParameters bt_param = new sl.BodyTrackingParameters();
             bt_param.instanceModuleID = 0;
@@ -3155,9 +3210,6 @@ public class ZEDManager : MonoBehaviour
 
             bodyTrackingRuntimeParams.detectionConfidenceThreshold = bodyTrackingConfidenceThreshold;
             bodyTrackingRuntimeParams.minimumKeypointsThreshold = bodyTrackingMinimumKPThreshold;
-
-            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
-            watch.Start();
 
             sl.ERROR_CODE err = zedCamera.EnableBodyTracking(ref bt_param);
             if (err == sl.ERROR_CODE.SUCCESS)
