@@ -2135,24 +2135,36 @@ public class ZEDManager : MonoBehaviour
     {
         if (initParameters.depthMode == sl.DEPTH_MODE.NEURAL)
         {
+            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
+            watch.Start();
+
             var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_DEPTH)); //Assign thread.
             threadOptim.Start();
 
             while (optimStatus != sl.ERROR_CODE.SUCCESS)
             {
-                Debug.LogWarning("Optimizing neural model ... The process can take few minutes....");
+                if (watch.Elapsed.TotalSeconds > optimTimeout_S) 
+                    Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
+
+                Debug.LogWarning($"Optimizing neural model ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds} seconds.");
                 yield return new WaitForSeconds(5.0f);
             }
             threadOptim.Join();
         }
         else if (initParameters.depthMode == sl.DEPTH_MODE.NEURAL_FAST)
         {
+            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
+            watch.Start();
+
             var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_FAST_DEPTH)); //Assign thread.
             threadOptim.Start();
 
             while (optimStatus != sl.ERROR_CODE.SUCCESS)
             {
-                Debug.LogWarning("Optimizing neural fast ... The process can take few minutes....");
+                if (watch.Elapsed.TotalSeconds > optimTimeout_S)
+                    Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
+
+                Debug.LogWarning($"Optimizing neural fast ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds} seconds.");
                 yield return new WaitForSeconds(5.0f);
             }
             threadOptim.Join();
