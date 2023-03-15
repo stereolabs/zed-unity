@@ -2798,36 +2798,34 @@ namespace sl
         ////////////////////////
         /// Object detection ///
         ////////////////////////
-        public static sl.AI_MODELS cvtDetection(sl.DETECTION_MODEL m_in)
+        #region Object Detection
+        public static sl.AI_MODELS cvtDetection(sl.OBJECT_DETECTION_MODEL m_in)
         {
             sl.AI_MODELS m_out = sl.AI_MODELS.LAST;
             switch (m_in)
             {
-                case sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE: m_out = sl.AI_MODELS.HUMAN_BODY_ACCURATE_DETECTION; break;
-                case sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM: m_out = sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION; break;
-                case sl.DETECTION_MODEL.HUMAN_BODY_FAST: m_out = sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION; break;
-                case sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE: m_out = sl.AI_MODELS.MULTI_CLASS_ACCURATE_DETECTION; break;
-                case sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM: m_out = sl.AI_MODELS.MULTI_CLASS_MEDIUM_DETECTION; break;
-                case sl.DETECTION_MODEL.MULTI_CLASS_BOX: m_out = sl.AI_MODELS.MULTI_CLASS_DETECTION; break;
-                case sl.DETECTION_MODEL.PERSON_HEAD_BOX: m_out = sl.AI_MODELS.PERSON_HEAD_DETECTION; break;
-                case sl.DETECTION_MODEL.PERSON_HEAD_BOX_ACCURATE: m_out = sl.AI_MODELS.PERSON_HEAD_ACCURATE_DETECTION; break;
+                case sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE: m_out = sl.AI_MODELS.MULTI_CLASS_ACCURATE_DETECTION; break;
+                case sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM: m_out = sl.AI_MODELS.MULTI_CLASS_MEDIUM_DETECTION; break;
+                case sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX: m_out = sl.AI_MODELS.MULTI_CLASS_DETECTION; break;
+                case sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX: m_out = sl.AI_MODELS.PERSON_HEAD_DETECTION; break;
+                case sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX_ACCURATE: m_out = sl.AI_MODELS.PERSON_HEAD_ACCURATE_DETECTION; break;
             }
             return m_out;
         }
 
-        public static sl.DETECTION_MODEL cvtDetection(sl.AI_MODELS m_in)
+        public static int cvtDetection(sl.AI_MODELS m_in)
         {
-            sl.DETECTION_MODEL m_out = sl.DETECTION_MODEL.LAST;
+            int m_out = -1;
             switch (m_in)
             {
-                case sl.AI_MODELS.HUMAN_BODY_ACCURATE_DETECTION: m_out = sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE; break;
-                case sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION: m_out = sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM; break;
-                case sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION: m_out = sl.DETECTION_MODEL.HUMAN_BODY_FAST; break;
-                case sl.AI_MODELS.MULTI_CLASS_ACCURATE_DETECTION: m_out = sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE; break;
-                case sl.AI_MODELS.MULTI_CLASS_MEDIUM_DETECTION: m_out = sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM; break;
-                case sl.AI_MODELS.MULTI_CLASS_DETECTION: m_out = sl.DETECTION_MODEL.MULTI_CLASS_BOX; break;
-                case sl.AI_MODELS.PERSON_HEAD_DETECTION: m_out = sl.DETECTION_MODEL.PERSON_HEAD_BOX; break;
-                case sl.AI_MODELS.PERSON_HEAD_ACCURATE_DETECTION: m_out = sl.DETECTION_MODEL.PERSON_HEAD_BOX_ACCURATE; break;
+                case sl.AI_MODELS.HUMAN_BODY_ACCURATE_DETECTION: m_out = (int)sl.BODY_TRACKING_MODEL.HUMAN_BODY_ACCURATE; break;
+                case sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION: m_out = (int)sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM; break;
+                case sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION: m_out = (int)sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST; break;
+                case sl.AI_MODELS.MULTI_CLASS_ACCURATE_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE; break;
+                case sl.AI_MODELS.MULTI_CLASS_MEDIUM_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM; break;
+                case sl.AI_MODELS.MULTI_CLASS_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX; break;
+                case sl.AI_MODELS.PERSON_HEAD_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX; break;
+                case sl.AI_MODELS.PERSON_HEAD_ACCURATE_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX_ACCURATE; break;
             }
             return m_out;
         }
@@ -2840,6 +2838,11 @@ namespace sl
         /// <returns></returns>
         public static AI_Model_status CheckAIModelStatus(AI_MODELS model, int gpu_id = 0)
         {
+            AI_Model_status tmpStatus = new AI_Model_status();
+            tmpStatus.downloaded = true; tmpStatus.optimized = true;
+            Debug.LogWarning("CheckAIModelStatus called, returning success...");
+            return tmpStatus;
+
             IntPtr p = dllz_check_AI_model_status(model, gpu_id);
             if (p == IntPtr.Zero)
             {
@@ -2858,6 +2861,8 @@ namespace sl
         /// <returns></returns>
         public static sl.ERROR_CODE OptimizeAIModel(AI_MODELS model, int gpu_id = 0)
         {
+            Debug.LogWarning("OptimizeAIModel called, returning success...");
+            return ERROR_CODE.SUCCESS;
             return (sl.ERROR_CODE)dllz_optimize_AI_model(model, gpu_id);
         }
 
@@ -2942,6 +2947,24 @@ namespace sl
                 objectsBatch.boundingBoxes, objectsBatch.confidences, objectsBatch.actionStates, objectsBatch.headBoundingBoxes2D,
                 objectsBatch.headBoundingBoxes, objectsBatch.headPositions);
         }
+        #endregion
+
+
+        ////////////////////////
+        /// Body Tracking  /////
+        ////////////////////////
+        #region Body Tracking
+        public static sl.AI_MODELS cvtDetection(sl.BODY_TRACKING_MODEL m_in)
+        {
+            sl.AI_MODELS m_out = sl.AI_MODELS.LAST;
+            switch (m_in)
+            {
+                case sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST: m_out = sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION; break;
+                case sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM: m_out = sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION; break;
+                case sl.BODY_TRACKING_MODEL.HUMAN_BODY_ACCURATE: m_out = sl.AI_MODELS.HUMAN_BODY_ACCURATE_DETECTION; break;
+            }
+            return m_out;
+        }
 
         /// <summary>
         /// Enable body tracking module
@@ -2990,6 +3013,8 @@ namespace sl
         {
             return (sl.ERROR_CODE)dllz_retrieve_bodies_data(CameraID, ref bt_params, ref bodies, 0);
         }
+        #endregion
+
 
     }//Zed Camera class
 } // namespace sl

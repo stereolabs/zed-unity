@@ -3,6 +3,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UnityEditor;
 
 #if ZED_URP
 using UnityEngine.Rendering.Universal;
@@ -44,7 +45,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     /// </summary>
     [Tooltip("Display 3D avatar. If set to false, only display bones and joint")]
     public bool useAvatar = true;
-    public sl.BODY_FORMAT bodyModel = sl.BODY_FORMAT.BODY_38;
+    private sl.BODY_FORMAT bodyModel = sl.BODY_FORMAT.BODY_38;
 
     [Space(5)]
     [Header("State Filters")]
@@ -128,12 +129,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
             zedManager.OnZEDReady += OnZEDReady;
             zedManager.OnBodyTracking += UpdateSkeletonData;
 		}
-
-        if (zedManager.bodyTrackingModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX || zedManager.bodyTrackingModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE || zedManager.bodyTrackingModel == sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM )
-        {
-            Debug.LogWarning("MULTI_CLASS_BOX model can't be used for skeleton tracking, please use either HUMAN_BODY_FAST or HUMAN_BODY_ACCURATE");
-        }
-
+        bodyModel = zedManager.bodyFormat;
     }
 
     private void OnZEDReady()
@@ -251,8 +247,15 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
                 break;
             default:
                 Debug.LogError("Invalid body model, select at least BODY_34 to use a 3D avatar, defaulting to 38");
-                worldJointsPos = new Vector3[38];
-                worldJointsRot = new Quaternion[38];
+#if UNITY_EDITOR
+                EditorApplication.ExitPlaymode();
+                worldJointsPos = new Vector3[34];
+                worldJointsRot = new Quaternion[34];
+#else
+                Application.Quit();
+                worldJointsPos = new Vector3[34];
+                worldJointsRot = new Quaternion[34];
+#endif
                 break;
         }
 

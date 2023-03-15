@@ -272,7 +272,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
             if (boxhandler)
             {
                 boxhandler.SetColor(col);
-                if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
+                if (zedManager.objectDetectionModel == sl.OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
                 {
                     //boxhandler.SetID(dobj.rawObjectData.rawLabel.ToString());
                     boxhandler.SetID(dobj.id.ToString());

@@ -4,6 +4,7 @@ using System.Threading;
 using UnityEngine.XR;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 
 /// <summary>
 /// The central script of the ZED Unity plugin, and the primary way a developer can interact with the camera.
@@ -393,7 +394,7 @@ public class ZEDManager : MonoBehaviour
     /// Choose what detection model to use in the Object detection module
     /// </summary>
     [HideInInspector]
-    public sl.DETECTION_MODEL objectDetectionModel = sl.DETECTION_MODEL.MULTI_CLASS_BOX;
+    public sl.OBJECT_DETECTION_MODEL objectDetectionModel = sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX;
 
     /// <summary>
     /// Defines a upper depth range for detections.
@@ -607,7 +608,7 @@ public class ZEDManager : MonoBehaviour
     /// Choose what detection model to use in the Object detection module
     /// </summary>
     [HideInInspector]
-    public sl.DETECTION_MODEL bodyTrackingModel = sl.DETECTION_MODEL.MULTI_CLASS_BOX;
+    public sl.BODY_TRACKING_MODEL bodyTrackingModel = sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM;
 
     /// <summary>
     /// Defines a upper depth range for detections.
@@ -2146,7 +2147,7 @@ public class ZEDManager : MonoBehaviour
                 if (watch.Elapsed.TotalSeconds > optimTimeout_S) 
                     Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
 
-                Debug.LogWarning($"Optimizing neural model ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds} seconds.");
+                Debug.LogWarning($"Optimizing neural model ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds.ToString("N2")} seconds.");
                 yield return new WaitForSeconds(5.0f);
             }
             threadOptim.Join();
@@ -2164,7 +2165,7 @@ public class ZEDManager : MonoBehaviour
                 if (watch.Elapsed.TotalSeconds > optimTimeout_S)
                     Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
 
-                Debug.LogWarning($"Optimizing neural fast ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds} seconds.");
+                Debug.LogWarning($"Optimizing neural fast ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds.ToString("N2")} seconds.");
                 yield return new WaitForSeconds(5.0f);
             }
             threadOptim.Join();
@@ -2970,7 +2971,7 @@ public class ZEDManager : MonoBehaviour
         while (optimStatus != sl.ERROR_CODE.SUCCESS)
         {
             if (watch.Elapsed.TotalSeconds > optimTimeout_S) Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
-            Debug.LogWarning("Optimizing AI Model  : " + sl.ZEDCamera.cvtDetection(objectDetectionModel) + "... The process can take few minutes.... " + watch.Elapsed.TotalSeconds + " sec");
+            Debug.LogWarning("Optimizing AI Model  : " + sl.ZEDCamera.cvtDetection(objectDetectionModel) + "... The process can take few minutes.... " + watch.Elapsed.TotalSeconds.ToString("N2") + " sec");
             yield return new WaitForSeconds(5.0f);
         }
 
@@ -3153,11 +3154,22 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     public void StartBodyTracking()
     {
+        if (bodyFormat != sl.BODY_FORMAT.BODY_34 && bodyFormat != sl.BODY_FORMAT.BODY_38 && bodyFormat != sl.BODY_FORMAT.BODY_70)
+        {
+            Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34, BODY_38 or BODY_70");
+#if UNITY_EDITOR
+            EditorApplication.ExitPlaymode();
+#else
+            Application.Quit();
+#endif
+        }
+
         sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel));
         if (!AiModelStatus.optimized)
         {
             Debug.LogWarning("The Model * " + objectDetectionModel.ToString() + "  has not been downloaded/optimized. The process can take few minutes....");
         }
+
         //We start a coroutine so we can delay actually starting the detection.
         //This is because the main thread is locked for awhile when you call this, appearing like a freeze.
         //This time lets us deliver a log message to the user indicating that this is expected.
@@ -3172,6 +3184,16 @@ public class ZEDManager : MonoBehaviour
     /// <returns></returns>
     private IEnumerator startBodyTracking()
     {
+        if(bodyFormat != sl.BODY_FORMAT.BODY_34 && bodyFormat != sl.BODY_FORMAT.BODY_38 && bodyFormat != sl.BODY_FORMAT.BODY_70)
+        {
+            Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34, BODY_38 or BODY_70.");
+#if UNITY_EDITOR
+            EditorApplication.ExitPlaymode();
+#else
+            Application.Quit();
+#endif
+        }
+
         if (btIsStarting == true)
         {
             Debug.LogError("Tried to start Body Tracking while it was already starting. Do you have two scripts trying to start it?");
@@ -3193,8 +3215,8 @@ public class ZEDManager : MonoBehaviour
 
         while (optimStatus != sl.ERROR_CODE.SUCCESS)
         {
-            if (watch.Elapsed.TotalSeconds > optimTimeout_S) Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
-            Debug.LogWarning("Optimizing AI Model  : " + sl.ZEDCamera.cvtDetection(bodyTrackingModel) + "... The process can take few minutes.... " + watch.Elapsed.TotalSeconds + " sec");
+            if (watch.Elapsed.TotalSeconds > optimTimeout_S) Debug.LogError("Optimization process Timeout. Please try to optimize the AI models outside of Unity, using the ZED Diagnostic tool ");
+            Debug.LogWarning("Optimizing AI Model  : " + sl.ZEDCamera.cvtDetection(bodyTrackingModel) + "... The process can take few minutes.... " + watch.Elapsed.TotalSeconds.ToString("N2") + " sec");
             yield return new WaitForSeconds(5.0f);
         }
 

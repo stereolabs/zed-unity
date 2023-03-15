@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEditor;
 
 public class SkeletonHandler : ScriptableObject
 {
@@ -890,7 +891,12 @@ public class SkeletonHandler : ScriptableObject
                 }
                 break;
             default:
-                Debug.LogError("Error: Invalid BODY_MODEL!");
+                Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34, BODY_38 or BODY_70");
+#if UNITY_EDITOR
+                EditorApplication.ExitPlaymode();
+#else
+                Application.Quit();
+#endif
                 break;
         }
     }
@@ -1914,9 +1920,7 @@ public class SkeletonHandler : ScriptableObject
                 break;
             default:
                 Debug.LogError("Error! InitSkeleton: Invalid body model, select at least BODY_34 to use a 3D avatar. Assuming Body38.");
-                bones = new GameObject[bonesList38.Length / 2];
-                spheres = new GameObject[sphereList38.Length];
-                curSphereList = sphereList38;
+                throw new Exception("Invalid Body model. Please use either BODY_34, BODY_38 or BODY_70");
                 break;
         }
 
@@ -1932,6 +1936,7 @@ public class SkeletonHandler : ScriptableObject
             cylinder.GetComponent<Renderer>().material = skBaseMat;
             skBaseMat.color = color;
             cylinder.transform.parent = skeleton.transform;
+            cylinder.name = "Bone_" + i.ToString("00");
             bones[i] = cylinder;
         }
         for (int j = 0; j < spheres.Length; j++)
@@ -2036,6 +2041,7 @@ public class SkeletonHandler : ScriptableObject
                 {
                     if (sl.ZEDCommon.IsVector3NaN(joints70[sphereList70[j]]))
                     {
+                        Debug.LogWarning("NaN value caught!");
                         spheres[j].transform.position = Vector3.zero + offsetDebug;
                         spheres[j].SetActive(false);
                     }
@@ -2389,7 +2395,7 @@ public class SkeletonHandler : ScriptableObject
                             Quaternion newRotation = rigBoneTarget[humanBones70[i]] * rigBone[humanBones70[i]].transform.localRotation;
 
                             // update animator bones.
-                            animator.SetBoneLocalRotation(humanBones70[i], newRotation);
+                            rigBone[humanBones70[i]].transform.localRotation = newRotation;
                         }
 
                     }

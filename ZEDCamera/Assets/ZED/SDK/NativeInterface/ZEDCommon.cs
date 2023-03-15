@@ -744,14 +744,18 @@ namespace sl
 		/// Does not compute any depth map. Only rectified stereo images will be available.
 		/// </summary>
 		NONE,
-		/// <summary>
-		/// Fastest mode for depth computation.
-		/// </summary>
-		PERFORMANCE,
-		/// <summary>
-		/// Balanced quality mode. Depth map is robust in most environment and requires medium compute power.
-		/// </summary>
-		NEURAL_FAST,
+        /// <summary>
+        /// Fastest mode for depth computation.
+        /// </summary>
+        PERFORMANCE,
+        /// <summary>
+        /// Computation mode designed for challenging areas with untextured surfaces.
+        /// </summary>
+        QUALITY,
+        /// <summary>
+        /// Balanced quality mode. Depth map is robust in most environment and requires medium compute power.
+        /// </summary>
+        NEURAL_FAST,
 		/// <summary>
 		/// Native depth. Very accurate, but at a large performance cost.
 		/// </summary>
@@ -1838,7 +1842,7 @@ namespace sl
         /// <summary>
         /// Defines the AI model used for detection 
         /// </summary>
-        public sl.DETECTION_MODEL detectionModel;
+        public sl.OBJECT_DETECTION_MODEL detectionModel;
         /// <summary>
         /// Defines a upper depth range for detections.
         /// Defined in  UNIT set at  sl.Camera.Open.
@@ -2099,7 +2103,7 @@ namespace sl
         /// <summary>
         /// Current detection model used.
         /// </summary>
-        public sl.DETECTION_MODEL detectionModel;
+        public sl.OBJECT_DETECTION_MODEL detectionModel;
         /// <summary>
         /// Array of objects 
         /// </summary>
@@ -2135,7 +2139,7 @@ namespace sl
         /// <summary>
         /// Defines the AI model used for detection 
         /// </summary>
-        public sl.DETECTION_MODEL detectionModel;
+        public sl.BODY_TRACKING_MODEL detectionModel;
         /// <summary>
         /// Defines if the body fitting will be applied
         /// </summary>
@@ -2351,7 +2355,7 @@ namespace sl
         /// <summary>
         /// Current detection model used.
         /// </summary>
-        public sl.DETECTION_MODEL detectionModel;
+        public sl.OBJECT_DETECTION_MODEL detectionModel;
         /// <summary>
         /// Array of objects 
         /// </summary>
@@ -2432,7 +2436,7 @@ namespace sl
     /// <summary>
     /// List available models for detection
     /// </summary>
-    public enum DETECTION_MODEL {
+    public enum OBJECT_DETECTION_MODEL {
         /// <summary>
         /// Any objects, bounding box based.
         /// </summary>
@@ -2457,6 +2461,14 @@ namespace sl
         /// For external inference, using your own custom model and/or frameworks. This mode disable the internal inference engine, the 2D bounding box detection must be provided
         /// </summary>
         CUSTOM_BOX_OBJECTS,
+        LAST
+    };
+
+    /// <summary>
+    /// List available models for detection
+    /// </summary>
+    public enum BODY_TRACKING_MODEL
+    {
         /// <summary>
         /// Keypoints based, specific to human skeleton, real time performance even on Jetson or low end GPU cards.
         /// </summary>

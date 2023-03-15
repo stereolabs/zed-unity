@@ -11,7 +11,7 @@ public class HeightOffsetter : MonoBehaviour
     [Header("Main settings")]
 
     [Tooltip("Height offset applied to transform each frame.")]
-    public Vector3 manualOffset = Vector3.zero;
+    public float manualOffset = 0;
 
     [Tooltip("Automatic offset adjustment: Finds an automatic offset that sets both feet above ground, and at least one foot on the ground.")]
     public bool automaticOffset = false;
@@ -120,7 +120,7 @@ public class HeightOffsetter : MonoBehaviour
         }
         else
         {
-            offsetToApply = manualOffset;
+            offsetToApply = new Vector3(0, manualOffset, 0);
         }
 
         return offsetToApply;
@@ -131,7 +131,7 @@ public class HeightOffsetter : MonoBehaviour
     /// </summary>
     public void ComputeRootHeightOffset()
     {
-        zedSkeletonAnimator.RootHeightOffset = manualOffset;
+        zedSkeletonAnimator.RootHeightOffset = new Vector3(0, manualOffset, 0);
     }
 
     /// <summary>
@@ -158,11 +158,11 @@ public class HeightOffsetter : MonoBehaviour
     {
         if (Input.GetKeyDown(increaseOffsetKey))
         {
-            manualOffset.y += offsetStep;
+            manualOffset += offsetStep;
         }
         else if (Input.GetKeyDown(decreaseOffsetKey))
         {
-            manualOffset.y -= offsetStep;
+            manualOffset -= offsetStep;
         }
 
         if (Input.GetKeyDown(toggleAutomaticOffsetKey))

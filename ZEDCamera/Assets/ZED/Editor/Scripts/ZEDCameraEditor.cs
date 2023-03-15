@@ -785,19 +785,19 @@ public class ZEDCameraEditor : Editor
             EditorGUI.indentLevel++;
 
             GUIContent ObjectDetectionModelLabel = new GUIContent("Object Detection Model", "Select one object detection model");
-            OD_DetectionModel.enumValueIndex = (int)(sl.DETECTION_MODEL)EditorGUILayout.EnumPopup(ObjectDetectionModelLabel, (sl.DETECTION_MODEL)OD_DetectionModel.enumValueIndex);
+            OD_DetectionModel.enumValueIndex = (int)(sl.OBJECT_DETECTION_MODEL)EditorGUILayout.EnumPopup(ObjectDetectionModelLabel, (sl.OBJECT_DETECTION_MODEL)OD_DetectionModel.enumValueIndex);
 
-            if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.HUMAN_BODY_FAST || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE
-                || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.LAST)
-            {   
-                GUILayout.Space(10);
-                GUIStyle orangetext = new GUIStyle(EditorStyles.label);
-                orangetext.normal.textColor = Color.red;
-                orangetext.wordWrap = true;
-                string labeltext = "This detection model is not compatible with the Object detection module. Please use a non-human model";
-                Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(labeltext, ""), orangetext);
-                EditorGUI.LabelField(labelrect, labeltext, orangetext);
-            }
+            //if (OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.HUMAN_BODY_FAST || OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.HUMAN_BODY_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.HUMAN_BODY_ACCURATE
+            //    || OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.LAST)
+            //{   
+            //    GUILayout.Space(10);
+            //    GUIStyle orangetext = new GUIStyle(EditorStyles.label);
+            //    orangetext.normal.textColor = Color.red;
+            //    orangetext.wordWrap = true;
+            //    string labeltext = "This detection model is not compatible with the Object detection module. Please use a non-human model";
+            //    Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(labeltext, ""), orangetext);
+            //    EditorGUI.LabelField(labelrect, labeltext, orangetext);
+            //}
 
             EditorGUI.indentLevel--;
 
@@ -839,7 +839,7 @@ public class ZEDCameraEditor : Editor
             GUILayout.Space(10);
 
 
-            if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
+            if (OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX || OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
             {
 
                 EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
@@ -899,7 +899,7 @@ public class ZEDCameraEditor : Editor
 
                 EditorGUI.indentLevel--;
             }
-            else if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.PERSON_HEAD_BOX)
+            else if (OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX)
             {
 
                 EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
@@ -910,7 +910,7 @@ public class ZEDCameraEditor : Editor
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
                 OD_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(OD_personDetectionConfidenceThresholdLabel, OD_PersonDetectionConfidence.intValue, 1, 99);
             }
-            else if (OD_DetectionModel.enumValueIndex == (int)sl.DETECTION_MODEL.CUSTOM_BOX_OBJECTS) { 
+            else if (OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS) { 
             }
             else //SKELETON
             {
@@ -959,18 +959,18 @@ public class ZEDCameraEditor : Editor
             EditorGUI.indentLevel++;
 
             GUIContent BodyTrackingModelLabel = new GUIContent("Body Tracking Model", "Select one Body Tracking model (HUMAN_BODY_XXX)");
-            BT_DetectionModel.enumValueIndex = (int)(sl.DETECTION_MODEL)EditorGUILayout.EnumPopup(BodyTrackingModelLabel, (sl.DETECTION_MODEL)BT_DetectionModel.enumValueIndex);
+            BT_DetectionModel.enumValueIndex = (int)(sl.BODY_TRACKING_MODEL)EditorGUILayout.EnumPopup(BodyTrackingModelLabel, (sl.BODY_TRACKING_MODEL)BT_DetectionModel.enumValueIndex);
 
-            if (BT_DetectionModel.enumValueIndex != (int)sl.DETECTION_MODEL.HUMAN_BODY_FAST && BT_DetectionModel.enumValueIndex != (int)sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM && BT_DetectionModel.enumValueIndex != (int)sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE)
-            {
-                GUILayout.Space(10);
-                GUIStyle orangetext = new GUIStyle(EditorStyles.label);
-                orangetext.normal.textColor = Color.red;
-                orangetext.wordWrap = true;
-                string labeltext = "This detection model is not compatible with the Body Tracking module. Please use a human_body_xxx model";
-                Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(labeltext, ""), orangetext);
-                EditorGUI.LabelField(labelrect, labeltext, orangetext);
-            }
+            //if (BT_DetectionModel.enumValueIndex != (int)sl.OBJECT_DETECTION_MODEL.HUMAN_BODY_FAST && BT_DetectionModel.enumValueIndex != (int)sl.OBJECT_DETECTION_MODEL.HUMAN_BODY_MEDIUM && BT_DetectionModel.enumValueIndex != (int)sl.OBJECT_DETECTION_MODEL.HUMAN_BODY_ACCURATE)
+            //{
+            //    GUILayout.Space(10);
+            //    GUIStyle orangetext = new GUIStyle(EditorStyles.label);
+            //    orangetext.normal.textColor = Color.red;
+            //    orangetext.wordWrap = true;
+            //    string labeltext = "This detection model is not compatible with the Body Tracking module. Please use a human_body_xxx model";
+            //    Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(labeltext, ""), orangetext);
+            //    EditorGUI.LabelField(labelrect, labeltext, orangetext);
+            //}
 
             GUIContent BT_BodyFormatLabel = new GUIContent("Body Format", "");
             BT_BodyFormat.enumValueIndex = (int)(sl.BODY_FORMAT)EditorGUILayout.EnumPopup(BT_BodyFormatLabel, (sl.BODY_FORMAT)BT_BodyFormat.enumValueIndex);
