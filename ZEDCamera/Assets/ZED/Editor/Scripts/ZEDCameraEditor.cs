@@ -839,7 +839,7 @@ public class ZEDCameraEditor : Editor
             GUILayout.Space(10);
 
 
-            if (OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX || OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
+            if (OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_FAST || OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
             {
 
                 EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
@@ -899,7 +899,7 @@ public class ZEDCameraEditor : Editor
 
                 EditorGUI.indentLevel--;
             }
-            else if (OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX)
+            else if (OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX_FAST)
             {
 
                 EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
@@ -1023,7 +1023,8 @@ public class ZEDCameraEditor : Editor
 
             GUIContent BodyTrackingMinKeypointsLabel = new GUIContent("Minimum Visible Keypoints", "Minimum number of keypoints tracked by the SDK on a body to report it" +
             "as a body.\r\n\nTweak this value depending on your application. Keep in mind that some parts of the body have a lot of keypoints (e.g. hands and face).");
-            BT_MinimumKPThresh.intValue = EditorGUILayout.IntSlider(BodyTrackingMinKeypointsLabel, BT_MinimumKPThresh.intValue, 1, 70);
+            // BT_MinimumKPThresh.intValue = EditorGUILayout.IntSlider(BodyTrackingMinKeypointsLabel, BT_MinimumKPThresh.intValue, 1, 70);
+            BT_MinimumKPThresh.intValue = EditorGUILayout.IntField(BodyTrackingMinKeypointsLabel, BT_MinimumKPThresh.intValue);
 
             GUIContent BodyTrackingConfidenceLabel = new GUIContent("Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
             "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");

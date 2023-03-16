@@ -394,7 +394,7 @@ public class ZEDManager : MonoBehaviour
     /// Choose what detection model to use in the Object detection module
     /// </summary>
     [HideInInspector]
-    public sl.OBJECT_DETECTION_MODEL objectDetectionModel = sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX;
+    public sl.OBJECT_DETECTION_MODEL objectDetectionModel = sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_FAST;
 
     /// <summary>
     /// Defines a upper depth range for detections.
@@ -2152,24 +2152,6 @@ public class ZEDManager : MonoBehaviour
             }
             threadOptim.Join();
         }
-        else if (initParameters.depthMode == sl.DEPTH_MODE.NEURAL_FAST)
-        {
-            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
-            watch.Start();
-
-            var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_FAST_DEPTH)); //Assign thread.
-            threadOptim.Start();
-
-            while (optimStatus != sl.ERROR_CODE.SUCCESS)
-            {
-                if (watch.Elapsed.TotalSeconds > optimTimeout_S)
-                    Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
-
-                Debug.LogWarning($"Optimizing neural fast ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds.ToString("N2")} seconds.");
-                yield return new WaitForSeconds(5.0f);
-            }
-            threadOptim.Join();
-        }
 
         zedReady = false;
         if (!openingLaunched)
@@ -3162,6 +3144,11 @@ public class ZEDManager : MonoBehaviour
 #else
             Application.Quit();
 #endif
+        }
+
+        if (bodyFormat == sl.BODY_FORMAT.BODY_34)
+        {
+            Debug.LogWarning("The body format BODY_34 is deprecated and will be removed in a further version.");
         }
 
         sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel));

@@ -2806,8 +2806,8 @@ namespace sl
             {
                 case sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE: m_out = sl.AI_MODELS.MULTI_CLASS_ACCURATE_DETECTION; break;
                 case sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM: m_out = sl.AI_MODELS.MULTI_CLASS_MEDIUM_DETECTION; break;
-                case sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX: m_out = sl.AI_MODELS.MULTI_CLASS_DETECTION; break;
-                case sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX: m_out = sl.AI_MODELS.PERSON_HEAD_DETECTION; break;
+                case sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_FAST: m_out = sl.AI_MODELS.MULTI_CLASS_FAST_DETECTION; break;
+                case sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX_FAST: m_out = sl.AI_MODELS.PERSON_HEAD_FAST_DETECTION; break;
                 case sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX_ACCURATE: m_out = sl.AI_MODELS.PERSON_HEAD_ACCURATE_DETECTION; break;
             }
             return m_out;
@@ -2823,8 +2823,8 @@ namespace sl
                 case sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION: m_out = (int)sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST; break;
                 case sl.AI_MODELS.MULTI_CLASS_ACCURATE_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE; break;
                 case sl.AI_MODELS.MULTI_CLASS_MEDIUM_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM; break;
-                case sl.AI_MODELS.MULTI_CLASS_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX; break;
-                case sl.AI_MODELS.PERSON_HEAD_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX; break;
+                case sl.AI_MODELS.MULTI_CLASS_FAST_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_FAST; break;
+                case sl.AI_MODELS.PERSON_HEAD_FAST_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX_FAST; break;
                 case sl.AI_MODELS.PERSON_HEAD_ACCURATE_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX_ACCURATE; break;
             }
             return m_out;

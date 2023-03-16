@@ -752,10 +752,6 @@ namespace sl
         /// Computation mode designed for challenging areas with untextured surfaces.
         /// </summary>
         QUALITY,
-        /// <summary>
-        /// Balanced quality mode. Depth map is robust in most environment and requires medium compute power.
-        /// </summary>
-        NEURAL_FAST,
 		/// <summary>
 		/// Native depth. Very accurate, but at a large performance cost.
 		/// </summary>
@@ -1911,9 +1907,9 @@ namespace sl
     public enum BODY_FORMAT
     {
         BODY_18,
-        BODY_34,
-        BODY_38,
-        BODY_70,
+        BODY_34=1,
+        BODY_38=2,
+        BODY_70=3,
     };
 
     /// <summary>
@@ -2440,7 +2436,7 @@ namespace sl
         /// <summary>
         /// Any objects, bounding box based.
         /// </summary>
-		MULTI_CLASS_BOX,
+		MULTI_CLASS_BOX_FAST,
         /// <summary>
         /// Any objects, bounding box based.
         /// </summary>
@@ -2452,7 +2448,7 @@ namespace sl
         /// <summary>
         ///  Bounding Box detector specialized in person heads, particulary well suited for crowded environement, the person localization is also improved
         /// </summary>
-        PERSON_HEAD_BOX,
+        PERSON_HEAD_BOX_FAST,
         /// <summary>
         ///  Bounding Box detector specialized in person heads, particulary well suited for crowded environement, the person localization is also improved
         /// </summary>
@@ -2508,7 +2504,7 @@ namespace sl
         /// <summary>
         /// related to sl.DETECTION_MODEL.MULTI_CLASS_BOX
         /// </summary>
-        MULTI_CLASS_DETECTION,
+        MULTI_CLASS_FAST_DETECTION,
         /// <summary>
         /// related to sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM
         /// </summary>
@@ -2532,7 +2528,7 @@ namespace sl
         /// <summary>
         /// related to sl.DETECTION_MODEL.PERSON_HEAD
         /// </summary>
-        PERSON_HEAD_DETECTION,
+        PERSON_HEAD_FAST_DETECTION,
         /// <summary>
         /// related to sl.DETECTION_MODEL.PERSON_HEAD
         /// </summary>
@@ -2541,10 +2537,6 @@ namespace sl
         /// related to sl.BatchParameters.enable
         /// </summary>
         REID_ASSOCIATION,
-        /// <summary>
-        /// related to sl.DETECTION_MODEL.NEURAL_FAST
-        /// </summary>
-        NEURAL_FAST_DEPTH,
         /// <summary>
         /// related to sl.DETECTION_MODEL.NEURAL
         /// </summary>

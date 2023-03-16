@@ -239,10 +239,12 @@ public class SkeletonHandler : ScriptableObject
     JointType_70_RIGHT_HAND_PINKY_3, JointType_70_RIGHT_HAND_PINKY_4,
     // legs
     JointType_LEFT_HIP, JointType_LEFT_KNEE,
+    JointType_LEFT_KNEE, JointType_LEFT_ANKLE,
     JointType_LEFT_ANKLE, JointType_LEFT_HEEL,
     JointType_LEFT_ANKLE, JointType_LEFT_BIG_TOE,
     JointType_LEFT_ANKLE, JointType_LEFT_SMALL_TOE,
     JointType_RIGHT_HIP, JointType_RIGHT_KNEE,
+    JointType_RIGHT_KNEE, JointType_RIGHT_ANKLE,
     JointType_RIGHT_ANKLE, JointType_RIGHT_HEEL,
     JointType_RIGHT_ANKLE, JointType_RIGHT_BIG_TOE,
     JointType_RIGHT_ANKLE, JointType_RIGHT_SMALL_TOE
