@@ -233,7 +233,7 @@ namespace sl
             get { return calibrationParametersRectified; }
         }
         /// <summary>
-        /// Camera model - ZED or ZED Mini.
+        /// Camera model
         /// </summary>
         public sl.MODEL CameraModel
         {
@@ -285,7 +285,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(3, 8, 0);
+        public static readonly System.Version PluginVersion = new System.Version(4, 0, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -419,10 +419,10 @@ namespace sl
         private static extern int dllz_get_video_settings(int id, int mode);
 
         [DllImport(nameDll, EntryPoint = "sl_set_roi_for_aec_agc")]
-        private static extern int dllz_set_roi_for_aec_agc(int id, int side, iRect roi,bool reset);
+        private static extern int dllz_set_roi_for_aec_agc(int id, int side, sl.Rect roi,bool reset);
 
         [DllImport(nameDll, EntryPoint = "sl_get_roi_for_aec_agc")]
-        private static extern int dllz_get_roi_for_aec_agc(int id, int side, ref iRect roi);
+        private static extern int dllz_get_roi_for_aec_agc(int id, int side, ref sl.Rect roi);
 
 
         [DllImport(nameDll, EntryPoint = "sl_get_input_type")]
@@ -685,23 +685,38 @@ namespace sl
         private static extern int dllz_optimize_AI_model(AI_MODELS model, int gpu_id);
 
 
-        [DllImport(nameDll, EntryPoint = "sl_enable_objects_detection")]
-        private static extern int dllz_enable_objects_detection(int cameraID, ref dll_ObjectDetectionParameters od_params);
+        [DllImport(nameDll, EntryPoint = "sl_enable_object_detection")]
+        private static extern int dllz_enable_object_detection(int cameraID, ref ObjectDetectionParameters od_params);
 
         [DllImport(nameDll, EntryPoint = "sl_get_object_detection_parameters")]
         private static extern IntPtr dllz_get_object_detection_parameters(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_disable_objects_detection")]
-        private static extern void dllz_disable_objects_detection(int cameraID);
+        [DllImport(nameDll, EntryPoint = "sl_disable_object_detection")]
+        private static extern void dllz_disable_object_detection(int cameraID, uint instanceID, bool force_disable_all_instances);
 
-        [DllImport(nameDll, EntryPoint = "sl_pause_objects_detection")]
-        private static extern void dllz_pause_objects_detection(int cameraID, bool status);
+        [DllImport(nameDll, EntryPoint = "sl_pause_object_detection")]
+        private static extern void dllz_pause_object_detection(int cameraID, bool status, uint instanceID);
 
         [DllImport(nameDll, EntryPoint = "sl_ingest_custom_box_objects")]
         private static extern int dllz_ingest_custom_box_objects(int cameraID, int nb_objects, CustomBoxObjectData[] objects_in);
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_objects")]
-        private static extern int dllz_retrieve_objects_data(int cameraID, ref dll_ObjectDetectionRuntimeParameters od_params, ref ObjectsFrameSDK objFrame);
+        private static extern int dllz_retrieve_objects_data(int cameraID, ref ObjectDetectionRuntimeParameters od_params, ref Objects objs, uint instanceID);
+
+        [DllImport(nameDll, EntryPoint = "sl_enable_body_tracking")]
+        private static extern int dllz_enable_body_tracking(int cameraID, ref BodyTrackingParameters bt_params);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_object_detection_parameters")]
+        private static extern IntPtr dllz_get_body_tracking_parameters(int cameraID);
+
+        [DllImport(nameDll, EntryPoint = "sl_disable_body_tracking")]
+        private static extern void dllz_disable_body_tracking(int cameraID, uint instanceID, bool force_disable_all_instances);
+
+        [DllImport(nameDll, EntryPoint = "sl_pause_body_tracking")]
+        private static extern void dllz_pause_body_tracking(int cameraID, bool status, uint instanceID);
+
+        [DllImport(nameDll, EntryPoint = "sl_retrieve_bodies")]
+        private static extern int dllz_retrieve_bodies_data(int cameraID, ref BodyTrackingRuntimeParameters bt_params, ref Bodies bodies, uint instanceID);
 
         [DllImport(nameDll, EntryPoint = "sl_update_objects_batch")]
         private static extern int dllz_update_objects_batch(int cameraID, out int nbBatches);
@@ -709,8 +724,7 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_get_objects_batch")]
         private static extern int dllz_get_objects_batch_data(int cameraID, int batch_index, ref int numData, ref int id, ref OBJECT_CLASS label, ref OBJECT_SUBCLASS sublabel, ref TRACKING_STATE trackingState,
             [In, Out] Vector3[] position, [In, Out] float[,] positionCovariances, [In, Out] Vector3[] velocities, [In, Out] ulong[] timestamps, [In, Out] Vector2[,] boundingBoxes2D, [In, Out] Vector3[,] boundingBoxes,
-            [In, Out] float[] confidences, [In, Out] OBJECT_ACTION_STATE[] actionStates, [In, Out] Vector2[,] keypoints2D, [In, Out] Vector3[,] keypoints, [In, Out] Vector2[,] headBoundingBoxes2D, [In, Out] Vector3[,] headBoundingBoxes, [In, Out] Vector3[] headPositions,
-            [In, Out] float[,] keypointsConfidences);
+            [In, Out] float[] confidences, [In, Out] OBJECT_ACTION_STATE[] actionStates, [In, Out] Vector2[,] headBoundingBoxes2D, [In, Out] Vector3[,] headBoundingBoxes, [In, Out] Vector3[] headPositions);
 
 
         /*
@@ -1057,6 +1071,14 @@ namespace sl
             /// This parameter only impacts the LIVE mode.
             /// </summary>
             public float openTimeoutSec;
+            /// <summary>
+            /// 	Define the behavior of the automatic camera recovery during grab() function call. When async is enabled and there's an issue with the communication with the camera
+            /// the grab() will exit after a short period and return the ERROR_CODE::CAMERA_REBOOTING warning.The recovery will run in the background until the correct communication is restored.
+            /// When async_grab_camera_recovery is false, the grab() function is blocking and will return only once the camera communication is restored or the timeout is reached.
+            /// The default behavior is synchronous, like previous ZED SDK versions
+            /// </summary>
+           [MarshalAs(UnmanagedType.U1)]
+            public bool asyncGrabRecovery;
 
             /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
@@ -1084,6 +1106,7 @@ namespace sl
                 enableImageEnhancement = init.enableImageEnhancement;
                 optionalOpencvCalibrationFile = init.optionalOpencvCalibrationFile;
                 openTimeoutSec = init.openTimeoutSec;
+                asyncGrabRecovery = init.asyncGrabRecovery;
             }
         }
 
@@ -1094,7 +1117,7 @@ namespace sl
         /// A newly-instantiated InitParameters will have recommended default values.</param>
         /// <returns>ERROR_CODE: The error code gives information about the internal connection process.
         /// If SUCCESS is returned, the camera is ready to use. Every other code indicates an error.</returns>
-        public ERROR_CODE Init(ref InitParameters initParameters)
+        public ERROR_CODE Open(ref InitParameters initParameters)
         {
             //Update values with what we're about to pass to the camera.
             currentResolution = initParameters.resolution;
@@ -1987,7 +2010,7 @@ namespace sl
         /// <param name="roi">the roi defined as a sl.Rect</param>
         /// <param name="reset">Defines if the target must be reset to full sensor</param>
         /// <returns></returns>
-        public int SetCameraSettings(CAMERA_SETTINGS settings, int side, iRect roi,bool reset)
+        public int SetCameraSettings(CAMERA_SETTINGS settings, int side, sl.Rect roi,bool reset)
         {
             AssertCameraIsReady();
             if (settings == CAMERA_SETTINGS.AEC_AGC_ROI)
@@ -2003,7 +2026,7 @@ namespace sl
         /// <param name="side"> defines left=0 or right=1 or both=2 sensor target.</param>
         /// <param name="roi"> Roi that will be filled.</param>
         /// <returns></returns>
-        public int GetCameraSettings(CAMERA_SETTINGS settings, int side,ref iRect roi)
+        public int GetCameraSettings(CAMERA_SETTINGS settings, int side, ref sl.Rect roi)
         {
             AssertCameraIsReady();
             if (settings == CAMERA_SETTINGS.AEC_AGC_ROI)
@@ -2030,7 +2053,7 @@ namespace sl
             SetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC, 1);
             SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, 1);
 
-            SetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC_ROI,2, new sl.iRect(), true);
+            SetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC_ROI,2, new sl.Rect(), true);
         }
 
         /// <summary>
@@ -2775,34 +2798,34 @@ namespace sl
         ////////////////////////
         /// Object detection ///
         ////////////////////////
-        public static sl.AI_MODELS cvtDetection(sl.DETECTION_MODEL m_in)
+        #region Object Detection
+        public static sl.AI_MODELS cvtDetection(sl.OBJECT_DETECTION_MODEL m_in)
         {
             sl.AI_MODELS m_out = sl.AI_MODELS.LAST;
             switch (m_in)
             {
-                case sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE: m_out = sl.AI_MODELS.HUMAN_BODY_ACCURATE_DETECTION; break;
-                case sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM: m_out = sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION; break;
-                case sl.DETECTION_MODEL.HUMAN_BODY_FAST: m_out = sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION; break;
-                case sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE: m_out = sl.AI_MODELS.MULTI_CLASS_ACCURATE_DETECTION; break;
-                case sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM: m_out = sl.AI_MODELS.MULTI_CLASS_MEDIUM_DETECTION; break;
-                case sl.DETECTION_MODEL.MULTI_CLASS_BOX: m_out = sl.AI_MODELS.MULTI_CLASS_DETECTION; break;
-                case sl.DETECTION_MODEL.PERSON_HEAD_BOX: m_out = sl.AI_MODELS.PERSON_HEAD_DETECTION; break;
+                case sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE: m_out = sl.AI_MODELS.MULTI_CLASS_ACCURATE_DETECTION; break;
+                case sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM: m_out = sl.AI_MODELS.MULTI_CLASS_MEDIUM_DETECTION; break;
+                case sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_FAST: m_out = sl.AI_MODELS.MULTI_CLASS_FAST_DETECTION; break;
+                case sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX_FAST: m_out = sl.AI_MODELS.PERSON_HEAD_FAST_DETECTION; break;
+                case sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX_ACCURATE: m_out = sl.AI_MODELS.PERSON_HEAD_ACCURATE_DETECTION; break;
             }
             return m_out;
         }
 
-        public static sl.DETECTION_MODEL cvtDetection(sl.AI_MODELS m_in)
+        public static int cvtDetection(sl.AI_MODELS m_in)
         {
-            sl.DETECTION_MODEL m_out = sl.DETECTION_MODEL.LAST;
+            int m_out = -1;
             switch (m_in)
             {
-                case sl.AI_MODELS.HUMAN_BODY_ACCURATE_DETECTION: m_out = sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE; break;
-                case sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION: m_out = sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM; break;
-                case sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION: m_out = sl.DETECTION_MODEL.HUMAN_BODY_FAST; break;
-                case sl.AI_MODELS.MULTI_CLASS_ACCURATE_DETECTION: m_out = sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE; break;
-                case sl.AI_MODELS.MULTI_CLASS_MEDIUM_DETECTION: m_out = sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM; break;
-                case sl.AI_MODELS.MULTI_CLASS_DETECTION: m_out = sl.DETECTION_MODEL.MULTI_CLASS_BOX; break;
-                case sl.AI_MODELS.PERSON_HEAD_DETECTION: m_out = sl.DETECTION_MODEL.PERSON_HEAD_BOX; break;
+                case sl.AI_MODELS.HUMAN_BODY_ACCURATE_DETECTION: m_out = (int)sl.BODY_TRACKING_MODEL.HUMAN_BODY_ACCURATE; break;
+                case sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION: m_out = (int)sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM; break;
+                case sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION: m_out = (int)sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST; break;
+                case sl.AI_MODELS.MULTI_CLASS_ACCURATE_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE; break;
+                case sl.AI_MODELS.MULTI_CLASS_MEDIUM_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM; break;
+                case sl.AI_MODELS.MULTI_CLASS_FAST_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_FAST; break;
+                case sl.AI_MODELS.PERSON_HEAD_FAST_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX_FAST; break;
+                case sl.AI_MODELS.PERSON_HEAD_ACCURATE_DETECTION: m_out = (int)sl.OBJECT_DETECTION_MODEL.PERSON_HEAD_BOX_ACCURATE; break;
             }
             return m_out;
         }
@@ -2839,12 +2862,12 @@ namespace sl
         /// <summary>
         /// Enable object detection module
         /// </summary>
-        public sl.ERROR_CODE EnableObjectsDetection(ref dll_ObjectDetectionParameters od_params)
+        public sl.ERROR_CODE EnableObjectDetection(ref ObjectDetectionParameters od_params)
         {
             sl.ERROR_CODE objDetectStatus = ERROR_CODE.FAILURE;
             lock (grabLock)
             {
-                objDetectStatus = (sl.ERROR_CODE)dllz_enable_objects_detection(CameraID, ref od_params);
+                objDetectStatus = (sl.ERROR_CODE)dllz_enable_object_detection(CameraID, ref od_params);
             }
 
             return objDetectStatus;
@@ -2853,11 +2876,11 @@ namespace sl
         /// <summary>
         /// Disable object detection module and release the resources.
         /// </summary>
-        public void DisableObjectsDetection()
+        public void DisableObjectDetection()
         {
             lock (grabLock)
             {
-                dllz_disable_objects_detection(CameraID);
+                dllz_disable_object_detection(CameraID, 0, false);
             }
         }
 
@@ -2865,11 +2888,11 @@ namespace sl
         /// Pause or Unpause the object detection
         /// </summary>
         /// <param name="status"></param>
-        public void PauseObjectsDetection(bool status)
+        public void PauseObjectDetection(bool status)
         {
             lock (grabLock)
             {
-                dllz_pause_objects_detection(CameraID, status);
+                dllz_pause_object_detection(CameraID, status, 0);
             }
         }
 
@@ -2885,10 +2908,11 @@ namespace sl
         /// <param name="od_params"> Object detection runtime parameters</param>
         /// <param name="objFrame"> ObjectsFrameSDK that contains all the detection data</param>
         /// <returns></returns>
-        public sl.ERROR_CODE RetrieveObjectsDetectionData(ref dll_ObjectDetectionRuntimeParameters od_params, ref ObjectsFrameSDK objFrame)
+        public sl.ERROR_CODE RetrieveObjects(ref ObjectDetectionRuntimeParameters od_params, ref Objects objFrame)
         {
-            return (sl.ERROR_CODE)dllz_retrieve_objects_data(CameraID, ref od_params, ref objFrame);
+            return (sl.ERROR_CODE)dllz_retrieve_objects_data(CameraID, ref od_params, ref objFrame, 0);
         }
+
 
         /// <summary>
         /// Update the batch trajectories and retrieve the number of batches.
@@ -2913,9 +2937,109 @@ namespace sl
         {
             return (sl.ERROR_CODE)dllz_get_objects_batch_data(CameraID, batch_index, ref objectsBatch.numData, ref objectsBatch.id, ref objectsBatch.label, ref objectsBatch.sublabel,
                 ref objectsBatch.trackingState, objectsBatch.positions, objectsBatch.positionCovariances, objectsBatch.velocities, objectsBatch.timestamps, objectsBatch.boundingBoxes2D,
-                objectsBatch.boundingBoxes, objectsBatch.confidences, objectsBatch.actionStates, objectsBatch.keypoints2D, objectsBatch.keypoints, objectsBatch.headBoundingBoxes2D,
-                objectsBatch.headBoundingBoxes, objectsBatch.headPositions, objectsBatch.keypointConfidences);
+                objectsBatch.boundingBoxes, objectsBatch.confidences, objectsBatch.actionStates, objectsBatch.headBoundingBoxes2D,
+                objectsBatch.headBoundingBoxes, objectsBatch.headPositions);
         }
+        #endregion
+
+
+        ////////////////////////
+        /// Body Tracking  /////
+        ////////////////////////
+        #region Body Tracking
+        public static sl.AI_MODELS cvtDetection(sl.BODY_TRACKING_MODEL m_in, sl.BODY_FORMAT bodyFormat)
+        {
+            sl.AI_MODELS m_out = sl.AI_MODELS.LAST;
+            if (bodyFormat == sl.BODY_FORMAT.BODY_18 || bodyFormat == sl.BODY_FORMAT.BODY_34)
+            {
+                switch (m_in)
+                {
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST:     m_out = sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM:   m_out = sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_ACCURATE: m_out = sl.AI_MODELS.HUMAN_BODY_ACCURATE_DETECTION; break;
+                }
+            }
+            else if (bodyFormat == sl.BODY_FORMAT.BODY_38)
+            {
+                switch (m_in)
+                {
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST:     m_out = sl.AI_MODELS.HUMAN_BODY_38_FAST_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM:   m_out = sl.AI_MODELS.HUMAN_BODY_38_MEDIUM_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_ACCURATE: m_out = sl.AI_MODELS.HUMAN_BODY_38_ACCURATE_DETECTION; break;
+                }
+            
+            }
+            else if (bodyFormat == sl.BODY_FORMAT.BODY_70)
+            {
+                switch (m_in)
+                {
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST:     m_out = sl.AI_MODELS.HUMAN_BODY_70_FAST_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM:   m_out = sl.AI_MODELS.HUMAN_BODY_70_MEDIUM_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_ACCURATE: m_out = sl.AI_MODELS.HUMAN_BODY_70_ACCURATE_DETECTION; break;
+                }
+            }
+            else
+            {
+                switch (m_in)
+                {
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST:     m_out = sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM:   m_out = sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_ACCURATE: m_out = sl.AI_MODELS.HUMAN_BODY_ACCURATE_DETECTION; break;
+                }
+            }
+
+            return m_out;
+        }
+
+        /// <summary>
+        /// Enable body tracking module
+        /// </summary>
+        public sl.ERROR_CODE EnableBodyTracking(ref BodyTrackingParameters bt_params)
+        {
+            sl.ERROR_CODE  bodyTrackingStatus = ERROR_CODE.FAILURE;
+            lock (grabLock)
+            {
+                bodyTrackingStatus = (sl.ERROR_CODE)dllz_enable_body_tracking(CameraID, ref bt_params);
+            }
+
+            return bodyTrackingStatus;
+        }
+
+        /// <summary>
+        /// Disable body tracking module and release the resources.
+        /// </summary>
+        public void DisableBodyTracking()
+        {
+            lock (grabLock)
+            {
+                dllz_disable_body_tracking(CameraID, 0, false);
+            }
+        }
+
+        /// <summary>
+        /// Pause or Unpause the body tracking
+        /// </summary>
+        /// <param name="status"></param>
+        public void PauseBodyTracking(bool status)
+        {
+            lock (grabLock)
+            {
+                dllz_pause_body_tracking(CameraID, status, 0);
+            }
+        }
+
+        /// <summary>
+        /// Retrieve body tracking data 
+        /// </summary>
+        /// <param name="body_params"> Body Tracking runtime parameters</param>
+        /// <param name="bodies"> Bodies that contains all the detection data</param>
+        /// <returns></returns>
+        public sl.ERROR_CODE RetrieveBodies(ref BodyTrackingRuntimeParameters bt_params, ref Bodies bodies)
+        {
+            return (sl.ERROR_CODE)dllz_retrieve_bodies_data(CameraID, ref bt_params, ref bodies, 0);
+        }
+        #endregion
+
 
     }//Zed Camera class
 } // namespace sl

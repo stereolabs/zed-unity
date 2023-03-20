@@ -104,16 +104,11 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
     /// </summary>
     private void ImageUpdated(Camera cam, Mat camMat, Mat imageMat)
     {
-
-        //Dictionary predict = Aruco.getPredefinedDictionary((int)markerDictionary); //Load the selected pre-defined dictionary. 
-
         Dictionary predict = Objdetect.getPredefinedDictionary((int)markerDictionary); //Load the selected pre-defined dictionary. 
 
         //Create empty structures to hold the output of Aruco.detectMarkers. 
         List<Mat> corners = new List<Mat>();
         Mat ids = new Mat();
-
-        //DetectorParameters detectparams = DetectorParameters.create();
         DetectorParameters detectparams = new DetectorParameters();
         List<Mat> rejectedpoints = new List<Mat>(); //There is no overload for detectMarkers that will take camMat without this also. 
 
@@ -283,6 +278,7 @@ public class ZEDArUcoDetectionManager : MonoBehaviour
         DICT_APRILTAG_25h9 = Aruco.DICT_APRILTAG_25h9,
         DICT_APRILTAG_36h10 = Aruco.DICT_APRILTAG_36h10,
         DICT_APRILTAG_36h11 = Aruco.DICT_APRILTAG_36h11
+
     }
     */
 

@@ -27,6 +27,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -40,7 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6327103935139800442}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad2e79f67d90e0e4a8be7b327a26b6c7, type: 3}
+  m_Script: {fileID: 11500000, guid: 11bf08251bace62458c9f347c41d8c27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   zedManager: {fileID: 0}
@@ -50,5 +51,5 @@ MonoBehaviour:
   showON: 1
   showSEARCHING: 0
   showOFF: 0
-  Avatar: {fileID: 7319989575081748950, guid: 80332038e573d7e43ae6eecc9e2f5b89, type: 3}
-  smoothFactor: 0.5
+  Avatar: {fileID: 0}
+  mirrorMode: 0
