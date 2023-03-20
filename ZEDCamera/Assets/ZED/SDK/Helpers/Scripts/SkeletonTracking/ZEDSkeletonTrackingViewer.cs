@@ -45,7 +45,8 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     /// </summary>
     [Tooltip("Display 3D avatar. If set to false, only display bones and joint")]
     public bool useAvatar = true;
-    private sl.BODY_FORMAT bodyModel = sl.BODY_FORMAT.BODY_38;
+
+    private sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.BODY_38;
 
     [Space(5)]
     [Header("State Filters")]
@@ -129,7 +130,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
             zedManager.OnZEDReady += OnZEDReady;
             zedManager.OnBodyTracking += UpdateSkeletonData;
 		}
-        bodyModel = zedManager.bodyFormat;
+        bodyFormat = zedManager.bodyFormat;
     }
 
     private void OnZEDReady()
@@ -173,7 +174,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 			{
 				SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
                 Vector3 spawnPosition = zedManager.GetZedRootTansform().TransformPoint(dbody.rawBodyData.position);
-                handler.Create(avatar, bodyModel);
+                handler.Create(avatar, bodyFormat);
                 handler.InitSkeleton(person_id, new Material(skeletonBaseMaterial));
                 avatarControlList.Add(person_id, handler);
                 UpdateAvatarControl(handler, dbody.rawBodyData);
@@ -231,7 +232,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 	{
         Vector3[] worldJointsPos; 
         Quaternion[] worldJointsRot;
-        switch (bodyModel)
+        switch (bodyFormat)
         {
             case sl.BODY_FORMAT.BODY_34:
                 worldJointsPos = new Vector3[34];
@@ -270,7 +271,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         {
             handler.SetConfidences(data.keypointConfidence);
             handler.SetControlWithJointPosition(
-                handler.SkBodyModel, worldJointsPos,
+                handler.BodyFormat, worldJointsPos,
                 worldJointsRot, data.globalRootOrientation,
                 useAvatar, mirrorMode);
         }

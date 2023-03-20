@@ -1928,7 +1928,7 @@ namespace sl
         /// <summary>
         /// Hands only
         /// </summary>
-        HAND
+       // HAND
     };
 
     /// <summary>
@@ -2476,8 +2476,7 @@ namespace sl
         /// <summary>
         ///  Keypoints based, specific to human skeleton, state of the art accuracy, requires powerful GPU.
         /// </summary>
-		HUMAN_BODY_ACCURATE,
-        LAST
+		HUMAN_BODY_ACCURATE
     };
 
     /// <summary>
@@ -2525,6 +2524,30 @@ namespace sl
         /// related to sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE
         /// </summary>
         HUMAN_BODY_ACCURATE_DETECTION,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.HUMAN_BODY_FAST
+        /// </summary>
+        HUMAN_BODY_38_FAST_DETECTION,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
+        /// </summary>
+        HUMAN_BODY_38_MEDIUM_DETECTION,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE
+        /// </summary>
+        HUMAN_BODY_38_ACCURATE_DETECTION,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.HUMAN_BODY_FAST
+        /// </summary>
+        HUMAN_BODY_70_FAST_DETECTION,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
+        /// </summary>
+        HUMAN_BODY_70_MEDIUM_DETECTION,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE
+        /// </summary>
+        HUMAN_BODY_70_ACCURATE_DETECTION,
         /// <summary>
         /// related to sl.DETECTION_MODEL.PERSON_HEAD
         /// </summary>

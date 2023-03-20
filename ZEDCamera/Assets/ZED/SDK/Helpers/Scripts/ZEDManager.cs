@@ -3197,13 +3197,13 @@ public class ZEDManager : MonoBehaviour
         bool oldpausestate = pauseSVOReading;
         pauseSVOReading = true;
 
-        var threadOptim = new Thread(() => OptimizeModel(sl.ZEDCamera.cvtDetection(bodyTrackingModel))); //Assign thread.
+        var threadOptim = new Thread(() => OptimizeModel(sl.ZEDCamera.cvtDetection(bodyTrackingModel, bodyFormat))); //Assign thread.
         threadOptim.Start();
 
         while (optimStatus != sl.ERROR_CODE.SUCCESS)
         {
             if (watch.Elapsed.TotalSeconds > optimTimeout_S) Debug.LogError("Optimization process Timeout. Please try to optimize the AI models outside of Unity, using the ZED Diagnostic tool ");
-            Debug.LogWarning("Optimizing AI Model  : " + sl.ZEDCamera.cvtDetection(bodyTrackingModel) + "... The process can take few minutes.... " + watch.Elapsed.TotalSeconds.ToString("N2") + " sec");
+            Debug.LogWarning("Optimizing AI Model  : " + sl.ZEDCamera.cvtDetection(bodyTrackingModel, bodyFormat) + "... The process can take few minutes.... " + watch.Elapsed.TotalSeconds.ToString("N2") + " sec");
             yield return new WaitForSeconds(5.0f);
         }
 

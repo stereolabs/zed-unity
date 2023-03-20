@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using UnityEditor;
 
 public class SkeletonHandler : ScriptableObject
 {
@@ -125,7 +124,7 @@ public class SkeletonHandler : ScriptableObject
         JointType_34_SpineNaval = 1,
         JointType_34_SpineChest = 2,
         JointType_34_Nose = 27,
-        jointType_34_Count = 34;
+        jointType_34_COUNT = 34;
 
 
     // List of bones (pair of joints) for BODY_38. Used for Skeleton mode.
@@ -239,12 +238,10 @@ public class SkeletonHandler : ScriptableObject
     JointType_70_RIGHT_HAND_PINKY_3, JointType_70_RIGHT_HAND_PINKY_4,
     // legs
     JointType_LEFT_HIP, JointType_LEFT_KNEE,
-    JointType_LEFT_KNEE, JointType_LEFT_ANKLE,
     JointType_LEFT_ANKLE, JointType_LEFT_HEEL,
     JointType_LEFT_ANKLE, JointType_LEFT_BIG_TOE,
     JointType_LEFT_ANKLE, JointType_LEFT_SMALL_TOE,
     JointType_RIGHT_HIP, JointType_RIGHT_KNEE,
-    JointType_RIGHT_KNEE, JointType_RIGHT_ANKLE,
     JointType_RIGHT_ANKLE, JointType_RIGHT_HEEL,
     JointType_RIGHT_ANKLE, JointType_RIGHT_BIG_TOE,
     JointType_RIGHT_ANKLE, JointType_RIGHT_SMALL_TOE
@@ -768,12 +765,10 @@ public class SkeletonHandler : ScriptableObject
 
     #region vars
 
-    private sl.BODY_FORMAT skBodyModel = sl.BODY_FORMAT.BODY_38;
-
-    public Vector3[] joints34 = new Vector3[jointType_34_Count];
+    public Vector3[] joints34 = new Vector3[jointType_34_COUNT];
     public Vector3[] joints38 = new Vector3[JointType_38_COUNT];
     public Vector3[] joints70 = new Vector3[JointType_70_COUNT];
-    public float[] confidences34 = new float[jointType_34_Count];
+    public float[] confidences34 = new float[jointType_34_COUNT];
     public float[] confidences38 = new float[JointType_38_COUNT];
     public float[] confidences70 = new float[JointType_70_COUNT];
     GameObject skeleton;
@@ -788,8 +783,6 @@ public class SkeletonHandler : ScriptableObject
 
     private Dictionary<HumanBodyBones, Quaternion> default_rotations = null;
 
-    private List<GameObject> sphere = new List<GameObject>();
-
     private Vector3 targetBodyPosition = new Vector3(0.0f, 0.0f, 0.0f);
     private Vector3 targetBodyPositionWithHipOffset = new Vector3(0.0f, 0.0f, 0.0f);
     private Quaternion targetBodyOrientation = Quaternion.identity;
@@ -797,7 +790,8 @@ public class SkeletonHandler : ScriptableObject
     private bool usingAvatar = true;
 
     [SerializeField] private float _feetOffset = 0.0f;
-    public float FeetOffset {
+    public float FeetOffset
+    {
         get { return _feetOffset; }
         set { _feetOffset = value; }
     }
@@ -805,7 +799,9 @@ public class SkeletonHandler : ScriptableObject
     public Dictionary<HumanBodyBones, Quaternion> RigBoneTarget { get => rigBoneTarget; set => rigBoneTarget = value; }
     public Quaternion TargetBodyOrientation { get => targetBodyOrientation; set => targetBodyOrientation = value; }
     public Vector3 TargetBodyPositionWithHipOffset { get => targetBodyPositionWithHipOffset; set => targetBodyPositionWithHipOffset = value; }
-    public sl.BODY_FORMAT SkBodyModel { get => skBodyModel; set => skBodyModel = value; }
+
+    private sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.BODY_38;
+    public sl.BODY_FORMAT BodyFormat { get => bodyFormat; set => bodyFormat = value; }
 
     #endregion
 
@@ -823,12 +819,12 @@ public class SkeletonHandler : ScriptableObject
     /// </summary>
     /// <param name="h">The humanoid GameObject prefab.</param>
     /// <param name="body_model">The Body model to apply (38 or 70 bones).</param>
-    public void Create(GameObject h, sl.BODY_FORMAT body_model)
+    public void Create(GameObject h, sl.BODY_FORMAT body_format)
     {
         humanoid = (GameObject)Instantiate(h, Vector3.zero, Quaternion.identity);
         animator = humanoid.GetComponent<Animator>();
 
-        skBodyModel = body_model;
+        BodyFormat = body_format;
 
         zedSkeletonAnimator = humanoid.GetComponent<ZEDSkeletonAnimator>();
         zedSkeletonAnimator.Skhandler = this;
@@ -839,7 +835,7 @@ public class SkeletonHandler : ScriptableObject
 
         default_rotations = new Dictionary<HumanBodyBones, Quaternion>();
 
-        switch (body_model)
+        switch (BodyFormat)
         {
             case sl.BODY_FORMAT.BODY_34:
                 foreach (HumanBodyBones bone in humanBones34)
@@ -893,12 +889,7 @@ public class SkeletonHandler : ScriptableObject
                 }
                 break;
             default:
-                Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34, BODY_38 or BODY_70");
-#if UNITY_EDITOR
-                EditorApplication.ExitPlaymode();
-#else
-                Application.Quit();
-#endif
+                Debug.LogError("Error: Invalid BODY_MODEL!");
                 break;
         }
     }
@@ -929,7 +920,7 @@ public class SkeletonHandler : ScriptableObject
             rigBoneTarget[HumanBodyBones.Hips] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.Hips)];
         }
 
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.Spine].transform)
         {
             rigBoneTarget[HumanBodyBones.Spine] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.Spine)];
         }
@@ -1417,7 +1408,7 @@ public class SkeletonHandler : ScriptableObject
             rigBoneTarget[HumanBodyBones.Hips] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.Hips)].mirror_x();
         }
 
-        if (rigBone[HumanBodyBones.Hips].transform)
+        if (rigBone[HumanBodyBones.Spine].transform)
         {
             rigBoneTarget[HumanBodyBones.Spine] = jointsRotation[Array.IndexOf(humanBones34, HumanBodyBones.Spine)].mirror_x();
         }
@@ -1894,7 +1885,7 @@ public class SkeletonHandler : ScriptableObject
         targetBodyOrientation = rootRotation;
         targetBodyPosition = rootPosition;
     }
-    
+
     /// <summary>
     /// Initialize SDK skeleton display (based on keypoints positions).
     /// </summary>
@@ -1903,7 +1894,7 @@ public class SkeletonHandler : ScriptableObject
     public void InitSkeleton(int person_id, Material skBaseMat)
     {
         int[] curSphereList;
-        switch (skBodyModel)
+        switch (BodyFormat)
         {
             case sl.BODY_FORMAT.BODY_34:
                 bones = new GameObject[bonesList34.Length / 2];
@@ -1922,7 +1913,9 @@ public class SkeletonHandler : ScriptableObject
                 break;
             default:
                 Debug.LogError("Error! InitSkeleton: Invalid body model, select at least BODY_34 to use a 3D avatar. Assuming Body38.");
-                throw new Exception("Invalid Body model. Please use either BODY_34, BODY_38 or BODY_70");
+                bones = new GameObject[bonesList38.Length / 2];
+                spheres = new GameObject[sphereList38.Length];
+                curSphereList = sphereList38;
                 break;
         }
 
@@ -1938,7 +1931,6 @@ public class SkeletonHandler : ScriptableObject
             cylinder.GetComponent<Renderer>().material = skBaseMat;
             skBaseMat.color = color;
             cylinder.transform.parent = skeleton.transform;
-            cylinder.name = "Bone_" + i.ToString("00");
             bones[i] = cylinder;
         }
         for (int j = 0; j < spheres.Length; j++)
@@ -1952,17 +1944,17 @@ public class SkeletonHandler : ScriptableObject
             spheres[j] = sphere;
         }
     }
-    
+
     /// <summary>
     /// Updates SDK skeleton display.
     /// </summary>
     /// <param name="body_model">38 or 70 keypoints.</param>
     /// <param name="offsetDebug">In case the "displayDebugSkeleton" option is enabled in the ZEDSkeletonTrackingManager, the skeleton will be displayed with this offset.</param>
-    void UpdateSkeleton(sl.BODY_FORMAT body_model, Vector3 offsetDebug)
+    void UpdateSkeleton(sl.BODY_FORMAT body_format, Vector3 offsetDebug)
     {
         float width = 0.025f;
 
-        switch (body_model)
+        switch (body_format)
         {
             case sl.BODY_FORMAT.BODY_34:
                 for (int j = 0; j < spheres.Length; j++)
@@ -2001,7 +1993,7 @@ public class SkeletonHandler : ScriptableObject
 
                 }
                 break;
-            case    sl.BODY_FORMAT.BODY_38:
+            case sl.BODY_FORMAT.BODY_38:
                 for (int j = 0; j < spheres.Length; j++)
                 {
                     if (sl.ZEDCommon.IsVector3NaN(joints38[sphereList38[j]]))
@@ -2043,7 +2035,6 @@ public class SkeletonHandler : ScriptableObject
                 {
                     if (sl.ZEDCommon.IsVector3NaN(joints70[sphereList70[j]]))
                     {
-                        Debug.LogWarning("NaN value caught!");
                         spheres[j].transform.position = Vector3.zero + offsetDebug;
                         spheres[j].SetActive(false);
                     }
@@ -2077,7 +2068,7 @@ public class SkeletonHandler : ScriptableObject
                 }
                 break;
             default:
-                Debug.LogError("Error: updateSkeleton: Invalid Body Model. No update.");
+                Debug.LogError("Error: updateSkeleton: Invalid body model, select at least BODY_34 to use a 3D avatar. No update.");
                 break;
         }
     }
@@ -2087,15 +2078,15 @@ public class SkeletonHandler : ScriptableObject
     /// Called on camera's OnObjectDetection event.
     /// Updates the target rotations so that the 3D avatar can be correctly animated.
     /// </summary>
-    /// <param name="body_model">Body model in use.</param>
+    /// <param name="body_format">Body format in use.</param>
     /// <param name="jointsPosition">The keypoints position from the ZED SDK.</param>
     /// <param name="jointsRotation">The bones local orientations from the ZED SDK.</param>
     /// <param name="rootRotation">The global root orientation from the ZED SDK.</param>
     /// <param name="useAvatar">If the 3D avatar should be displayed (and if the corresponding data should be updated).</param>
     /// <param name="_mirrorOnYAxis">Mirror the 3D avatars or not.</param>
-    public void SetControlWithJointPosition(sl.BODY_FORMAT body_model, Vector3[] jointsPosition, Quaternion[] jointsRotation, Quaternion rootRotation, bool useAvatar, bool _mirrorOnYAxis)
+    public void SetControlWithJointPosition(sl.BODY_FORMAT bodyFormat, Vector3[] jointsPosition, Quaternion[] jointsRotation, Quaternion rootRotation, bool useAvatar, bool _mirrorOnYAxis)
     {
-        switch (body_model)
+        switch (bodyFormat)
         {
             case sl.BODY_FORMAT.BODY_34:
                 joints34 = jointsPosition;
@@ -2113,12 +2104,12 @@ public class SkeletonHandler : ScriptableObject
 
                     if (ZEDSkeletonTrackingViewer.DisplayDebugSkeleton)
                     {
-                        UpdateSkeleton(body_model, ZEDSkeletonTrackingViewer.OffsetDebugSkeleton);
+                        UpdateSkeleton(bodyFormat, ZEDSkeletonTrackingViewer.OffsetDebugSkeleton);
                     }
                 }
                 else
                 {
-                    UpdateSkeleton(body_model, Vector3.zero);
+                    UpdateSkeleton(bodyFormat, Vector3.zero);
                 }
 
                 zedSkeletonAnimator.PoseWasUpdatedIK();
@@ -2140,12 +2131,12 @@ public class SkeletonHandler : ScriptableObject
 
                     if (ZEDSkeletonTrackingViewer.DisplayDebugSkeleton)
                     {
-                        UpdateSkeleton(body_model, ZEDSkeletonTrackingViewer.OffsetDebugSkeleton);
+                        UpdateSkeleton(bodyFormat, ZEDSkeletonTrackingViewer.OffsetDebugSkeleton);
                     }
                 }
                 else
                 {
-                    UpdateSkeleton(body_model, Vector3.zero);
+                    UpdateSkeleton(bodyFormat, Vector3.zero);
                 }
 
                 zedSkeletonAnimator.PoseWasUpdatedIK();
@@ -2167,18 +2158,18 @@ public class SkeletonHandler : ScriptableObject
 
                     if (ZEDSkeletonTrackingViewer.DisplayDebugSkeleton)
                     {
-                        UpdateSkeleton(body_model, ZEDSkeletonTrackingViewer.OffsetDebugSkeleton);
+                        UpdateSkeleton(bodyFormat, ZEDSkeletonTrackingViewer.OffsetDebugSkeleton);
                     }
                 }
                 else
                 {
-                    UpdateSkeleton(body_model, Vector3.zero);
+                    UpdateSkeleton(bodyFormat, Vector3.zero);
                 }
                 zedSkeletonAnimator.PoseWasUpdatedIK();
                 break;
 
             default:
-                Debug.LogError("Error: setControlWithJointPosition: Invalid Body Model. No update.");
+                Debug.LogError("Error: setControlWithJointPosition: Invalid body model, select at least BODY_34 to use a 3D avatar. No update.");
                 break;
         }
     }
@@ -2186,9 +2177,9 @@ public class SkeletonHandler : ScriptableObject
     /// <summary>
     /// Utility function to apply the rest pose to the bones.
     /// </summary>
-    void PropagateRestPoseRotations(sl.BODY_FORMAT body_model, int parentIdx, Dictionary<HumanBodyBones, RigBone> outPose, Quaternion restPosRot, bool inverse)
+    void PropagateRestPoseRotations(sl.BODY_FORMAT bodyFormat, int parentIdx, Dictionary<HumanBodyBones, RigBone> outPose, Quaternion restPosRot, bool inverse)
     {
-        if (body_model == sl.BODY_FORMAT.BODY_34)
+        if (bodyFormat == sl.BODY_FORMAT.BODY_34)
         {
             for (int i = 0; i < humanBones34.Length; i++)
             {
@@ -2220,12 +2211,12 @@ public class SkeletonHandler : ScriptableObject
                             restPoseRotChild = restPosRot;
                         }
 
-                        PropagateRestPoseRotations(body_model, i, outPose, restPoseRotChild, inverse);
+                        PropagateRestPoseRotations(bodyFormat, i, outPose, restPoseRotChild, inverse);
                     }
                 }
             }
         }
-        else if (body_model == sl.BODY_FORMAT.BODY_38)
+        else if (bodyFormat == sl.BODY_FORMAT.BODY_38)
         {
             for (int i = 0; i < humanBones38.Length; i++)
             {
@@ -2257,12 +2248,12 @@ public class SkeletonHandler : ScriptableObject
                             restPoseRotChild = restPosRot;
                         }
 
-                        PropagateRestPoseRotations(body_model, i, outPose, restPoseRotChild, inverse);
+                        PropagateRestPoseRotations(bodyFormat, i, outPose, restPoseRotChild, inverse);
                     }
                 }
             }
         }
-        else if (body_model == sl.BODY_FORMAT.BODY_70)
+        else if (bodyFormat == sl.BODY_FORMAT.BODY_70)
         {
             for (int i = 0; i < humanBones70.Length; i++)
             {
@@ -2294,14 +2285,14 @@ public class SkeletonHandler : ScriptableObject
                             restPoseRotChild = restPosRot;
                         }
 
-                        PropagateRestPoseRotations(body_model, i, outPose, restPoseRotChild, inverse);
+                        PropagateRestPoseRotations(bodyFormat, i, outPose, restPoseRotChild, inverse);
                     }
                 }
             }
         }
         else
         {
-            Debug.LogError("Error:PropagateRestPoseRotations: Invalid Body Model.");
+            Debug.LogError("Error:PropagateRestPoseRotations: Invalid body model, select at least BODY_34 to use a 3D avatar.");
         }
     }
 
@@ -2310,10 +2301,10 @@ public class SkeletonHandler : ScriptableObject
     /// Sets 3D avatar position, and the bones rotations. Called in Update().
     /// This method does not use the animator, and instead directly sets the rotations of the bones transforms.
     /// </summary>
-    /// <param name="body_model">Body model in use.</param>
-    private void MoveAvatar(sl.BODY_FORMAT body_model)
+    /// <param name="bodyFormat">Body format in use.</param>
+    private void MoveAvatar(sl.BODY_FORMAT bodyFormat)
     {
-        switch (body_model)
+        switch (bodyFormat)
         {
             case sl.BODY_FORMAT.BODY_34:
                 // Put in Ref Pose
@@ -2328,7 +2319,7 @@ public class SkeletonHandler : ScriptableObject
                     }
                 }
 
-                PropagateRestPoseRotations(body_model, 0, rigBone, default_rotations[0], false);
+                PropagateRestPoseRotations(bodyFormat, 0, rigBone, default_rotations[0], false);
 
                 for (int i = 0; i < humanBones34.Length; i++)
                 {
@@ -2341,7 +2332,7 @@ public class SkeletonHandler : ScriptableObject
                         }
                     }
                 }
-                PropagateRestPoseRotations(body_model, 0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
+                PropagateRestPoseRotations(bodyFormat, 0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
                 break;
 
             case sl.BODY_FORMAT.BODY_38:
@@ -2357,7 +2348,7 @@ public class SkeletonHandler : ScriptableObject
                     }
                 }
 
-                PropagateRestPoseRotations(body_model, 0, rigBone, default_rotations[0], false);
+                PropagateRestPoseRotations(bodyFormat, 0, rigBone, default_rotations[0], false);
 
                 for (int i = 0; i < humanBones38.Length; i++)
                 {
@@ -2370,7 +2361,7 @@ public class SkeletonHandler : ScriptableObject
                         }
                     }
                 }
-                PropagateRestPoseRotations(body_model, 0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
+                PropagateRestPoseRotations(bodyFormat, 0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
                 break;
 
             case sl.BODY_FORMAT.BODY_70:
@@ -2386,7 +2377,7 @@ public class SkeletonHandler : ScriptableObject
                     }
                 }
 
-                PropagateRestPoseRotations(body_model, 0, rigBone, default_rotations[0], false);
+                PropagateRestPoseRotations(bodyFormat, 0, rigBone, default_rotations[0], false);
 
                 for (int i = 0; i < humanBones70.Length; i++)
                 {
@@ -2395,18 +2386,19 @@ public class SkeletonHandler : ScriptableObject
                         if (parentsIdx_70[i] != -1)
                         {
                             Quaternion newRotation = rigBoneTarget[humanBones70[i]] * rigBone[humanBones70[i]].transform.localRotation;
+                            rigBone[humanBones70[i]].transform.localRotation = newRotation;
 
                             // update animator bones.
-                            rigBone[humanBones70[i]].transform.localRotation = newRotation;
+                            animator.SetBoneLocalRotation(humanBones70[i], newRotation);
                         }
 
                     }
                 }
-                PropagateRestPoseRotations(body_model, 0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
+                PropagateRestPoseRotations(bodyFormat, 0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
                 break;
 
             default:
-                Debug.LogError("Error: Invalid Body Model.");
+                Debug.LogError("Error: Invalid body model, select at least BODY_34 to use a 3D avatar.");
                 break;
         }
 
@@ -2424,7 +2416,7 @@ public class SkeletonHandler : ScriptableObject
     /// <param name="confidences">Confidences from the ZED SDK.</param>
     public void SetConfidences(float[] confidences)
     {
-        switch (skBodyModel)
+        switch (BodyFormat)
         {
             case sl.BODY_FORMAT.BODY_34:
                 confidences34 = confidences;
@@ -2448,7 +2440,7 @@ public class SkeletonHandler : ScriptableObject
     {
         if (usingAvatar)
         {
-            MoveAvatar(SkBodyModel);
+            MoveAvatar(BodyFormat);
         }
     }
 }

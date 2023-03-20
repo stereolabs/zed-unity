@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
@@ -36,8 +35,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     [Header("RIG SETTINGS")]
     public Transform LeftFootTransform = null;
     public Transform RightFootTransform = null;
-    public float ankleHeightOffset =0.102f;
-    [HideInInspector]
+    public Vector3 ankleHeightOffset = new Vector3(0, 0.102f, 0);
     public ZEDSkeletonTrackingViewer bodyTrackingManager;
 
     [Header("Keyboard controls")]
@@ -74,7 +72,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
     private Vector3 rootHeightOffset = Vector3.zero;
     public Vector3 RootHeightOffset { get => rootHeightOffset; set => rootHeightOffset = value; }
-    public bool HeightOffsetStabilized { get => heightOffsetStabilized; set => heightOffsetStabilized = value; }
 
     /**
      * LERP DATA FOR IK TARGETS
@@ -97,11 +94,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
     private Vector3 ankleRPosBeforMove = Vector3.zero;
     private Vector3 ankleLPosBeforMove = Vector3.zero;
-
-    [SerializeField]
-    private bool heightOffsetStabilized = false;
-    [SerializeField]
-    private bool footIKDisabledForCalib = false;
 
     #endregion
 
@@ -133,7 +125,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         animator = GetComponent<Animator>();
         currentGroundedPosL = LeftFootTransform.position;
         currentGroundedPosR = RightFootTransform.position;
-        footIKDisabledForCalib = heightOffsetter.automaticOffset;
         bodyTrackingFrequency = ZEDSkeletonTrackingViewer.BodyTrackingFrequency;
         smoothingFactor = ZEDSkeletonTrackingViewer.SmoothingFactor;
     }
@@ -165,19 +156,14 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             transform.position = skhandler.TargetBodyPositionWithHipOffset;
             transform.rotation = skhandler.TargetBodyOrientation;
 
-            if (footIKDisabledForCalib)
-            {
-                ManageHeightOffset();
-            }
+            ManageHeightOffset();
 
             // 3) Manage Foot IK
             if (animator)
             {
                 //if the IK is active, set the position and rotation directly to the goal.
-                if (enableFootIK && !footIKDisabledForCalib)
+                if (enableFootIK)
                 {
-                    ManageHeightOffset();
-
                     // Set the right foot target position and rotation, if one has been assigned
                     if (RightFootTransform != null)
                     {
@@ -196,7 +182,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         Ray ray = new Ray(effectorTargetPos + (Vector3.up * (groundedR ? thresholdLeaveGroundedState : thresholdEnterGroundedState)), Vector3.down);
                         if (Physics.Raycast(ray, out RaycastHit hit, 2 * (groundedR ? thresholdLeaveGroundedState : thresholdEnterGroundedState), raycastDetectionLayers))
                         {
-                            effectorTargetPos = CustomInterp(startLerpPosR, hit.point + new Vector3(0,ankleHeightOffset,0), ref curLerpTimeR);
+                            effectorTargetPos = CustomInterp(startLerpPosR, hit.point + ankleHeightOffset, ref curLerpTimeR);
                             normalR = hit.normal;
                             groundedR = true;
                             animator.SetIKRotation(
@@ -243,7 +229,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         {
                             posHitRay = hit.point;
                             colorAnkleRAfterMove = Color.white;
-                            effectorTargetPos = CustomInterp(startLerpPosL, hit.point + new Vector3(0, ankleHeightOffset, 0), ref curLerpTimeL);
+                            effectorTargetPos = CustomInterp(startLerpPosL, hit.point + ankleHeightOffset, ref curLerpTimeL);
                             normalL = hit.normal;
                             groundedL = true;
                             animator.SetIKRotation(
@@ -299,17 +285,17 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         float confAnkleLeft = 0;
         float confAnkleRight = 0;
 
-        if (skhandler.SkBodyModel == sl.BODY_FORMAT.BODY_34)
+        if (skhandler.BodyFormat == sl.BODY_FORMAT.BODY_34)
         {
             confAnkleLeft = skhandler.confidences34[SkeletonHandler.JointType_LEFT_ANKLE];
             confAnkleRight = skhandler.confidences34[SkeletonHandler.JointType_RIGHT_ANKLE];
         }
-        else if (skhandler.SkBodyModel == sl.BODY_FORMAT.BODY_38)
+        else if (skhandler.BodyFormat == sl.BODY_FORMAT.BODY_38)
         {
             confAnkleLeft = skhandler.confidences38[SkeletonHandler.JointType_LEFT_ANKLE];
             confAnkleRight = skhandler.confidences38[SkeletonHandler.JointType_RIGHT_ANKLE];
         }
-        else if (skhandler.SkBodyModel == sl.BODY_FORMAT.BODY_70)
+        else if (skhandler.BodyFormat == sl.BODY_FORMAT.BODY_70)
         {
             confAnkleLeft = skhandler.confidences70[SkeletonHandler.JointType_LEFT_ANKLE];
             confAnkleRight = skhandler.confidences70[SkeletonHandler.JointType_RIGHT_ANKLE];
@@ -323,7 +309,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
         try
         {
-            switch (skhandler.SkBodyModel)
+            switch (skhandler.BodyFormat)
             {
                 case sl.BODY_FORMAT.BODY_34:
                     targetLerpPosL = skhandler.joints34[SkeletonHandler.JointType_LEFT_ANKLE];
@@ -357,7 +343,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
         try
         {
-            switch (skhandler.SkBodyModel)
+            switch (skhandler.BodyFormat)
             {
                 case sl.BODY_FORMAT.BODY_34:
                     targetLerpPosR = skhandler.joints34[SkeletonHandler.JointType_RIGHT_ANKLE];
@@ -403,15 +389,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         curTValR = 0;
         totalLerpTime = 1 / bodyTrackingFrequency;
         totalLerpTime *= smoothingFactor;
-
-        if (!HeightOffsetStabilized && heightOffsetter.automaticOffset
-            && confAnkleLeft > 0
-            && confAnkleRight > 0)
-        {
-            heightOffsetter.CurCalibrationFrames++;
-            heightOffsetStabilized = heightOffsetter.CurCalibrationFrames > heightOffsetter.nbCalibrationFrames;
-            footIKDisabledForCalib = !(HeightOffsetStabilized && enableFootIK);
-        }
     }
 
     private Vector3 AccumulateLerpVec3(Vector3 startPos, Vector3 targetPos, ref float curTVal, ref float currentLerpTime)
@@ -465,29 +442,24 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         float confAnkleLeft = 0;
         float confAnkleRight = 0;
 
-        if (skhandler.SkBodyModel == sl.BODY_FORMAT.BODY_34)
+        if (skhandler.BodyFormat == sl.BODY_FORMAT.BODY_34)
         {
             confAnkleLeft = skhandler.confidences34[SkeletonHandler.JointType_LEFT_ANKLE];
             confAnkleRight = skhandler.confidences34[SkeletonHandler.JointType_RIGHT_ANKLE];
         }
-        else if (skhandler.SkBodyModel == sl.BODY_FORMAT.BODY_38)
+        else if (skhandler.BodyFormat == sl.BODY_FORMAT.BODY_38)
         {
             confAnkleLeft = skhandler.confidences38[SkeletonHandler.JointType_LEFT_ANKLE];
             confAnkleRight = skhandler.confidences38[SkeletonHandler.JointType_RIGHT_ANKLE];
         }
-        else if (skhandler.SkBodyModel == sl.BODY_FORMAT.BODY_70)
+        else if (skhandler.BodyFormat == sl.BODY_FORMAT.BODY_70)
         {
             confAnkleLeft = skhandler.confidences70[SkeletonHandler.JointType_LEFT_ANKLE];
             confAnkleRight = skhandler.confidences70[SkeletonHandler.JointType_RIGHT_ANKLE];
         }
         else
         {
-            Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34, BODY_38 or BODY_70");
-#if UNITY_EDITOR
-            EditorApplication.ExitPlaymode();
-#else
-            Application.Quit();
-#endif
+            Debug.LogError("Error: OnAnimatorIK: Invalid body model, select at least BODY_34 to use a 3D avatar.");
         }
 
         //// height offset management
@@ -496,8 +468,9 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         confAnkleRight,
         ankleLPosBeforMove,
         ankleRPosBeforMove,
-        ankleHeightOffset);
-        transform.position += rootHeightOffset + new Vector3(0, ankleHeightOffset, 0);
+        ankleHeightOffset.y);
+        // transform.position += rootHeightOffset + ankleHeightOffset;
+        transform.position -= rootHeightOffset;
     }
 
     private void Update()
@@ -519,9 +492,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         // reset automatic height offset calibration
         if (Input.GetKeyDown(resetAutomaticOffset))
         {
-            heightOffsetter.CurCalibrationFrames = 0;
-            heightOffsetStabilized = false;
-            footIKDisabledForCalib = true;
+            heightOffsetter.CurrentheightOffset = 0;
         }
     }
 
