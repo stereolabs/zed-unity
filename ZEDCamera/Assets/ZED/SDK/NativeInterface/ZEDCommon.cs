@@ -2569,9 +2569,35 @@ namespace sl
     };
 
     /// <summary>
+    /// semantic and order of human body keypoints.
+    /// </summary>
+    public enum BODY_18_PARTS
+    {
+        NOSE = 0,
+        NECK = 1,
+        RIGHT_SHOULDER = 2,
+        RIGHT_ELBOW = 3,
+        RIGHT_WRIST = 4,
+        LEFT_SHOULDER = 5,
+        LEFT_ELBOW = 6,
+        LEFT_WRIST = 7,
+        RIGHT_HIP = 8,
+        RIGHT_KNEE = 9,
+        RIGHT_ANKLE = 10,
+        LEFT_HIP = 11,
+        LEFT_KNEE = 12,
+        LEFT_ANKLE = 13,
+        RIGHT_EYE = 14,
+        LEFT_EYE = 15,
+        RIGHT_EAR = 16,
+        LEFT_EAR = 17,
+        LAST = 18
+    };
+
+    /// <summary>
     /// ssemantic of human body parts and order keypoints for BODY_FORMAT.BODY_34.
     /// </summary>
-    public enum BODY_PARTS_POSE_34
+    public enum BODY_34_PARTS
     {
         PELVIS = 0,
         NAVAL_SPINE = 1,
@@ -2613,7 +2639,7 @@ namespace sl
     /// <summary>
     /// ssemantic of human body parts and order keypoints for BODY_FORMAT.BODY_38.
     /// </summary>
-    public enum BODY_PARTS_POSE_38
+    public enum BODY_38_PARTS
     {
         PELVIS = 0,
         SPINE_1 = 1,
@@ -2657,7 +2683,7 @@ namespace sl
         LAST = 38
     };
 
-    enum BODY_PARTS_BODY_70
+    enum BODY_70_PARTS
     {
         PELVIS = 0,
         SPINE_1 = 1,
