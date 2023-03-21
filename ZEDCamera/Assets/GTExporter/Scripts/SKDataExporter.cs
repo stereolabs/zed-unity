@@ -143,6 +143,14 @@ public class SKDataExporter : MonoBehaviour
         isInit = true;
     }
 
+    public void Update()
+    {
+        if (isInit && FrameCount == zedManager.zedCamera.GetSVONumberOfFrames() - 2)
+        {
+            Save(jsonFilename);
+        }
+    }
+
     public void LateUpdate()
     {
         if (isInit)
@@ -195,9 +203,9 @@ public class SKDataExporter : MonoBehaviour
                         Keypoints3DData keypoints3D = new Keypoints3DData();
                         Keypoints2DData keypoints2D = new Keypoints2DData();
 
-                        keypoints3D.NOSE = new float[3] { InvalidValue, InvalidValue, InvalidValue };
-                        keypoints3D.NECK = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.NECK]).position));
-                        keypoints3D.RIGHT_SHOULDER = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_SHOULDER]).position));
+                    /*  keypoints3D.NOSE = new float[3] { InvalidValue, InvalidValue, InvalidValue };
+                        keypoints3D.NECK = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.NECK]).position);
+                        keypoints3D.RIGHT_SHOULDER = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_SHOULDER]).position));
                         keypoints3D.RIGHT_ELBOW = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_ELBOW]).position));
                         keypoints3D.RIGHT_WRIST = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_WRIST]).position));
                         keypoints3D.LEFT_SHOULDER = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_SHOULDER]).position));
@@ -211,6 +219,25 @@ public class SKDataExporter : MonoBehaviour
                         keypoints3D.LEFT_ANKLE = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_ANKLE]).position));
                         keypoints3D.RIGHT_EYE = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_EYE]).position));
                         keypoints3D.LEFT_EYE = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_EYE]).position));
+                        keypoints3D.RIGHT_EAR = new float[3] { InvalidValue, InvalidValue, InvalidValue };
+                        keypoints3D.LEFT_EAR = new float[3] { InvalidValue, InvalidValue, InvalidValue };*/
+
+                        keypoints3D.NOSE = new float[3] { InvalidValue, InvalidValue, InvalidValue };
+                        keypoints3D.NECK = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.NECK]).position);
+                        keypoints3D.RIGHT_SHOULDER = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_SHOULDER]).position);
+                        keypoints3D.RIGHT_ELBOW = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_ELBOW]).position);
+                        keypoints3D.RIGHT_WRIST = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_WRIST]).position);
+                        keypoints3D.LEFT_SHOULDER = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_SHOULDER]).position);
+                        keypoints3D.LEFT_ELBOW = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_ELBOW]).position);
+                        keypoints3D.LEFT_WRIST = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_WRIST]).position);
+                        keypoints3D.RIGHT_HIP = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_HIP]).position);
+                        keypoints3D.RIGHT_KNEE = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_KNEE]).position);
+                        keypoints3D.RIGHT_ANKLE = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_ANKLE]).position);
+                        keypoints3D.LEFT_HIP = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_HIP]).position);
+                        keypoints3D.LEFT_KNEE = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_KNEE]).position);
+                        keypoints3D.LEFT_ANKLE = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_ANKLE]).position);
+                        keypoints3D.RIGHT_EYE = new float[3] { InvalidValue, InvalidValue, InvalidValue }; //Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_EYE]).position);
+                        keypoints3D.LEFT_EYE = new float[3] { InvalidValue, InvalidValue, InvalidValue };  //Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_EYE]).position);
                         keypoints3D.RIGHT_EAR = new float[3] { InvalidValue, InvalidValue, InvalidValue };
                         keypoints3D.LEFT_EAR = new float[3] { InvalidValue, InvalidValue, InvalidValue };
 
@@ -228,8 +255,8 @@ public class SKDataExporter : MonoBehaviour
                         keypoints2D.LEFT_HIP = Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_HIP]).position)), fx, fy, cx, cy);
                         keypoints2D.LEFT_KNEE = Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_KNEE]).position)), fx, fy, cx, cy);
                         keypoints2D.LEFT_ANKLE = Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_ANKLE]).position)), fx, fy, cx, cy);
-                        keypoints2D.RIGHT_EYE = Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_EYE]).position)), fx, fy, cx, cy);
-                        keypoints2D.LEFT_EYE = Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_EYE]).position)), fx, fy, cx, cy);
+                        keypoints2D.RIGHT_EYE = new float[2] { InvalidValue, InvalidValue }; // Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.RIGHT_EYE]).position)), fx, fy, cx, cy);
+                        keypoints2D.LEFT_EYE = new float[2] { InvalidValue, InvalidValue };  //Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones18[(int)sl.BODY_18_PARTS.LEFT_EYE]).position)), fx, fy, cx, cy);
                         keypoints2D.RIGHT_EAR = new float[2] { InvalidValue, InvalidValue };
                         keypoints2D.LEFT_EAR = new float[2] { InvalidValue, InvalidValue };
 
@@ -243,37 +270,37 @@ public class SKDataExporter : MonoBehaviour
                         Keypoints2DData_34 keypoints2D_34 = new Keypoints2DData_34();
                         Keypoints3DData_34 keypoints3D_34 = new Keypoints3DData_34();
 
-                        keypoints3D_34.PELVIS = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.PELVIS]).position));
-                        keypoints3D_34.NAVAL_SPINE = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.NAVAL_SPINE]).position));
-                        keypoints3D_34.CHEST_SPINE = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.CHEST_SPINE]).position));
-                        keypoints3D_34.NECK = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.NECK]).position));
-                        keypoints3D_34.LEFT_CLAVICLE = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_CLAVICLE]).position));
-                        keypoints3D_34.LEFT_SHOULDER = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_SHOULDER]).position));
-                        keypoints3D_34.LEFT_ELBOW = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_ELBOW]).position));
-                        keypoints3D_34.LEFT_WRIST = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_WRIST]).position));
+                        keypoints3D_34.PELVIS = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.PELVIS]).position);
+                        keypoints3D_34.NAVAL_SPINE = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.NAVAL_SPINE]).position);
+                        keypoints3D_34.CHEST_SPINE = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.CHEST_SPINE]).position);
+                        keypoints3D_34.NECK = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.NECK]).position);
+                        keypoints3D_34.LEFT_CLAVICLE = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_CLAVICLE]).position);
+                        keypoints3D_34.LEFT_SHOULDER = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_SHOULDER]).position);
+                        keypoints3D_34.LEFT_ELBOW = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_ELBOW]).position);
+                        keypoints3D_34.LEFT_WRIST = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_WRIST]).position);
                         keypoints3D_34.LEFT_HAND = new float[3] { InvalidValue, InvalidValue, InvalidValue };
-                        keypoints3D_34.LEFT_HANDTIP = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_HANDTIP]).position));
-                        keypoints3D_34.LEFT_THUMB = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_THUMB]).position));
-                        keypoints3D_34.RIGHT_CLAVICLE = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_CLAVICLE]).position));
-                        keypoints3D_34.RIGHT_SHOULDER = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_SHOULDER]).position));
-                        keypoints3D_34.RIGHT_ELBOW = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_ELBOW]).position));
-                        keypoints3D_34.RIGHT_WRIST = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_WRIST]).position));
+                        keypoints3D_34.LEFT_HANDTIP = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_HANDTIP]).position);
+                        keypoints3D_34.LEFT_THUMB = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_THUMB]).position);
+                        keypoints3D_34.RIGHT_CLAVICLE = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_CLAVICLE]).position);
+                        keypoints3D_34.RIGHT_SHOULDER = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_SHOULDER]).position);
+                        keypoints3D_34.RIGHT_ELBOW = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_ELBOW]).position);
+                        keypoints3D_34.RIGHT_WRIST = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_WRIST]).position);
                         keypoints3D_34.RIGHT_HAND = new float[3] { InvalidValue, InvalidValue, InvalidValue };
-                        keypoints3D_34.RIGHT_HANDTIP = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_HANDTIP]).position));
+                        keypoints3D_34.RIGHT_HANDTIP = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_HANDTIP]).position);
                         keypoints3D_34.RIGHT_THUMB = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_THUMB]).position);
                         keypoints3D_34.LEFT_HIP = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_HIP]).position);
                         keypoints3D_34.LEFT_KNEE = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_KNEE]).position);
                         keypoints3D_34.LEFT_ANKLE = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_ANKLE]).position);
-                        keypoints3D_34.LEFT_FOOT = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_FOOT]).position));
-                        keypoints3D_34.RIGHT_HIP = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_HIP]).position));
-                        keypoints3D_34.RIGHT_KNEE = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_KNEE]).position));
-                        keypoints3D_34.RIGHT_ANKLE = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_ANKLE]).position));
-                        keypoints3D_34.RIGHT_FOOT = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_FOOT]).position));
-                        keypoints3D_34.HEAD = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.HEAD]).position));
+                        keypoints3D_34.LEFT_FOOT = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_FOOT]).position);
+                        keypoints3D_34.RIGHT_HIP = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_HIP]).position);
+                        keypoints3D_34.RIGHT_KNEE = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_KNEE]).position);
+                        keypoints3D_34.RIGHT_ANKLE = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_ANKLE]).position);
+                        keypoints3D_34.RIGHT_FOOT = Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_FOOT]).position);
+                        keypoints3D_34.HEAD = new float[3] { InvalidValue, InvalidValue, InvalidValue }; // Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.HEAD]).position);
                         keypoints3D_34.NOSE = new float[3] { InvalidValue, InvalidValue, InvalidValue };
-                        keypoints3D_34.LEFT_EYE = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_EYE]).position));
+                        keypoints3D_34.LEFT_EYE = new float[3] { InvalidValue, InvalidValue, InvalidValue };  // Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_EYE]).position);
                         keypoints3D_34.LEFT_EAR = new float[3] { InvalidValue, InvalidValue, InvalidValue };
-                        keypoints3D_34.RIGHT_EYE = Utility.Vector3ToFloat3(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_EYE]).position));
+                        keypoints3D_34.RIGHT_EYE = new float[3] { InvalidValue, InvalidValue, InvalidValue };  //Utility.Vector3ToFloat3(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_EYE]).position);
                         keypoints3D_34.RIGHT_EAR = new float[3] { InvalidValue, InvalidValue, InvalidValue };
                         keypoints3D_34.LEFT_HEEL = new float[3] { InvalidValue, InvalidValue, InvalidValue };
                         keypoints3D_34.RIGHT_HEEL = new float[3] { InvalidValue, InvalidValue, InvalidValue };
@@ -304,11 +331,11 @@ public class SKDataExporter : MonoBehaviour
                         keypoints2D_34.RIGHT_KNEE = Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_KNEE]).position)), fx, fy, cx, cy);
                         keypoints2D_34.RIGHT_ANKLE = Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_ANKLE]).position)), fx, fy, cx, cy);
                         keypoints2D_34.RIGHT_FOOT = Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_FOOT]).position)), fx, fy, cx, cy);
-                        keypoints2D_34.HEAD = Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.HEAD]).position)), fx, fy, cx, cy);
+                        keypoints2D_34.HEAD = new float[2] { InvalidValue, InvalidValue };  //Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.HEAD]).position)), fx, fy, cx, cy);
                         keypoints2D_34.NOSE = new float[2] { InvalidValue, InvalidValue };
-                        keypoints2D_34.LEFT_EYE = Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_EYE]).position)), fx, fy, cx, cy);
+                        keypoints2D_34.LEFT_EYE = new float[2] { InvalidValue, InvalidValue };  // Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.LEFT_EYE]).position)), fx, fy, cx, cy);
                         keypoints2D_34.LEFT_EAR = new float[2] { InvalidValue, InvalidValue };
-                        keypoints2D_34.RIGHT_EYE = Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_EYE]).position)), fx, fy, cx, cy);
+                        keypoints2D_34.RIGHT_EYE = new float[2] { InvalidValue, InvalidValue };  // Utility.WorldToScreen(Utility.ToImage(camTransform.InverseTransformPoint(animator.GetBoneTransform(humanBones34[(int)sl.BODY_34_PARTS.RIGHT_EYE]).position)), fx, fy, cx, cy);
                         keypoints2D_34.RIGHT_EAR = new float[2] { InvalidValue, InvalidValue };
                         keypoints2D_34.LEFT_HEEL = new float[2] { InvalidValue, InvalidValue };
                         keypoints2D_34.RIGHT_HEEL = new float[2] { InvalidValue, InvalidValue };
@@ -317,7 +344,7 @@ public class SKDataExporter : MonoBehaviour
                         singleDetection.Keypoints2D_34 = keypoints2D_34;
 
                         singleDetection.ObjectType = 0;
-                        singleDetection.ObjectID = avatar.Key;
+                        singleDetection.ObjectID = 1; // avatar.Key;
 
                         frameDetections.ObjectDetections.Add(singleDetection);
                     }
