@@ -282,49 +282,14 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// </summary>
     public void PoseWasUpdatedIK()
     {
-        float confAnkleLeft = 0;
-        float confAnkleRight = 0;
-
-        if (skhandler.BodyFormat == sl.BODY_FORMAT.BODY_34)
-        {
-            confAnkleLeft = skhandler.confidences34[SkeletonHandler.JointType_LEFT_ANKLE];
-            confAnkleRight = skhandler.confidences34[SkeletonHandler.JointType_RIGHT_ANKLE];
-        }
-        else if (skhandler.BodyFormat == sl.BODY_FORMAT.BODY_38)
-        {
-            confAnkleLeft = skhandler.confidences38[SkeletonHandler.JointType_LEFT_ANKLE];
-            confAnkleRight = skhandler.confidences38[SkeletonHandler.JointType_RIGHT_ANKLE];
-        }
-        else if (skhandler.BodyFormat == sl.BODY_FORMAT.BODY_70)
-        {
-            confAnkleLeft = skhandler.confidences70[SkeletonHandler.JointType_LEFT_ANKLE];
-            confAnkleRight = skhandler.confidences70[SkeletonHandler.JointType_RIGHT_ANKLE];
-        }
-        else
-        {
-            Debug.LogError("Error: PoseWasUpdated: Invalid body model, select at least BODY_34 to use a 3D avatar.");
-        }
+        float confAnkleLeft = skhandler.currentConfidences[Skhandler.currentLeftAnkleIndex];
+        float confAnkleRight = skhandler.currentConfidences[Skhandler.currentRightAnkleIndex];
 
         startLerpPosL = curEffectorPosL;
 
         try
         {
-            switch (skhandler.BodyFormat)
-            {
-                case sl.BODY_FORMAT.BODY_34:
-                    targetLerpPosL = skhandler.joints34[SkeletonHandler.JointType_LEFT_ANKLE];
-                    break;
-                case sl.BODY_FORMAT.BODY_38:
-                    targetLerpPosL = skhandler.joints38[SkeletonHandler.JointType_LEFT_ANKLE];
-                    break;
-                case sl.BODY_FORMAT.BODY_70:
-                    targetLerpPosL = skhandler.joints70[SkeletonHandler.JointType_LEFT_ANKLE];
-                    break;
-                default:
-                    targetLerpPosL = Vector3.zero;
-                    break;
-            }
-
+            targetLerpPosL = Skhandler.currentJoints[Skhandler.currentLeftAnkleIndex];
             targetLerpPosL += rootHeightOffset;
         }
         catch (Exception e)
@@ -343,21 +308,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
         try
         {
-            switch (skhandler.BodyFormat)
-            {
-                case sl.BODY_FORMAT.BODY_34:
-                    targetLerpPosR = skhandler.joints34[SkeletonHandler.JointType_RIGHT_ANKLE];
-                    break;
-                case sl.BODY_FORMAT.BODY_38:
-                    targetLerpPosR = skhandler.joints38[SkeletonHandler.JointType_RIGHT_ANKLE];
-                    break;
-                case sl.BODY_FORMAT.BODY_70:
-                    targetLerpPosR = skhandler.joints70[SkeletonHandler.JointType_RIGHT_ANKLE];
-                    break;
-                default:
-                    targetLerpPosR = Vector3.zero;
-                    break;
-            }
+            targetLerpPosR = Skhandler.currentJoints[skhandler.currentLeftAnkleIndex];
             targetLerpPosR += rootHeightOffset;
         }
         catch (Exception e)
@@ -439,28 +390,8 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// </summary>
     private void ManageHeightOffset()
     {
-        float confAnkleLeft = 0;
-        float confAnkleRight = 0;
-
-        if (skhandler.BodyFormat == sl.BODY_FORMAT.BODY_34)
-        {
-            confAnkleLeft = skhandler.confidences34[SkeletonHandler.JointType_LEFT_ANKLE];
-            confAnkleRight = skhandler.confidences34[SkeletonHandler.JointType_RIGHT_ANKLE];
-        }
-        else if (skhandler.BodyFormat == sl.BODY_FORMAT.BODY_38)
-        {
-            confAnkleLeft = skhandler.confidences38[SkeletonHandler.JointType_LEFT_ANKLE];
-            confAnkleRight = skhandler.confidences38[SkeletonHandler.JointType_RIGHT_ANKLE];
-        }
-        else if (skhandler.BodyFormat == sl.BODY_FORMAT.BODY_70)
-        {
-            confAnkleLeft = skhandler.confidences70[SkeletonHandler.JointType_LEFT_ANKLE];
-            confAnkleRight = skhandler.confidences70[SkeletonHandler.JointType_RIGHT_ANKLE];
-        }
-        else
-        {
-            Debug.LogError("Error: OnAnimatorIK: Invalid body model, select at least BODY_34 to use a 3D avatar.");
-        }
+        float confAnkleLeft = skhandler.currentConfidences[Skhandler.currentLeftAnkleIndex];
+        float confAnkleRight = skhandler.currentConfidences[Skhandler.currentRightAnkleIndex];
 
         //// height offset management
         rootHeightOffset = heightOffsetter.ComputeRootHeightOffsetXFrames(

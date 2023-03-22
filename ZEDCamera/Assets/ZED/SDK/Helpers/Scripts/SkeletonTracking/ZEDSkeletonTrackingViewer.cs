@@ -222,44 +222,16 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
 
         UpdateViewCameraPosition();
     }
-     
-	/// <summary>
-	/// Function to update avatar control with data from ZED SDK.
-	/// </summary>
-	/// <param name="handler">Handler.</param>
-	/// <param name="p">P.</param>
-	private void UpdateAvatarControl(SkeletonHandler handler, sl.BodyData data)
-	{
-        Vector3[] worldJointsPos; 
-        Quaternion[] worldJointsRot;
-        switch (bodyFormat)
-        {
-            case sl.BODY_FORMAT.BODY_34:
-                worldJointsPos = new Vector3[34];
-                worldJointsRot = new Quaternion[34];
-                break;
-            case sl.BODY_FORMAT.BODY_38:
-                worldJointsPos = new Vector3[38];
-                worldJointsRot = new Quaternion[38];
-                break;
-            case sl.BODY_FORMAT.BODY_70:
-                worldJointsPos = new Vector3[70];
-                worldJointsRot = new Quaternion[70];
-                break;
-            default:
-                Debug.LogError("Invalid body model, select at least BODY_34 to use a 3D avatar, defaulting to 38");
-#if UNITY_EDITOR
-                EditorApplication.ExitPlaymode();
-                worldJointsPos = new Vector3[34];
-                worldJointsRot = new Quaternion[34];
-#else
-                Application.Quit();
-                worldJointsPos = new Vector3[34];
-                worldJointsRot = new Quaternion[34];
-#endif
-                break;
-        }
 
+    /// <summary>
+    /// Function to update avatar control with data from ZED SDK.
+    /// </summary>
+    /// <param name="handler">Handler.</param>
+    /// <param name="data">BodyData to get values from.</param>
+    private void UpdateAvatarControl(SkeletonHandler handler, sl.BodyData data)
+	{
+        Vector3[] worldJointsPos = new Vector3[handler.currentKeypointsCount]; 
+        Quaternion[] worldJointsRot = new Quaternion[handler.currentKeypointsCount];
 
         for (int i = 0; i < worldJointsPos.Length; i++)
         {
@@ -271,7 +243,7 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         {
             handler.SetConfidences(data.keypointConfidence);
             handler.SetControlWithJointPosition(
-                handler.BodyFormat, worldJointsPos,
+                worldJointsPos,
                 worldJointsRot, data.globalRootOrientation,
                 useAvatar, mirrorMode);
         }
