@@ -40,7 +40,7 @@ namespace sl
         INPUT_TYPE_USB,
         INPUT_TYPE_SVO,
         INPUT_TYPE_STREAM,
-        INOUT_TYPE_GMSL
+        INPUT_TYPE_GMSL
     };
 
     /// <summary>
@@ -969,11 +969,38 @@ namespace sl
         AUTO
     };
 
+    /// <summary>
+    /// Represents the available resolution options.
+    /// </summary>
+    public enum USB_RESOLUTION
+    {
+        /// <summary>
+        /// 2208*1242. Supported frame rate: 15 FPS.
+        /// </summary>
+        HD2K = 0,
+        /// <summary>
+        /// 1920*1080. Supported frame rates: 15, 30 FPS.
+        /// </summary>
+        HD1080 = 1,
+        /// <summary>
+        /// 1280*720. Supported frame rates: 15, 30, 60 FPS.
+        /// </summary>
+        HD720 = 3,
+        /// <summary>
+        /// 672*376. Supported frame rates: 15, 30, 60, 100 FPS.
+        /// </summary>
+        VGA = 4,
+        /// <summary>
+        /// Select the resolution compatible with camera, on ZEDX HD1200, HD720 otherwise
+        /// </summary>
+        AUTO = 5
+    };
 
-	/// <summary>
-	/// Types of compatible ZED cameras.
-	/// </summary>
-	public enum MODEL
+
+    /// <summary>
+    /// Types of compatible ZED cameras.
+    /// </summary>
+    public enum MODEL
 	{
         /// <summary>
         /// ZED(1)
