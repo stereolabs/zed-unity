@@ -1694,6 +1694,12 @@ namespace sl
         [MarshalAs(UnmanagedType.U1)]
         public bool enableDepth;
         /// <summary>
+        /// Defines if the depth map should be completed or not, similar to the removed SENSING_MODE::FILL.
+        /// Warning: Enabling this will override the confidence values confidenceThreshold and textureConfidenceThreshold as well as removeSaturatedAreas
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableFillMode;
+        /// <summary>
         ///  Defines the confidence threshold for the depth. Based on stereo matching score.
         /// </summary>
         public int confidenceThreshold;
