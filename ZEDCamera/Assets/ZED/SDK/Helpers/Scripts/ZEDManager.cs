@@ -631,12 +631,6 @@ public class ZEDManager : MonoBehaviour
     public bool bodyTrackingAllowReducedPrecisionInference = false;
 
     /// <summary>
-    /// Defines a upper depth range for detections.
-    /// </summary>
-    [HideInInspector]
-    public sl.OBJECT_FILTERING_MODE bodyTrackingFilteringMode = sl.OBJECT_FILTERING_MODE.NMS3D;
-
-    /// <summary>
     /// Defines if the body fitting will be applied
     /// </summary>
     [HideInInspector]
@@ -782,6 +776,14 @@ public class ZEDManager : MonoBehaviour
                 OnCamBrightnessChange(m_cameraBrightness);
         }
     }
+
+    /// <summary>
+    /// Defines if the depth map should be completed or not, similar to the removed SENSING_MODE::FILL.
+    /// Warning: Enabling this will override the confidence values confidenceThreshold and textureConfidenceThreshold as well as removeSaturatedAreas
+    /// </summary>
+    [HideInInspector]
+    [SerializeField]
+    public bool enableFillMode = false;
 
     /// <summary>
     /// Whether to enable the new color/gamma curve added to the ZED SDK in v3.0. Exposes more detail in darker regions

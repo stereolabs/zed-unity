@@ -238,13 +238,14 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
             worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.keypoint[i]);
             worldJointsRot[i] = data.localOrientationPerJoint[i].normalized;
         }
+        Quaternion worldGlobalRotation = zedManager.GetZedRootTansform().rotation * data.globalRootOrientation;
 
         if (data.localOrientationPerJoint.Length > 0 && data.keypoint.Length > 0 && data.keypointConfidence.Length > 0)
         {
             handler.SetConfidences(data.keypointConfidence);
             handler.SetControlWithJointPosition(
                 worldJointsPos,
-                worldJointsRot, data.globalRootOrientation,
+                worldJointsRot, worldGlobalRotation,
                 useAvatar, mirrorMode);
         }
 

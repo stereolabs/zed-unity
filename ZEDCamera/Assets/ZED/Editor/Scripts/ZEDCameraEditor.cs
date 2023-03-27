@@ -142,7 +142,6 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty BT_BodyFormat;
     private SerializedProperty BT_BodySelection;
     private SerializedProperty BT_MaxRange;
-    private SerializedProperty BT_FilteringMode;
     private SerializedProperty BT_PredictionTimeout;
     private SerializedProperty BT_AllowReducedPrecisionInference;
 
@@ -170,6 +169,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty fadeinonstart;
     private SerializedProperty dontdestroyonload;
     private SerializedProperty enableImageEnhancementProperty;
+    private SerializedProperty enableFillModeProperty;
     SerializedProperty setIMUPrior;
     SerializedProperty allowPassThroughProperty;
     SerializedProperty greyskybox;
@@ -308,7 +308,6 @@ public class ZEDCameraEditor : Editor
         BT_2DMask = serializedObject.FindProperty("bodyTracking2DMask");
         BT_DetectionModel = serializedObject.FindProperty("bodyTrackingModel");
         BT_MaxRange = serializedObject.FindProperty("bodyTrackingMaxRange");
-        BT_FilteringMode = serializedObject.FindProperty("bodyTrackingFilteringMode");
         BT_PredictionTimeout = serializedObject.FindProperty("bodyTrackingPredictionTimeout");
         BT_AllowReducedPrecisionInference = serializedObject.FindProperty("bodyTrackingAllowReducedPrecisionInference");
         BT_MinimumKPThresh = serializedObject.FindProperty("bodyTrackingMinimumKPThreshold");
@@ -352,6 +351,7 @@ public class ZEDCameraEditor : Editor
         enableIMUFusionProperty = serializedObject.FindProperty("enableIMUFusion");
         allowPassThroughProperty = serializedObject.FindProperty("allowARPassThrough");
         setIMUPrior = serializedObject.FindProperty("setIMUPriorInAR");
+        enableFillModeProperty = serializedObject.FindProperty("enableFillMode");
         enableImageEnhancementProperty = serializedObject.FindProperty("enableImageEnhancement");
         opencvCalibFilePath = serializedObject.FindProperty("opencvCalibFile");
 
@@ -407,7 +407,7 @@ public class ZEDCameraEditor : Editor
             case 0:
                 GUIContent cameraResolutionLabel = new GUIContent("Resolution", "Camera resolution.");
                 //GUI.enabled = !Application.isPlaying;
-                usbResolutionProperty.enumValueIndex = (int)(sl.RESOLUTION)EditorGUILayout.EnumPopup(cameraResolutionLabel, (sl.RESOLUTION)usbResolutionProperty.enumValueIndex);
+                usbResolutionProperty.enumValueIndex = (int)(sl.USB_RESOLUTION)EditorGUILayout.EnumPopup(cameraResolutionLabel, (sl.USB_RESOLUTION)usbResolutionProperty.enumValueIndex);
                 //GUI.enabled = true;
                 GUIContent cameraFPSLabel = new GUIContent("FPS", "Desired camera FPS. Maximum FPS depends on your resolution setting:\r\n\n" +
                     "- HD2k: 15FPS\r\n\n- HD1080: 30FPS\r\n\n- HD720p: 60FPS\r\n\n- VGA: 100FPS");
@@ -1003,9 +1003,6 @@ public class ZEDCameraEditor : Editor
             GUIContent BT_MaxRangeLabel = new GUIContent("Max Range", "Defines a upper depth range for detections.");
             BT_MaxRange.floatValue = EditorGUILayout.Slider(BT_MaxRangeLabel, BT_MaxRange.floatValue, 0, 40.0f);
 
-            GUIContent BT_FilteringModeLabel = new GUIContent("Filtering Mode", "Defines the bounding box preprocessor used.");
-            BT_FilteringMode.enumValueIndex = (int)(sl.OBJECT_FILTERING_MODE)EditorGUILayout.EnumPopup(BT_FilteringModeLabel, (sl.OBJECT_FILTERING_MODE)BT_FilteringMode.enumValueIndex);
-
             GUIContent BT_PredictionTimeoutLabel = new GUIContent("Prediction Timeout", "When an object is not detected anymore, the SDK will predict its positions during a short period of time before its state switched to SEARCHING.");
             BT_PredictionTimeout.floatValue = EditorGUILayout.Slider(BT_PredictionTimeoutLabel, BT_PredictionTimeout.floatValue, 0, 1.0f);
 
@@ -1190,6 +1187,9 @@ public class ZEDCameraEditor : Editor
 
 
             GUILayout.Space(12);
+
+            GUIContent enableFillModeLabel = new GUIContent("Enable Fill Mode", "Defines if the depth map should be completed or not, similar to the removed SENSING_MODE::FILL.");
+            enableFillModeProperty.boolValue = EditorGUILayout.Toggle(enableFillModeLabel, enableFillModeProperty.boolValue);
 
             //Enable image enhancement toggle
             EditorGUI.BeginDisabledGroup(Application.isPlaying);
