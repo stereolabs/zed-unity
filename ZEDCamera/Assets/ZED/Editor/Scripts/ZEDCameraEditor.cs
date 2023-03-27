@@ -63,7 +63,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty svoOutputBitrateProperty;
     private SerializedProperty svoOutputTargetFPSProperty;
     private SerializedProperty svoOutputTranscodeProperty;
-    
+
 
     //Streaming Prop
     private SerializedProperty streamingOutProperty;
@@ -110,7 +110,7 @@ public class ZEDCameraEditor : Editor
 
     //Object Detection Prop 
     private SerializedProperty OD_ImageSyncMode;
-    private SerializedProperty OD_ObjectTracking;   
+    private SerializedProperty OD_ObjectTracking;
     private SerializedProperty OD_2DMask;
     private SerializedProperty OD_DetectionModel;
     private SerializedProperty OD_MaxRange;
@@ -323,7 +323,7 @@ public class ZEDCameraEditor : Editor
         svoOutputBitrateProperty = serializedObject.FindProperty("svoOutputBitrate");
         svoOutputTargetFPSProperty = serializedObject.FindProperty("svoOutputTargetFPS");
         svoOutputTranscodeProperty = serializedObject.FindProperty("svoOutputTranscodeStreaming");
-      
+
 
         streamingOutProperty = serializedObject.FindProperty("enableStreaming");
         streamingOutCodecProperty = serializedObject.FindProperty("streamingCodec");
@@ -333,7 +333,7 @@ public class ZEDCameraEditor : Editor
         streamingOutAdaptBitrateProperty = serializedObject.FindProperty("adaptativeBitrate");
         streamingOutChunkSizeProperty = serializedObject.FindProperty("chunkSize");
         streamingOutTargetFPSProperty = serializedObject.FindProperty("streamingTargetFramerate");
-        
+
 
 
         ///Advanced Settings Serialized Properties
@@ -351,8 +351,8 @@ public class ZEDCameraEditor : Editor
         enableIMUFusionProperty = serializedObject.FindProperty("enableIMUFusion");
         allowPassThroughProperty = serializedObject.FindProperty("allowARPassThrough");
         setIMUPrior = serializedObject.FindProperty("setIMUPriorInAR");
-        enableFillModeProperty = serializedObject.FindProperty("enableFillMode");
         enableImageEnhancementProperty = serializedObject.FindProperty("enableImageEnhancement");
+        enableFillModeProperty = serializedObject.FindProperty("enableFillMode");
         opencvCalibFilePath = serializedObject.FindProperty("opencvCalibFile");
 
         //Video Settings Serialized Properties
@@ -407,7 +407,7 @@ public class ZEDCameraEditor : Editor
             case 0:
                 GUIContent cameraResolutionLabel = new GUIContent("Resolution", "Camera resolution.");
                 //GUI.enabled = !Application.isPlaying;
-                usbResolutionProperty.enumValueIndex = (int)(sl.USB_RESOLUTION)EditorGUILayout.EnumPopup(cameraResolutionLabel, (sl.USB_RESOLUTION)usbResolutionProperty.enumValueIndex);
+                usbResolutionProperty.enumValueIndex = (int)(sl.RESOLUTION)EditorGUILayout.EnumPopup(cameraResolutionLabel, (sl.RESOLUTION)usbResolutionProperty.enumValueIndex);
                 //GUI.enabled = true;
                 GUIContent cameraFPSLabel = new GUIContent("FPS", "Desired camera FPS. Maximum FPS depends on your resolution setting:\r\n\n" +
                     "- HD2k: 15FPS\r\n\n- HD1080: 30FPS\r\n\n- HD720p: 60FPS\r\n\n- VGA: 100FPS");
@@ -570,7 +570,7 @@ public class ZEDCameraEditor : Editor
         ///  Motion Tracking layout  /////////////////////////////////
         /////////////////////////////////////////////////////////////
         GUILayout.Space(10);
-        EditorGUILayout.LabelField("ZED Positional Tracking", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Positional Tracking", EditorStyles.boldLabel);
         GUILayout.Space(5);
         EditorGUI.indentLevel++;
         GUIContent enableTrackingLabel = new GUIContent("Enable Tracking", "If enabled, the ZED will move/rotate itself using its own inside-out tracking. " +
@@ -596,25 +596,6 @@ public class ZEDCameraEditor : Editor
         EditorGUI.indentLevel--;
 
         ///////////////////////////////////////////////////////////////
-        ///  Rendering layout  /////////////////////////////////
-        /////////////////////////////////////////////////////////////
-        GUILayout.Space(10);
-        EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
-        GUILayout.Space(5);
-        EditorGUI.indentLevel++;
-        GUIContent depthOcclusionPropertyLabel = new GUIContent("Depth Occlusion", "When enabled, the real world can occlude (cover up) virtual objects that are behind it. " +
-        "Otherwise, virtual objects will appear in front.");
-        depthOcclusionProperty.boolValue = EditorGUILayout.Toggle(depthOcclusionPropertyLabel, depthOcclusionProperty.boolValue);
-
-        GUIContent arpostProcessingProperyLabel = new GUIContent("AR Post-Processing", "Enables post-processing effects on virtual objects that blends them in with the real world.");
-        arpostProcessingPropery.boolValue = EditorGUILayout.Toggle(arpostProcessingProperyLabel, arpostProcessingPropery.boolValue);
-
-        GUIContent camBrightnessPropertyLabel = new GUIContent("Camera Brightness", "Brightness of the final real-world image. Default is 100. Lower to darken the environment in a realistic-looking way. " +
-        "This is a rendering setting that doesn't affect the raw input from the camera.");
-        camBrightnessProperty.intValue = EditorGUILayout.IntSlider(camBrightnessPropertyLabel, camBrightnessProperty.intValue, 0, 100);
-        EditorGUI.indentLevel--;
-
-        ///////////////////////////////////////////////////////////////
         ///  Spatial Mapping layout  /////////////////////////////////
         /////////////////////////////////////////////////////////////
         GUILayout.Space(10);
@@ -635,7 +616,7 @@ public class ZEDCameraEditor : Editor
 
             EditorGUILayout.EndHorizontal();
 
-            
+
             GUIContent resolutionlabel = new GUIContent("Resolution", "Resolution setting for the scan. " +
                                          "A higher resolution creates more submeshes and uses more memory, but is more accurate.");
             ZEDSpatialMapping.RESOLUTION newResolution = (ZEDSpatialMapping.RESOLUTION)EditorGUILayout.EnumPopup(resolutionlabel, manager.mappingResolutionPreset);
@@ -779,10 +760,12 @@ public class ZEDCameraEditor : Editor
                 cameraIsReady = manager.zedCamera != null ? manager.zedCamera.IsCameraReady : false;
 
             GUILayout.Space(10);
-            EditorGUILayout.LabelField("Detection Mode", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Detection Parameters", EditorStyles.boldLabel);
             GUILayout.Space(5);
 
             EditorGUI.indentLevel++;
+
+            GUI.enabled = !cameraIsReady || !manager.IsObjectDetectionRunning;
 
             GUIContent ObjectDetectionModelLabel = new GUIContent("Object Detection Model", "Select one object detection model");
             OD_DetectionModel.enumValueIndex = (int)(sl.OBJECT_DETECTION_MODEL)EditorGUILayout.EnumPopup(ObjectDetectionModelLabel, (sl.OBJECT_DETECTION_MODEL)OD_DetectionModel.enumValueIndex);
@@ -799,21 +782,20 @@ public class ZEDCameraEditor : Editor
             //    EditorGUI.LabelField(labelrect, labeltext, orangetext);
             //}
 
-            EditorGUI.indentLevel--;
+            /*            EditorGUI.indentLevel--;
 
-            GUILayout.Space(10);
-            EditorGUILayout.LabelField("Init Parameters", EditorStyles.boldLabel);
-            GUILayout.Space(5);
+                        GUILayout.Space(10);
+                        EditorGUILayout.LabelField("Init Parameters", EditorStyles.boldLabel);
+                        GUILayout.Space(5);
 
-            EditorGUI.indentLevel++;
+                        EditorGUI.indentLevel++;*/
 
-            GUI.enabled = !cameraIsReady || !manager.IsObjectDetectionRunning;
 
-            GUIContent OD_ImageSyncModeLabel = new GUIContent("Image Sync", "If enabled, object detection will be computed for each image before the next frame is available, " +
-                "locking the main thread if necessary.\r\n\nRecommended setting is false for real-time applications.");
-            OD_ImageSyncMode.boolValue = EditorGUILayout.Toggle(OD_ImageSyncModeLabel, OD_ImageSyncMode.boolValue);
+            /*            GUIContent OD_ImageSyncModeLabel = new GUIContent("Image Sync", "If enabled, object detection will be computed for each image before the next frame is available, " +
+                            "locking the main thread if necessary.\r\n\nRecommended setting is false for real-time applications.");
+                        OD_ImageSyncMode.boolValue = EditorGUILayout.Toggle(OD_ImageSyncModeLabel, OD_ImageSyncMode.boolValue);*/
 
-            GUIContent OD_ObjectTrackingLabel = new GUIContent("Enable Object Tracking", "Whether to track objects across multiple frames using the ZED's position relative to the floor.\r\n\n" +
+            GUIContent OD_ObjectTrackingLabel = new GUIContent("Enable Tracking", "Whether to track objects across multiple frames using the ZED's position relative to the floor.\r\n\n" +
                 "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
             OD_ObjectTracking.boolValue = EditorGUILayout.Toggle(OD_ObjectTrackingLabel, OD_ObjectTracking.boolValue);
 
@@ -821,14 +803,8 @@ public class ZEDCameraEditor : Editor
             "Must be on when Object Detection starts. Requires more performance, so do not enable unless needed.");
             OD_2DMask.boolValue = EditorGUILayout.Toggle(OD_Object2DMaskLabel, OD_2DMask.boolValue);
 
-            GUIContent OD_MaxRangeLabel = new GUIContent("Max Range", "Defines a upper depth range for detections.");
+            GUIContent OD_MaxRangeLabel = new GUIContent("Max Detection Range", "Defines a upper depth range for detections.");
             OD_MaxRange.floatValue = EditorGUILayout.Slider(OD_MaxRangeLabel, OD_MaxRange.floatValue, 0, 40.0f);
-
-            GUIContent OD_FilteringModeLabel = new GUIContent("Filtering Mode", "Defines the bounding box preprocessor used.");
-            OD_FilteringMode.enumValueIndex = (int)(sl.OBJECT_FILTERING_MODE)EditorGUILayout.EnumPopup(OD_FilteringModeLabel, (sl.OBJECT_FILTERING_MODE)OD_FilteringMode.enumValueIndex);
-
-            GUIContent OD_PredictionTimeoutLabel = new GUIContent("Prediction Timeout", "When an object is not detected anymore, the SDK will predict its positions during a short period of time before its state switched to SEARCHING.");
-            OD_PredictionTimeout.floatValue = EditorGUILayout.Slider(OD_PredictionTimeoutLabel, OD_PredictionTimeout.floatValue, 0, 1.0f);
 
             GUIContent OD_AllowReducedPrecisionInferenceLabel = new GUIContent("Allow Reduced Precision Inference", "Allow inference to run at a lower precision to improve runtime and memory usage.");
             OD_AllowReducedPrecisionInference.boolValue = EditorGUILayout.Toggle(OD_AllowReducedPrecisionInferenceLabel, OD_AllowReducedPrecisionInference.boolValue);
@@ -838,13 +814,19 @@ public class ZEDCameraEditor : Editor
             EditorGUI.indentLevel--;
             GUILayout.Space(10);
 
+            EditorGUILayout.LabelField("Tracking Parameters", EditorStyles.boldLabel);
+
+            EditorGUI.indentLevel++;
+
+            GUIContent OD_FilteringModeLabel = new GUIContent("Filtering Mode", "Defines the bounding box preprocessor used.");
+            OD_FilteringMode.enumValueIndex = (int)(sl.OBJECT_FILTERING_MODE)EditorGUILayout.EnumPopup(OD_FilteringModeLabel, (sl.OBJECT_FILTERING_MODE)OD_FilteringMode.enumValueIndex);
+
+            GUIContent OD_PredictionTimeoutLabel = new GUIContent("Prediction Timeout", "When an object is not detected anymore, the SDK will predict its positions during a short period of time before its state switched to SEARCHING.");
+            OD_PredictionTimeout.floatValue = EditorGUILayout.Slider(OD_PredictionTimeoutLabel, OD_PredictionTimeout.floatValue, 0, 1.0f);
 
             if (OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_FAST || OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
             {
-
-                EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
-                GUILayout.Space(5);
-                EditorGUI.indentLevel++;
+                GUILayout.Space(10);
 
                 GUIContent OD_personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
@@ -910,7 +892,8 @@ public class ZEDCameraEditor : Editor
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
                 OD_PersonDetectionConfidence.intValue = EditorGUILayout.IntSlider(OD_personDetectionConfidenceThresholdLabel, OD_PersonDetectionConfidence.intValue, 1, 99);
             }
-            else if (OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS) { 
+            else if (OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
+            {
             }
             else //SKELETON
             {
@@ -953,10 +936,12 @@ public class ZEDCameraEditor : Editor
                 cameraIsReady = manager.zedCamera != null ? manager.zedCamera.IsCameraReady : false;
 
             GUILayout.Space(10);
-            EditorGUILayout.LabelField("Detection Mode", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Detection Parameters", EditorStyles.boldLabel);
             GUILayout.Space(5);
 
             EditorGUI.indentLevel++;
+
+            GUI.enabled = !cameraIsReady || !manager.IsBodyTrackingRunning;
 
             GUIContent BodyTrackingModelLabel = new GUIContent("Body Tracking Model", "Select one Body Tracking model (HUMAN_BODY_XXX)");
             BT_DetectionModel.enumValueIndex = (int)(sl.BODY_TRACKING_MODEL)EditorGUILayout.EnumPopup(BodyTrackingModelLabel, (sl.BODY_TRACKING_MODEL)BT_DetectionModel.enumValueIndex);
@@ -977,34 +962,25 @@ public class ZEDCameraEditor : Editor
 
             GUIContent BT_BodySelectionLabel = new GUIContent("Body Selection", "");
             BT_BodySelection.enumValueIndex = (int)(sl.BODY_KEYPOINTS_SELECTION)EditorGUILayout.EnumPopup(BT_BodySelectionLabel, (sl.BODY_KEYPOINTS_SELECTION)BT_BodySelection.enumValueIndex);
-            
-            EditorGUI.indentLevel--;
 
-            GUILayout.Space(10);
-            EditorGUILayout.LabelField("Init Parameters", EditorStyles.boldLabel);
-            GUILayout.Space(5);
+            /*            EditorGUI.indentLevel--;
 
-            EditorGUI.indentLevel++;
+                        GUILayout.Space(10);
+                        EditorGUILayout.LabelField("Init Parameters", EditorStyles.boldLabel);
+                        GUILayout.Space(5);
 
-            GUI.enabled = !cameraIsReady || !manager.IsBodyTrackingRunning;
+                        EditorGUI.indentLevel++;*/
 
-            GUIContent BT_ImageSyncModeLabel = new GUIContent("Image Sync", "If enabled, object detection will be computed for each image before the next frame is available, " +
-                "locking the main thread if necessary.\r\n\nRecommended setting is false for real-time applications.");
-            BT_ImageSyncMode.boolValue = EditorGUILayout.Toggle(BT_ImageSyncModeLabel, BT_ImageSyncMode.boolValue);
+            /*            GUIContent BT_ImageSyncModeLabel = new GUIContent("Image Sync", "If enabled, object detection will be computed for each image before the next frame is available, " +
+                            "locking the main thread if necessary.\r\n\nRecommended setting is false for real-time applications.");
+                        BT_ImageSyncMode.boolValue = EditorGUILayout.Toggle(BT_ImageSyncModeLabel, BT_ImageSyncMode.boolValue);*/
 
-            GUIContent BT_ObjectTrackingLabel = new GUIContent("Enable Object Tracking", "Whether to track objects across multiple frames using the ZED's position relative to the floor.\r\n\n" +
-                "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
-            BT_ObjectTracking.boolValue = EditorGUILayout.Toggle(BT_ObjectTrackingLabel, BT_ObjectTracking.boolValue);
+            /*            GUIContent BT_Object2DMaskLabel = new GUIContent("Enable Segmentation", "Whether to calculate 2D masks for each object, showing exactly which pixels within the 2D bounding box are the object.\r\n\n" +
+                        "Must be on when Object Detection starts. Requires more performance, so do not enable unless needed.");
+                        BT_2DMask.boolValue = EditorGUILayout.Toggle(BT_Object2DMaskLabel, BT_2DMask.boolValue);*/
 
-            GUIContent BT_Object2DMaskLabel = new GUIContent("Enable Segmentation", "Whether to calculate 2D masks for each object, showing exactly which pixels within the 2D bounding box are the object.\r\n\n" +
-            "Must be on when Object Detection starts. Requires more performance, so do not enable unless needed.");
-            BT_2DMask.boolValue = EditorGUILayout.Toggle(BT_Object2DMaskLabel, BT_2DMask.boolValue);
-
-            GUIContent BT_MaxRangeLabel = new GUIContent("Max Range", "Defines a upper depth range for detections.");
+            GUIContent BT_MaxRangeLabel = new GUIContent("Max Detection Range", "Defines a upper depth range for detections.");
             BT_MaxRange.floatValue = EditorGUILayout.Slider(BT_MaxRangeLabel, BT_MaxRange.floatValue, 0, 40.0f);
-
-            GUIContent BT_PredictionTimeoutLabel = new GUIContent("Prediction Timeout", "When an object is not detected anymore, the SDK will predict its positions during a short period of time before its state switched to SEARCHING.");
-            BT_PredictionTimeout.floatValue = EditorGUILayout.Slider(BT_PredictionTimeoutLabel, BT_PredictionTimeout.floatValue, 0, 1.0f);
 
             GUIContent BT_AllowReducedPrecisionInferenceLabel = new GUIContent("Allow Reduced Precision Inference", "Allow inference to run at a lower precision to improve runtime and memory usage.");
             BT_AllowReducedPrecisionInference.boolValue = EditorGUILayout.Toggle(BT_AllowReducedPrecisionInferenceLabel, BT_AllowReducedPrecisionInference.boolValue);
@@ -1014,9 +990,16 @@ public class ZEDCameraEditor : Editor
             EditorGUI.indentLevel--;
             GUILayout.Space(10);
 
-            EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Tracking Parameters", EditorStyles.boldLabel);
             GUILayout.Space(5);
             EditorGUI.indentLevel++;
+
+            GUIContent BT_ObjectTrackingLabel = new GUIContent("Enable Tracking", "Whether to track objects across multiple frames using the ZED's position relative to the floor.\r\n\n" +
+            "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
+            BT_ObjectTracking.boolValue = EditorGUILayout.Toggle(BT_ObjectTrackingLabel, BT_ObjectTracking.boolValue);
+
+            GUIContent BT_PredictionTimeoutLabel = new GUIContent("Prediction Timeout", "When an object is not detected anymore, the SDK will predict its positions during a short period of time before its state switched to SEARCHING.");
+            BT_PredictionTimeout.floatValue = EditorGUILayout.Slider(BT_PredictionTimeoutLabel, BT_PredictionTimeout.floatValue, 0, 1.0f);
 
             GUIContent BodyTrackingMinKeypointsLabel = new GUIContent("Minimum Visible Keypoints", "Minimum number of keypoints tracked by the SDK on a body to report it" +
             "as a body.\r\n\nTweak this value depending on your application. Keep in mind that some parts of the body have a lot of keypoints (e.g. hands and face).");
@@ -1070,7 +1053,7 @@ public class ZEDCameraEditor : Editor
             GUIContent svoCompressionModeLabel = new GUIContent("SVO Compression", "SVO Compression mode for the recorded SVO file");
             svoOutputCompressionModeProperty.enumValueIndex = (int)(sl.SVO_COMPRESSION_MODE)EditorGUILayout.EnumPopup(svoCompressionModeLabel, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex, GUILayout.ExpandWidth(true));
 
-            GUIContent svoOutBitrateLabel = new GUIContent("Bitrate", "Bitrate for H264/5 recording");
+            GUIContent svoOutBitrateLabel = new GUIContent("Bitrate", "Bitrate for H264/5 recording. default : 0 means default values (depends on the resolution)");
             svoOutputBitrateProperty.intValue = EditorGUILayout.IntField(svoOutBitrateLabel, svoOutputBitrateProperty.intValue);
 
             GUIContent svoOutTargetFPSLabel = new GUIContent("Target FPS", "Target FPS for SVO recording");
@@ -1095,7 +1078,7 @@ public class ZEDCameraEditor : Editor
                 else
                 {
 
-                    if (manager.zedCamera.EnableRecording(svoOutputFileNameProperty.stringValue, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex,(int)svoOutputBitrateProperty.intValue,(int)svoOutputTargetFPSProperty.intValue,svoOutputTranscodeProperty.boolValue) == sl.ERROR_CODE.SUCCESS)
+                    if (manager.zedCamera.EnableRecording(svoOutputFileNameProperty.stringValue, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex, (int)svoOutputBitrateProperty.intValue, (int)svoOutputTargetFPSProperty.intValue, svoOutputTranscodeProperty.boolValue) == sl.ERROR_CODE.SUCCESS)
                         manager.needRecordFrame = true;
                     else
                     {
@@ -1188,6 +1171,7 @@ public class ZEDCameraEditor : Editor
 
             GUILayout.Space(12);
 
+
             GUIContent enableFillModeLabel = new GUIContent("Enable Fill Mode", "Defines if the depth map should be completed or not, similar to the removed SENSING_MODE::FILL.");
             enableFillModeProperty.boolValue = EditorGUILayout.Toggle(enableFillModeLabel, enableFillModeProperty.boolValue);
 
@@ -1227,6 +1211,17 @@ public class ZEDCameraEditor : Editor
             GUILayout.Space(5);
 
             EditorGUI.indentLevel++;
+
+            GUIContent depthOcclusionPropertyLabel = new GUIContent("Depth Occlusion", "When enabled, the real world can occlude (cover up) virtual objects that are behind it. " +
+            "Otherwise, virtual objects will appear in front.");
+            depthOcclusionProperty.boolValue = EditorGUILayout.Toggle(depthOcclusionPropertyLabel, depthOcclusionProperty.boolValue);
+
+            GUIContent arpostProcessingProperyLabel = new GUIContent("AR Post-Processing", "Enables post-processing effects on virtual objects that blends them in with the real world.");
+            arpostProcessingPropery.boolValue = EditorGUILayout.Toggle(arpostProcessingProperyLabel, arpostProcessingPropery.boolValue);
+
+            GUIContent camBrightnessPropertyLabel = new GUIContent("Camera Brightness", "Brightness of the final real-world image. Default is 100. Lower to darken the environment in a realistic-looking way. " +
+            "This is a rendering setting that doesn't affect the raw input from the camera.");
+            camBrightnessProperty.intValue = EditorGUILayout.IntSlider(camBrightnessPropertyLabel, camBrightnessProperty.intValue, 0, 100);
 
             //Style for the AR layer box. 
             GUIStyle layerboxstyle = new GUIStyle(EditorStyles.numberField);
@@ -1338,19 +1333,6 @@ public class ZEDCameraEditor : Editor
             //Fade In At Start toggle. 
             GUIContent fadeinlabel = new GUIContent("Fade In at Start", "When enabled, makes the ZED image fade in from black when the application starts.");
             fadeinonstart.boolValue = EditorGUILayout.Toggle(fadeinlabel, manager.fadeInOnStart);
-
-            GUILayout.Space(12);
-
-            GUI.enabled = true;
-
-            GUIContent camRebootButton = new GUIContent("Reboot Camera", "Reboot the camera.");
-            if (GUILayout.Button(camRebootButton))
-            {
-                if (Application.isPlaying && manager.zedCamera.IsCameraReady)
-                {
-                    manager.Reboot();
-                }
-            }
 
             EditorGUI.EndDisabledGroup();
             EditorGUI.indentLevel--;
@@ -1585,6 +1567,17 @@ public class ZEDCameraEditor : Editor
 
             EditorGUILayout.EndHorizontal();
             GUI.enabled = true;
+
+            GUILayout.Space(12);
+
+            GUIContent camRebootButton = new GUIContent("Reboot Camera", "Reboot the camera.");
+            if (GUILayout.Button(camRebootButton))
+            {
+                if (Application.isPlaying && manager.zedCamera.IsCameraReady)
+                {
+                    manager.Reboot();
+                }
+            }
         }
         serializedObject.ApplyModifiedProperties();
 
@@ -1693,5 +1686,4 @@ public class ZEDCameraEditor : Editor
     }
 
 }
-
 
