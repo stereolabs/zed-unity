@@ -191,9 +191,24 @@ public class SkeletonHandler : ScriptableObject
     JointType_LEFT_EYE, JointType_LEFT_EAR,
     JointType_NOSE, JointType_RIGHT_EYE,
     JointType_RIGHT_EYE, JointType_RIGHT_EAR,
+    // legs
+    JointType_LEFT_HIP, JointType_LEFT_KNEE,
+    JointType_LEFT_KNEE, JointType_LEFT_ANKLE,
+    JointType_LEFT_ANKLE, JointType_LEFT_HEEL,
+    JointType_LEFT_ANKLE, JointType_LEFT_BIG_TOE,
+    JointType_LEFT_ANKLE, JointType_LEFT_SMALL_TOE,
+    JointType_RIGHT_HIP, JointType_RIGHT_KNEE,
+    JointType_RIGHT_KNEE, JointType_RIGHT_ANKLE,
+    JointType_RIGHT_ANKLE, JointType_RIGHT_HEEL,
+    JointType_RIGHT_ANKLE, JointType_RIGHT_BIG_TOE,
+    JointType_RIGHT_ANKLE, JointType_RIGHT_SMALL_TOE,
     // Left arm
     JointType_LEFT_SHOULDER, JointType_LEFT_ELBOW,
     JointType_LEFT_ELBOW, JointType_LEFT_WRIST,
+    // right arm
+    JointType_RIGHT_SHOULDER, JointType_RIGHT_ELBOW,
+    JointType_RIGHT_ELBOW, JointType_RIGHT_WRIST,
+    // left hand
     JointType_LEFT_WRIST, JointType_70_LEFT_HAND_THUMB_1,
     JointType_70_LEFT_HAND_THUMB_1, JointType_70_LEFT_HAND_THUMB_2,
     JointType_70_LEFT_HAND_THUMB_2, JointType_70_LEFT_HAND_THUMB_3,
@@ -214,9 +229,7 @@ public class SkeletonHandler : ScriptableObject
     JointType_70_LEFT_HAND_PINKY_1, JointType_70_LEFT_HAND_PINKY_2,
     JointType_70_LEFT_HAND_PINKY_2, JointType_70_LEFT_HAND_PINKY_3,
     JointType_70_LEFT_HAND_PINKY_3, JointType_70_LEFT_HAND_PINKY_4,
-    // right arm
-    JointType_RIGHT_SHOULDER, JointType_RIGHT_ELBOW,
-    JointType_RIGHT_ELBOW, JointType_RIGHT_WRIST,
+    // right hand
     JointType_RIGHT_WRIST, JointType_70_RIGHT_HAND_THUMB_1,
     JointType_70_RIGHT_HAND_THUMB_1, JointType_70_RIGHT_HAND_THUMB_2,
     JointType_70_RIGHT_HAND_THUMB_2, JointType_70_RIGHT_HAND_THUMB_3,
@@ -236,18 +249,7 @@ public class SkeletonHandler : ScriptableObject
     JointType_RIGHT_WRIST, JointType_70_RIGHT_HAND_PINKY_1,
     JointType_70_RIGHT_HAND_PINKY_1, JointType_70_RIGHT_HAND_PINKY_2,
     JointType_70_RIGHT_HAND_PINKY_2, JointType_70_RIGHT_HAND_PINKY_3,
-    JointType_70_RIGHT_HAND_PINKY_3, JointType_70_RIGHT_HAND_PINKY_4,
-    // legs
-    JointType_LEFT_HIP, JointType_LEFT_KNEE,
-    JointType_LEFT_KNEE, JointType_LEFT_ANKLE,
-    JointType_LEFT_ANKLE, JointType_LEFT_HEEL,
-    JointType_LEFT_ANKLE, JointType_LEFT_BIG_TOE,
-    JointType_LEFT_ANKLE, JointType_LEFT_SMALL_TOE,
-    JointType_RIGHT_HIP, JointType_RIGHT_KNEE,
-    JointType_RIGHT_KNEE, JointType_RIGHT_ANKLE,
-    JointType_RIGHT_ANKLE, JointType_RIGHT_HEEL,
-    JointType_RIGHT_ANKLE, JointType_RIGHT_BIG_TOE,
-    JointType_RIGHT_ANKLE, JointType_RIGHT_SMALL_TOE
+    JointType_70_RIGHT_HAND_PINKY_3, JointType_70_RIGHT_HAND_PINKY_4
     };
 
     // List of bones (pair of joints) for BODY_34. Used for Skeleton mode.
@@ -1055,7 +1057,9 @@ public class SkeletonHandler : ScriptableObject
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere.GetComponent<Renderer>().material = skBaseMat;
             skBaseMat.color = color;
-            sphere.transform.localScale = new Vector3(width * 2, width * 2, width * 2);
+            sphere.transform.localScale = (BodyFormat == sl.BODY_FORMAT.BODY_70 && j >= JointType_70_LEFT_HAND_THUMB_1) 
+                ? new Vector3(width, width, width)
+                : new Vector3(width * 2, width * 2, width * 2);
             sphere.transform.parent = skeleton.transform;
             sphere.name = currentSpheresList[j].ToString();
             spheres[j] = sphere;
@@ -1065,20 +1069,20 @@ public class SkeletonHandler : ScriptableObject
     /// <summary>
     /// Updates SDK skeleton display.
     /// </summary>
-    /// <param name="offsetDebug">In case the "displayDebugSkeleton" option is enabled in the ZEDSkeletonTrackingManager, the skeleton will be displayed with this offset.</param>
-    void UpdateSkeleton(Vector3 offsetDebug)
+    /// <param name="offsetSDK">In case the "displaySDKSkeleton" option is enabled in the ZEDSkeletonTrackingManager, the skeleton will be displayed with this offset.</param>
+    void UpdateSkeleton(Vector3 offsetSDK)
     {
         float width = 0.025f;
         for (int j = 0; j < spheres.Length; j++)
         {
             if (sl.ZEDCommon.IsVector3NaN(currentJoints[currentSpheresList[j]]))
             {
-                spheres[j].transform.position = Vector3.zero + offsetDebug;
+                spheres[j].transform.position = Vector3.zero + offsetSDK;
                 spheres[j].SetActive(false);
             }
             else
             {
-                spheres[j].transform.position = currentJoints[currentSpheresList[j]] + offsetDebug;
+                spheres[j].transform.position = currentJoints[currentSpheresList[j]] + offsetSDK;
                 spheres[j].SetActive(true);
             }
         }
@@ -1096,7 +1100,10 @@ public class SkeletonHandler : ScriptableObject
 
             bones[i].SetActive(true);
             Vector3 offset = end - start;
-            Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
+            // if hands, thinner cylinders
+            Vector3 scale = (BodyFormat == sl.BODY_FORMAT.BODY_70 && i >= 29 )
+                ? new Vector3(width/2f, offset.magnitude / 2.0f, width/2f)
+                : new Vector3(width, offset.magnitude / 2.0f, width);
             Vector3 position = start + (offset / 2.0f);
 
             bones[i].transform.position = position;
