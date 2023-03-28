@@ -2630,8 +2630,7 @@ public class ZEDManager : MonoBehaviour
             //SVO and loop back ? --> reset position if needed
             if (zedCamera.GetInputType() == sl.INPUT_TYPE.INPUT_TYPE_SVO && svoLoopBack)
             {
-                int maxSVOFrame = zedCamera.GetSVONumberOfFrames();
-                if (zedCamera.GetSVOPosition() >= maxSVOFrame - (svoRealTimeMode ? 2 : 1))
+                if (zedCamera.GetSVOPosition() >= zedCamera.GetSVONumberOfFrames() - 2)
                 {
                     zedCamera.SetSVOPosition(0);
                     if (enableTracking)
@@ -3166,7 +3165,7 @@ public class ZEDManager : MonoBehaviour
             Debug.LogWarning("The body format BODY_34 is deprecated and will be removed in a further version.");
         }
 
-        sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel));
+        sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(bodyTrackingModel,bodyFormat));
         if (!AiModelStatus.optimized)
         {
             Debug.LogWarning("The Model * " + objectDetectionModel.ToString() + "  has not been downloaded/optimized. The process can take few minutes....");
