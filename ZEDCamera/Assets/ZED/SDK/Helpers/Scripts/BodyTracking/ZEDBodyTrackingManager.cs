@@ -9,11 +9,8 @@ using UnityEditor;
 using UnityEngine.Rendering.Universal;
 #endif
 
-/// <summary>
-/// Contols the ZEDSkeletonTracking . Links the SDK to Unity
-/// </summary>
 [DisallowMultipleComponent]
-public class ZEDSkeletonTrackingViewer : MonoBehaviour
+public class ZEDBodyTrackingManager : MonoBehaviour
 {
     #region vars
 
@@ -86,17 +83,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
     [Space(5)]
     [Tooltip("Mirror the animation.")]
     public bool mirrorMode;
-
-    [Header("MOVEMENT SMOOTHING SETTINGS")]
-    [Tooltip("Expected frequency of reception of new Body Tracking data, in FPS")]
-    [SerializeField]
-    private float bodyTrackingFrequency = 30f;
-    public static float BodyTrackingFrequency = 30f;
-    [Tooltip("Factor for the interpolation duration. " +
-        "\n0=>instant movement, no lerp; 1=>Rotation of the SDK should be done between two frames. More=>Interpolation will be longer, latency grow but movements will be smoother.")]
-    [SerializeField]
-    private float smoothingFactor = 3f;
-    public static float SmoothingFactor = 3f;
 
     private Dictionary<int,SkeletonHandler> avatarControlList;
     public Dictionary<int, SkeletonHandler> AvatarControlList { get => avatarControlList;}
@@ -194,8 +180,6 @@ public class ZEDSkeletonTrackingViewer : MonoBehaviour
         DisplayDebugSkeleton = displayDebugSkeleton;
         OffsetDebugSkeleton = offsetDebugSkeleton;
         LogFusionMetrics = logFusionMetrics;    
-        BodyTrackingFrequency = bodyTrackingFrequency;    
-        SmoothingFactor = smoothingFactor;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {

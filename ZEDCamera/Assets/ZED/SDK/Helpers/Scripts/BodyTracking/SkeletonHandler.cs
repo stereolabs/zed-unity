@@ -1128,16 +1128,16 @@ public class SkeletonHandler : ScriptableObject
         currentJoints = jointsPosition;
 
         humanoid.SetActive(useAvatar);
-        skeleton.SetActive(!useAvatar || ZEDSkeletonTrackingViewer.DisplayDebugSkeleton);
+        skeleton.SetActive(!useAvatar || ZEDBodyTrackingManager.DisplayDebugSkeleton);
         usingAvatar = useAvatar;
 
         if (useAvatar)
         {
             SetHumanPoseControl(jointsPosition[0], rootRotation, jointsRotation, _mirrorOnYAxis);
 
-            if (ZEDSkeletonTrackingViewer.DisplayDebugSkeleton)
+            if (ZEDBodyTrackingManager.DisplayDebugSkeleton)
             {
-                UpdateSkeleton(ZEDSkeletonTrackingViewer.OffsetDebugSkeleton);
+                UpdateSkeleton(ZEDBodyTrackingManager.OffsetDebugSkeleton);
             }
         }
         else

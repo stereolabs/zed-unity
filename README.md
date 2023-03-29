@@ -10,6 +10,8 @@ Features include:
  - Inside-out positional tracking
  - Spatial mapping
  - Real-time plane detection
+ - Object detection
+ - Body tracking
 
 ## Getting Started
 

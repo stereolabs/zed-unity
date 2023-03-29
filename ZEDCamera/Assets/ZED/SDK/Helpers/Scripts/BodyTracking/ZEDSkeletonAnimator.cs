@@ -36,7 +36,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     public Transform LeftFootTransform = null;
     public Transform RightFootTransform = null;
     public float ankleHeightOffset = 0.102f;
-    public ZEDSkeletonTrackingViewer bodyTrackingManager;
+    public ZEDBodyTrackingManager bodyTrackingManager;
 
     [Header("Keyboard controls")]
     public KeyCode toggleFootIK = KeyCode.I;
@@ -112,7 +112,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
     private void Awake()
     {
-        bodyTrackingManager = (ZEDSkeletonTrackingViewer)FindObjectOfType(typeof(ZEDSkeletonTrackingViewer));
+        bodyTrackingManager = FindObjectOfType<ZEDBodyTrackingManager>();
         if (bodyTrackingManager == null)
         {
             Debug.LogError("ZEDManagerIK: No body tracking manager loaded!");
@@ -125,8 +125,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         animator = GetComponent<Animator>();
         currentGroundedPosL = LeftFootTransform.position;
         currentGroundedPosR = RightFootTransform.position;
-        bodyTrackingFrequency = ZEDSkeletonTrackingViewer.BodyTrackingFrequency;
-        smoothingFactor = ZEDSkeletonTrackingViewer.SmoothingFactor;
     }
 
     /// <summary>
@@ -405,9 +403,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
     private void Update()
     {
-        bodyTrackingFrequency = ZEDSkeletonTrackingViewer.BodyTrackingFrequency;
-        smoothingFactor = ZEDSkeletonTrackingViewer.SmoothingFactor;
-
         /// KEY INPUTS
         if (Input.GetKeyDown(toggleFootIK))
         {

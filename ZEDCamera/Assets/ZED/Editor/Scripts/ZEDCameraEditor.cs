@@ -407,7 +407,7 @@ public class ZEDCameraEditor : Editor
             case 0:
                 GUIContent cameraResolutionLabel = new GUIContent("Resolution", "Camera resolution.");
                 //GUI.enabled = !Application.isPlaying;
-                usbResolutionProperty.enumValueIndex = (int)(sl.RESOLUTION)EditorGUILayout.EnumPopup(cameraResolutionLabel, (sl.RESOLUTION)usbResolutionProperty.enumValueIndex);
+                usbResolutionProperty.enumValueIndex = (int)(sl.USB_RESOLUTION)EditorGUILayout.EnumPopup(cameraResolutionLabel, (sl.USB_RESOLUTION)usbResolutionProperty.enumValueIndex);
                 //GUI.enabled = true;
                 GUIContent cameraFPSLabel = new GUIContent("FPS", "Desired camera FPS. Maximum FPS depends on your resolution setting:\r\n\n" +
                     "- HD2k: 15FPS\r\n\n- HD1080: 30FPS\r\n\n- HD720p: 60FPS\r\n\n- VGA: 100FPS");
