@@ -123,7 +123,7 @@ Properties
 									outDepth = 0;
 					#elif SHADER_API_GLCORE
 									outDepth = 1000;//fake infinite depth
-					#endif
+					#endif				
 				#else
 						outDepth = saturate(d);
 				#endif

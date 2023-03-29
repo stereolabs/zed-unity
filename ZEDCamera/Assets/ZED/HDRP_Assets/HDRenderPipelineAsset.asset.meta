@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:ZEDCamera/Assets/ZED/HDRP_Assets/HDRenderPipelineAsset.asset.meta
 guid: e33728e351e7d384bb6e60b5204cd00d
+========
+guid: 589f2f18df9d7384fa55a7cc864f8ca2
+>>>>>>>> 6936388b3e9c84845bb5af794eb25cb9defd68f0:ZEDCamera/Assets/ZED/Examples/GreenScreen/Resources/Materials/Mat_ZED_Greenscreen_HDRP_Lit.mat.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 0

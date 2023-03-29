@@ -44,3 +44,10 @@ ZEDCamera/Assets/SteamVR/
 ZEDCamera/Assets/Oculus/
 ZEDCamera/ProjectSettings/
 ZEDCamera/Assets/Benjamin
+ZEDCamera/Assets/LocalTests/
+ZEDCamera/Assets/LocalTest/
+
+ZEDCamera/Logs/
+ZEDCamera/Packages/
+ZEDCamera/UserSettings/
+ZEDCamera/.vsconfig

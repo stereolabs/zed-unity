@@ -11,14 +11,14 @@ using UnityEditor.PackageManager.Requests;
 
 
 /// <summary>
-/// Manages the various compiler defines that the ZED Unity plugin uses to enable and disable features that are dependent on specific packages.
-/// This includes the SteamVR and Oculus plugins (for controller interaction) and OpenCV for Unity (for ArUco detection).
+/// Manages the various compiler defines that the ZED Unity plugin uses to enable and disable features that are dependent on specific packages. 
+/// This includes the SteamVR and Oculus plugins (for controller interaction) and OpenCV for Unity (for ArUco detection). 
 /// </summary>
 [InitializeOnLoad]
 public class ZEDDefineHandler : AssetPostprocessor
 {
     static ZEDDefineHandler()
-    {
+    {  
     }
 
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)

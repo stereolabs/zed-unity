@@ -305,7 +305,7 @@ public class ZEDTransformController : MonoBehaviour
     {
         //If the ZEDManager uses Estimate Initial Position and tracking, then the position will change shortly after OnZEDReady.
         //We'll make a non-async call to EstimateInitialPosition to determine what the angle will be. 
-        if (zedManager.estimateInitialPosition && zedManager.enableTracking)
+        if (zedManager.setFloorAsOrigin && zedManager.enableTracking)
         {
             Vector3 initpos = Vector3.zero;
             Quaternion initrot = Quaternion.identity;
@@ -324,7 +324,7 @@ public class ZEDTransformController : MonoBehaviour
         }
 
         //If we're going to know where the floor is, then make sure the object doesn't spawn in the floor if the user is looking down. 
-        if(zedManager.estimateInitialPosition)
+        if(zedManager.setFloorAsOrigin)
         {
             if (transform.position.y < 0.5f) transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         }

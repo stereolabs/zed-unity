@@ -147,7 +147,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
         zedManager.OnObjectDetection += Visualize3DBoundingBoxes;
         zedManager.OnZEDReady += OnZEDReady;
 
-        if (zedManager.estimateInitialPosition == false && transformBoxToTouchFloor == true)
+        if (zedManager.setFloorAsOrigin == false && transformBoxToTouchFloor == true)
         {
             Debug.Log("Estimate initial position is set to false. Then, transformBoxToTouchFloor is disable.");
             transformBoxToTouchFloor = false;
@@ -168,7 +168,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
     /// in that object's actual 3D location within the world.
     /// <para>Called from ZEDManager.OnObjectDetection each time there's a new detection frame available.</para>
     /// </summary>
-    private void Visualize3DBoundingBoxes(DetectionFrame dframe)
+    private void Visualize3DBoundingBoxes(ObjectDetectionFrame dframe)
     {
         //Get a list of all active IDs from last frame, and we'll remove each box that's visible this frame.
         //At the end, we'll clear the remaining boxes, as those are objects no longer visible to the ZED.
@@ -178,16 +178,16 @@ public class ZED3DObjectVisualizer : MonoBehaviour
         foreach (DetectedObject dobj in newobjects)
         {
             Bounds objbounds = dobj.Get3DWorldBounds();
-            //Make sure the object is big enough to count. We filter out very small boxes.
+            //Make sure the object is big enough to count. We filter out very small boxes. 
             if (objbounds.size.x < minimumWidthToDisplay || objbounds.size == Vector3.zero) continue;
 
-            //Remove the ID from the list we'll use to clear no-longer-visible boxes.
+            //Remove the ID from the list we'll use to clear no-longer-visible boxes. 
             if (activeids.Contains(dobj.id)) activeids.Remove(dobj.id);
 
             //Get the box and update its distance value.
             GameObject bbox = GetBBoxForObject(dobj);
 
-            //Move the box into position.
+            //Move the box into position. 
             Vector3 obj_position = dobj.Get3DWorldPosition();
 
             if (!ZEDSupportFunctions.IsVector3NaN(obj_position))
@@ -198,10 +198,10 @@ public class ZED3DObjectVisualizer : MonoBehaviour
                     bbox.transform.position = new Vector3(bbox.transform.position.x, 0, bbox.transform.position.z);
                 }
 
-                bbox.transform.rotation = dobj.Get3DWorldRotation(boxesFaceCamera); //Rotate them.
+                bbox.transform.rotation = dobj.Get3DWorldRotation(boxesFaceCamera); //Rotate them. 
             }
 
-            //Transform the box if desired.
+            //Transform the box if desired. 
             if (transformBoxScale)
             {
                 //We'll scale the object assuming that it's mesh is the default Unity cube, or something sized equally.
@@ -272,7 +272,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
             if (boxhandler)
             {
                 boxhandler.SetColor(col);
-                if (zedManager.objectDetectionModel == sl.DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
+                if (zedManager.objectDetectionModel == sl.OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
                 {
                     //boxhandler.SetID(dobj.rawObjectData.rawLabel.ToString());
                     boxhandler.SetID(dobj.id.ToString());
@@ -372,7 +372,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
     {
         //Test bbox orientation.
         Transform camtrans = dobj.detectingZEDManager.GetLeftCameraTransform();
-        Vector3[] corners = dobj.rawObjectData.worldBoundingBox;
+        Vector3[] corners = dobj.rawObjectData.boundingBox;
         Vector3[] rotcorners = new Vector3[8];
         //Vector3[] corners3d = new Vector3[8];
         Vector3[] corners3d = dobj.Get3DWorldCorners();

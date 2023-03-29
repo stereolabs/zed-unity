@@ -10,6 +10,8 @@ Features include:
  - Inside-out positional tracking
  - Spatial mapping
  - Real-time plane detection
+ - Object detection
+ - Body tracking
 
 ## Getting Started
 
@@ -163,13 +165,19 @@ Print out ArUco markers, put them in view of your ZED, and let the battle begin.
 
 ### Greenscreen
 
-https://user-images.githubusercontent.com/113181784/202203983-01d323ce-4f57-4ce5-b8cf-f22d891c6319.mp4
+[![](https://thumbs.gfycat.com/PalatableDesertedHorse-size_restricted.gif)](https://gfycat.com/PalatableDesertedHorse)
+
+Aim your ZED at a greenscreen and hit Play to see your subject standing in a small town in the desert. You'll see that the nearby crates still have all the proper occlusion, but the greenscreen background is replaced with the virtual background. Attach the ZED to a controller or Vive Tracker and specify it in **ZEDControllerTracker** to move the ZED around in your tracked VR space.
 
 Aim your ZED at a greenscreen and hit Play to see your subject standing in a small town in the desert. You'll see that the nearby crates still have all the proper occlusion, but the greenscreen background is replaced with the virtual background. Attach the ZED to a controller or Vive Tracker and specify it in **ZEDControllerTracker** to move the ZED around in your tracked VR space.
 
 ### Mixed Reality Calibration
 
-https://user-images.githubusercontent.com/113181784/202201972-7e199704-1057-4a40-a7ac-ca82a5f2ce53.mp4
+[![](https://thumbs.gfycat.com/NegativeLazyHuman-size_restricted.gif)](https://gfycat.com/NegativeLazyHuman)
+
+Use our interactive, in-VR app to calibrate your ZED with a tracked object, like a controller or Vive Tracker, to make capturing mixed reality videos easier than ever.
+
+
 
 Use our interactive, in-VR app to calibrate your ZED with a tracked object, like a controller or Vive Tracker, to make capturing mixed reality videos easier than ever.
 
@@ -402,9 +410,7 @@ To use, create an empty GameObject and add the **ZEDPlaneDetectionManager** comp
 
  - **Visible in Scene** governs whether you see planes in the Scene window.
  - **Visible in Game** governs whether you see planes in the Game view. Disabling can be useful if you just want planes for collisions.
- - **Override Material** will replace the default wireframe material
-
- on created planes with the material you specify.
+ - **Override Material** will replace the default wireframe material on created planes with the material you specify.
  - **Add Collider** causes the manager to add a Mesh Collider to planes once spawned, enabling collisions.
 
 See the two included Plane Detection samples to explore further.

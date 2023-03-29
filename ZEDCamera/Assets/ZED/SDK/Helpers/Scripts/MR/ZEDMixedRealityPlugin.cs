@@ -106,7 +106,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	public GameObject finalCameraCenter;
 	/// <summary>
 	/// 'Intermediate' left camera GameObject, which is the one on the regular, always-visible ZED stereo rig (ZED_Rig_Stereo),
-	/// usually called 'Left_eye'.
+	/// usually called 'Left_eye'. 
 	/// </summary>
 	[Tooltip("'Intermediate' left camera GameObject, which is the one on the regular, always-visible ZED stereo rig (ZED_Rig_Stereo), "
         + "usually called 'Left_eye'. ")]
@@ -146,7 +146,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 	/// <summary>
 	/// Material from the final center plane. Usually a new instance of Mat_ZED_Unlit.
 	/// </summary>
-	[Tooltip("Material from the final right plane. Usually a new instance of Mat_ZED_Unlit. ")]
+	[Tooltip("Material from the final center plane. Usually a new instance of Mat_ZED_Unlit. ")]
 	public Material centerMaterial;
 
 	/// <summary>
@@ -387,7 +387,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 		Camera.onPreRender += PreRender;
 #endif
 
-		LoadHmdToZEDCalibration();
+		LoadHmdToZEDCalibration(); 
 	}
 
 	/// <summary>
@@ -542,9 +542,6 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     {
         if (manager == null)
             return;
-
-        if (!manager.IsStereoRig)
-            return; //Make sure we're in pass-through AR mode.
 
 #if UNITY_2019_3_OR_NEWER
         List<InputDevice> eyes = new List<InputDevice>();
@@ -727,9 +724,9 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     }
 #else
 	/// <summary>
-	/// Before the ZED is ready, lock the quads in front of the cameras as latency correction isn't available yet.
-	/// This allows us to see the loading messages (and other virtual objects if desired) while the ZED is still loading.
-	/// Called by Camera.OnPreRender anytime any camera renders.
+	/// Before the ZED is ready, lock the quads in front of the cameras as latency correction isn't available yet. 
+	/// This allows us to see the loading messages (and other virtual objects if desired) while the ZED is still loading. 
+	/// Called by Camera.OnPreRender anytime any camera renders. 
 	/// </summary>
 	/// <param name="cam">Cam.</param>
 	public void PreRender(Camera cam)

@@ -694,7 +694,7 @@ public class ZEDRenderingPlane : MonoBehaviour
         matRGB.SetTexture("_DepthXYZTex", depth);
         matRGB.SetTexture("_NormalsTex", normals);
 
-#if ZED_HDRP && !ZED_URP//Need FoV to calculate world space positions accurately.
+#if ZED_HDRP && !ZED_URP//Need FoV to calculate world space positions accurately. 
         matRGB.SetFloat("_ZEDHFoVRad", zedCamera.GetCalibrationParameters().leftCam.hFOV * Mathf.Deg2Rad);
         matRGB.SetFloat("_ZEDVFoVRad", zedCamera.GetCalibrationParameters().leftCam.vFOV * Mathf.Deg2Rad);
 #endif

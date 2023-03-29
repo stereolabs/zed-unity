@@ -69,7 +69,11 @@ public class ZEDCustomObjDetection : MonoBehaviour
     {
         if (!zedManager) zedManager = FindObjectOfType<ZEDManager>();
 
+<<<<<<< HEAD
         if (zedManager.objectDetectionModel != DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
+=======
+        if (zedManager.objectDetectionModel != OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
+>>>>>>> 6936388b3e9c84845bb5af794eb25cb9defd68f0
         {
             Debug.LogWarning("sl.DETECTION_MODEL.CUSTOM_BOX_OBJECTS is mandatory for this sample");
         }

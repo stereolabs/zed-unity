@@ -295,7 +295,7 @@ PrefabInstance:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: svoInputFileName
-      value:
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
@@ -447,8 +447,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!850595691 &1012881192
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -570,8 +570,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d0abc0576042adc45b8f05b0d971b044, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   bunnyPrefab: {fileID: 1791071174324572, guid: 0bcfb109574c6044a8d247157698abd6,
     type: 3}
   pointerPrefab: {fileID: 1013873881802346, guid: 059643d321daca8498088bf53a3c033d,
@@ -596,8 +596,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c69cab078a599db4689ba9ae19ee7645, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   goodPlacementTex:
   - {fileID: 2800000, guid: f6d1923cc5b827e4b9c373156b027ad4, type: 3}
   - {fileID: 2800000, guid: 8cf16a9446836704e9c64c8ec86e3d33, type: 3}
