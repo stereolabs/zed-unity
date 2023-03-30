@@ -364,7 +364,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   zedManager: {fileID: 1078485266}
   canvas: {fileID: 65360501}
-  detectionMode: 1
+  detectionMode: 0
   startAIModuleAutomatically: 0
   boundingBoxPrefab: {fileID: 1187247398682752, guid: a71fe20b5d673e34fb3fef09b4bb6ee3,
     type: 3}
