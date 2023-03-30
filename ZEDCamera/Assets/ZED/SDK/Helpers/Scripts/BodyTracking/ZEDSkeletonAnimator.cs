@@ -14,7 +14,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
     [Header("IK SETTINGS")]
     [Tooltip("Enable foot IK (feet on ground when near it)")]
-    public bool enableFootIK = true;
+    public bool enableFootIK = false;
     [Tooltip("EXPERIMENTAL: Filter feet movements caused by root offset when the feet should not be moving (on floor).")]
     public bool filterSlidingMovementsOnGround = false;
     [Tooltip("Distance (between ankle and environment under it) under which a foot is considered on the floor.")]
