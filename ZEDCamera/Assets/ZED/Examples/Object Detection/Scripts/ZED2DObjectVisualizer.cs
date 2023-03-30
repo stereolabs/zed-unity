@@ -15,6 +15,12 @@ using UnityEngine.UI;
 /// </summary>
 public class ZED2DObjectVisualizer : MonoBehaviour
 {
+    public enum DetectionMode
+    {
+        ObjectDetection,
+        BodyTracking
+    }
+
     /// <summary>
     /// The scene's ZEDManager.
     /// If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DObjectVisualizer commponents in the scene.
@@ -31,13 +37,20 @@ public class ZED2DObjectVisualizer : MonoBehaviour
         "will line up properly with the ZED video feed.")]
     public Canvas canvas;
 
+    [Space(5)]
+    /// <summary>
+    /// Allow you to choose which type of detection (object detection or body tracking) is used to retrieve the bounding boxes.
+    /// </summary>
+    [Tooltip("Allow you to choose which type of detection (object detection or body tracking) is used to retrieve the bounding boxes.")]
+    public DetectionMode detectionMode = DetectionMode.ObjectDetection;
+
     /// <summary>
     /// If true, the ZED Object Detection manual will be started as soon as the ZED is initiated.
     /// This avoids having to press the Start Object Detection button in ZEDManager's Inspector.
     /// </summary>
-    [Tooltip("If true, the ZED Object Detection manual will be started as soon as the ZED is initiated. " +
+    [Tooltip("If true, the ZED Object Detection or Body tracking module manual will be started as soon as the ZED is initiated depending of the detection mode chosen " +
     "This avoids having to press the Start Object Detection button in ZEDManager's Inspector.")]
-    public bool startObjectDetectionAutomatically = true;
+    public bool startAIModuleAutomatically = true;
 
 
     /// <summary>
@@ -131,7 +144,16 @@ public class ZED2DObjectVisualizer : MonoBehaviour
             zedManager = FindObjectOfType<ZEDManager>();
         }
 
-        zedManager.OnObjectDetection += Visualize2DBoundingBoxes;
+        if (detectionMode == DetectionMode.ObjectDetection)
+        {
+            zedManager.OnObjectDetection += Visualize2DBoundingBoxes;
+
+        }
+        else if (detectionMode == DetectionMode.BodyTracking)
+        {
+            zedManager.OnBodyTracking += Visualize2DBoundingBoxes;
+
+        }
         zedManager.OnZEDReady += OnZEDReady;
 
         if (!canvas) //If we don't have a canvas in the scene, we need one.
@@ -145,9 +167,13 @@ public class ZED2DObjectVisualizer : MonoBehaviour
 
     private void OnZEDReady()
     {
-        if (startObjectDetectionAutomatically && !zedManager.IsObjectDetectionRunning)
+        if (detectionMode == DetectionMode.ObjectDetection && startAIModuleAutomatically && !zedManager.IsObjectDetectionRunning)
         {
             zedManager.StartObjectDetection();
+        }
+        else if (detectionMode == DetectionMode.BodyTracking && startAIModuleAutomatically && !zedManager.IsBodyTrackingRunning)
+        {
+            zedManager.StartBodyTracking();
         }
 
         //Enforce some specific settings on the canvas that are needed for things to line up.
@@ -246,6 +272,81 @@ public class ZED2DObjectVisualizer : MonoBehaviour
     }
 
     /// <summary>
+    /// Given a frame of object detections, positions a canvas object to represent every visible object
+    /// to encompass the object within the 2D image from the ZED.
+    /// <para>Called from ZEDManager.OnObjectDetection each time there's a new detection frame available.</para>
+    /// </summary>
+    public void Visualize2DBoundingBoxes(BodyTrackingFrame dframe)
+    {
+        //Clear any masks that were displayed last frame, to avoid memory leaks.
+        DestroyLastFrameMaskTextures();
+
+        //Debug.Log("Received frame with " + dframe.detectedObjects.Count + " objects.");
+        //Get a list of all active IDs from last frame, and we'll remove each box that's visible this frame.
+        //At the end, we'll clear the remaining boxes, as those are objects no longer visible to the ZED.
+        List<int> activeids = liveBBoxes.Keys.ToList();
+
+        List<DetectedBody> newbodies = dframe.GetFilteredObjectList(showONTracked, showSEARCHINGTracked, showOFFTracked);
+        //Test just setting box to first available.
+        foreach (DetectedBody dbody in newbodies)
+        {
+            //Remove the ID from the list we'll use to clear no-longer-visible boxes.
+            if (activeids.Contains(dbody.id)) activeids.Remove(dbody.id);
+
+            //Get the relevant box. This function will create a new one if it wasn't designated yet.
+            RectTransform bbox = GetBBoxForBody(dbody);
+
+
+            BBox2DHandler idtext = bbox.GetComponentInChildren<BBox2DHandler>();
+            if (idtext)
+            {
+                float disttobox = Vector3.Distance(dbody.detectingZEDManager.GetLeftCameraTransform().position, dbody.Get3DWorldPosition());
+                idtext.SetDistance(disttobox);
+            }
+
+#if UNITY_2018_3_OR_NEWER
+            float xmod = canvas.GetComponent<RectTransform>().rect.width / zedManager.zedCamera.ImageWidth;
+            Rect objrect = dbody.Get2DBoundingBoxRect(xmod);
+#else
+            Rect objrect = dobj.Get2DBoundingBoxRect();
+
+#endif
+            //Adjust the size of the RectTransform to encompass the object.
+            bbox.sizeDelta = new Vector2(objrect.width, objrect.height);
+            bbox.anchoredPosition = new Vector2(objrect.x, objrect.y);
+
+            /*
+#if UNITY_2018_3_OR_NEWER
+            float xmod = canvas.GetComponent<RectTransform>().rect.width / zedManager.zedCamera.ImageWidth;
+            bbox.anchoredPosition = new Vector2(bbox.anchoredPosition.x * xmod, bbox.anchoredPosition.y);
+            bbox.sizeDelta *= xmod;
+#endif
+*/
+
+
+            //Apply the mask.
+            if (showObjectMask)
+            {
+                //Make a new image for this new mask.
+                Texture2D maskimage;
+                if (dbody.GetMaskTexture(out maskimage, false))
+                {
+                    idtext.SetMaskImage(maskimage); //Apply to 2D bbox.
+                    lastFrameMasks.Add(maskimage);   //Cache the texture so it's deleted next time we update our objects.
+                }
+            }
+        }
+
+        //Remove boxes for objects that the ZED can no longer see.
+        foreach (int id in activeids)
+        {
+            ReturnBoxToPool(id, liveBBoxes[id]);
+        }
+
+        SortActiveObjectsByDepth(); //Sort all object transforms so that ones with further depth appear behind objects that are closer.
+    }
+
+    /// <summary>
     /// Returs the RectTransform within the GameObject (instantiated from boundingBoxPrefab) that represents the provided DetectedObject.
     /// If none exists, it retrieves one from the pool (or instantiates a new one if none is available) and
     /// sets it up with the proper ID and colors.
@@ -288,6 +389,52 @@ public class ZED2DObjectVisualizer : MonoBehaviour
             return newrecttrans;
         }
         else return liveBBoxes[dobj.id];
+
+    }
+
+    /// <summary>
+    /// Returs the RectTransform within the GameObject (instantiated from boundingBoxPrefab) that represents the provided DetectedObject.
+    /// If none exists, it retrieves one from the pool (or instantiates a new one if none is available) and
+    /// sets it up with the proper ID and colors.
+    /// </summary>
+    private RectTransform GetBBoxForBody(DetectedBody dbody)
+    {
+        if (!liveBBoxes.ContainsKey(dbody.id))
+        {
+            GameObject newbox = GetAvailableBBox();
+            newbox.transform.SetParent(canvas.transform, false);
+            newbox.name = "Object #" + dbody.id;
+
+            Color col;
+            if (idColorDict.ContainsKey(dbody.id))
+            {
+                col = idColorDict[dbody.id];
+            }
+            else
+            {
+                col = GetNextColor();
+                idColorDict.Add(dbody.id, col);
+            }
+
+            BBox2DHandler boxhandler = newbox.GetComponent<BBox2DHandler>();
+            if (boxhandler)
+            {
+                boxhandler.SetColor(col);
+                boxhandler.SetID(dbody.id);
+            }
+
+
+            RectTransform newrecttrans = newbox.GetComponent<RectTransform>();
+            if (!newrecttrans)
+            {
+                Debug.LogError("BBox prefab needs a RectTransform in the root object.");
+                return null;
+            }
+
+            liveBBoxes[dbody.id] = newrecttrans;
+            return newrecttrans;
+        }
+        else return liveBBoxes[dbody.id];
 
     }
 
@@ -412,7 +559,16 @@ public class ZED2DObjectVisualizer : MonoBehaviour
     {
         if (zedManager)
         {
-            zedManager.OnObjectDetection -= Visualize2DBoundingBoxes;
+            if (detectionMode == DetectionMode.ObjectDetection)
+            {
+                zedManager.OnObjectDetection += Visualize2DBoundingBoxes;
+
+            }
+            else if (detectionMode == DetectionMode.BodyTracking)
+            {
+                zedManager.OnBodyTracking += Visualize2DBoundingBoxes;
+
+            }
             zedManager.OnZEDReady -= OnZEDReady;
         }
 

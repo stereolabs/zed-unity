@@ -13,6 +13,12 @@ using UnityEngine;
 /// </summary>
 public class ZED3DObjectVisualizer : MonoBehaviour
 {
+    public enum DetectionMode
+    {
+        ObjectDetection,
+        BodyTracking
+    }
+
     /// <summary>
     /// The scene's ZEDManager.
     /// If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DObjectVisualizer commponents in the scene.
@@ -21,13 +27,20 @@ public class ZED3DObjectVisualizer : MonoBehaviour
         "If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DObjectVisualizer commponents in the scene. ")]
     public ZEDManager zedManager;
 
+    [Space(5)]
+    /// <summary>
+    /// Allow you to choose which type of detection (object detection or body tracking) is used to retrieve the bounding boxes.
+    /// </summary>
+    [Tooltip("Allow you to choose which type of detection (object detection or body tracking) is used to retrieve the bounding boxes.")]
+    public DetectionMode detectionMode = DetectionMode.ObjectDetection;
+
     /// <summary>
     /// If true, the ZED Object Detection manual will be started as soon as the ZED is initiated.
     /// This avoids having to press the Start Object Detection button in ZEDManager's Inspector.
     /// </summary>
-    [Tooltip("If true, the ZED Object Detection manual will be started as soon as the ZED is initiated. " +
-        "This avoids having to press the Start Object Detection button in ZEDManager's Inspector.")]
-    public bool startObjectDetectionAutomatically = true;
+    [Tooltip("If true, the ZED Object Detection or Body tracking module manual will be started as soon as the ZED is initiated depending of the detection mode chosen " +
+    "This avoids having to press the Start Object Detection button in ZEDManager's Inspector.")]
+    public bool startAIModuleAutomatically = true;
 
     /// <summary>
     /// Prefab object that's instantiated to represent detected objects.
@@ -144,7 +157,16 @@ public class ZED3DObjectVisualizer : MonoBehaviour
             zedManager = FindObjectOfType<ZEDManager>();
         }
 
-        zedManager.OnObjectDetection += Visualize3DBoundingBoxes;
+        if (detectionMode == DetectionMode.ObjectDetection)
+        {
+            zedManager.OnObjectDetection += Visualize3DBoundingBoxes;
+
+        }
+        else if (detectionMode == DetectionMode.BodyTracking)
+        {
+            zedManager.OnBodyTracking += Visualize3DBoundingBoxes;
+
+        }
         zedManager.OnZEDReady += OnZEDReady;
 
         if (zedManager.setFloorAsOrigin == false && transformBoxToTouchFloor == true)
@@ -156,9 +178,13 @@ public class ZED3DObjectVisualizer : MonoBehaviour
 
     private void OnZEDReady()
     {
-        if (startObjectDetectionAutomatically && !zedManager.IsObjectDetectionRunning)
+        if (detectionMode == DetectionMode.ObjectDetection && startAIModuleAutomatically && !zedManager.IsObjectDetectionRunning)
         {
             zedManager.StartObjectDetection();
+        }
+        else if (detectionMode == DetectionMode.BodyTracking && startAIModuleAutomatically && !zedManager.IsBodyTrackingRunning)
+        {
+            zedManager.StartBodyTracking();
         }
     }
 
@@ -245,6 +271,87 @@ public class ZED3DObjectVisualizer : MonoBehaviour
     }
 
     /// <summary>
+    /// Given a frame of object detections, positions a GameObject to represent every visible object
+    /// in that object's actual 3D location within the world.
+    /// <para>Called from ZEDManager.OnObjectDetection each time there's a new detection frame available.</para>
+    /// </summary>
+    private void Visualize3DBoundingBoxes(BodyTrackingFrame dframe)
+    {
+        //Get a list of all active IDs from last frame, and we'll remove each box that's visible this frame.
+        //At the end, we'll clear the remaining boxes, as those are objects no longer visible to the ZED.
+        List<int> activeids = liveBBoxes.Keys.ToList();
+
+        List<DetectedBody> newbodies = dframe.GetFilteredObjectList(showONTracked, showSEARCHINGTracked, showOFFTracked);
+        foreach (DetectedBody dbody in newbodies)
+        {
+            Bounds objbounds = dbody.Get3DWorldBounds();
+            //Make sure the object is big enough to count. We filter out very small boxes. 
+            if (objbounds.size.x < minimumWidthToDisplay || objbounds.size == Vector3.zero) continue;
+
+            //Remove the ID from the list we'll use to clear no-longer-visible boxes. 
+            if (activeids.Contains(dbody.id)) activeids.Remove(dbody.id);
+
+            //Get the box and update its distance value.
+            GameObject bbox = GetBBoxForBody(dbody);
+
+            //Move the box into position. 
+            Vector3 obj_position = dbody.Get3DWorldPosition();
+
+            if (!ZEDSupportFunctions.IsVector3NaN(obj_position))
+            {
+                bbox.transform.position = obj_position;
+                if (floorBBoxPosition)
+                {
+                    bbox.transform.position = new Vector3(bbox.transform.position.x, 0, bbox.transform.position.z);
+                }
+
+                bbox.transform.rotation = dbody.Get3DWorldRotation(boxesFaceCamera); //Rotate them. 
+            }
+
+            //Transform the box if desired. 
+            if (transformBoxScale)
+            {
+                //We'll scale the object assuming that it's mesh is the default Unity cube, or something sized equally.
+                if (transformBoxToTouchFloor)
+                {
+                    Vector3 startscale = objbounds.size;
+                    float distfromfloor = bbox.transform.position.y - (objbounds.size.y / 2f);
+                    bbox.transform.localScale = new Vector3(objbounds.size.x, objbounds.size.y + distfromfloor, objbounds.size.z);
+                    Vector3 newpos = bbox.transform.position;
+                    newpos.y -= (distfromfloor / 2f);
+
+                    bbox.transform.position = newpos;
+
+                }
+                else
+                {
+                    bbox.transform.localScale = objbounds.size;
+                }
+            }
+
+            //Now that we've adjusted position, tell the handler on the prefab to adjust distance display..
+            BBox3DHandler boxhandler = bbox.GetComponent<BBox3DHandler>();
+            if (boxhandler)
+            {
+                float disttobox = Vector3.Distance(dbody.detectingZEDManager.GetLeftCameraTransform().position, dbody.Get3DWorldPosition());
+                boxhandler.SetDistance(disttobox);
+
+                boxhandler.UpdateBoxUVScales();
+                boxhandler.UpdateLabelScaleAndPosition();
+            }
+
+            //DrawDebugBox(dobj);
+        }
+
+        //Remove boxes for objects that the ZED can no longer see.
+        foreach (int id in activeids)
+        {
+            ReturnBoxToPool(id, liveBBoxes[id]);
+        }
+
+    }
+
+    /// <summary>
     /// Returs the GameObject (instantiated from boundingBoxPrefab) that represents the provided DetectedObject.
     /// If none exists, it retrieves one from the pool (or instantiates a new one if none is available) and
     /// sets it up with the proper ID and colors.
@@ -289,6 +396,46 @@ public class ZED3DObjectVisualizer : MonoBehaviour
         }
         else return liveBBoxes[dobj.id];
     }
+
+    /// <summary>
+    /// Returs the GameObject (instantiated from boundingBoxPrefab) that represents the provided DetectedObject.
+    /// If none exists, it retrieves one from the pool (or instantiates a new one if none is available) and
+    /// sets it up with the proper ID and colors.
+    /// </summary>
+    private GameObject GetBBoxForBody(DetectedBody dbody)
+    {
+        if (!liveBBoxes.ContainsKey(dbody.id))
+        {
+            GameObject newbox = GetAvailableBBox();
+            newbox.name = "Object #" + dbody.id;
+
+            BBox3DHandler boxhandler = newbox.GetComponent<BBox3DHandler>();
+
+            Color col;
+            if (idColorDict.ContainsKey(dbody.id))
+            {
+                col = idColorDict[dbody.id];
+            }
+            else
+            {
+                col = GetNextColor();
+                idColorDict.Add(dbody.id, col);
+            }
+
+            if (boxhandler)
+            {
+                boxhandler.SetColor(col);
+
+                boxhandler.SetID(dbody.id.ToString());
+
+            }
+
+            liveBBoxes[dbody.id] = newbox;
+            return newbox;
+        }
+        else return liveBBoxes[dbody.id];
+    }
+
 
     /// <summary>
     /// Gets an available GameObject (instantiated from boundingBoxPrefab) from the pool,
