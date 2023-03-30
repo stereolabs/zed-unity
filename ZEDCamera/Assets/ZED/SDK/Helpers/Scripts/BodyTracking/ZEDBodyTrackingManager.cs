@@ -184,14 +184,6 @@ public class ZEDBodyTrackingManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             useAvatar = !useAvatar;
-            if (useAvatar)
-            {
-                if (zedManager.enableBodyFitting)
-                    Debug.Log("<b><color=green> Switch to Avatar mode</color></b>");
-
-            }
-            else
-                Debug.Log("<b><color=green> Switch to Skeleton mode</color></b>");
         }
 
         // Adjust the 3D avatar to the bones rotations from the SDK each frame.
