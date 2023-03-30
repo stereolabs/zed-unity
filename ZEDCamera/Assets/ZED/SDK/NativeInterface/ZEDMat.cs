@@ -241,7 +241,7 @@ namespace sl
         private static extern int dllz_mat_set_to_float4(System.IntPtr ptr, float4 value, int mem);
 
         [DllImport(nameDll, EntryPoint = "sl_mat_set_to_uchar")]
-        private static extern int dllz_mat_set_to_uchar(System.IntPtr ptr,  byte value, int mem);
+        private static extern int dllz_mat_set_to_uchar(System.IntPtr ptr, byte value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_to_uchar2")]          
         private static extern int dllz_mat_set_to_uchar2(System.IntPtr ptr, char2 value, int mem);
         [DllImport(nameDll, EntryPoint = "sl_mat_set_to_uchar3")]          

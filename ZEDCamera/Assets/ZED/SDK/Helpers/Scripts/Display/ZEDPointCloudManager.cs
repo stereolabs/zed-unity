@@ -210,6 +210,7 @@ public class ZEDPointCloudManager : MonoBehaviour
         }
         previousUpdate = update;
         }
+
     }
 
 

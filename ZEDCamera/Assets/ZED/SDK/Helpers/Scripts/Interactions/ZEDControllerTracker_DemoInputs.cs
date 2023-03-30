@@ -98,7 +98,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
     /// Input Button checked to signal a Back event when checked or subscribed to.
     /// </summary>
     [Tooltip("Input Button checked to signal a Back event when checked or subscribed to")]
-    public InputFeatureUsage<bool> backButton = CommonUsages.secondaryButton; //Y, or B if just right controller is connected.
+    public InputFeatureUsage<bool> backButton = CommonUsages.secondaryButton; //Y, or B if just right controller is connected. 
     /// <summary>
     /// Input Button checked to signal a Grab event when checked or subscribed to.
     /// </summary>
@@ -411,7 +411,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         Vector2 result = Vector2.zero;
         if (device.TryGetFeatureValue(navigateUIAxis, out Vector2 value))
             result = value;
-
+            
         return result;
     }
 
@@ -423,7 +423,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
             {
                 onButtonDown?.Invoke();
             }
-
+ 
             _wasPressedDownPreviousFrame = true;
             onButtonHeld?.Invoke();
         }
@@ -433,7 +433,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
             {
                 onButtonUp?.Invoke();
             }
-
+ 
             _wasPressedDownPreviousFrame = false;
         }
     }

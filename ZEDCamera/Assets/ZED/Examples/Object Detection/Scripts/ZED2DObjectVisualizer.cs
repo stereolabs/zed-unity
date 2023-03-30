@@ -175,7 +175,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
     /// to encompass the object within the 2D image from the ZED.
     /// <para>Called from ZEDManager.OnObjectDetection each time there's a new detection frame available.</para>
     /// </summary>
-    public void Visualize2DBoundingBoxes(DetectionFrame dframe)
+    public void Visualize2DBoundingBoxes(ObjectDetectionFrame dframe)
     {
         //Clear any masks that were displayed last frame, to avoid memory leaks.
         DestroyLastFrameMaskTextures();

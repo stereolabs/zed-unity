@@ -13,12 +13,12 @@ using System;
 /// </remarks>
 public class DetectedObject
 {
-    private ObjectDataSDK objectData;
+    private ObjectData objectData;
     /// <summary>
     /// The raw ObjectData object that this instance is an abstraction of - ObjectData's data comes
     /// directly from the SDK and doesn't follow Unity conventions. 
     /// </summary>
-    public ObjectDataSDK rawObjectData
+    public ObjectData rawObjectData
     {
         get
         {
@@ -41,22 +41,22 @@ public class DetectedObject
     /// <summary>
     /// Class of object that was detected (person, vehicle, etc.)
     /// </summary>
-    public OBJECT_CLASS objectClass
+    public OBJECT_CLASS label
     {
         get
         {
-            return objectData.objectClass;
+            return objectData.label;
         }
     }
 
     /// <summary>
     /// SubClass of object that was detected  
     /// </summary>
-    public OBJECT_SUBCLASS objectSubClass
+    public OBJECT_SUBCLASS subLabel
     {
         get
         {
-            return objectData.objectSubClass;
+            return objectData.subLabel;
         }
     }
 
@@ -65,11 +65,11 @@ public class DetectedObject
     /// visible recently, but is no longer visible. "OFF" means that object detection has tracking turned off, 
     /// so 3D data will never be available. 
     /// </summary>
-    public OBJECT_TRACK_STATE trackingState
+    public OBJECT_TRACKING_STATE trackingState
     {
         get
         {
-            return objectData.objectTrackingState;
+            return objectData.trackingState;
         }
     }
 
@@ -134,7 +134,7 @@ public class DetectedObject
     /// <param name="viewingmanager">ZEDManager assigned to the ZED camera that detected the object.</param>
     /// <param name="campos">World position of the left ZED camera when the object was detected.</param>
     /// <param name="camrot">World rotation of the left ZED camera when the object was detected.</param>
-    public DetectedObject(ObjectDataSDK odata, ZEDManager viewingmanager, Vector3 campos, Quaternion camrot)
+    public DetectedObject(ObjectData odata, ZEDManager viewingmanager, Vector3 campos, Quaternion camrot)
     {
         objectData = odata;
         detectingZEDManager = viewingmanager;
@@ -172,8 +172,8 @@ public class DetectedObject
         for (int i = 0; i < 4; i++)
         {
             Vector2 rawcoord;
-            rawcoord.x = objectData.imageBoundingBox[i].x * scaleForCanvasUnityError + cxoffset;
-            rawcoord.y = detectingZEDManager.zedCamera.ImageHeight - objectData.imageBoundingBox[i].y + cyoffset;
+            rawcoord.x = objectData.boundingBox2D[i].x * scaleForCanvasUnityError + cxoffset;
+            rawcoord.y = detectingZEDManager.zedCamera.ImageHeight - objectData.boundingBox2D[i].y + cyoffset;
             
 
 #if UNITY_2018_1_OR_NEWER
@@ -217,7 +217,7 @@ public class DetectedObject
     /// </summary>
     /// <param name="scaleForCanvasUnityError">Adds an optional scaling factor to handle a bug in 2018.3 and greater where the
     /// canvas set to Screen Space - Camera has very weird offsets when its projection matrix has certain small changes made to it directly.</param>
-    public Rect Get2DBoundingBoxRect(float scaleForCanvasUnityError = 1f)
+    public UnityEngine.Rect Get2DBoundingBoxRect(float scaleForCanvasUnityError = 1f)
     {
         Vector2[] imagecoords = Get2DBoundingBoxCorners_Image(scaleForCanvasUnityError);
 
@@ -226,7 +226,7 @@ public class DetectedObject
 
         Vector2 bottomleftcorner = imagecoords[3];
 
-        return new Rect(bottomleftcorner, new Vector2(width, height));
+        return new UnityEngine.Rect(bottomleftcorner, new Vector2(width, height));
     }
 
     /// <summary>
@@ -235,8 +235,8 @@ public class DetectedObject
     public Vector3 Get3DWorldPosition()
     {
         //Get the center of the transformed bounding box. 
-        float ypos = (localToWorld(objectData.worldBoundingBox[0]).y - localToWorld(objectData.worldBoundingBox[4]).y) / 2f + localToWorld(objectData.worldBoundingBox[4]).y;
-        Vector3 transformedroot = localToWorld(objectData.rootWorldPosition);
+        float ypos = (localToWorld(objectData.boundingBox[0]).y - localToWorld(objectData.boundingBox[4]).y) / 2f + localToWorld(objectData.boundingBox[4]).y;
+        Vector3 transformedroot = localToWorld(objectData.position);
 
         return new Vector3(transformedroot.x, ypos, transformedroot.z);
     }
@@ -268,7 +268,7 @@ public class DetectedObject
     /// </summary>
     public Bounds Get3DWorldBounds()
     {
-        Vector3[] worldcorners = objectData.worldBoundingBox;
+        Vector3[] worldcorners = objectData.boundingBox;
 
         Quaternion pitchrot = GetRotationWithoutYaw();
 
@@ -301,7 +301,7 @@ public class DetectedObject
 
         for (int i = 0; i < 8; i++)
         {
-            worldspacecorners[i] = localToWorld(objectData.worldBoundingBox[i]);
+            worldspacecorners[i] = localToWorld(objectData.boundingBox[i]);
         }
 
         return worldspacecorners;
