@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/GreenScreen/Resources/Materials/Mat_ZED_Greenscreen_HDRP_Lit.mat.meta
-guid: 3f37ac983ab567a43ada54bc03b82763
-========
 guid: 0c40e74d0a5b71249938d7cf27a43290
->>>>>>>> 6936388b3e9c84845bb5af794eb25cb9defd68f0:ZEDCamera/Assets/ZED/SDK/Helpers/Resources/Materials/Unlit/Mat_ZED_Greenscreen_Unlit.mat.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 0

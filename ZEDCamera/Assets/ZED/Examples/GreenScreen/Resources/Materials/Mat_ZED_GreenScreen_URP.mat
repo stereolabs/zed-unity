@@ -7,15 +7,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-<<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/GreenScreen/Resources/Materials/Mat_ZED_GreenScreen_URP.mat
   m_Name: Mat_ZED_GreenScreen_URP
   m_Shader: {fileID: 4800000, guid: 5e4b79b49a7305649ba2f40b8a6e1b71, type: 3}
   m_ShaderKeywords: KEY_COLORS _EMISSION
-========
-  m_Name: Mat_ZED_Forward_Lighting_URP
-  m_Shader: {fileID: 4800000, guid: 2809325ac48130642a19c357ce7d5200, type: 3}
-  m_ShaderKeywords: DIRECTIONALLIGHTEFFECT_ON _EMISSION
->>>>>>>> 6936388b3e9c84845bb5af794eb25cb9defd68f0:ZEDCamera/Assets/ZED/SDK/Helpers/Resources/Materials/Lighting/Mat_ZED_Forward_Lighting_URP.mat
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -62,7 +56,6 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-<<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/GreenScreen/Resources/Materials/Mat_ZED_GreenScreen_URP.mat
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -74,19 +67,6 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-========
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MaskTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MetallicGlossMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
->>>>>>>> 6936388b3e9c84845bb5af794eb25cb9defd68f0:ZEDCamera/Assets/ZED/SDK/Helpers/Resources/Materials/Lighting/Mat_ZED_Forward_Lighting_URP.mat
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -95,13 +75,6 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-<<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/GreenScreen/Resources/Materials/Mat_ZED_GreenScreen_URP.mat
-========
-    - _ShadowMapTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
->>>>>>>> 6936388b3e9c84845bb5af794eb25cb9defd68f0:ZEDCamera/Assets/ZED/SDK/Helpers/Resources/Materials/Lighting/Mat_ZED_Forward_Lighting_URP.mat
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5
@@ -110,10 +83,6 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-<<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/GreenScreen/Resources/Materials/Mat_ZED_GreenScreen_URP.mat
-========
-    - _MaxDepth: 20
->>>>>>>> 6936388b3e9c84845bb5af794eb25cb9defd68f0:ZEDCamera/Assets/ZED/SDK/Helpers/Resources/Materials/Lighting/Mat_ZED_Forward_Lighting_URP.mat
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -124,7 +93,6 @@ Material:
     - _StencilComp: 0
     - _UVSec: 0
     - _ZWrite: 1
-<<<<<<<< HEAD:ZEDCamera/Assets/ZED/Examples/GreenScreen/Resources/Materials/Mat_ZED_GreenScreen_URP.mat
     - _indexRGB: 1
     - _numberColors: 1
     - _slope: 0.63
@@ -151,10 +119,4 @@ Material:
     - _keyingColor3: {r: 0, g: 1, b: 0, a: 1}
     - _keyingColor4: {r: 0, g: 1, b: 0, a: 1}
     - _keyingColor5: {r: 0, g: 1, b: 0, a: 1}
-========
-    - directionalLightEffect: 1
-    m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
->>>>>>>> 6936388b3e9c84845bb5af794eb25cb9defd68f0:ZEDCamera/Assets/ZED/SDK/Helpers/Resources/Materials/Lighting/Mat_ZED_Forward_Lighting_URP.mat
   m_BuildTextureStacks: []
