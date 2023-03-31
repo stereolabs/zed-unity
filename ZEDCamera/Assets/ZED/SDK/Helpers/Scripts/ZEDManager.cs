@@ -382,7 +382,7 @@ public class ZEDManager : MonoBehaviour
     /// Sync the Object on the image.
     /// </summary>
     [HideInInspector]
-    public bool objectDetectionImageSyncMode = false;
+    public bool objectDetectionImageSyncMode = true;
 
     /// <summary>
     /// Whether to track objects across multiple frames using the ZED's position relative to the floor.
@@ -602,7 +602,7 @@ public class ZEDManager : MonoBehaviour
     /// Sync the Object on the image.
     /// </summary>
     [HideInInspector]
-    public bool bodyTrackingImageSyncMode = false;
+    public bool bodyTrackingImageSyncMode = true;
 
     /// <summary>
     /// Whether to track objects across multiple frames using the ZED's position relative to the floor.
