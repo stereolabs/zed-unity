@@ -149,7 +149,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
             zedManager.OnObjectDetection += Visualize2DBoundingBoxes;
 
         }
-        else if (detectionMode == DetectionMode.BodyTracking)
+        if (detectionMode == DetectionMode.BodyTracking)
         {
             zedManager.OnBodyTracking += Visualize2DBoundingBoxes;
 
@@ -171,7 +171,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
         {
             zedManager.StartObjectDetection();
         }
-        else if (detectionMode == DetectionMode.BodyTracking && startAIModuleAutomatically && !zedManager.IsBodyTrackingRunning)
+        if (detectionMode == DetectionMode.BodyTracking && startAIModuleAutomatically && !zedManager.IsBodyTrackingRunning)
         {
             zedManager.StartBodyTracking();
         }

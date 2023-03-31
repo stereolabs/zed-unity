@@ -370,6 +370,14 @@ public class ZEDManager : MonoBehaviour
     /////////////////////////////////////////////////////////////////////////
     ////////////////////////  Object Detection //////////////////////////////
     /////////////////////////////////////////////////////////////////////////
+    ///
+
+    /// <summary>
+    /// Instance ID of the Object detection module. Can be used to enable OD and BT modules at the same time.
+    /// </summary>
+    [HideInInspector]
+    public uint objectDetectionInstanceID = 0;
+
     /// <summary>
     /// Sync the Object on the image.
     /// </summary>
@@ -583,6 +591,12 @@ public class ZEDManager : MonoBehaviour
     /////////////////////////////////////////////////////////////////////////
     ////////////////////////  Body Tracking /////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Instance ID of the body tracking module. Can be used to enable OD and BT modules at the same time.
+    /// </summary>
+    [HideInInspector]
+    public uint bodyTrackingInstanceID = 1;
 
     /// <summary>
     /// Sync the Object on the image.
@@ -2983,6 +2997,7 @@ public class ZEDManager : MonoBehaviour
 
 
             sl.ObjectDetectionParameters od_param = new sl.ObjectDetectionParameters();
+            od_param.instanceModuleID = objectDetectionInstanceID;
             od_param.imageSync = objectDetectionImageSyncMode;
             od_param.enableTracking = objectDetectionTracking;
             od_param.enableSegmentation = objectDetection2DMask;
@@ -3102,7 +3117,7 @@ public class ZEDManager : MonoBehaviour
     {
         sl.Objects objsbuffer = new sl.Objects();
 
-        sl.ERROR_CODE res = zedCamera.RetrieveObjects(ref objectDetectionRuntimeParameters, ref objsbuffer);
+        sl.ERROR_CODE res = zedCamera.RetrieveObjects(ref objectDetectionRuntimeParameters, ref objsbuffer, objectDetectionInstanceID);
         if (res == sl.ERROR_CODE.SUCCESS && objsbuffer.isNew != 0)
         {
             if (objectDetection2DMask)
@@ -3232,11 +3247,11 @@ public class ZEDManager : MonoBehaviour
 
         if (zedCamera != null)
         {
-            odIsStarting = true;
+            btIsStarting = true;
             Debug.LogWarning("Starting Body Tracking. This may take a moment.");
 
             sl.BodyTrackingParameters bt_param = new sl.BodyTrackingParameters();
-            bt_param.instanceModuleID = 0;
+            bt_param.instanceModuleID = bodyTrackingInstanceID;
             bt_param.imageSync = bodyTrackingImageSyncMode;
             bt_param.enableTracking = bodyTrackingTracking;
             bt_param.enableSegmentation = bodyTracking2DMask;
@@ -3333,7 +3348,7 @@ public class ZEDManager : MonoBehaviour
     {
         sl.Bodies bodiesbuffer = new sl.Bodies();
 
-        sl.ERROR_CODE res = zedCamera.RetrieveBodies(ref bodyTrackingRuntimeParams, ref bodiesbuffer);
+        sl.ERROR_CODE res = zedCamera.RetrieveBodies(ref bodyTrackingRuntimeParams, ref bodiesbuffer, bodyTrackingInstanceID);
         if (res == sl.ERROR_CODE.SUCCESS && bodiesbuffer.isNew != 0)
         {
             if (bodyTracking2DMask)

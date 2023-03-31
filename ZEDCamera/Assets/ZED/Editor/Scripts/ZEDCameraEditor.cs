@@ -276,6 +276,7 @@ public class ZEDCameraEditor : Editor
         meshPath = serializedObject.FindProperty("meshPath");
 
         ///Object Detection Serialized Properties
+
         OD_ImageSyncMode = serializedObject.FindProperty("objectDetectionImageSyncMode");
         OD_ObjectTracking = serializedObject.FindProperty("objectDetectionTracking");
 
@@ -795,6 +796,7 @@ public class ZEDCameraEditor : Editor
             /*            GUIContent OD_ImageSyncModeLabel = new GUIContent("Image Sync", "If enabled, object detection will be computed for each image before the next frame is available, " +
                             "locking the main thread if necessary.\r\n\nRecommended setting is false for real-time applications.");
                         OD_ImageSyncMode.boolValue = EditorGUILayout.Toggle(OD_ImageSyncModeLabel, OD_ImageSyncMode.boolValue);*/
+
 
             GUIContent OD_ObjectTrackingLabel = new GUIContent("Enable Tracking", "Whether to track objects across multiple frames using the ZED's position relative to the floor.\r\n\n" +
                 "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");

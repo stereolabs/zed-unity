@@ -2907,9 +2907,9 @@ namespace sl
         /// <param name="od_params"> Object detection runtime parameters</param>
         /// <param name="objFrame"> ObjectsFrameSDK that contains all the detection data</param>
         /// <returns></returns>
-        public sl.ERROR_CODE RetrieveObjects(ref ObjectDetectionRuntimeParameters od_params, ref Objects objFrame)
+        public sl.ERROR_CODE RetrieveObjects(ref ObjectDetectionRuntimeParameters od_params, ref Objects objFrame, uint instanceID = 0)
         {
-            return (sl.ERROR_CODE)dllz_retrieve_objects_data(CameraID, ref od_params, ref objFrame, 0);
+            return (sl.ERROR_CODE)dllz_retrieve_objects_data(CameraID, ref od_params, ref objFrame, instanceID);
         }
 
         /// <summary>
@@ -3032,9 +3032,9 @@ namespace sl
         /// <param name="body_params"> Body Tracking runtime parameters</param>
         /// <param name="bodies"> Bodies that contains all the detection data</param>
         /// <returns></returns>
-        public sl.ERROR_CODE RetrieveBodies(ref BodyTrackingRuntimeParameters bt_params, ref Bodies bodies)
+        public sl.ERROR_CODE RetrieveBodies(ref BodyTrackingRuntimeParameters bt_params, ref Bodies bodies, uint instanceID = 0)
         {
-            return (sl.ERROR_CODE)dllz_retrieve_bodies_data(CameraID, ref bt_params, ref bodies, 0);
+            return (sl.ERROR_CODE)dllz_retrieve_bodies_data(CameraID, ref bt_params, ref bodies, instanceID);
         }
         #endregion
 
