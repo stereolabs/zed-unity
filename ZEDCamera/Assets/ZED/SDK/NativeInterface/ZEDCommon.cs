@@ -997,11 +997,11 @@ namespace sl
         /// <summary>
         /// 672*376. Supported frame rates: 15, 30, 60, 100 FPS.
         /// </summary>
-        VGA = 4,
+        VGA = 5,
         /// <summary>
         /// Select the resolution compatible with camera, on ZEDX HD1200, HD720 otherwise
         /// </summary>
-        AUTO = 5
+        AUTO = 6
     };
 
 

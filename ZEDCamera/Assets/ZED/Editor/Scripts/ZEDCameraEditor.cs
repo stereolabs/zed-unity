@@ -276,7 +276,6 @@ public class ZEDCameraEditor : Editor
         meshPath = serializedObject.FindProperty("meshPath");
 
         ///Object Detection Serialized Properties
-
         OD_ImageSyncMode = serializedObject.FindProperty("objectDetectionImageSyncMode");
         OD_ObjectTracking = serializedObject.FindProperty("objectDetectionTracking");
 
@@ -797,11 +796,6 @@ public class ZEDCameraEditor : Editor
                             "locking the main thread if necessary.\r\n\nRecommended setting is false for real-time applications.");
                         OD_ImageSyncMode.boolValue = EditorGUILayout.Toggle(OD_ImageSyncModeLabel, OD_ImageSyncMode.boolValue);*/
 
-
-            GUIContent OD_ObjectTrackingLabel = new GUIContent("Enable Tracking", "Whether to track objects across multiple frames using the ZED's position relative to the floor.\r\n\n" +
-                "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
-            OD_ObjectTracking.boolValue = EditorGUILayout.Toggle(OD_ObjectTrackingLabel, OD_ObjectTracking.boolValue);
-
             GUIContent OD_Object2DMaskLabel = new GUIContent("Enable Segmentation", "Whether to calculate 2D masks for each object, showing exactly which pixels within the 2D bounding box are the object.\r\n\n" +
             "Must be on when Object Detection starts. Requires more performance, so do not enable unless needed.");
             OD_2DMask.boolValue = EditorGUILayout.Toggle(OD_Object2DMaskLabel, OD_2DMask.boolValue);
@@ -819,7 +813,13 @@ public class ZEDCameraEditor : Editor
 
             EditorGUILayout.LabelField("Tracking Parameters", EditorStyles.boldLabel);
 
+            GUILayout.Space(5);
+
             EditorGUI.indentLevel++;
+
+            GUIContent OD_ObjectTrackingLabel = new GUIContent("Enable Tracking", "Whether to track objects across multiple frames using the ZED's position relative to the floor.\r\n\n" +
+            "Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.");
+            OD_ObjectTracking.boolValue = EditorGUILayout.Toggle(OD_ObjectTrackingLabel, OD_ObjectTracking.boolValue);
 
             GUIContent OD_FilteringModeLabel = new GUIContent("Filtering Mode", "Defines the bounding box preprocessor used.");
             OD_FilteringMode.enumValueIndex = (int)(sl.OBJECT_FILTERING_MODE)EditorGUILayout.EnumPopup(OD_FilteringModeLabel, (sl.OBJECT_FILTERING_MODE)OD_FilteringMode.enumValueIndex);
@@ -830,10 +830,6 @@ public class ZEDCameraEditor : Editor
             if (OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_FAST || OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM || OD_DetectionModel.enumValueIndex == (int)sl.OBJECT_DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE)
             {
                 GUILayout.Space(10);
-
-                EditorGUILayout.LabelField("Runtime Parameters", EditorStyles.boldLabel);
-                GUILayout.Space(5);
-                EditorGUI.indentLevel++;
 
                 GUIContent OD_personDetectionConfidenceThresholdLabel = new GUIContent("Person Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
                 "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
@@ -1468,8 +1464,13 @@ public class ZEDCameraEditor : Editor
                     {
                         manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC, 0);
 
-                        gainProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAIN);
-                        exposureProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE);
+                        int value = 0;
+                        sl.ERROR_CODE err = sl.ERROR_CODE.FAILURE;
+                        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAIN, ref value);
+                        if (err == sl.ERROR_CODE.SUCCESS) { gainProperty.intValue = value; }
+                        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, ref value);
+                        if (err == sl.ERROR_CODE.SUCCESS) { exposureProperty.intValue = value; }
+
 
                         manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.GAIN, gainProperty.intValue); //Apply last settings immediately.
                         manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, exposureProperty.intValue);
@@ -1521,7 +1522,10 @@ public class ZEDCameraEditor : Editor
                     else
                     {
                         manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.AUTO_WHITEBALANCE, 0);
-                        whitebalanceProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE) * 100;
+                        int value = 0;
+                        sl.ERROR_CODE err = sl.ERROR_CODE.FAILURE;
+                        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, ref value);
+                        if (err == sl.ERROR_CODE.SUCCESS) { whitebalanceProperty.intValue = value * 100; }
                         manager.zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, whitebalanceProperty.intValue / 100);
 
                     }
@@ -1681,19 +1685,34 @@ public class ZEDCameraEditor : Editor
     /// </summary>
     private void LoadCurrentVideoSettings()
     {
-        brightnessProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS);
-        contrastProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST);
-        hueProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.HUE);
-        saturationProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SATURATION);
-        sharpnessProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SHARPNESS);
-        gammaProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAMMA);
-        gainProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAIN);
-        exposureProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE);
-        whitebalanceProperty.intValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE);
+        sl.ERROR_CODE err = sl.ERROR_CODE.FAILURE;
+        int value = 0;
+        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, ref value);
+        if (err == sl.ERROR_CODE.SUCCESS) { brightnessProperty.intValue = value; }
+        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, ref value);
+        if (err == sl.ERROR_CODE.SUCCESS) { contrastProperty.intValue = value; }
+        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.HUE, ref value);
+        if (err == sl.ERROR_CODE.SUCCESS) { hueProperty.intValue = value; }
+        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, ref value);
+        if (err == sl.ERROR_CODE.SUCCESS) { saturationProperty.intValue = value; }
+        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SHARPNESS, ref value);
+        if (err == sl.ERROR_CODE.SUCCESS) { sharpnessProperty.intValue = value; }
+        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAMMA, ref value);
+        if (err == sl.ERROR_CODE.SUCCESS) { gammaProperty.intValue = value; }
+        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAIN, ref value);
+        if (err == sl.ERROR_CODE.SUCCESS) { gainProperty.intValue = value; }
+        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, ref value);
+        if (err == sl.ERROR_CODE.SUCCESS) { exposureProperty.intValue = value; }
+        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, ref value);
+        if (err == sl.ERROR_CODE.SUCCESS) { whitebalanceProperty.intValue = value; }
 
-        autoGainExposureProperty.boolValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC) == 1 ? true : false;
-        autoWhiteBalanceProperty.boolValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.AUTO_WHITEBALANCE) == 1 ? true : false;
-        ledStatus.boolValue = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS) == 1 ? true : false;
+        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC, ref value);
+        if (err == sl.ERROR_CODE.SUCCESS) { autoGainExposureProperty.intValue = value; }
+        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.AUTO_WHITEBALANCE, ref value);
+        if (err == sl.ERROR_CODE.SUCCESS) { autoWhiteBalanceProperty.intValue = value; }
+        err = manager.zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, ref value);
+        if (err == sl.ERROR_CODE.SUCCESS) { ledStatus.intValue = value; }
+
     }
 
 }

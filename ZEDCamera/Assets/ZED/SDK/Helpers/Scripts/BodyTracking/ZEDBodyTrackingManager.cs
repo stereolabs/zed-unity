@@ -94,7 +94,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     /// <summary>
     /// Start this instance.
     /// </summary>
-    private void Start()
+    void Start()
     {
         QualitySettings.vSyncCount = 1; // Activate vsync
 
@@ -126,7 +126,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
             zedManager.StartBodyTracking();
         }
     }
-	private void OnDestroy()
+	void OnDestroy()
     {
         if (zedManager)
         {

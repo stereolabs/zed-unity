@@ -416,7 +416,7 @@ namespace sl
         private static extern void dllz_set_video_settings(int id, int mode, int value);
 
         [DllImport(nameDll, EntryPoint = "sl_get_video_settings")]
-        private static extern int dllz_get_video_settings(int id, int mode);
+        private static extern int dllz_get_video_settings(int id, int mode, ref int value);
 
         [DllImport(nameDll, EntryPoint = "sl_set_roi_for_aec_agc")]
         private static extern int dllz_set_roi_for_aec_agc(int id, int side, sl.Rect roi,bool reset);
@@ -1994,10 +1994,10 @@ namespace sl
         /// Gets the value of a given setting from the ZED camera.
         /// </summary>
         /// <param name="settings">Setting to be retrieved (brightness, contrast, gain, exposure, etc.)</param>
-        public int GetCameraSettings(CAMERA_SETTINGS settings)
+        public sl.ERROR_CODE GetCameraSettings(CAMERA_SETTINGS settings, ref int value)
         {
             AssertCameraIsReady();
-            return dllz_get_video_settings(CameraID, (int)settings);
+            return (sl.ERROR_CODE)dllz_get_video_settings(CameraID, (int)settings, ref value);
             //return cameraSettingsManager.GetCameraSettings(CameraID, settings);
         }
 

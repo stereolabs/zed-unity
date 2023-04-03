@@ -3619,26 +3619,32 @@ public class ZEDManager : MonoBehaviour
     private void GetCurrentVideoSettings()
     {
         //Sets all the video setting values to the ones currently applied to the ZED.
-        videoBrightness = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS);
-        videoContrast = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST);
-        videoHue = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.HUE);
-        videoSaturation = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SATURATION);
-        videoSharpness = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SHARPNESS);
-        videoGamma = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAMMA);
-        videoAutoGainExposure = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC) == 1 ? true : false;
+        zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.BRIGHTNESS, ref videoBrightness);
+        zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, ref videoContrast);
+        zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.HUE, ref videoHue);
+        zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, ref videoSaturation);
+        zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.SHARPNESS, ref videoSharpness);
+        zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAMMA, ref videoGamma);
+
+        int value = 0;
+        zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC, ref value);
+        if (value == 0) videoAutoGainExposure = false; else videoAutoGainExposure = true;
         if (!videoAutoGainExposure)
         {
-            videoGain = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAIN);
-            videoExposure = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE);
+            zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAIN, ref videoGain);
+            zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.EXPOSURE, ref videoExposure);
         }
 
-        videoAutoWhiteBalance = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.AUTO_WHITEBALANCE) == 1 ? true : false;
+        zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.AUTO_WHITEBALANCE, ref value);
+        if (value == 0) videoAutoWhiteBalance = false; else videoAutoWhiteBalance = true;
+
         if (!videoAutoWhiteBalance)
         {
-            videoWhiteBalance = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE);
+            zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, ref videoWhiteBalance);
         }
 
-        videoLEDStatus = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS) == 1 ? true : false;
+        zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, ref value);
+        if (value == 0) videoLEDStatus = false; else videoLEDStatus = true;
     }
 
     private void ApplyLocalVideoSettingsToZED()
@@ -3663,7 +3669,7 @@ public class ZEDManager : MonoBehaviour
             zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.WHITEBALANCE, videoWhiteBalance);
         }
 
-        zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, 1);
+        zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, videoLEDStatus ? 1 : 0);
     }
     #region EventHandler
     /// <summary>

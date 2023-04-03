@@ -44,13 +44,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75b2a3ff7b847ca4490808f4c0432cd4, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   cameraID: 0
-  depthMode: 1
+  depthMode: 3
   inputType: 0
   resolution: 1
-  FPS: 60
+  FPS: 30
   serialNumber: 0
   svoInputFileName: Assets/Recording.svo
   opencvCalibFile: 
@@ -77,10 +77,11 @@ MonoBehaviour:
   saveMeshWhenOver: 0
   meshPath: Assets/ZEDMesh.obj
   meshFilterParameters: 0
+  objectDetectionInstanceID: 0
   objectDetectionImageSyncMode: 0
   objectDetectionTracking: 1
   objectDetection2DMask: 0
-  objectDetectionModel: 1
+  objectDetectionModel: 2
   objectDetectionMaxRange: 40
   objectDetectionPredictionTimeout: 0.2
   objectDetectionAllowReducedPrecisionInference: 0
@@ -99,22 +100,23 @@ MonoBehaviour:
   objectClassElectronicsFilter: 1
   objectClassFruitVegetableFilter: 1
   objectClassSportFilter: 1
+  bodyTrackingInstanceID: 1
   bodyTrackingImageSyncMode: 1
   bodyTrackingTracking: 1
   bodyTracking2DMask: 0
-  bodyTrackingModel: 1
+  bodyTrackingModel: 2
   bodyTrackingMaxRange: 40
   bodyTrackingPredictionTimeout: 0.2
   bodyTrackingAllowReducedPrecisionInference: 0
-  bodyTrackingFilteringMode: 1
   enableBodyFitting: 1
-  bodyFormat: 0
+  bodyFormat: 2
   bodySelection: 0
   bodyTrackingMinimumKPThreshold: 1
   bodyTrackingConfidenceThreshold: 25
   depthOcclusion: 1
   postProcessing: 1
   m_cameraBrightness: 100
+  enableFillMode: 0
   enableImageEnhancement: 1
   m_maxDepthRange: 40
   svoOutputFileName: Assets/Recording.svo
@@ -142,7 +144,7 @@ MonoBehaviour:
   depthMinRange: -1
   setGravityAsOrigin: 1
   enableSelfCalibration: 1
-  videoSettingsInitMode: 0
+  videoSettingsInitMode: 2
   videoBrightness: 4
   videoContrast: 4
   videoHue: 0
@@ -176,10 +178,10 @@ MonoBehaviour:
   advancedPanelOpen: 0
   spatialMappingFoldoutOpen: 0
   objectDetectionFoldoutOpen: 0
-  bodyTrackingFoldoutOpen: 1
+  bodyTrackingFoldoutOpen: 0
   recordingFoldoutOpen: 0
   streamingOutFoldoutOpen: 0
-  camControlFoldoutOpen: 0
+  camControlFoldoutOpen: 1
   zedRigDisplayer: {fileID: 0}
 --- !u!114 &114452247113840790
 MonoBehaviour:
@@ -191,8 +193,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c602d2dc840f0144911c39c566846cb, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1215292335019620
 GameObject:
   m_ObjectHideFlags: 0
@@ -287,8 +289,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 313514277d565454383ea4c1a1f8beb9, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   showInNonZEDCameras: 0
 --- !u!1 &1795562263255876
 GameObject:
@@ -377,8 +379,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e14eefa25813a3489cc8b38d2027ac8, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   canvas: {fileID: 1215292335019620}
   viewSide: 0
   viewMode: 0
