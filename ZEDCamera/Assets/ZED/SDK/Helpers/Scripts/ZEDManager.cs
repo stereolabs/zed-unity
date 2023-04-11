@@ -577,6 +577,15 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     public event onNewObjectDetectionTriggerSDKDelegate OnObjectDetection_SDKData;
     /// <summary>
+    /// </summary>
+    public delegate void onTriggerSDKDelegate();
+    /// <summary>
+    /// Event that's called whenever the Object Detection module detects a new frame.
+    /// Includes data straight from the C++ SDK. See OnObjectDetection/DetectionFrame for an abstracted version that has many helper functions
+    /// that makes it easier to use in Unity.
+    /// </summary>
+    public event onTriggerSDKDelegate OnStopObjectDetection;
+    /// <summary>
     /// Delegate for events that take an object detection frame, in the form of a DetectionFrame object which has helper functions.
     /// </summary>
     public delegate void onNewObjectDetectionTriggerDelegate(ObjectDetectionFrame objFrame);
@@ -1225,43 +1234,43 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// The camera model (ZED or ZED-M).
     /// </summary>
-    [ReadOnly("Camera S/N")] [HideInInspector] public string cameraModel = "-";
+    [ReadOnly("Camera S/N")][HideInInspector] public string cameraModel = "-";
     /// <summary>
     /// The camera serial number.
     /// </summary>
-    [ReadOnly("Camera S/N")] [HideInInspector] public string cameraSerialNumber = "-";
+    [ReadOnly("Camera S/N")][HideInInspector] public string cameraSerialNumber = "-";
     /// <summary>
     /// The camera firmware version
     /// </summary>
-    [ReadOnly("Camera Firmware")] [HideInInspector] public string cameraFirmware = "-";
+    [ReadOnly("Camera Firmware")][HideInInspector] public string cameraFirmware = "-";
     /// <summary>
     /// Version of the installed ZED SDK, for display in the Inspector.
     /// </summary>
-    [ReadOnly("Version")] [HideInInspector] public string versionZED = "-";
+    [ReadOnly("Version")][HideInInspector] public string versionZED = "-";
     /// <summary>
     /// How many frames per second the engine is rendering, for display in the Inspector.
     /// </summary>
-    [ReadOnly("Engine FPS")] [HideInInspector] public string engineFPS = "-";
+    [ReadOnly("Engine FPS")][HideInInspector] public string engineFPS = "-";
     /// <summary>
     /// How many images per second are received from the ZED, for display in the Inspector.
     /// </summary>
-    [ReadOnly("Camera FPS")] [HideInInspector] public string cameraFPS = "-";
+    [ReadOnly("Camera FPS")][HideInInspector] public string cameraFPS = "-";
     /// <summary>
     /// The connected VR headset, if any, for display in the Inspector.
     /// </summary>
-    [ReadOnly("HMD Device")] [HideInInspector] public string HMDDevice = "-";
+    [ReadOnly("HMD Device")][HideInInspector] public string HMDDevice = "-";
     /// <summary>
     /// Whether the ZED's tracking is on, off, or searching (lost position, trying to recover) for display in the Inspector.
     /// </summary>
-    [ReadOnly("Tracking State")] [HideInInspector] public string trackingState = "-";
+    [ReadOnly("Tracking State")][HideInInspector] public string trackingState = "-";
     /// <summary>
     /// Object detection framerate
     /// </summary>
-    [ReadOnly("Object Detection FPS")] [HideInInspector] public string objectDetectionFPS = "-";
+    [ReadOnly("Object Detection FPS")][HideInInspector] public string objectDetectionFPS = "-";
     /// <summary>
     /// Body Tracking framerate
     /// </summary>
-    [ReadOnly("Body Tracking FPS")] [HideInInspector] public string bodyTrackingFPS = "-";
+    [ReadOnly("Body Tracking FPS")][HideInInspector] public string bodyTrackingFPS = "-";
 
 
 
@@ -2168,7 +2177,7 @@ public class ZEDManager : MonoBehaviour
 
             while (optimStatus != sl.ERROR_CODE.SUCCESS)
             {
-                if (watch.Elapsed.TotalSeconds > optimTimeout_S) 
+                if (watch.Elapsed.TotalSeconds > optimTimeout_S)
                     Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
 
                 Debug.LogWarning($"Optimizing neural model ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds.ToString("N2")} seconds.");
@@ -2935,12 +2944,6 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     public void StartObjectDetection()
     {
-        sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel));
-        if (!AiModelStatus.optimized)
-        {
-            Debug.LogWarning("The Model * " + objectDetectionModel.ToString() + " * has not been downloaded/optimized. The process can take few minutes....");
-            //return;
-        }
         //We start a coroutine so we can delay actually starting the detection.
         //This is because the main thread is locked for awhile when you call this, appearing like a freeze.
         //This time lets us deliver a log message to the user indicating that this is expected.
@@ -2971,22 +2974,25 @@ public class ZEDManager : MonoBehaviour
         System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
         watch.Start();
 
-        sl.AI_Model_status status = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel), 0);
-        if (!status.optimized)
+        if (objectDetectionModel != sl.OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
         {
-            var threadOptim = new Thread(() => OptimizeModel(sl.ZEDCamera.cvtDetection(objectDetectionModel))); //Assign thread.
-            threadOptim.Start();
 
-            while (optimStatus != sl.ERROR_CODE.SUCCESS)
+            sl.AI_Model_status status = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(objectDetectionModel), 0);
+            if (!status.optimized)
             {
-                if (watch.Elapsed.TotalSeconds > optimTimeout_S) Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
-                Debug.LogWarning("Optimizing AI Model  : " + sl.ZEDCamera.cvtDetection(objectDetectionModel) + "... The process can take few minutes.... " + watch.Elapsed.TotalSeconds.ToString("N2") + " sec");
-                yield return new WaitForSeconds(5.0f);
-            }
-            
-            threadOptim.Join();
-        }
+                var threadOptim = new Thread(() => OptimizeModel(sl.ZEDCamera.cvtDetection(objectDetectionModel))); //Assign thread.
+                threadOptim.Start();
 
+                while (optimStatus != sl.ERROR_CODE.SUCCESS)
+                {
+                    if (watch.Elapsed.TotalSeconds > optimTimeout_S) Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
+                    Debug.LogWarning("Optimizing AI Model  : " + sl.ZEDCamera.cvtDetection(objectDetectionModel) + "... The process can take few minutes.... " + watch.Elapsed.TotalSeconds.ToString("N2") + " sec");
+                    yield return new WaitForSeconds(5.0f);
+                }
+
+                threadOptim.Join();
+            }
+        }
 
         pauseSVOReading = oldpausestate;
 
@@ -3049,6 +3055,10 @@ public class ZEDManager : MonoBehaviour
         if (zedCamera != null && running)
         {
             zedCamera.DisableObjectDetection();
+            if (OnStopObjectDetection != null)
+            {
+                OnStopObjectDetection();
+            }
             objectDetectionRunning = false;
         }
     }
@@ -3155,7 +3165,7 @@ public class ZEDManager : MonoBehaviour
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////// BODY TRACKING REGION  ////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#region BODY_TRACKING
+    #region BODY_TRACKING
 
     /// <summary>
     /// True when the body tracking coroutine is in the process of starting.
@@ -3167,9 +3177,9 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     public void StartBodyTracking()
     {
-        if (bodyFormat != sl.BODY_FORMAT.BODY_34 && bodyFormat != sl.BODY_FORMAT.BODY_38 && bodyFormat != sl.BODY_FORMAT.BODY_70)
+        if (bodyFormat != sl.BODY_FORMAT.BODY_18 && bodyFormat != sl.BODY_FORMAT.BODY_34 && bodyFormat != sl.BODY_FORMAT.BODY_38 && bodyFormat != sl.BODY_FORMAT.BODY_70)
         {
-            Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34, BODY_38 or BODY_70");
+            Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34, BODY_38 or BODY_70.");
 #if UNITY_EDITOR
             EditorApplication.ExitPlaymode();
 #else
@@ -3177,15 +3187,9 @@ public class ZEDManager : MonoBehaviour
 #endif
         }
 
-        if (bodyFormat == sl.BODY_FORMAT.BODY_34)
+        if (bodyFormat == sl.BODY_FORMAT.BODY_34 || bodyFormat != sl.BODY_FORMAT.BODY_18)
         {
             Debug.LogWarning("The body format BODY_34 is deprecated and will be removed in a further version.");
-        }
-
-        sl.AI_Model_status AiModelStatus = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(bodyTrackingModel,bodyFormat));
-        if (!AiModelStatus.optimized)
-        {
-            Debug.LogWarning("The Model * " + objectDetectionModel.ToString() + "  has not been downloaded/optimized. The process can take few minutes....");
         }
 
         //We start a coroutine so we can delay actually starting the detection.
@@ -3202,16 +3206,6 @@ public class ZEDManager : MonoBehaviour
     /// <returns></returns>
     private IEnumerator startBodyTracking()
     {
-        if(bodyFormat != sl.BODY_FORMAT.BODY_34 && bodyFormat != sl.BODY_FORMAT.BODY_38 && bodyFormat != sl.BODY_FORMAT.BODY_70)
-        {
-            Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34, BODY_38 or BODY_70.");
-#if UNITY_EDITOR
-            EditorApplication.ExitPlaymode();
-#else
-            Application.Quit();
-#endif
-        }
-
         if (btIsStarting == true)
         {
             Debug.LogError("Tried to start Body Tracking while it was already starting. Do you have two scripts trying to start it?");
@@ -3558,6 +3552,7 @@ public class ZEDManager : MonoBehaviour
             while (!isCameraAvailable && count < 30)
             {
                 count++;
+                Thread.Sleep(1000);
                 sl.DeviceProperties[] devices = sl.ZEDCamera.GetDeviceList(out int nbDevices);
                 for (int i = 0; i < nbDevices; i++)
                 {
@@ -3567,7 +3562,6 @@ public class ZEDManager : MonoBehaviour
                         break;
                     }
                 }
-                Thread.Sleep(500);
             }
         }
         else

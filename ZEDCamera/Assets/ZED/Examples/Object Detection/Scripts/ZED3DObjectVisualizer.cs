@@ -168,6 +168,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
 
         }
         zedManager.OnZEDReady += OnZEDReady;
+        zedManager.OnStopObjectDetection += ClearBboxes;
 
         if (zedManager.setFloorAsOrigin == false && transformBoxToTouchFloor == true)
         {
@@ -188,6 +189,15 @@ public class ZED3DObjectVisualizer : MonoBehaviour
         }
     }
 
+    void ClearBboxes()
+    {
+        List<int> activeids = liveBBoxes.Keys.ToList();
+        //Remove boxes for objects that the ZED can no longer see.
+        foreach (int id in activeids)
+        {
+            ReturnBoxToPool(id, liveBBoxes[id]);
+        }
+    }
 
     /// <summary>
     /// Given a frame of object detections, positions a GameObject to represent every visible object
@@ -379,16 +389,7 @@ public class ZED3DObjectVisualizer : MonoBehaviour
             if (boxhandler)
             {
                 boxhandler.SetColor(col);
-                if (zedManager.objectDetectionModel == sl.OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
-                {
-                    //boxhandler.SetID(dobj.rawObjectData.rawLabel.ToString());
-                    boxhandler.SetID(dobj.id.ToString());
-                }
-                else
-                {
-                    boxhandler.SetID(dobj.id.ToString());
-                }
-
+                boxhandler.SetID(dobj.id.ToString());
             }
 
             liveBBoxes[dobj.id] = newbox;
@@ -507,8 +508,18 @@ public class ZED3DObjectVisualizer : MonoBehaviour
     {
         if (zedManager)
         {
-            zedManager.OnObjectDetection -= Visualize3DBoundingBoxes;
+            if (detectionMode == DetectionMode.ObjectDetection)
+            {
+                zedManager.OnObjectDetection += Visualize3DBoundingBoxes;
+
+            }
+            else if (detectionMode == DetectionMode.BodyTracking)
+            {
+                zedManager.OnBodyTracking += Visualize3DBoundingBoxes;
+
+            }
             zedManager.OnZEDReady -= OnZEDReady;
+            zedManager.OnStopObjectDetection -= ClearBboxes;
         }
     }
 

@@ -155,6 +155,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
 
         }
         zedManager.OnZEDReady += OnZEDReady;
+        zedManager.OnStopObjectDetection += ClearBboxes;
 
         if (!canvas) //If we don't have a canvas in the scene, we need one.
         {
@@ -163,6 +164,16 @@ public class ZED2DObjectVisualizer : MonoBehaviour
         }
 
         lastShowObjectMaskValue = showObjectMask;
+    }
+
+    void ClearBboxes()
+    {
+        List<int> activeids = liveBBoxes.Keys.ToList();
+        //Remove boxes for objects that the ZED can no longer see.
+        foreach (int id in activeids)
+        {
+            ReturnBoxToPool(id, liveBBoxes[id]);
+        }
     }
 
     private void OnZEDReady()
@@ -547,7 +558,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
         {
             lastShowObjectMaskValue = showObjectMask;
             if (!zedManager) zedManager = ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_01);
-            if(showObjectMask == true && zedManager != null && zedManager.objectDetection2DMask == false)
+            if (showObjectMask == true && zedManager != null && zedManager.objectDetection2DMask == false)
             {
                 Debug.LogError("ZED2DObjectVisualizer has showObjectMask enabled, but its ZEDManager has objectDetection2DMask disabled. " +
                 "objectDetection2DMask must be enabled when Object Detection is started or masks will not be visible.");
@@ -570,6 +581,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
 
             }
             zedManager.OnZEDReady -= OnZEDReady;
+            zedManager.OnStopObjectDetection -= ClearBboxes;
         }
 
         DestroyLastFrameMaskTextures();
