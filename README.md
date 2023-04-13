@@ -3,6 +3,7 @@
 This package brings the many mixed reality features of the [ZED](https://www.stereolabs.com/zed/), [ZED Mini](https://www.stereolabs.com/zed-mini/) and [ZED 2](https://www.stereolabs.com/zed-2/) depth sensors into Unity. It comes with prefabs to make adding advanced features to your project as simple as drag-and-drop, helper scripts to simplify custom integration, and numerous examples to see the ZED/ZED Mini in action and learn how it works.
 
 Features include:
+ - Body tracking
  - Pass-through augmented reality with an Oculus Rift, HTC Vive and other headsets
  - Third person mixed reality
  - Real-time depth occlusion between the real and virtual
@@ -11,7 +12,20 @@ Features include:
  - Spatial mapping
  - Real-time plane detection
  - Object detection
- - Body tracking
+
+## Overview
+
+| [Body Tracking](https://www.stereolabs.com/docs/unity/body-tracking/) | [AR/MR](https://www.stereolabs.com/docs/unity/creating-mixed-reality-app/) | [Point Cloud](https://www.stereolabs.com/docs/unity/)
+| :-----------: |  :------------: | :--------: |
+| <video src="https://user-images.githubusercontent.com/113181784/202238672-b87ec681-a574-454c-ba09-683201d1dcbb.mp4" controls="controls" style="max-width: 100;"></video> | <video src="https://user-images.githubusercontent.com/113181784/202200233-ff0a6777-ab02-4896-aad5-8904b9318443.mp4"></video> | <video src="https://user-images.githubusercontent.com/113181784/202454461-5ecb0b60-e518-4d50-aba1-7cef4699d124.mp4"></video>
+| [**Object Detection**](https://www.stereolabs.com/docs/unity/object-detection/) | [**Dark Room**](https://www.stereolabs.com/docs/unity/lighting/) | [**Spatial mapping**](https://www.stereolabs.com/docs/unity/spatial-mapping-unity/)
+| <video src="https://thumbs.gfycat.com/DiligentWindingGrayreefshark-mobile.mp4" ></video> | <video src="https://user-images.githubusercontent.com/113181784/202200729-966c34de-654e-4c4c-a977-941af3c854b7.mp4"></video> | <video src="https://thumbs.gfycat.com/ReflectingAgedAphid-mobile.mp4"></video>
+| [**Object Placement**](https://www.stereolabs.com/docs/unity/object-placement/) | [**ArUco Markers**](https://www.stereolabs.com/docs/unity/using-opencv-with-unity/) | [**Green Screen**](https://www.stereolabs.com/docs/unity/green-screen-vr/)
+| <video src="https://thumbs.gfycat.com/RepentantFamousAndeancondor-mobile.mp4" ></video> | <video src="https://user-images.githubusercontent.com/113181784/202201640-ff353944-0adb-4eba-a672-564d5d475f97.mp4"></video> | <video src="https://thumbs.gfycat.com/PalatableDesertedHorse-mobile.mp4"></video>
+
+## About Fusion
+
+To use the **Fusion API** of the ZED SDK with Unity, please take a look at our [ZED Live Link for Unity](https://github.com/stereolabs/zed-unity-livelink) repository. The Fusion API is currently not implemented in the Unity plugin itself, but it can still be easily integrated and tested in your Unity projects!
 
 ## Getting Started
 
@@ -451,12 +465,16 @@ It will automatically create an OpenCV matrix for the ZED's rectified camera par
 
 You can see examples of ZEDToOpenCVRetriever being used in the ArUco sample scenes, where **ZEDArUcoDetectionManager** subscribes to them in order to move GameObjects to visible ArUco markers.
 
-## Additional Resources:
+## Additional Resources
 
-Want more details? Our [Documentation](https://docs.stereolabs.com/mixed-reality/unity/getting-started/) has overviews and tutorials for getting started with specific features.
+Want more details? Our [Documentation](https://www.stereolabs.com/docs/unity/) has overviews and tutorials for getting started with specific features.
 
 Not sure where to start with attaching your ZED Mini to your VR headset? See our guides for [Oculus Rift](https://www.stereolabs.com/zed-mini/setup/rift/) and [HTC Vive](https://www.stereolabs.com/zed-mini/setup/vive/).
 
-Got a problem you just can't seem to solve? Contact our support at [support@stereolabs.com](mailto:support@stereolabs.com).
+Got a problem you just can't seem to solve? Check our [Community forums](https://community.stereolabs.com/) or contact our support at [support@stereolabs.com](mailto:support@stereolabs.com).
 
-Made something amazing you'd love to share with us? Email our developer evangelist at [chris.orris@stereolabs.com](mailto:chris.orris@stereolabs.com).
+## Bugs and fixes
+
+You found a bug / a flaw in our plugin ? Please check that it is not [already reported](https://github.com/stereolabs/zed-unity/issues), and open an issue if necessary. You can also reach out to us on the community forums for any question or feedback !
+
+*By the way, we also have a special place in our hearts for PR senders.*
