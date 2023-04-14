@@ -4,7 +4,7 @@
 </h1>
 
 <p align="center">
-This package brings the many mixed reality features of the <a href="https://www.stereolabs.com/store/">ZED cameras</a> depth sensors into Unity. It comes with prefabs to make adding advanced features to your project as simple as drag-and-drop, helper scripts to simplify custom integration, and numerous examples to see your camera in action and learn how it works.
+This package brings the features of the <a href="https://www.stereolabs.com/store/">ZED cameras</a> into Unity. It comes with prefabs to make adding advanced features to your project as simple as drag-and-drop, helper scripts to simplify custom integration, and numerous examples to see your camera in action and learn how it works.
 </p>
 
 ---
@@ -27,7 +27,7 @@ This package brings the many mixed reality features of the <a href="https://www.
 | :------: | :-----------------------: | :---------------: |
 | <div align="center">ZED, ZED Mini, ZED2, ZED2i</div>  | <div align="center">CUDA&nbsp;10.2 capability or higher<br> GTX&nbsp;1060 or higher is recommended</div> | <div align="center"><div><a href="https://github.com/ValveSoftware/openvr"><img src="https://user-images.githubusercontent.com/113181784/231974244-37054070-9a80-4f1e-ad8f-30715c2faab8.jpg" width="20%" alt="" /></a></div><div>HMDs compatible with OpenVR</div></div>
 | <div align="center">**OS**</div>  | <div align="center">**Unity Version**</div> | <div align="center">**ZED SDK Version**</div>
-| <div align="center">Windows 10/11 <br> Ubuntu 18-22</div>  | <div align="center"><a href="https://unity.com/download">Unity 2021.3</a> and newer</div> | <div align="center"><a href="https://www.stereolabs.com/developers/release/">ZED SDK 4.0</a></div>
+| <div align="center">Windows 10/11 <br> Ubuntu 18-22</div>  | <div align="center"><a href="https://unity.com/download">Unity 2021.3</a> and newer</div> | <div align="center"><a href="https://www.stereolabs.com/developers/release/">ZED SDK 4.0</a><br><em>Older versions are supported in <a href="https://github.com/stereolabs/zed-unity/releases">older releases</a></em></div>
 
 </div>
   
