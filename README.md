@@ -7,9 +7,7 @@
 This package brings the many mixed reality features of the <a href="https://www.stereolabs.com/store/">ZED cameras</a> depth sensors into Unity. It comes with prefabs to make adding advanced features to your project as simple as drag-and-drop, helper scripts to simplify custom integration, and numerous examples to see your camera in action and learn how it works.
 </p>
 
-
-
-
+---
 
 ## Overview
 
