@@ -50,11 +50,9 @@ The overview is available in the [documentation for the ZED Unity plugin](https:
 
 ## Additional Resources
 
-Want more details? Our [Documentation](https://www.stereolabs.com/docs/unity/) has overviews and tutorials for getting started with specific features.
+Want more details? Our [📖 Documentation](https://www.stereolabs.com/docs/unity/) has overviews and tutorials for getting started with specific features.
 
-Not sure where to start with attaching your ZED Mini to your VR headset? See our guides for [Oculus Rift](https://www.stereolabs.com/zed-mini/setup/rift/) and [HTC Vive](https://www.stereolabs.com/zed-mini/setup/vive/).
-
-Got a problem you just can't seem to solve? Check our [Community forums](https://community.stereolabs.com/) or contact our support at [support@stereolabs.com](mailto:support@stereolabs.com).
+Got a problem you just can't seem to solve? Got a project you want to share? Check out our [Community forums](https://community.stereolabs.com/)!
 
 ## Bugs and fixes
 
