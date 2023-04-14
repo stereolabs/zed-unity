@@ -8,24 +8,31 @@ This package brings the many mixed reality features of the <a href="https://www.
 </p>
 
 
+
+
+
 ## Overview
 
 | [Body Tracking](https://www.stereolabs.com/docs/unity/body-tracking/) | [AR/MR](https://www.stereolabs.com/docs/unity/creating-mixed-reality-app/) | [Point Cloud](https://www.stereolabs.com/docs/unity/samples/#point-cloud)
 | :-----------: |  :------------: | :--------: |
-| <video src="https://user-images.githubusercontent.com/113181784/231798475-dd95b8dd-3352-414a-85b5-36deb6808122.mp4"></video> | <video src="https://user-images.githubusercontent.com/113181784/202200233-ff0a6777-ab02-4896-aad5-8904b9318443.mp4"></video> | <video src="https://user-images.githubusercontent.com/113181784/231798621-f02ec02f-49a9-4407-8342-a9f374b03515.mp4"></video>
+| ![bt](https://user-images.githubusercontent.com/113181784/231981880-eb9a5a7e-a4e3-4dac-909d-22f5fca33342.gif) | ![planet](https://user-images.githubusercontent.com/113181784/231981947-9b07b84a-8d92-4e60-aea1-982ed13b1d66.gif) | ![pointcloud](https://user-images.githubusercontent.com/113181784/231982024-538dd3dd-58cc-4b6c-8260-3d026a0132cf.gif)
 | [**Object Detection**](https://www.stereolabs.com/docs/unity/object-detection/) | [**Dark Room**](https://www.stereolabs.com/docs/unity/lighting/) | [**Spatial mapping**](https://www.stereolabs.com/docs/unity/spatial-mapping-unity/)
-| <video src="https://user-images.githubusercontent.com/113181784/231798888-2c5fcda7-34d6-4f87-aa96-feaee7b8bced.mp4" ></video> | <video src="https://user-images.githubusercontent.com/113181784/202200729-966c34de-654e-4c4c-a977-941af3c854b7.mp4"></video> | <video src="https://user-images.githubusercontent.com/113181784/231798926-9b0a9c26-7a0e-4fcf-acf0-a0e336f6d132.mp4"></video>
+| ![od](https://user-images.githubusercontent.com/113181784/231982040-3275f251-435a-41e1-99ba-c16e129bdbe2.gif) | ![dark](https://user-images.githubusercontent.com/113181784/231981911-1437f38c-d974-470b-8c86-217cbeec6591.gif) | ![spamap](https://user-images.githubusercontent.com/113181784/231982066-0831e8c0-0700-429b-8169-4d7b9d25d75d.gif)
 | [**Object Placement**](https://www.stereolabs.com/docs/unity/object-placement/) | [**ArUco Markers**](https://www.stereolabs.com/docs/unity/using-opencv-with-unity/) | [**Green Screen**](https://www.stereolabs.com/docs/unity/green-screen-vr/)
-| <video src="https://user-images.githubusercontent.com/113181784/231799053-5312a458-d1df-430d-b196-184b15874936.mp4" ></video> | <video src="https://user-images.githubusercontent.com/113181784/202201640-ff353944-0adb-4eba-a672-564d5d475f97.mp4"></video> | <video src="https://user-images.githubusercontent.com/113181784/231799097-53995502-7e09-4b1d-9e4e-6e76de56ac14.mp4"></video>
+| ![placement](https://user-images.githubusercontent.com/113181784/231982097-c1013a5c-2b65-4c63-8d1a-5cb525335044.gif) | ![aru](https://user-images.githubusercontent.com/113181784/231982111-477485bd-f135-4f68-a4d8-2feef8d467ec.gif) | ![green](https://user-images.githubusercontent.com/113181784/231982130-81b7f0bf-6c72-4435-b6fc-8b77494df366.gif)
 
 ## Compatibility
 
+<div align="center">
+
 | ZED Camera | GPU | AR/VR |
 | :------: | :-----------------------: | :---------------: |
-| <div align="center">ZED, ZED Mini, ZED2, ZED2i</div>  | <div align="center">CUDA&nbsp;10.2 capability or higher<br> GTX&nbsp;1060 or higher is recommended</div> | <div align="center"><a href="https://github.com/ValveSoftware/openvr"><img src="https://user-images.githubusercontent.com/32394882/230619273-feeee52b-209b-48da-b990-06630cabe323.png" width="40%" alt="" /></a></div>
+| <div align="center">ZED, ZED Mini, ZED2, ZED2i</div>  | <div align="center">CUDA&nbsp;10.2 capability or higher<br> GTX&nbsp;1060 or higher is recommended</div> | <div align="center"><div><a href="https://github.com/ValveSoftware/openvr"><img src="https://user-images.githubusercontent.com/113181784/231974244-37054070-9a80-4f1e-ad8f-30715c2faab8.jpg" width="20%" alt="" /></a></div><div>HMDs compatible with OpenVR</div></div>
 | <div align="center">**OS**</div>  | <div align="center">**Unity Version**</div> | <div align="center">**ZED SDK Version**</div>
 | <div align="center">Windows 10/11 <br> Ubuntu 18-22</div>  | <div align="center"><a href="https://unity.com/download">Unity 2021.3</a> and newer</div> | <div align="center"><a href="https://www.stereolabs.com/developers/release/">ZED SDK 4.0</a></div>
 
+</div>
+  
 ## Get Started
 
 To develop applications in Unity with your ZED, you'll need the following things:
