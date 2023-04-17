@@ -43,7 +43,11 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     [Tooltip("Display 3D avatar. If set to false, only display bones and joint")]
     public bool useAvatar = true;
 
-    private sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.BODY_38;
+    /// <summary>
+    /// Maximum number of detection displayed in the scene.
+    /// </summary>
+    [Tooltip("Maximum number of detections spawnable in the scene")]
+    public int maximumNumberOfDetections = (int)sl.Constant.MAX_OBJECTS;
 
     [Space(5)]
     [Header("State Filters")]
@@ -86,6 +90,8 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
     private Dictionary<int,SkeletonHandler> avatarControlList;
     public Dictionary<int, SkeletonHandler> AvatarControlList { get => avatarControlList;}
+
+    private sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.BODY_38;
 
     //private float alpha = 0.1f;
 
@@ -158,12 +164,15 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 			}
 			else
 			{
-				SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
-                Vector3 spawnPosition = zedManager.GetZedRootTansform().TransformPoint(dbody.rawBodyData.position);
-                handler.Create(avatar, bodyFormat);
-                handler.InitSkeleton(person_id, new Material(skeletonBaseMaterial));
-                avatarControlList.Add(person_id, handler);
-                UpdateAvatarControl(handler, dbody.rawBodyData);
+                if (avatarControlList.Count < maximumNumberOfDetections)
+                {
+                    SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
+                    Vector3 spawnPosition = zedManager.GetZedRootTansform().TransformPoint(dbody.rawBodyData.position);
+                    handler.Create(avatar, bodyFormat);
+                    handler.InitSkeleton(person_id, new Material(skeletonBaseMaterial));
+                    avatarControlList.Add(person_id, handler);
+                    UpdateAvatarControl(handler, dbody.rawBodyData);
+                }
 			}
 		}
 
