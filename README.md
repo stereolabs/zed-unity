@@ -48,6 +48,22 @@ After importing the plugin, pick and try some of the example scenes. Each is des
 
 The overview is available in the [documentation for the ZED Unity plugin](https://www.stereolabs.com/docs/unity/samples/).
 
+- [Body Tracking](https://www.stereolabs.com/docs/unity/body-tracking/): Animate a 3D avatar based on real-people movements using the ZED SDK [Body Tracking](https://www.stereolabs.com/docs/body-tracking/) module.
+- [Dark Room](https://www.stereolabs.com/docs/unity/lighting/): Your office is now a night club! Explore the lighting features coupled to the depth sensing to cast a laser show on your walls.
+- [Drone Shooter](https://www.stereolabs.com/docs/unity/samples/#drone-battle): Defend yourself from drones that spawn around your room and shoot at you. Block lasers with your hand, and shoot back with the spacebar, or VR controllers if using the Oculus Integration or SteamVR plugin.
+- [Green Screen](https://www.stereolabs.com/docs/unity/green-screen-vr/): Aim your ZED at a greenscreen and hit Play to see your subject standing in a small town in the desert. You’ll see that the nearby crates still have all the proper occlusion, but the greenscreen background is replaced with the virtual background.
+- [Movie Screen](https://www.stereolabs.com/docs/unity/samples/#movie-screen): Simple AR sample, playing a movie on a movable, scalable 3D screen integrated to the real-world. Demonstrates how 2D content can easily be displayed in a 3D, mixed reality scene.
+- [Multicam](./ZEDCamera/Assets/ZED/Examples/MultiCam/): Integrate data from multiple ZED cameras in the same scene, at the same time.
+- [Object Detection](https://www.stereolabs.com/docs/unity/object-detection/): Detect objects and people bounding boxes using the ZED SDK Object Detection module.
+- [Object Placement](https://www.stereolabs.com/docs/unity/object-placement/): Place virtual objects on real-world surfaces using the [Plane Detection](https://www.stereolabs.com/docs/spatial-mapping/plane-detection/) capabilities of the ZED SDK.
+- [OpenCV ArUco Detection](https://www.stereolabs.com/docs/unity/using-opencv-with-unity/): Print out ArUco markers, put them in view of your ZED, and let the battle of the drones begin. Shows how to easily interface the ZED with OpenCV for marker detection using a variety of included scripts.
+- [Plane Detection](https://www.stereolabs.com/docs/unity/samples/#simple-plane-detection): Run the scene and hold down spacebar to see if you’re looking at a valid surface where a bunny could stand. Release the spacebar and a bunny will fall from the sky and land on that surface with proper physics.
+- [VR Plane Detection](https://www.stereolabs.com/docs/unity/samples/#vr-only-plane-detection-requires-vr-hmd-and-oculussteamvr-plugin): Throw a plushie as far as possible, the distance is measured where it lands using the Plane Detection. Shows how plane detection can fit into a proper VR game.
+- [Planetarium](https://www.stereolabs.com/docs/unity/samples/#planetarium): A beautiful display of the ZED plugin’s basic mixed reality features, viewable with or without a headset. Watch as the planets are properly occluded by the real world.
+- [Point Cloud](https://www.stereolabs.com/docs/unity/samples/#point-cloud): Visualize the depth retrieved by the ZED Camera directly into Unity, in the form of a Point Cloud.
+- [Simple MR](https://www.stereolabs.com/docs/unity/creating-mixed-reality-app/): Learn to create a basic AR app, with depth occlusion and camera tracking.
+- [Spatial Mapping](https://www.stereolabs.com/docs/unity/spatial-mapping-unity/): Capture a mesh of your environment, allowing physical interactions between the real and virtual world.
+
 ## Additional Resources
 
 Want more details? Our [📖 Documentation](https://www.stereolabs.com/docs/unity/) has overviews and tutorials for getting started with specific features.
