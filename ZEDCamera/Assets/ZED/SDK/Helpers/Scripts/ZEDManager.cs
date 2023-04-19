@@ -5,6 +5,7 @@ using UnityEngine.XR;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine.XR.Management;
 
 /// <summary>
 /// The central script of the ZED Unity plugin, and the primary way a developer can interact with the camera.
@@ -1736,20 +1737,44 @@ public class ZEDManager : MonoBehaviour
 
     private bool hasXRDevice()
     {
-#if UNITY_2020_1_OR_NEWER
-        var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
-        SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
-        foreach (var xrDisplay in xrDisplaySubsystems)
+        bool isPresent = false;
+        XRLoader xRLoader = XRGeneralSettings.Instance.Manager.activeLoader;
+        Debug.Log("Device name " + XRSettings.loadedDeviceName);
+
+        if (xRLoader)
         {
-            if (xrDisplay.running)
+            if (xRLoader.name == "OculusLoader" || xRLoader.name == "OpenVRLoader")
             {
-                return true;
+                var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
+                SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
+                foreach (var xrDisplay in xrDisplaySubsystems)
+                {
+                    if (xrDisplay.running)
+                    {
+                        isPresent = true;
+                    }
+                }
             }
+            else if (xRLoader.name == "OpenXRLoader") 
+            {
+                if (xRLoader.Start())
+                {
+                    isPresent = true;
+                }
+                else
+                {
+                    isPresent = false;
+                }
+            }
+            else { isPresent = false; }  
         }
-        return false;
-#else
-        return XRDevice.isPresent;
-#endif
+        else
+        {
+            isPresent = false;
+        }
+
+        Debug.Log("Is Present " + isPresent);
+        return isPresent;
     }
 
     /// <summary>
@@ -1761,7 +1786,6 @@ public class ZEDManager : MonoBehaviour
     {
         zedRigRoot = gameObject.transform; //The object moved by tracking. By default it's this Transform. May get changed.
 
-        bool devicePresent = hasXRDevice(); //May not need.
         //Set first left eye
         Component[] cams = gameObject.GetComponentsInChildren<Camera>();
         //Camera firstmonocam = null;

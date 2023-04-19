@@ -308,11 +308,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
     private string getXRModelName()
     {
-#if UNITY_2019_1_OR_NEWER
         return XRSettings.loadedDeviceName;
-#else
-        return XRDevice.model;
-#endif
     }
 
     private void Awake()
@@ -324,22 +320,9 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
 		if (hasVRDevice)
         {
-            if (getXRModelName().ToLower().Contains("vive")) //Vive or Vive Pro
-            {
-                dllz_latency_corrector_initialize(0);
-            }
-            else //Oculus Rift CV1, Rift S, Windows Mixed Reality, Valve Index, etc.
-            {
-                dllz_latency_corrector_initialize(1);
-            }
-
+            dllz_latency_corrector_initialize(0);
             dllz_drift_corrector_initialize();
         }
-#if UNITY_2017_OR_NEWER
-
-		nodeState.nodeType = VRNode.Head;
-		nodes.Add(nodeState);
-#endif
     }
 
     /// <summary>
@@ -349,7 +332,6 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     void Start()
 	{
 		hasVRDevice = hasXRDevice();
-
 
 		//iterate until we found the ZED Manager parent...
 		Transform ObjParent = gameObject.transform;
@@ -543,7 +525,6 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         if (manager == null)
             return;
 
-#if UNITY_2019_3_OR_NEWER
         List<InputDevice> eyes = new List<InputDevice>();
         InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.HeadMounted, eyes);
 
@@ -556,7 +537,6 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 			finalCenterEye.transform.localPosition = centerEyePosition;
 			finalCenterEye.transform.localRotation = centerEyeRotation;
 		}
-#endif
 
         Quaternion r;
 

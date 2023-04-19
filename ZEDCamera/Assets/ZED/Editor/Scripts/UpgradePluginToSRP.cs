@@ -22,7 +22,6 @@ public class EditPrefabAssetScope : IDisposable
     }
 }
 
-
 public class UpgradePluginToSRP
 {
 

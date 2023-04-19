@@ -493,13 +493,13 @@ public class ZEDControllerTracker : MonoBehaviour
     }
 
 #endif
-                /// <summary>
-                /// Compute the delayed position and rotation from the history stored in the poseData dictionary.
-                /// </summary>
-                /// <param name="keyindex"></param>
-                /// <param name="timeDelay"></param>
-                /// <returns></returns>
-                private sl.Pose GetValuePosition(int keyindex, float timeDelay)
+    /// <summary>
+    /// Compute the delayed position and rotation from the history stored in the poseData dictionary.
+    /// </summary>
+    /// <param name="keyindex"></param>
+    /// <param name="timeDelay"></param>
+    /// <returns></returns>
+    private sl.Pose GetValuePosition(int keyindex, float timeDelay)
     {
         sl.Pose p = new sl.Pose();
         if (poseData.ContainsKey(keyindex))
