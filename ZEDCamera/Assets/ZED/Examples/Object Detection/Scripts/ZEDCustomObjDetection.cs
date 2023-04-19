@@ -50,7 +50,6 @@ public class ZEDCustomObjDetection : MonoBehaviour
     
     public Scalar mean = new Scalar(0, 0, 0, 0);
 
-
     private Mat bgrMat;
 
     public ZEDManager zedManager;
@@ -61,9 +60,9 @@ public class ZEDCustomObjDetection : MonoBehaviour
     /// </summary>
     public ZEDToOpenCVRetriever imageRetriever;
 
-    public delegate void onNewIngestCustomODDelegate();
+    //public delegate void onNewIngestCustomODDelegate();
 
-    public event onNewIngestCustomODDelegate OnIngestCustomOD;
+    //public event onNewIngestCustomODDelegate OnIngestCustomOD;
 
     public void Start()
     {
@@ -79,8 +78,6 @@ public class ZEDCustomObjDetection : MonoBehaviour
             if (!imageRetriever) imageRetriever = ZEDToOpenCVRetriever.GetInstance();
             imageRetriever.OnImageUpdated_LeftRGBA += Run;
         }
-
-
         Init();
     }
 
@@ -137,18 +134,18 @@ public class ZEDCustomObjDetection : MonoBehaviour
 
             outBlobTypes = getOutputsTypes(net);
         }
-
     }
 
     public void Run(Camera cam, Mat camera_matrix, Mat rgbaMat)
     {
-
         if (!zedManager.IsObjectDetectionRunning) return;
         
         Mat bgrMat = new Mat(rgbaMat.rows(), rgbaMat.cols(), CvType.CV_8UC3);
 
         Imgproc.cvtColor(rgbaMat, bgrMat, Imgproc.COLOR_RGBA2BGR);
-        
+
+        //OpenCVForUnity.ImgcodecsModule.Imgcodecs.imwrite("D:/test.png", rgbaMat);
+
         // Create a 4D blob from a frame.
         Size infSize = new Size(inferenceWidth > 0 ? inferenceWidth : bgrMat.cols(),
                            inferenceHeight > 0 ? inferenceHeight : bgrMat.rows());
@@ -156,22 +153,15 @@ public class ZEDCustomObjDetection : MonoBehaviour
 
         // Run a model.
         net.setInput(blob);
-        
-        if (net.getLayer(new DictValue(0)).outputNameToIndex("im_info") != -1)
-        {  // Faster-RCNN or R-FCN
-            Imgproc.resize(bgrMat, bgrMat, infSize);
-            Mat imInfo = new Mat(1, 3, CvType.CV_32FC1);
-            imInfo.put(0, 0, new float[] {
-                            (float)infSize.height,
-                            (float)infSize.width,
-                            1.6f
-                        });
-            net.setInput(imInfo, "im_info");
-        }
+
+        //TickMeter tm = new TickMeter();
+        //tm.start();
 
         List<Mat> outs = new List<Mat>();
         net.forward(outs, outBlobNames);
 
+        //tm.stop();
+        //Debug.Log("Inference time, ms: " + tm.getTimeMilli());
         postprocess(rgbaMat, outs, net, Dnn.DNN_BACKEND_OPENCV);
 
         for (int i = 0; i < outs.Count; i++)
@@ -192,89 +182,98 @@ public class ZEDCustomObjDetection : MonoBehaviour
     {
         MatOfInt outLayers = net.getUnconnectedOutLayers();
         string outLayerType = outBlobTypes[0];
-
         List<int> classIdsList = new List<int>();
         List<float> confidencesList = new List<float>();
         List<Rect2d> boxesList = new List<Rect2d>();
 
-        for (int i = 0; i < outs.Count; ++i)
+        if (outLayerType == "Region")
         {
-            // Network produces output blob with a shape NxC where N is a number of
-            // detected objects and C is a number of classes + 4 where the first 4
-            // numbers are [center_x, center_y, width, height]
-
-            //Debug.Log ("outs[i].ToString() "+outs[i].ToString());
-
-            float[] positionData = new float[5];
-            float[] confidenceData = new float[outs[i].cols() - 5];
-            for (int p = 0; p < outs[i].rows(); p++)
+            for (int i = 0; i < outs.Count; ++i)
             {
-                outs[i].get(p, 0, positionData);
-                outs[i].get(p, 5, confidenceData);
+                // Network produces output blob with a shape NxC where N is a number of
+                // detected objects and C is a number of classes + 4 where the first 4
+                // numbers are [center_x, center_y, width, height]
 
-                int maxIdx = confidenceData.Select((val, idx) => new { V = val, I = idx }).Aggregate((max, working) => (max.V > working.V) ? max : working).I;
-                float confidence = confidenceData[maxIdx];
-                if (confidence > confThreshold)
+                //Debug.Log ("outs[i].ToString() "+outs[i].ToString());
+
+                float[] positionData = new float[5];
+                float[] confidenceData = new float[outs[i].cols() - 5];
+
+                for (int p = 0; p < outs[i].rows(); p++)
                 {
-                    float centerX = positionData[0] * frame.cols();
-                    float centerY = positionData[1] * frame.rows();
-                    float width = positionData[2] * frame.cols();
-                    float height = positionData[3] * frame.rows();
-                    float left = centerX - width / 2;
-                    float top = centerY - height / 2;
+                    outs[i].get(p, 0, positionData);
+                    outs[i].get(p, 5, confidenceData);
 
-                    classIdsList.Add(maxIdx);
-                    confidencesList.Add((float)confidence);
-                    boxesList.Add(new Rect2d(left, top, width, height));
+                    int maxIdx = confidenceData.Select((val, idx) => new { V = val, I = idx }).Aggregate((max, working) => (max.V > working.V) ? max : working).I;
+                    float confidence = confidenceData[maxIdx];
+                    if (confidence > confThreshold)
+                    {
+                        float centerX = positionData[0] * frame.cols();
+                        float centerY = positionData[1] * frame.rows();
+                        float width = positionData[2] * frame.cols();
+                        float height = positionData[3] * frame.rows();
+                        float left = centerX - width / 2;
+                        float top = centerY - height / 2;
+
+                        classIdsList.Add(maxIdx);
+                        confidencesList.Add((float)confidence);
+                        boxesList.Add(new Rect2d(left, top, width, height));
+                    }
                 }
             }
         }
 
-        Dictionary<int, List<int>> class2indices = new Dictionary<int, List<int>>();
-        for (int i = 0; i < classIdsList.Count; i++)
+        // NMS is used inside Region layer only on DNN_BACKEND_OPENCV for another backends we need NMS in sample
+        // or NMS is required if number of outputs > 1
+        if (outLayers.total() > 1 || (outLayerType == "Region" && backend != Dnn.DNN_BACKEND_OPENCV))
         {
-            if (confidencesList[i] >= confThreshold)
+            Dictionary<int, List<int>> class2indices = new Dictionary<int, List<int>>();
+            for (int i = 0; i < classIdsList.Count; i++)
             {
-                if (!class2indices.ContainsKey(classIdsList[i]))
-                    class2indices.Add(classIdsList[i], new List<int>());
-
-                class2indices[classIdsList[i]].Add(i);
-            }
-        }
-
-        List<Rect2d> nmsBoxesList = new List<Rect2d>();
-        List<float> nmsConfidencesList = new List<float>();
-        List<int> nmsClassIdsList = new List<int>();
-        foreach (int key in class2indices.Keys)
-        {
-            List<Rect2d> localBoxesList = new List<Rect2d>();
-            List<float> localConfidencesList = new List<float>();
-            List<int> classIndicesList = class2indices[key];
-            for (int i = 0; i < classIndicesList.Count; i++)
-            {
-                localBoxesList.Add(boxesList[classIndicesList[i]]);
-                localConfidencesList.Add(confidencesList[classIndicesList[i]]);
-            }
-
-            using (MatOfRect2d localBoxes = new MatOfRect2d(localBoxesList.ToArray()))
-            using (MatOfFloat localConfidences = new MatOfFloat(localConfidencesList.ToArray()))
-            using (MatOfInt nmsIndices = new MatOfInt())
-            {
-                Dnn.NMSBoxes(localBoxes, localConfidences, confThreshold, nmsThreshold, nmsIndices);
-                for (int i = 0; i < nmsIndices.total(); i++)
+                if (confidencesList[i] >= confThreshold)
                 {
-                    int idx = (int)nmsIndices.get(i, 0)[0];
-                    nmsBoxesList.Add(localBoxesList[idx]);
-                    nmsConfidencesList.Add(localConfidencesList[idx]);
-                    nmsClassIdsList.Add(key);
+                    if (!class2indices.ContainsKey(classIdsList[i]))
+                        class2indices.Add(classIdsList[i], new List<int>());
+
+                    class2indices[classIdsList[i]].Add(i);
                 }
             }
+
+            List<Rect2d> nmsBoxesList = new List<Rect2d>();
+            List<float> nmsConfidencesList = new List<float>();
+            List<int> nmsClassIdsList = new List<int>();
+            foreach (int key in class2indices.Keys)
+            {
+                List<Rect2d> localBoxesList = new List<Rect2d>();
+                List<float> localConfidencesList = new List<float>();
+                List<int> classIndicesList = class2indices[key];
+                for (int i = 0; i < classIndicesList.Count; i++)
+                {
+                    localBoxesList.Add(boxesList[classIndicesList[i]]);
+                    localConfidencesList.Add(confidencesList[classIndicesList[i]]);
+                }
+
+                using (MatOfRect2d localBoxes = new MatOfRect2d(localBoxesList.ToArray()))
+                using (MatOfFloat localConfidences = new MatOfFloat(localConfidencesList.ToArray()))
+                using (MatOfInt nmsIndices = new MatOfInt())
+                {
+                    Dnn.NMSBoxes(localBoxes, localConfidences, confThreshold, nmsThreshold, nmsIndices);
+                    for (int i = 0; i < nmsIndices.total(); i++)
+                    {
+                        int idx = (int)nmsIndices.get(i, 0)[0];
+                        nmsBoxesList.Add(localBoxesList[idx]);
+                        nmsConfidencesList.Add(localConfidencesList[idx]);
+                        nmsClassIdsList.Add(key);
+                    }
+                }
+            }
+
+            boxesList = nmsBoxesList;
+            classIdsList = nmsClassIdsList;
+            confidencesList = nmsConfidencesList;
+
         }
 
-        boxesList = nmsBoxesList;
-        classIdsList = nmsClassIdsList;
-        confidencesList = nmsConfidencesList;
-        
         ingestCustomData(boxesList, confidencesList, classIdsList);
     }
 
@@ -304,10 +303,11 @@ public class ZEDCustomObjDetection : MonoBehaviour
                 }
             }
         }
+        zedManager.customObjects.Clear();
+        zedManager.customObjects.AddRange(objects_in);
 
-        zedManager.zedCamera.IngestCustomBoxObjects(objects_in);
-        if (OnIngestCustomOD != null)
-            OnIngestCustomOD();
+/*        if (OnIngestCustomOD != null)
+            OnIngestCustomOD();*/
     }
 
     /// <summary>
@@ -356,7 +356,7 @@ public class ZEDCustomObjDetection : MonoBehaviour
         MatOfInt outLayers = net.getUnconnectedOutLayers();
         for (int i = 0; i < outLayers.total(); ++i)
         {
-            names.Add(net.getLayer(new DictValue((int)outLayers.get(i, 0)[0])).get_name());
+            names.Add(net.getLayer((int)outLayers.get(i, 0)[0]).get_name());
         }
         outLayers.Dispose();
 
@@ -375,7 +375,7 @@ public class ZEDCustomObjDetection : MonoBehaviour
         MatOfInt outLayers = net.getUnconnectedOutLayers();
         for (int i = 0; i < outLayers.total(); ++i)
         {
-            types.Add(net.getLayer(new DictValue((int)outLayers.get(i, 0)[0])).get_type());
+            types.Add(net.getLayer((int)outLayers.get(i, 0)[0]).get_type());
         }
         outLayers.Dispose();
 

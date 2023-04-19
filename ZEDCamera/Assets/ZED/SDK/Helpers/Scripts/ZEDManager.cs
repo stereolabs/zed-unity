@@ -5,6 +5,7 @@ using UnityEngine.XR;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using sl;
 
 /// <summary>
 /// The central script of the ZED Unity plugin, and the primary way a developer can interact with the camera.
@@ -596,6 +597,9 @@ public class ZEDManager : MonoBehaviour
     public event onNewObjectDetectionTriggerDelegate OnObjectDetection;
 
     private sl.ObjectDetectionRuntimeParameters objectDetectionRuntimeParameters = new sl.ObjectDetectionRuntimeParameters();
+
+    [HideInInspector]
+    public List<CustomBoxObjectData> customObjects = new List<CustomBoxObjectData>();
 
     /////////////////////////////////////////////////////////////////////////
     ////////////////////////  Body Tracking /////////////////////////////////
@@ -2459,6 +2463,11 @@ public class ZEDManager : MonoBehaviour
                     //Update object detection here if using object sync.
                     if (objectDetectionRunning && objectDetectionImageSyncMode == true && requestobjectsframe)
                     {
+                        if (objectDetectionModel == sl.OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
+                        {
+                            zedCamera.IngestCustomBoxObjects(customObjects, objectDetectionInstanceID);
+                        }
+
                         RetrieveObjectDetectionFrame();
                     }
 

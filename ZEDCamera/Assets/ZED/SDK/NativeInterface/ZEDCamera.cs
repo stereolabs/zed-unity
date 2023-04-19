@@ -698,7 +698,7 @@ namespace sl
         private static extern void dllz_pause_object_detection(int cameraID, bool status, uint instanceID);
 
         [DllImport(nameDll, EntryPoint = "sl_ingest_custom_box_objects")]
-        private static extern int dllz_ingest_custom_box_objects(int cameraID, int nb_objects, CustomBoxObjectData[] objects_in);
+        private static extern int dllz_ingest_custom_box_objects(int cameraID, int nb_objects, CustomBoxObjectData[] objects_in, uint instanceID);
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_objects")]
         private static extern int dllz_retrieve_objects_data(int cameraID, ref ObjectDetectionRuntimeParameters od_params, ref Objects objs, uint instanceID);
@@ -2895,9 +2895,9 @@ namespace sl
             }
         }
 
-        public sl.ERROR_CODE IngestCustomBoxObjects(List<CustomBoxObjectData> objects_in)
+        public sl.ERROR_CODE IngestCustomBoxObjects(List<CustomBoxObjectData> objects_in, uint instanceID)
         {
-            return (sl.ERROR_CODE)dllz_ingest_custom_box_objects(CameraID, objects_in.Count, objects_in.ToArray());
+            return (sl.ERROR_CODE)dllz_ingest_custom_box_objects(CameraID, objects_in.Count, objects_in.ToArray(), instanceID);
         }
 
 
