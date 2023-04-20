@@ -598,6 +598,9 @@ public class ZEDManager : MonoBehaviour
 
     private sl.ObjectDetectionRuntimeParameters objectDetectionRuntimeParameters = new sl.ObjectDetectionRuntimeParameters();
 
+    [HideInInspector]
+    public List<CustomBoxObjectData> customObjects = new List<CustomBoxObjectData>();
+
     /////////////////////////////////////////////////////////////////////////
     ////////////////////////  Body Tracking /////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
@@ -2161,18 +2164,22 @@ public class ZEDManager : MonoBehaviour
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
             watch.Start();
 
-            var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_DEPTH)); //Assign thread.
-            threadOptim.Start();
-
-            while (optimStatus != sl.ERROR_CODE.SUCCESS)
+            sl.AI_Model_status status = sl.ZEDCamera.CheckAIModelStatus(sl.AI_MODELS.NEURAL_DEPTH, 0);
+            if (!status.optimized)
             {
-                if (watch.Elapsed.TotalSeconds > optimTimeout_S)
-                    Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
+                var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_DEPTH)); //Assign thread.
+                threadOptim.Start();
 
-                Debug.LogWarning($"Optimizing neural model ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds.ToString("N2")} seconds.");
-                yield return new WaitForSeconds(5.0f);
+                while (optimStatus != sl.ERROR_CODE.SUCCESS)
+                {
+                    if (watch.Elapsed.TotalSeconds > optimTimeout_S)
+                        Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
+
+                    Debug.LogWarning($"Optimizing neural model ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds.ToString("N2")} seconds.");
+                    yield return new WaitForSeconds(5.0f);
+                }
+                threadOptim.Join();
             }
-            threadOptim.Join();
         }
 
         zedReady = false;
@@ -2448,6 +2455,11 @@ public class ZEDManager : MonoBehaviour
                     //Update object detection here if using object sync.
                     if (objectDetectionRunning && objectDetectionImageSyncMode == true && requestobjectsframe)
                     {
+                        if (objectDetectionModel == sl.OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
+                        {
+                            zedCamera.IngestCustomBoxObjects(customObjects, objectDetectionInstanceID);
+                        }
+
                         RetrieveObjectDetectionFrame();
                     }
 
