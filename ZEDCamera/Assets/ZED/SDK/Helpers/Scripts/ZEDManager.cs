@@ -5,7 +5,7 @@ using UnityEngine.XR;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEngine.XR.Management;
+using sl;
 
 /// <summary>
 /// The central script of the ZED Unity plugin, and the primary way a developer can interact with the camera.
