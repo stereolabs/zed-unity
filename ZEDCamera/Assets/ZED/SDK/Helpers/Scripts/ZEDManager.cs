@@ -1735,48 +1735,6 @@ public class ZEDManager : MonoBehaviour
 
     #region CHECK_AR
 
-    private bool hasXRDevice()
-    {
-        bool isPresent = false;
-        XRLoader xRLoader = XRGeneralSettings.Instance.Manager.activeLoader;
-        Debug.Log("Device name " + XRSettings.loadedDeviceName);
-
-        if (xRLoader)
-        {
-            if (xRLoader.name == "OculusLoader" || xRLoader.name == "OpenVRLoader")
-            {
-                var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
-                SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
-                foreach (var xrDisplay in xrDisplaySubsystems)
-                {
-                    if (xrDisplay.running)
-                    {
-                        isPresent = true;
-                    }
-                }
-            }
-            else if (xRLoader.name == "OpenXRLoader") 
-            {
-                if (xRLoader.Start())
-                {
-                    isPresent = true;
-                }
-                else
-                {
-                    isPresent = false;
-                }
-            }
-            else { isPresent = false; }  
-        }
-        else
-        {
-            isPresent = false;
-        }
-
-        Debug.Log("Is Present " + isPresent);
-        return isPresent;
-    }
-
     /// <summary>
     /// Checks if this GameObject is a stereo rig. Requires a child object called 'Camera_eyes' and
     /// two cameras as children of that object, one with stereoTargetEye set to Left, the other two Right.
@@ -1847,9 +1805,16 @@ public class ZEDManager : MonoBehaviour
                 zedRigRoot = camLeftTransform.parent; //Make the camera's parent object (Camera_eyes in the ZED_Rig_Stereo prefab) the new zedRigRoot to be tracked.
             }
 
-            if (hasXRDevice() && allowARPassThrough)
+            if (ZEDSupportFunctions.hasXRDevice() && allowARPassThrough)
             {
                 isStereoRig = true;
+
+                List<XRInputSubsystem> subsystems = new List<XRInputSubsystem>();
+                SubsystemManager.GetInstances<XRInputSubsystem>(subsystems);
+                for (int i = 0; i < subsystems.Count; i++)
+                {
+                    subsystems[i].TrySetTrackingOriginMode(TrackingOriginModeFlags.Unbounded);
+                }
             }
             else
             {
@@ -2308,7 +2273,7 @@ public class ZEDManager : MonoBehaviour
     void AdjustZEDRigCameraPosition()
     {
         //Vector3 rightCameraOffset = new Vector3(zedCamera.Baseline, 0.0f, 0.0f);
-        if (isStereoRig && hasXRDevice()) //Using AR pass-through mode.
+        if (isStereoRig && ZEDSupportFunctions.hasXRDevice()) //Using AR pass-through mode.
         {
             //zedRigRoot transform (origin of the global camera) is placed on the HMD headset. Therefore, we move the
             //camera in front of it by offsetHmdZEDPosition to compensate for the ZED's position on the headset.
@@ -2555,7 +2520,7 @@ public class ZEDManager : MonoBehaviour
             trackerThread.Join();
 
 
-        if (isStereoRig && hasXRDevice())
+        if (isStereoRig && ZEDSupportFunctions.hasXRDevice())
         {
             ZEDMixedRealityPlugin.Pose pose = arRig.InitTrackingAR();
             OriginPosition = pose.translation;
@@ -2716,7 +2681,7 @@ public class ZEDManager : MonoBehaviour
 
             isCameraTracked = true;
 
-            if (hasXRDevice() && isStereoRig) //AR pass-through mode.
+            if (ZEDSupportFunctions.hasXRDevice() && isStereoRig) //AR pass-through mode.
             {
                 if (calibrationHasChanged) //If the HMD offset calibration file changed during runtime.
                 {
@@ -2744,7 +2709,7 @@ public class ZEDManager : MonoBehaviour
                     zedRigRoot.localPosition = zedPosition;
             }
         }
-        else if (hasXRDevice() && isStereoRig) //ZED tracking is off but HMD tracking is on. Fall back to that.
+        else if (ZEDSupportFunctions.hasXRDevice() && isStereoRig) //ZED tracking is off but HMD tracking is on. Fall back to that.
         {
             isCameraTracked = true;
             arRig.ExtractLatencyPose(imageTimeStamp); //Find what HMD's pose was at ZED image's timestamp for latency compensation.
@@ -2762,7 +2727,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     void UpdateHmdPose()
     {
-        if (IsStereoRig && hasXRDevice())
+        if (IsStereoRig && ZEDSupportFunctions.hasXRDevice())
             arRig.CollectPose(); //Save headset pose with current timestamp.
     }
 
@@ -2804,7 +2769,7 @@ public class ZEDManager : MonoBehaviour
 
             if (isZEDTracked)
                 trackingState = ZEDTrackingState.ToString();
-            else if (hasXRDevice() && isStereoRig)
+            else if (ZEDSupportFunctions.hasXRDevice() && isStereoRig)
                 trackingState = "HMD Tracking";
             else
                 trackingState = "Camera Not Tracked";
@@ -3211,7 +3176,7 @@ public class ZEDManager : MonoBehaviour
 #endif
         }
 
-        if (bodyFormat == sl.BODY_FORMAT.BODY_34 || bodyFormat != sl.BODY_FORMAT.BODY_18)
+        if (bodyFormat == sl.BODY_FORMAT.BODY_34 || bodyFormat == sl.BODY_FORMAT.BODY_18)
         {
             Debug.LogWarning("The body format BODY_34 is deprecated and will be removed in a further version.");
         }
@@ -3474,13 +3439,9 @@ public class ZEDManager : MonoBehaviour
         arRig.quadCenter = centerScreen.transform;
 
         ZEDMixedRealityPlugin.OnHmdCalibChanged += CalibrationHasChanged;
-        if (hasXRDevice())
+        if (ZEDSupportFunctions.hasXRDevice())
         {
-#if UNITY_2019_1_OR_NEWER
             HMDDevice = XRSettings.loadedDeviceName;
-#else
-            HMDDevice = XRDevice.model;
-#endif
         }
 
         return zedRigDisplayer;

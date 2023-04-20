@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Text;
 using System.IO;
+using System.Collections.Generic;
+using UnityEngine.XR.Management;
+using UnityEngine.XR;
 
 /// <summary>
 /// Holds numerous static functions for getting info about the real world in 
@@ -16,11 +19,49 @@ using System.IO;
 /// </remarks>
 public class ZEDSupportFunctions
 {
+    public static bool hasXRDevice()
+    {
+        bool isPresent = false;
+        XRLoader xRLoader = XRGeneralSettings.Instance.Manager.activeLoader;
+
+        if (xRLoader)
+        {
+            if (xRLoader.name == "OculusLoader" || xRLoader.name == "OpenVRLoader")
+            {
+                var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
+                SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
+                foreach (var xrDisplay in xrDisplaySubsystems)
+                {
+                    if (xrDisplay.running)
+                    {
+                        isPresent = true;
+                    }
+                }
+            }
+            else if (xRLoader.name == "OpenXRLoader")
+            {
+                if (xRLoader.Start())
+                {
+                    isPresent = true;
+                }
+                else
+                {
+                    isPresent = false;
+                }
+            }
+            else { isPresent = false; }
+        }
+        else
+        {
+            isPresent = false;
+        }
+        return isPresent;
+    }
 
     /***********************************************************************************************
 	 ********************             BASIC "GET" FUNCTIONS             ****************************
 	 ***********************************************************************************************/
-	public static bool IsVector3NaN(Vector3 input)
+    public static bool IsVector3NaN(Vector3 input)
 	{
 		if (float.IsNaN (input.x) || float.IsNaN (input.y) || float.IsNaN (input.z))
 			return true;

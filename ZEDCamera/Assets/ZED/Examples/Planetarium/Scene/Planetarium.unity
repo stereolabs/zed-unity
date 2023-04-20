@@ -578,12 +578,12 @@ PrefabInstance:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: FPS
-      value: 30
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: depthMode
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
@@ -603,7 +603,7 @@ PrefabInstance:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: resolution
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
@@ -717,6 +717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454b1f0b0de2bb644a283d964ccf7f06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  loadedDevice: 
   deviceToTrack: 0
   latencyCompensation: 78
   correctControllerDrift: 1
@@ -753,7 +754,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1227702867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -766,6 +767,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  loadedDevice: 
   deviceToTrack: 1
   latencyCompensation: 78
   correctControllerDrift: 1
@@ -948,6 +950,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  loadedDevice: 
   deviceToTrack: 0
   latencyCompensation: 78
   correctControllerDrift: 1

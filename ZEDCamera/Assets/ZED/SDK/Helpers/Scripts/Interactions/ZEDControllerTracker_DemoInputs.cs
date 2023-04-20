@@ -3,9 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-#if UNITY_2019_3_OR_NEWER
 using UnityEngine.XR;
-#endif
 
 #if ZED_STEAM_VR
 using Valve.VR;
@@ -200,11 +198,8 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 #endif
 
 #if ZED_OCULUS
-#if UNITY_2019_3_OR_NEWER
         return CheckButtonState(fireButton, state, fireActive);
-#else
-        return CheckOculusButtonState(fireButton, state);
-#endif
+
 #endif
         return false;
     }
@@ -221,12 +216,10 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         return CheckSteamVRButtonState_Legacy(clickBinding_Legacy, state);
 #endif
 #if ZED_OCULUS
-#if UNITY_2019_3_OR_NEWER
         return CheckButtonState(clickButton, state, clickActive);
-#else
-        return CheckOculusButtonState(clickButton, state);
 #endif
-#endif
+
+
         return false;
     }
 
@@ -242,11 +235,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         return CheckSteamVRButtonState_Legacy(backBinding_Legacy, state);
 #endif
 #if ZED_OCULUS
-#if UNITY_2019_3_OR_NEWER
         return CheckButtonState(backButton, state, backActive);
-#else
-        return CheckOculusButtonState(backButton, state);
-#endif
 #endif
         return false;
     }
@@ -263,11 +252,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         return CheckSteamVRButtonState_Legacy(grabBinding_Legacy, state);
 #endif
 #if ZED_OCULUS
-#if UNITY_2019_3_OR_NEWER
         return CheckButtonState(grabButton, state, grabActive);
-#else
-        return CheckOculusButtonState(grabButton, state);
-#endif
 #endif
         return false;
     }
@@ -283,11 +268,7 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         return CheckSteamVRAxis_Legacy(navigateUIBinding_Legacy);
 #endif
 #if ZED_OCULUS
-#if UNITY_2019_3_OR_NEWER
         return Check2DAxisState(navigateUIAxis);
-#else
-        return CheckOculus2DAxisState(navigateUIAxis);
-#endif
 #endif
         return Vector3.zero;
     }
@@ -306,6 +287,8 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
         }
 #endif
     }
+
+    List<XRNodeState> nodeStates = new List<XRNodeState>();
 
     protected override void Update()
     {
@@ -347,34 +330,6 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
 #endif
 
 #if ZED_OCULUS
-    /// <summary>
-    /// Checks the button state of a given Oculus button.
-    /// </summary>
-    /// <param name="state">Whether to check if the button/action is just pressed, just released, or is being held down.</param>
-    public bool CheckOculusButtonState(OVRInput.Button button, ControllerButtonState state)
-    {
-        if (!ovrUpdateCalledThisFrame)
-        {
-            OVRInput.Update();
-            ovrUpdateCalledThisFrame = true;
-        }
-        bool result = false;
-        switch (state)
-        {
-            case ControllerButtonState.Down:
-                result = OVRInput.GetDown(button, GetOculusController());
-                break;
-            case ControllerButtonState.Held:
-                result = OVRInput.Get(button, GetOculusController());
-                break;
-            case ControllerButtonState.Up:
-                result = OVRInput.GetUp(button, GetOculusController());
-                break;
-        }
-        return result;
-    }
-
-#if UNITY_2019_3_OR_NEWER
     public bool CheckButtonState(InputFeatureUsage<bool> button, ControllerButtonState state, bool isActive){
 
         bool down = false;
@@ -437,32 +392,6 @@ public class ZEDControllerTracker_DemoInputs : ZEDControllerTracker
             _wasPressedDownPreviousFrame = false;
         }
     }
-#endif
-
-    /// <summary>
-    /// Returns the axis of a given Oculus axis button/joystick.
-    /// </summary>
-    public Vector3 CheckOculus2DAxisState(OVRInput.Axis2D axis)
-    {
-        if (!ovrUpdateCalledThisFrame)
-        {
-            OVRInput.Update();
-            ovrUpdateCalledThisFrame = true;
-        }
-
-        return OVRInput.Get(axis, GetOculusController());
-    }
-
-    /// <summary>
-    /// Returns the Oculus controller script of the controller currently attached to this object.
-    /// </summary>
-    public OVRInput.Controller GetOculusController()
-    {
-        if (deviceToTrack == Devices.LeftController) return OVRInput.Controller.LTouch;
-        else if (deviceToTrack == Devices.RightController) return OVRInput.Controller.RTouch;
-        else return OVRInput.Controller.None;
-    }
-
 #endif
 
 

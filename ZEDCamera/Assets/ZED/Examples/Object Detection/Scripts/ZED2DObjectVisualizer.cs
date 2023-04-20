@@ -240,25 +240,12 @@ public class ZED2DObjectVisualizer : MonoBehaviour
                 idtext.SetDistance(disttobox);
             }
 
-#if UNITY_2018_3_OR_NEWER
             float xmod = canvas.GetComponent<RectTransform>().rect.width / zedManager.zedCamera.ImageWidth;
             Rect objrect = dobj.Get2DBoundingBoxRect(xmod);
-#else
-            Rect objrect = dobj.Get2DBoundingBoxRect();
 
-#endif
             //Adjust the size of the RectTransform to encompass the object.
             bbox.sizeDelta = new Vector2(objrect.width, objrect.height);
             bbox.anchoredPosition = new Vector2(objrect.x, objrect.y);
-
-            /*
-#if UNITY_2018_3_OR_NEWER
-            float xmod = canvas.GetComponent<RectTransform>().rect.width / zedManager.zedCamera.ImageWidth;
-            bbox.anchoredPosition = new Vector2(bbox.anchoredPosition.x * xmod, bbox.anchoredPosition.y);
-            bbox.sizeDelta *= xmod;
-#endif
-*/
-
 
             //Apply the mask.
             if (showObjectMask)
@@ -315,25 +302,12 @@ public class ZED2DObjectVisualizer : MonoBehaviour
                 idtext.SetDistance(disttobox);
             }
 
-#if UNITY_2018_3_OR_NEWER
             float xmod = canvas.GetComponent<RectTransform>().rect.width / zedManager.zedCamera.ImageWidth;
             Rect objrect = dbody.Get2DBoundingBoxRect(xmod);
-#else
-            Rect objrect = dobj.Get2DBoundingBoxRect();
 
-#endif
             //Adjust the size of the RectTransform to encompass the object.
             bbox.sizeDelta = new Vector2(objrect.width, objrect.height);
             bbox.anchoredPosition = new Vector2(objrect.x, objrect.y);
-
-            /*
-#if UNITY_2018_3_OR_NEWER
-            float xmod = canvas.GetComponent<RectTransform>().rect.width / zedManager.zedCamera.ImageWidth;
-            bbox.anchoredPosition = new Vector2(bbox.anchoredPosition.x * xmod, bbox.anchoredPosition.y);
-            bbox.sizeDelta *= xmod;
-#endif
-*/
-
 
             //Apply the mask.
             if (showObjectMask)

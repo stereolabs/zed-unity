@@ -182,12 +182,7 @@ namespace sl
                     _pointMaterial.SetPass(0);
                     _pointMaterial.SetMatrix("_Transform", transform.localToWorldMatrix);
                     _pointMaterial.SetBuffer("_PointBuffer", _pointBuffer);
-#if UNITY_2019_1_OR_NEWER
                     Graphics.DrawProceduralNow(MeshTopology.Points, _pointBuffer.count, 1);
-#else
-                    Graphics.DrawProcedural(MeshTopology.Points, _pointBuffer.count, 1);
-
-#endif
                 }
                 //Draw with Disk shader
                 else
@@ -198,11 +193,7 @@ namespace sl
 
                     _diskMaterial.SetBuffer("_PointBuffer", _pointBuffer);
                     _diskMaterial.SetFloat("_PointSize", _pointSize);
-#if UNITY_2019_1_OR_NEWER
                     Graphics.DrawProceduralNow(MeshTopology.Points, _pointBuffer.count, 1);
-#else
-                    Graphics.DrawProcedural(MeshTopology.Points, _pointBuffer.count, 1);
-#endif
                 }
             }
         }

@@ -224,7 +224,7 @@ PrefabInstance:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: FPS
-      value: 30
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
@@ -249,11 +249,16 @@ PrefabInstance:
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: resolution
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: setIMUPriorInAR
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
+      propertyPath: setFloorAsOrigin
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
@@ -327,28 +332,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  index: -1
-  useLegacySteamVRInput: 0
   deviceToTrack: 0
   latencyCompensation: 78
   correctControllerDrift: 1
   SNHolder: 
   zedManager: {fileID: 1344833222}
-  fireBinding:
-    actionPath: 
-    needsReinit: 0
-  clickBinding:
-    actionPath: 
-    needsReinit: 0
-  backBinding:
-    actionPath: 
-    needsReinit: 0
-  grabBinding:
-    actionPath: 
-    needsReinit: 0
-  navigateUIBinding:
-    actionPath: 
-    needsReinit: 0
   onFireDown:
     m_PersistentCalls:
       m_Calls: []
@@ -475,6 +463,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 741507345}
   m_RootOrder: 3
@@ -612,6 +601,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -678,8 +668,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc0e4dfb527b99944a03710f713b764e, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   cachedLight: {fileID: 1320592376}
   interiorCone: 0.1
 --- !u!108 &1320592376
@@ -754,6 +744,7 @@ Transform:
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -821,26 +812,30 @@ PrefabInstance:
     - target: {fileID: 114191359626448276, guid: 558a4b76067e3e44089fbed55a2687e6,
         type: 3}
       propertyPath: zedManager
-      value:
+      value: 
       objectReference: {fileID: 1344833222}
-    - target: {fileID: 114191359626448276, guid: 558a4b76067e3e44089fbed55a2687e6, type: 3}
+    - target: {fileID: 114191359626448276, guid: 558a4b76067e3e44089fbed55a2687e6,
+        type: 3}
       propertyPath: useLegacySteamVRInput
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114506010654110848, guid: 558a4b76067e3e44089fbed55a2687e6, type: 3}
+    - target: {fileID: 114506010654110848, guid: 558a4b76067e3e44089fbed55a2687e6,
+        type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114506010654110848, guid: 558a4b76067e3e44089fbed55a2687e6, type: 3}
+    - target: {fileID: 114506010654110848, guid: 558a4b76067e3e44089fbed55a2687e6,
+        type: 3}
       propertyPath: zedManager
-      value:
+      value: 
       objectReference: {fileID: 1344833222}
     m_RemovedComponents:
     - {fileID: 114191359626448276, guid: 558a4b76067e3e44089fbed55a2687e6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 558a4b76067e3e44089fbed55a2687e6, type: 3}
 --- !u!1 &1698928816 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1222075980241000, guid: d0ab09dfdb72e614aadbc6e474b9bc3e, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1222075980241000, guid: d0ab09dfdb72e614aadbc6e474b9bc3e,
+    type: 3}
   m_PrefabInstance: {fileID: 942191712}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1698928817
@@ -853,28 +848,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   deviceToTrack: 1
   latencyCompensation: 78
   correctControllerDrift: 1
-  SNHolder:
+  SNHolder: 
   zedManager: {fileID: 1344833222}
-  fireBinding:
-    actionPath: 
-    needsReinit: 0
-  clickBinding:
-    actionPath: 
-    needsReinit: 0
-  backBinding:
-    actionPath: 
-    needsReinit: 0
-  grabBinding:
-    actionPath: 
-    needsReinit: 0
-  navigateUIBinding:
-    actionPath: 
-    needsReinit: 0
   onFireDown:
     m_PersistentCalls:
       m_Calls: []

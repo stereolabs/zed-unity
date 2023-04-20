@@ -1,11 +1,10 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
-using UnityEngine;
-using System.Runtime.InteropServices;
-using UnityEngine.XR;
-using System.IO;
 using System.Collections.Generic;
-using UnityEngine.Rendering;
+using System.IO;
+using System.Runtime.InteropServices;
+using UnityEngine;
+using UnityEngine.XR;
 
 /// <summary>
 /// In pass-through AR mode, handles the final output to the VR headset, positioning the final images
@@ -288,24 +287,6 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
 	List<XRNodeState> nodeStates = new List<XRNodeState>();
 
-    private bool hasXRDevice()
-    {
-#if UNITY_2020_1_OR_NEWER
-        var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
-        SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
-        foreach (var xrDisplay in xrDisplaySubsystems)
-        {
-            if (xrDisplay.running)
-            {
-                return true;
-            }
-        }
-        return false;
-#else
-        return XRDevice.isPresent;
-#endif
-    }
-
     private string getXRModelName()
     {
         return XRSettings.loadedDeviceName;
@@ -316,7 +297,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         //Initialize the latency tracking only if a supported headset is detected.
         //You can force it to work for unsupported headsets by implementing your own logic for calling
         //dllz_latency_corrector_initialize.
-        hasVRDevice = hasXRDevice();
+        hasVRDevice = ZEDSupportFunctions.hasXRDevice();
 
 		if (hasVRDevice)
         {
@@ -331,7 +312,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     /// </summary>
     void Start()
 	{
-		hasVRDevice = hasXRDevice();
+		hasVRDevice = ZEDSupportFunctions.hasXRDevice();
 
 		//iterate until we found the ZED Manager parent...
 		Transform ObjParent = gameObject.transform;
@@ -418,7 +399,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
 		float perception_distance = 1.0f;
 		float zed2eye_distance = 0.1f; //Estimating 10cm between your eye and physical location of the ZED Mini.
-		hasVRDevice = hasXRDevice();
+		hasVRDevice = ZEDSupportFunctions.hasXRDevice();
 
 		if (hasVRDevice) {
 			sl.CalibrationParameters parameters = zedCamera.CalibrationParametersRectified;
@@ -481,6 +462,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
         InputTracking.GetNodeStates(nodeStates);
         XRNodeState nodeState = nodeStates.Find(node => node.nodeType == XRNode.Head);
+
         nodeState.TryGetRotation(out k.Orientation);
         nodeState.TryGetPosition(out k.Translation);
 
@@ -621,7 +603,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     /// <param name="t">Final translation/position.</param>
 	public void AdjustTrackingAR(Vector3 position, Quaternion orientation, out Quaternion r, out Vector3 t, bool setimuprior)
     {
-        hasVRDevice = hasXRDevice();
+        hasVRDevice = ZEDSupportFunctions.hasXRDevice();
 
         InputTracking.GetNodeStates(nodeStates);
         XRNodeState nodeState = nodeStates.Find(node => node.nodeType == XRNode.Head);
