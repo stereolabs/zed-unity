@@ -2176,18 +2176,22 @@ public class ZEDManager : MonoBehaviour
             System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
             watch.Start();
 
-            var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_DEPTH)); //Assign thread.
-            threadOptim.Start();
-
-            while (optimStatus != sl.ERROR_CODE.SUCCESS)
+            sl.AI_Model_status status = sl.ZEDCamera.CheckAIModelStatus(sl.AI_MODELS.NEURAL_DEPTH, 0);
+            if (!status.optimized)
             {
-                if (watch.Elapsed.TotalSeconds > optimTimeout_S)
-                    Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
+                var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_DEPTH)); //Assign thread.
+                threadOptim.Start();
 
-                Debug.LogWarning($"Optimizing neural model ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds.ToString("N2")} seconds.");
-                yield return new WaitForSeconds(5.0f);
+                while (optimStatus != sl.ERROR_CODE.SUCCESS)
+                {
+                    if (watch.Elapsed.TotalSeconds > optimTimeout_S)
+                        Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
+
+                    Debug.LogWarning($"Optimizing neural model ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds.ToString("N2")} seconds.");
+                    yield return new WaitForSeconds(5.0f);
+                }
+                threadOptim.Join();
             }
-            threadOptim.Join();
         }
 
         zedReady = false;
@@ -3196,7 +3200,7 @@ public class ZEDManager : MonoBehaviour
 #endif
         }
 
-        if (bodyFormat == sl.BODY_FORMAT.BODY_34 || bodyFormat != sl.BODY_FORMAT.BODY_18)
+        if (bodyFormat == sl.BODY_FORMAT.BODY_34 || bodyFormat == sl.BODY_FORMAT.BODY_18)
         {
             Debug.LogWarning("The body format BODY_34 is deprecated and will be removed in a further version.");
         }
