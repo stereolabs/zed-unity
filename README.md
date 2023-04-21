@@ -37,7 +37,7 @@ To develop applications in Unity with your ZED, you'll need the following things
 
 - Download and install the [ZED SDK](https://www.stereolabs.com/developers/release/).
 - Download the [ZED Plugin for Unity](https://github.com/stereolabs/zed-unity/releases).
-- Import the *ZEDCamera.package* into Unity.
+- Import the *Zed_Unity_Plugin_V4.0.X.unitypackage* into Unity.
 - Read the [Basic Concepts](https://www.stereolabs.com/docs/unity/basic-concepts/) and [Build Your First AR/MR App](https://www.stereolabs.com/docs/unity/creating-mixed-reality-app/) guides to get started.
 - Explore the [Samples](https://www.stereolabs.com/docs/unity/samples/) included in the plugin.
 - The [Main Scripts](https://www.stereolabs.com/docs/unity/main-scripts/) page of the documentation introduces the important scripts of the plugin and their parameters.
