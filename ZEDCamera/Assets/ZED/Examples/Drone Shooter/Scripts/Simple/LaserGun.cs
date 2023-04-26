@@ -80,17 +80,11 @@ public class LaserGun : MonoBehaviour
         if (objecttracker != null)
         {
 
-#if ZED_STEAM_VR
-            if (objecttracker.index >= 0)
-                yield break;
-#endif
-#if ZED_OCULUS
             InputDeviceCharacteristics TrackedControllerFilter = InputDeviceCharacteristics.HeldInHand;
             List<InputDevice> foundControllers = new List<InputDevice>();
             InputDevices.GetDevicesWithCharacteristics(TrackedControllerFilter, foundControllers);
             if (foundControllers.Count > 0) { yield break; }
 
-#endif
             // If it got here then there's no VR Controller connected
             int children = transform.childCount;
             for (int i = 0; i < children; ++i)
@@ -105,26 +99,11 @@ public class LaserGun : MonoBehaviour
             if (otherObjectTracker != null)
             {
                 int children = transform.childCount;
-#if ZED_STEAM_VR
-                foreach (ZEDControllerTracker trackers in otherObjectTracker)
-                {
-                    if (trackers.index >= 0)
-                    {
-                        for (int i = 0; i < children; ++i)
-                            transform.GetChild(i).gameObject.SetActive(false);
-
-                        this.enabled = false;
-                        yield break;
-                    }
-                }
-#endif
-#if ZED_OCULUS
 
                 for (int i = 0; i < children; ++i)
                     transform.GetChild(i).gameObject.SetActive(false);
 
                 yield break;
-#endif
             }
         }
     }
@@ -167,8 +146,6 @@ public class LaserGun : MonoBehaviour
             buttondown = true;
         }
 
-#if ZED_OCULUS
-
         //Update whether the Touch controllers are active.
         int children = transform.childCount;
         InputDeviceCharacteristics TrackedControllerFilter = InputDeviceCharacteristics.HeldInHand;
@@ -191,16 +168,6 @@ public class LaserGun : MonoBehaviour
         {
             buttondown = objecttracker.CheckFireButton(ControllerButtonState.Down);
         }
-
-#endif
-
-#if ZED_STEAM_VR
-        //Looks for any input from this controller through SteamVR
-        if (objecttracker != null)
-        {
-            buttondown = objecttracker.CheckFireButton(ControllerButtonState.Down);
-        }
-#endif
 
         if (buttondown)
         {
@@ -276,13 +243,12 @@ public class LaserGun : MonoBehaviour
         }
 
         //Play a sound
-        if (audiosource)
+        if (audiosource && audiosource.enabled)
         {
             audiosource.Play();
         }
     }
 
-#if ZED_OCULUS
     /// <summary>
     /// Returns if this script is bound to an Oculus Touch controller that is currently not connected.
     /// For example, if it's a Right Controller but only the left is connected, it returns false.
@@ -309,6 +275,5 @@ public class LaserGun : MonoBehaviour
 
         return false;
     }
-#endif
 
 }

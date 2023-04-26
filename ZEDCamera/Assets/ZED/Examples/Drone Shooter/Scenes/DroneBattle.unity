@@ -143,6 +143,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ZED_Rig_Stereo
       objectReference: {fileID: 0}
+    - target: {fileID: 1721814514466412, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4309805032874704, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -253,13 +257,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
+      propertyPath: enableFillMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
+        type: 3}
       propertyPath: setIMUPriorInAR
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
       propertyPath: setFloorAsOrigin
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac,
         type: 3}
@@ -332,6 +341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  loadedDevice: 
   deviceToTrack: 0
   latencyCompensation: 78
   correctControllerDrift: 1
@@ -850,6 +860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 133b3bfe60baacd45a72714ffc6eb29a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  loadedDevice: 
   deviceToTrack: 1
   latencyCompensation: 78
   correctControllerDrift: 1

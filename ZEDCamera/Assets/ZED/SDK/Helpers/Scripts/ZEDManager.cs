@@ -1816,7 +1816,8 @@ public class ZEDManager : MonoBehaviour
                 SubsystemManager.GetInstances<XRInputSubsystem>(subsystems);
                 for (int i = 0; i < subsystems.Count; i++)
                 {
-                    subsystems[i].TrySetTrackingOriginMode(TrackingOriginModeFlags.Unbounded);
+                     subsystems[i].TrySetTrackingOriginMode(TrackingOriginModeFlags.Device);
+                     subsystems[i].TryRecenter();
                 }
             }
             else
@@ -2179,6 +2180,7 @@ public class ZEDManager : MonoBehaviour
                     yield return new WaitForSeconds(5.0f);
                 }
                 threadOptim.Join();
+                watch.Stop();
             }
         }
 

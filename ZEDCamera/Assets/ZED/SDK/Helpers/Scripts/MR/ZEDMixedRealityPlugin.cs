@@ -285,8 +285,6 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 		}
 	}
 
-	List<XRNodeState> nodeStates = new List<XRNodeState>();
-
     private string getXRModelName()
     {
         return XRSettings.loadedDeviceName;
@@ -460,11 +458,9 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
         KeyPose k = new KeyPose();
 
-        InputTracking.GetNodeStates(nodeStates);
-        XRNodeState nodeState = nodeStates.Find(node => node.nodeType == XRNode.Head);
-
-        nodeState.TryGetRotation(out k.Orientation);
-        nodeState.TryGetPosition(out k.Translation);
+        InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
+        head.TryGetFeatureValue(CommonUsages.devicePosition, out k.Translation);
+        head.TryGetFeatureValue(CommonUsages.deviceRotation, out k.Orientation);
 
         if (manager.zedCamera.IsCameraReady)
         {
@@ -507,18 +503,12 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         if (manager == null)
             return;
 
-        List<InputDevice> eyes = new List<InputDevice>();
-        InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.HeadMounted, eyes);
+        InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.CenterEye);
+        head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 headPosition);
+        head.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion headRotation);
 
-        if (eyes.Count > 0) // if a headset is detected
-        {
-            var eye = eyes[0];
-			eye.TryGetFeatureValue(CommonUsages.centerEyePosition, out Vector3 centerEyePosition);
-			eye.TryGetFeatureValue(CommonUsages.centerEyeRotation, out Quaternion centerEyeRotation);
-
-			finalCenterEye.transform.localPosition = centerEyePosition;
-			finalCenterEye.transform.localRotation = centerEyeRotation;
-		}
+        finalCenterEye.transform.localPosition = headPosition;
+		finalCenterEye.transform.localRotation = headRotation;
 
         Quaternion r;
 
@@ -550,11 +540,10 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
         Transform tmpHMD = transform;
 
-        InputTracking.GetNodeStates(nodeStates);
-        XRNodeState nodeState = nodeStates.Find(node => node.nodeType == XRNode.Head);
-        nodeState.TryGetRotation(out Quaternion rot);
-        nodeState.TryGetPosition(out Vector3 pos);
-        Pose hmdTransform = new Pose(pos, rot);
+        InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
+        head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 headPosition);
+        head.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion headRotation);
+        Pose hmdTransform = new Pose(headPosition, headRotation);
 
         Quaternion r = Quaternion.identity;
         Vector3 t = Vector3.zero;
@@ -605,11 +594,11 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
     {
         hasVRDevice = ZEDSupportFunctions.hasXRDevice();
 
-        InputTracking.GetNodeStates(nodeStates);
-        XRNodeState nodeState = nodeStates.Find(node => node.nodeType == XRNode.Head);
-        nodeState.TryGetRotation(out Quaternion rot);
-        nodeState.TryGetPosition(out Vector3 pos);
-        Pose hmdTransform = new Pose(pos, rot);
+        InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
+        head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 headPosition);
+        head.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion headRotation);
+
+        Pose hmdTransform = new Pose(headPosition, headRotation);
 
         trackingData.trackingState = (int)manager.ZEDTrackingState; //Whether the ZED's tracking is currently valid (not off or unable to localize).
         trackingData.zedPathTransform = new Pose(position, orientation);
@@ -698,14 +687,12 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
 			if ((!manager.IsZEDReady && manager.IsStereoRig))
 			{
-				System.Collections.Generic.List<XRNodeState> nodeStates = new System.Collections.Generic.List<XRNodeState>();
-				InputTracking.GetNodeStates(nodeStates);
-				XRNodeState nodeState = nodeStates.Find(node => node.nodeType == XRNode.Head);
-				nodeState.TryGetRotation(out Quaternion rot);
-				nodeState.TryGetPosition(out Vector3 pos);
+                InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.CenterEye);
+                head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 headPosition);
+                head.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion headRotation);
 
-				quadCenter.localRotation = rot;
-				quadCenter.localPosition = pos + quadCenter.localRotation * offset;
+				quadCenter.localRotation = headRotation;
+				quadCenter.localPosition = headPosition + quadCenter.localRotation * offset;
 			}
 		}
 	}
@@ -724,7 +711,6 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 			hmdtozedCalibration.translation.x = 0.0315f;//-zedCamera.Baseline/2;
 			hmdtozedCalibration.translation.y = 0.0f;
 			hmdtozedCalibration.translation.z = 0.11f;
-
 
             //if a calibration exists then load it
             //should be in ProgramData/stereolabs/mr/calibration.ini
