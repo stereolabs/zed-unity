@@ -144,8 +144,6 @@ public class ZEDCustomObjDetection : MonoBehaviour
 
         Imgproc.cvtColor(rgbaMat, bgrMat, Imgproc.COLOR_RGBA2BGR);
 
-        //OpenCVForUnity.ImgcodecsModule.Imgcodecs.imwrite("D:/test.png", rgbaMat);
-
         // Create a 4D blob from a frame.
         Size infSize = new Size(inferenceWidth > 0 ? inferenceWidth : bgrMat.cols(),
                            inferenceHeight > 0 ? inferenceHeight : bgrMat.rows());

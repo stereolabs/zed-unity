@@ -2168,7 +2168,8 @@ public class ZEDManager : MonoBehaviour
             sl.AI_Model_status status = sl.ZEDCamera.CheckAIModelStatus(sl.AI_MODELS.NEURAL_DEPTH, 0);
             if (!status.optimized)
             {
-                var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_DEPTH)); //Assign thread.
+                Debug.Log("NEURAL Not optimized");
+                /*var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_DEPTH)); //Assign thread.
                 threadOptim.Start();
 
                 while (optimStatus != sl.ERROR_CODE.SUCCESS)
@@ -2179,7 +2180,7 @@ public class ZEDManager : MonoBehaviour
                     Debug.LogWarning($"Optimizing neural model ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds.ToString("N2")} seconds.");
                     yield return new WaitForSeconds(5.0f);
                 }
-                threadOptim.Join();
+                threadOptim.Join();*/
                 watch.Stop();
             }
         }
@@ -3228,7 +3229,9 @@ public class ZEDManager : MonoBehaviour
         sl.AI_Model_status status = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(bodyTrackingModel, bodyFormat), 0);
         if (!status.optimized)
         {
-            var threadOptim = new Thread(() => OptimizeModel(sl.ZEDCamera.cvtDetection(bodyTrackingModel, bodyFormat))); //Assign thread.
+            Debug.Log(bodyTrackingModel + " Not optimized");
+
+            /*var threadOptim = new Thread(() => OptimizeModel(sl.ZEDCamera.cvtDetection(bodyTrackingModel, bodyFormat))); //Assign thread.
             threadOptim.Start();
 
             while (optimStatus != sl.ERROR_CODE.SUCCESS)
@@ -3238,7 +3241,7 @@ public class ZEDManager : MonoBehaviour
                 yield return new WaitForSeconds(5.0f);
             }
 
-            threadOptim.Join();
+            threadOptim.Join();*/
         }
 
         pauseSVOReading = oldpausestate;

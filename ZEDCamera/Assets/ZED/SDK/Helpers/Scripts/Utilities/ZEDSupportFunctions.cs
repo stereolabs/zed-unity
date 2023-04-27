@@ -22,39 +22,43 @@ public class ZEDSupportFunctions
     public static bool hasXRDevice()
     {
         bool isPresent = false;
-        XRLoader xRLoader = XRGeneralSettings.Instance.Manager.activeLoader;
-
-        if (xRLoader)
+        if (XRGeneralSettings.Instance)
         {
-            if (xRLoader.name == "OculusLoader" || xRLoader.name == "OpenVRLoader")
+            XRLoader xRLoader = XRGeneralSettings.Instance.Manager.activeLoader;
+
+            if (xRLoader)
             {
-                var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
-                SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
-                foreach (var xrDisplay in xrDisplaySubsystems)
+                if (xRLoader.name == "OculusLoader" || xRLoader.name == "OpenVRLoader")
                 {
-                    if (xrDisplay.running)
+                    var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
+                    SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
+                    foreach (var xrDisplay in xrDisplaySubsystems)
+                    {
+                        if (xrDisplay.running)
+                        {
+                            isPresent = true;
+                        }
+                    }
+                }
+                else if (xRLoader.name == "OpenXRLoader")
+                {
+                    if (xRLoader.Start())
                     {
                         isPresent = true;
                     }
+                    else
+                    {
+                        isPresent = false;
+                    }
                 }
+                else { isPresent = false; }
             }
-            else if (xRLoader.name == "OpenXRLoader")
+            else
             {
-                if (xRLoader.Start())
-                {
-                    isPresent = true;
-                }
-                else
-                {
-                    isPresent = false;
-                }
+                isPresent = false;
             }
-            else { isPresent = false; }
         }
-        else
-        {
-            isPresent = false;
-        }
+
         return isPresent;
     }
 
