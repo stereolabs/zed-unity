@@ -216,12 +216,12 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     private void UpdateAvatarControl(SkeletonHandler handler, sl.BodyData data)
 	{
         Vector3[] worldJointsPos = new Vector3[handler.currentKeypointsCount]; 
-        Quaternion[] worldJointsRot = new Quaternion[handler.currentKeypointsCount];
+        Quaternion[] normalizedLocalJointsRot = new Quaternion[handler.currentKeypointsCount];
 
         for (int i = 0; i < worldJointsPos.Length; i++)
         {
             worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.keypoint[i]);
-            worldJointsRot[i] = data.localOrientationPerJoint[i].normalized;
+            normalizedLocalJointsRot[i] = data.localOrientationPerJoint[i].normalized;
         }
         Quaternion worldGlobalRotation = zedManager.GetZedRootTansform().rotation * data.globalRootOrientation;
 
@@ -230,7 +230,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
             handler.SetConfidences(data.keypointConfidence);
             handler.SetControlWithJointPosition(
                 worldJointsPos,
-                worldJointsRot, worldGlobalRotation,
+                normalizedLocalJointsRot, worldGlobalRotation,
                 useAvatar, mirrorMode);
         }
 

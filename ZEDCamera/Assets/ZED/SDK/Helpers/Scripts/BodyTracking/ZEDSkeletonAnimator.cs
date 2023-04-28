@@ -134,7 +134,9 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     {
         foreach (var bone in skhandler.RigBoneTarget)
         {
-            animator.SetBoneLocalRotation(bone.Key, bone.Value);
+            // rigbonetarget are in WORLD space. It may work ok with O-ed only because it's 0-ed.
+            // i need the LOCAL rotations here
+            animator.SetBoneLocalRotation(bone.Key, /*bone.Value*/  skhandler.DefaultRotations.GetValueOrDefault(bone.Key));
         }
     }
 

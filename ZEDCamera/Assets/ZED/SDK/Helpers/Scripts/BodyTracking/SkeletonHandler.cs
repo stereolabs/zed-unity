@@ -796,6 +796,7 @@ public class SkeletonHandler : ScriptableObject
     private Dictionary<HumanBodyBones, Quaternion> rigBoneTarget = null;
 
     private Dictionary<HumanBodyBones, Quaternion> default_rotations = null;
+    private Dictionary<HumanBodyBones, Quaternion> defaultRotationsWorld = null;
 
     private Vector3 targetBodyPosition = new Vector3(0.0f, 0.0f, 0.0f);
     private Vector3 targetBodyPositionWithHipOffset = new Vector3(0.0f, 0.0f, 0.0f);
@@ -811,6 +812,8 @@ public class SkeletonHandler : ScriptableObject
     }
 
     public Dictionary<HumanBodyBones, Quaternion> RigBoneTarget { get => rigBoneTarget; set => rigBoneTarget = value; }
+    public Dictionary<HumanBodyBones, Quaternion> DefaultRotations { get => default_rotations; }
+    public Dictionary<HumanBodyBones, Quaternion> DefaultRotationsWorld { get => defaultRotationsWorld; }
     public Quaternion TargetBodyOrientation { get => targetBodyOrientation; set => targetBodyOrientation = value; }
     public Vector3 TargetBodyPositionWithHipOffset { get => targetBodyPositionWithHipOffset; set => targetBodyPositionWithHipOffset = value; }
 
@@ -900,6 +903,7 @@ public class SkeletonHandler : ScriptableObject
         rigBoneTarget = new Dictionary<HumanBodyBones, Quaternion>();
 
         default_rotations = new Dictionary<HumanBodyBones, Quaternion>();
+        defaultRotationsWorld = new Dictionary<HumanBodyBones, Quaternion>();
 
         foreach (HumanBodyBones bone in currentHumanBodyBones)
         {
@@ -911,6 +915,7 @@ public class SkeletonHandler : ScriptableObject
                 {
                     // Store rest pose rotations
                     default_rotations[bone] = animator.GetBoneTransform(bone).localRotation;
+                    defaultRotationsWorld[bone] = animator.GetBoneTransform(bone).rotation;
                 }
 
             }
