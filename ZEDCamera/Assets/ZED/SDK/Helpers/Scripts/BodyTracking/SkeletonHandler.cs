@@ -1255,6 +1255,61 @@ public class SkeletonHandler : ScriptableObject
             MoveAvatar();
         }
     }
+
+    /// <summary>
+    /// Propagate and un-propagate rotations.
+    /// </summary>
+    public void MoveAnimator()
+    {
+        // Put in Ref Pose
+        foreach (HumanBodyBones bone in currentHumanBodyBones)
+        {
+            if (bone != HumanBodyBones.LastBone)
+            {
+                if (rigBone[bone].transform)
+                {
+                    rigBone[bone].transform.localRotation = default_rotations[bone];
+                    //animator.SetBoneLocalRotation(bone, rigBone[bone].transform.localRotation);
+                    //rigBone[bone].transform.localRotation = default_rotations[bone];
+                }
+            }
+        }
+
+        PropagateRestPoseRotations(0, rigBone, default_rotations[0], false);
+
+        for (int i = 0; i < currentHumanBodyBones.Length; i++)
+        {
+            if (currentHumanBodyBones[i] != HumanBodyBones.LastBone && rigBone[currentHumanBodyBones[i]].transform)
+            {
+                if (currentParentIds[i] != -1)
+                {
+                    Quaternion newRotation = rigBoneTarget[currentHumanBodyBones[i]] * rigBone[currentHumanBodyBones[i]].transform.localRotation;
+                    rigBone[currentHumanBodyBones[i]].transform.localRotation = newRotation;
+                }
+            }
+        }
+        PropagateRestPoseRotations(0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
+
+        // Reposition root depending on hips position.
+        if (rigBone[HumanBodyBones.Hips].transform)
+        {
+            TargetBodyPositionWithHipOffset = targetBodyPosition;
+            rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(TargetBodyPositionWithHipOffset, targetBodyOrientation);
+        }
+
+        // animatorization
+        foreach (HumanBodyBones bone in currentHumanBodyBones)
+        {
+            if (bone != HumanBodyBones.LastBone)
+            {
+                if (rigBone[bone].transform)
+                {
+                    animator.SetBoneLocalRotation(bone, rigBone[bone].transform.localRotation);
+                }
+            }
+        }
+
+    }
 }
 
 public static class TransformExtensions

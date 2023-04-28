@@ -132,12 +132,19 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// </summary>
     void ApplyAllRigRotationsOnAnimator()
     {
-        foreach (var bone in skhandler.RigBoneTarget)
-        {
-            // rigbonetarget are in WORLD space. It may work ok with O-ed only because it's 0-ed.
-            // i need the LOCAL rotations here
-            animator.SetBoneLocalRotation(bone.Key, /*bone.Value*/  skhandler.DefaultRotations.GetValueOrDefault(bone.Key));
-        }
+        //Quaternion leZeroEuler = Quaternion.Euler(0f, 0f, 0f);
+
+        //foreach (var bone in skhandler.RigBoneTarget)
+        //{
+        //    // rigbonetarget are in LOCAL space. It may work ok with O-ed only because it's 0-ed... ??
+        //    // essayer de multiplier par l'inverse ??
+
+        //    Quaternion leDiff = leZeroEuler * Quaternion.Inverse(skhandler.DefaultRotations.GetValueOrDefault(bone.Key));
+        //    //animator.SetBoneLocalRotation(bone.Key, leDiff * bone.Value );
+        //    animator.SetBoneLocalRotation(bone.Key, /*bone.Value */ skhandler.DefaultRotations.GetValueOrDefault(bone.Key));
+        //}
+
+        skhandler.MoveAnimator();
     }
 
     /// <summary> 
