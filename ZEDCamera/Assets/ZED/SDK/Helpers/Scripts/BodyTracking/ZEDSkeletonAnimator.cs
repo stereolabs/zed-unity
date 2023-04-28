@@ -156,14 +156,14 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             transform.position = skhandler.TargetBodyPositionWithHipOffset;
             transform.rotation = skhandler.TargetBodyOrientation;
 
-            ManageHeightOffset();
-
             // 3) Manage Foot IK
             if (animator)
             {
                 //if the IK is active, set the position and rotation directly to the goal.
                 if (enableFootIK)
                 {
+                    ManageHeightOffset();
+
                     // Set the right foot target position and rotation, if one has been assigned
                     if (RightFootTransform != null)
                     {
@@ -400,7 +400,8 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         ankleLPosBeforMove,
         ankleRPosBeforMove,
         ankleHeightOffset);
-        transform.position -= rootHeightOffset;
+        // /2 because it's called twice between two renders
+        transform.position = skhandler.TargetBodyPositionWithHipOffset - rootHeightOffset / 2;
     }
 
     private void Update()
