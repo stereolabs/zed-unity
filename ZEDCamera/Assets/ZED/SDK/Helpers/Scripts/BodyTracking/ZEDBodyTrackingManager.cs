@@ -205,7 +205,6 @@ public class ZEDBodyTrackingManager : MonoBehaviour
             }
         }
 
-        UpdateViewCameraPosition();
     }
 
     /// <summary>
@@ -233,12 +232,5 @@ public class ZEDBodyTrackingManager : MonoBehaviour
                 normalizedLocalJointsRot, worldGlobalRotation,
                 useAvatar, mirrorMode);
         }
-
-    }
-
-    void UpdateViewCameraPosition()
-    {
-        viewCamera.transform.position = zedManager.transform.localPosition;
-        viewCamera.transform.rotation = zedManager.transform.localRotation;
     }
 }
