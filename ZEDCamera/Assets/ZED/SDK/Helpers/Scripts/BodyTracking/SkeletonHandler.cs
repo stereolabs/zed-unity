@@ -820,6 +820,8 @@ public class SkeletonHandler : ScriptableObject
     private sl.BODY_FORMAT currentBodyFormat = sl.BODY_FORMAT.BODY_38;
     public sl.BODY_FORMAT BodyFormat { get { return currentBodyFormat; } set { currentBodyFormat = value; UpdateCurrentValues(currentBodyFormat); } }
 
+    public Dictionary<HumanBodyBones, RigBone> RigBone { get => rigBone; set => rigBone = value; }
+
     #endregion
 
     /// <summary>
@@ -1232,7 +1234,7 @@ public class SkeletonHandler : ScriptableObject
         if (rigBone[HumanBodyBones.Hips].transform)
         {
             TargetBodyPositionWithHipOffset = targetBodyPosition;
-            rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(TargetBodyPositionWithHipOffset, targetBodyOrientation);
+            //rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(TargetBodyPositionWithHipOffset, targetBodyOrientation);
         }
     }
 

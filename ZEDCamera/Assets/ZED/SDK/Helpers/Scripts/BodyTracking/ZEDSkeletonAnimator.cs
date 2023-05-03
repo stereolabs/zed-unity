@@ -408,7 +408,8 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         ankleRPosBeforMove,
         ankleHeightOffset);
         // /2 because it's called twice between two renders
-        transform.position = skhandler.TargetBodyPositionWithHipOffset - rootHeightOffset / 2;
+        //transform.position = skhandler.TargetBodyPositionWithHipOffset + rootHeightOffset / 2;
+        Skhandler.RigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(Skhandler.TargetBodyPositionWithHipOffset + rootHeightOffset / 2, Skhandler.TargetBodyOrientation);
     }
 
     private void Update()
