@@ -541,9 +541,15 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         Transform tmpHMD = transform;
 
         InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
-        head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 headPosition);
-        head.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion headRotation);
-        Pose hmdTransform = new Pose(headPosition, headRotation);
+
+        Quaternion headRotation = Quaternion.identity;
+        Vector3 headPosition = Vector3.zero;
+
+        head.TryGetFeatureValue(CommonUsages.devicePosition, out headPosition);
+        head.TryGetFeatureValue(CommonUsages.deviceRotation, out headRotation);
+
+        tmpHMD.position = headPosition;
+        tmpHMD.rotation = headRotation;
 
         Quaternion r = Quaternion.identity;
         Vector3 t = Vector3.zero;

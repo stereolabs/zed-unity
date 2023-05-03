@@ -58,7 +58,6 @@ public class ZEDSupportFunctions
                 isPresent = false;
             }
         }
-
         return isPresent;
     }
 

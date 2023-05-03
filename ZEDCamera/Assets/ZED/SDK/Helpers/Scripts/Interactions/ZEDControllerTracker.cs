@@ -240,13 +240,17 @@ public class ZEDControllerTracker : MonoBehaviour
                             (zedManager != null && zedManager.IsStereoRig == true && !zedManager.transform.IsChildOf(transform)))
                         {
                             //Compensate for positional drift by measuring the distance between HMD and ZED rig root (the head's center). 
-                            InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.CenterEye);
+                            InputDevice head = InputDevices.GetDeviceAtXRNode(XRNode.Head);
                             head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 headPosition);
                             head.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion headRotation);
-                            Vector3 zedhmdposoffset = zedRigRoot.position;
-                            Quaternion zedhmsrotoffset = zedRigRoot.rotation * Quaternion.Inverse(headRotation);
+                            Vector3 zedhmdposoffset = zedRigRoot.position - headPosition;
+                            Quaternion zedhmdrotoffset = zedRigRoot.rotation * Quaternion.Inverse(headRotation);
+
                             p.translation += zedhmdposoffset;
-                            p.rotation *= zedhmsrotoffset;
+                            p.rotation *= zedhmdrotoffset;
+                            //Debug.Log(zedRigRoot.rotation.eulerAngles);
+                            //Debug.Log(headRotation.eulerAngles);
+
                         }
                         //Removes used elements from the dictionary.
                         poseData[keyindex].RemoveRange(0, currentIndex - 1);
