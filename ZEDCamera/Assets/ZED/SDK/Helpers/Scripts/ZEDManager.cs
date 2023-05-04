@@ -2185,7 +2185,10 @@ public class ZEDManager : MonoBehaviour
                 while (optimStatus != sl.ERROR_CODE.SUCCESS)
                 {
                     if (watch.Elapsed.TotalSeconds > optimTimeout_S)
+                    {
                         Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
+                        yield break;
+                    }
 
                     Debug.LogWarning($"Optimizing neural model ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds.ToString("N2")} seconds.");
                     yield return new WaitForSeconds(5.0f);
@@ -3000,7 +3003,11 @@ public class ZEDManager : MonoBehaviour
 
                 while (optimStatus != sl.ERROR_CODE.SUCCESS)
                 {
-                    if (watch.Elapsed.TotalSeconds > optimTimeout_S) Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
+                    if (watch.Elapsed.TotalSeconds > optimTimeout_S)
+                    {
+                        Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
+                        yield break;
+                    }
                     Debug.LogWarning("Optimizing AI Model  : " + sl.ZEDCamera.cvtDetection(objectDetectionModel) + "... The process can take few minutes.... " + watch.Elapsed.TotalSeconds.ToString("N2") + " sec");
                     yield return new WaitForSeconds(5.0f);
                 }
@@ -3245,7 +3252,11 @@ public class ZEDManager : MonoBehaviour
 
             while (optimStatus != sl.ERROR_CODE.SUCCESS)
             {
-                if (watch.Elapsed.TotalSeconds > optimTimeout_S) Debug.LogError("Optimization process Timeout. Please try to optimize the AI models outside of Unity, using the ZED Diagnostic tool ");
+                if (watch.Elapsed.TotalSeconds > optimTimeout_S)
+                {
+                    Debug.LogError("Optimization process Timeout. Please try to optimize the AI models outside of Unity, using the ZED Diagnostic tool ");
+                    yield break;
+                }
                 Debug.LogWarning("Optimizing AI Model  : " + sl.ZEDCamera.cvtDetection(bodyTrackingModel, bodyFormat) + "... The process can take few minutes.... " + watch.Elapsed.TotalSeconds.ToString("N2") + " sec");
                 yield return new WaitForSeconds(5.0f);
             }
