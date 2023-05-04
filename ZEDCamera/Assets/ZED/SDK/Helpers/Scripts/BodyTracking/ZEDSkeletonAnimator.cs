@@ -108,6 +108,10 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     private Vector3 posStartRay = Vector3.zero;
     private Vector3 posHitRay = Vector3.zero;
 
+    // if set to true, all animation will be handled by the MoveAnimator method of skeletonHandler in the OnAnimatorIk here.
+    // If false, the Update function will handle the animation via the Move methode of skeletonHandler.
+    private bool ikPassIsEnabled = false;
+
     #endregion
 
     private void Awake()
@@ -153,6 +157,8 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// </summary>
     void OnAnimatorIK()
     {
+        ikPassIsEnabled = true;
+
         if (skhandler)
         {
             // 1) Update target positions and rotations.
@@ -499,6 +505,13 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         {
             heightOffsetter.CurrentheightOffset = 0;
         }
+
+        if(!ikPassIsEnabled)
+        {
+            Skhandler.Move();
+            //transform.position = skhandler.TargetBodyPositionWithHipOffset;
+            //transform.rotation = skhandler.TargetBodyOrientation;
+        }
     }
 
     private void OnDrawGizmosSelected()
@@ -507,7 +520,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         Gizmos.DrawSphere(targetLerpPosL, .10f);
         Gizmos.color = colorPosStartRay;
         Gizmos.DrawCube(posStartRay, new Vector3(.25f, .05f, .25f));
-        Gizmos.color = colorPosHitRay;
-        Gizmos.DrawSphere(posHitRay, .05f);
+        //Gizmos.color = colorPosHitRay;
+        //Gizmos.DrawSphere(posHitRay, .05f);
     }
 }

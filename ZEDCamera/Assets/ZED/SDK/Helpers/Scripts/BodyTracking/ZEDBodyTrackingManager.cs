@@ -200,14 +200,21 @@ public class ZEDBodyTrackingManager : MonoBehaviour
             displayDebugSkeleton = !displayDebugSkeleton;
         }
 
+        //// Adjust the 3D avatar to the bones rotations from the SDK each frame.
+        //// These rotations are stored, and updated each time data is received from Fusion.
+        //if (useAvatar)
+        //{
+        //    foreach (var skelet in avatarControlList)
+        //    {
+        //        skelet.Value.Move();
+        //    }
+        //}
+
         // Adjust the 3D avatar to the bones rotations from the SDK each frame.
-        // These rotations are stored, and updated each time data is received from Fusion.
-        if (useAvatar)
+        // These rotations are stored, and updated each time data is received from Fusion
+        foreach (var skelet in avatarControlList)
         {
-            foreach (var skelet in avatarControlList)
-            {
-                skelet.Value.Move();
-            }
+            skelet.Value.GetAnimator().gameObject.SetActive(useAvatar);
         }
 
     }

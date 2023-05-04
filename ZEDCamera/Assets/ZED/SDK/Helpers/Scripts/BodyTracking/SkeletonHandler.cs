@@ -1234,7 +1234,7 @@ public class SkeletonHandler : ScriptableObject
         if (rigBone[HumanBodyBones.Hips].transform)
         {
             TargetBodyPositionWithHipOffset = targetBodyPosition;
-            //rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(TargetBodyPositionWithHipOffset, targetBodyOrientation);
+            rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(TargetBodyPositionWithHipOffset, targetBodyOrientation);
         }
     }
 
@@ -1296,7 +1296,7 @@ public class SkeletonHandler : ScriptableObject
         if (rigBone[HumanBodyBones.Hips].transform)
         {
             TargetBodyPositionWithHipOffset = targetBodyPosition;
-            rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(TargetBodyPositionWithHipOffset, targetBodyOrientation);
+            //rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(TargetBodyPositionWithHipOffset, targetBodyOrientation);
         }
 
         // animatorization
