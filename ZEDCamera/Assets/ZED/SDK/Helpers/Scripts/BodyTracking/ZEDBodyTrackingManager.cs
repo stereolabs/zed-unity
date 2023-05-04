@@ -195,6 +195,11 @@ public class ZEDBodyTrackingManager : MonoBehaviour
             useAvatar = !useAvatar;
         }
 
+        if (Input.GetKeyDown(KeyCode.Keypad0))
+        {
+            displayDebugSkeleton = !displayDebugSkeleton;
+        }
+
         // Adjust the 3D avatar to the bones rotations from the SDK each frame.
         // These rotations are stored, and updated each time data is received from Fusion.
         if (useAvatar)
