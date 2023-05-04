@@ -72,6 +72,13 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     public GameObject avatar;
     public Material skeletonBaseMaterial;
 
+    [Space(10)]
+    [Tooltip("Height offset applied to transform each frame.")]
+    public Vector3 manualOffset = Vector3.zero;
+
+    [Tooltip("Automatic offset adjustment: Finds an automatic offset that sets both feet above ground, and at least one foot on the ground.")]
+    public bool automaticOffset = false;
+
     [Space(20)]
     [Tooltip("Display bones and joints along 3D avatar")]
     [SerializeField]
