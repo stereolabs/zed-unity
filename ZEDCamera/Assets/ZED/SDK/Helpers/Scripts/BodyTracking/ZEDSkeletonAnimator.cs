@@ -177,6 +177,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         // blend weight
                         animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, ikPositionApplicationRatio);
                         animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, ikRotationApplicationRatio);
+                        animator.SetIKHintPosition(AvatarIKHint.RightKnee, animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).position + animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).forward * 0.15f);
                         animator.SetIKHintPositionWeight(AvatarIKHint.RightKnee, 1);
 
                         // init/prepare values
@@ -219,6 +220,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         // blend weight
                         animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, ikPositionApplicationRatio);
                         animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, ikRotationApplicationRatio);
+                        animator.SetIKHintPosition(AvatarIKHint.LeftKnee, animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position + animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).forward * 0.15f);
                         animator.SetIKHintPositionWeight(AvatarIKHint.LeftKnee, 1);
 
                         // init/prepare values
