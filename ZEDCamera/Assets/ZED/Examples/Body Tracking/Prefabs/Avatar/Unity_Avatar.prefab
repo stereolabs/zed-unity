@@ -2297,7 +2297,7 @@ MonoBehaviour:
   increaseOffsetKey: 273
   decreaseOffsetKey: 274
   toggleAutomaticOffsetKey: 111
-  offsetStep: 0.1
+  offsetStep: 0.02
 --- !u!114 &-6824248431415980064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2312,9 +2312,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableFootIK: 1
   filterSlidingMovementsOnGround: 1
-  thresholdEnterGroundedState: 0.3
-  thresholdLeaveGroundedState: 0.45
-  groundedFreeDistance: 0.15
+  thresholdEnterGroundedState: 0.1
+  thresholdLeaveGroundedState: 0.15
+  groundedFreeDistance: 0.5
   raycastDetectionLayers:
     serializedVersion: 2
     m_Bits: 65536
@@ -2328,6 +2328,6 @@ MonoBehaviour:
   toggleFilterSlidingMovementsOnGround: 102
   resetAutomaticOffset: 114
   targetLerpPosMultiplier: 1
-  colorAnkleRBeforeMove: {r: 0.9154093, g: 1, b: 0, a: 1}
+  colorPosStartRay: {r: 1, g: 1, b: 1, a: 1}
   colorAnkleRPlusHeightOffset: {r: 0.98929596, g: 0, b: 1, a: 1}
-  colorAnkleRAfterMove: {r: 0, g: 0.9230871, b: 1, a: 1}
+  colorPosHitRay: {r: 0, g: 0, b: 0, a: 1}
