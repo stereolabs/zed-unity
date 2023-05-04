@@ -2438,7 +2438,9 @@ public class ZEDManager : MonoBehaviour
                     NeedNewFrameGrab = false;
                 }
                 else if (!pauseSVOReading)
-                    ZEDGrabError = zedCamera.Grab(ref runtimeParameters);
+                {
+                    ZEDGrabError = zedCamera.Grab(ref runtimeParameters);                
+                }
 
                 currentFrame = zedCamera.GetSVOPosition();
             }
