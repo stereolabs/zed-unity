@@ -1054,6 +1054,7 @@ public class SkeletonHandler : ScriptableObject
         for (int i = 0; i < bones.Length; i++)
         {
             GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            cylinder.layer = LayerMask.NameToLayer("tagInvisibleToZED");
             cylinder.GetComponent<Renderer>().material = skBaseMat;
             skBaseMat.color = color;
             cylinder.transform.parent = skeleton.transform;
@@ -1062,6 +1063,7 @@ public class SkeletonHandler : ScriptableObject
         for (int j = 0; j < spheres.Length; j++)
         {
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.layer = LayerMask.NameToLayer("tagInvisibleToZED");
             sphere.GetComponent<Renderer>().material = skBaseMat;
             skBaseMat.color = color;
             sphere.transform.localScale = (BodyFormat == sl.BODY_FORMAT.BODY_70 && j >= JointType_70_LEFT_HAND_THUMB_1) 
@@ -1071,6 +1073,8 @@ public class SkeletonHandler : ScriptableObject
             sphere.name = currentSpheresList[j].ToString();
             spheres[j] = sphere;
         }
+
+        skeleton.layer = LayerMask.NameToLayer("tagInvisibleToZED");
     }
 
     /// <summary>
