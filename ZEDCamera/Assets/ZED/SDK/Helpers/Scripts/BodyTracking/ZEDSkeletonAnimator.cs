@@ -345,7 +345,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     // computes distance between the projections of vec1 and vec2 on an horizontal plane
     private float HorizontalDist(Vector3 vec1, Vector3 vec2)
     {
-        Debug.Log("GroundedL:" + groundedL + " / Horizontal dist: " + Vector2.Distance(new Vector2(vec1.x, vec1.z), new Vector2(vec2.x, vec2.z)));
+        // Debug.Log("GroundedL:" + groundedL + " / Horizontal dist: " + Vector2.Distance(new Vector2(vec1.x, vec1.z), new Vector2(vec2.x, vec2.z)));
         return Vector2.Distance(new Vector2(vec1.x, vec1.z), new Vector2(vec2.x, vec2.z));
     }
 
@@ -372,7 +372,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         try
         {
             targetLerpPosL = Skhandler.currentJoints[Skhandler.currentLeftAnkleIndex];
-            targetLerpPosL += rootHeightOffset;
+            //targetLerpPosL += rootHeightOffset;
         }
         catch (Exception e)
         {
@@ -392,7 +392,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         try
         {
             targetLerpPosR = Skhandler.currentJoints[skhandler.currentRightAnkleIndex];
-            targetLerpPosR += rootHeightOffset;
+            //targetLerpPosR += rootHeightOffset;
         }
         catch (Exception e)
         {
@@ -462,9 +462,9 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// Used for smoothing the transition between grounded and not.
     /// </summary>
     /// <param name="d">Distance between sole and floor (not ankle and floor).</param>
-    /// <param name="tMin">Distance above this value implies no application of IK.</param>
-    /// <param name="tMax">Distance under this value implies full (depending on setting) application of IK.</param>
-    /// <param name="rMax">Option to set the max ratio to different of 1.</param>
+    /// <param name="tMin">Threshold min: Distance above this value implies no application of IK.</param>
+    /// <param name="tMax">Threshold max: Distance under this value implies full (depending on setting) application of IK.</param>
+    /// <param name="rMax">Max ratio (default 1).</param>
     /// <returns></returns>
     private float GetLinearIKRatio(float d, float tMin, float tMax, float rMax = 1)
     {
@@ -537,7 +537,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         Gizmos.DrawSphere(targetLerpPosL, .10f);
         Gizmos.color = colorPosStartRay;
         Gizmos.DrawCube(posStartRay, new Vector3(.25f, .05f, .25f));
-        //Gizmos.color = colorPosHitRay;
-        //Gizmos.DrawSphere(posHitRay, .05f);
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawSphere(posHitRay, .1f);
     }
 }
