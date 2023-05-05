@@ -2314,7 +2314,7 @@ MonoBehaviour:
   filterSlidingMovementsOnGround: 1
   thresholdEnterGroundedState: 0.1
   thresholdLeaveGroundedState: 0.15
-  groundedFreeDistance: 0.15
+  groundedFreeDistance: 0.1
   raycastDetectionLayers:
     serializedVersion: 2
     m_Bits: 65536

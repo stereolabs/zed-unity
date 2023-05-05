@@ -61,17 +61,15 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     private bool groundedL = false;
     private bool groundedR = false;
 
-    private Vector3 currentPosFootL;
-    private Vector3 currentPosFootR;
-
-    private Vector3 normalL = Vector3.up;
-    private Vector3 normalR = Vector3.up;
-
-    private Vector3 currentGroundedPosL = Vector3.zero;
-    private Vector3 currentGroundedPosR = Vector3.zero;
-
     private Vector3 rootHeightOffset = Vector3.zero;
     public Vector3 RootHeightOffset { get => rootHeightOffset; set => rootHeightOffset = value; }
+
+
+    // if set to true, all animation will be handled by the MoveAnimator method of skeletonHandler in the OnAnimatorIk here.
+    // If false, the Update function will handle the animation via the Move methode of skeletonHandler. Set
+    // Set to true at the beginning of the OnAnimatorIK function.
+    private bool ikPassIsEnabled = false;
+    private bool raisePoseWasUpdatedIKFlag = false;
 
     /**
      * LERP DATA FOR IK TARGETS
@@ -80,17 +78,13 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     private Vector3 targetLerpPosL;
     // necessary because Move() will reset it
     private Vector3 curEffectorPosL;
-    private float curTValL;
 
     private Vector3 startLerpPosR;
     private Vector3 targetLerpPosR;
     // necessary because Move() will reset it
     private Vector3 curEffectorPosR;
-    private float curTValR;
 
     private float totalLerpTime;
-    private float curLerpTimeL;
-    private float curLerpTimeR;
 
     private Vector3 ankleRPosBeforMove = Vector3.zero;
     private Vector3 ankleLPosBeforMove = Vector3.zero;
@@ -106,12 +100,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     public Color colorPosHitRay = Color.black;
 
     private Vector3 posStartRay = Vector3.zero;
-    private Vector3 posHitRay = Vector3.zero;
-
-    // if set to true, all animation will be handled by the MoveAnimator method of skeletonHandler in the OnAnimatorIk here.
-    // If false, the Update function will handle the animation via the Move methode of skeletonHandler.
-    private bool ikPassIsEnabled = false;
-    private bool raisePoseWasUpdatedIKFlag = false;
 
     #endregion
 
@@ -128,8 +116,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
-        currentGroundedPosL = LeftFootTransform.position;
-        currentGroundedPosR = RightFootTransform.position;
     }
 
     /// <summary>
@@ -137,18 +123,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// </summary>
     void ApplyAllRigRotationsOnAnimator()
     {
-        //Quaternion leZeroEuler = Quaternion.Euler(0f, 0f, 0f);
-
-        //foreach (var bone in skhandler.RigBoneTarget)
-        //{
-        //    // rigbonetarget are in LOCAL space. It may work ok with O-ed only because it's 0-ed... ??
-        //    // essayer de multiplier par l'inverse ??
-
-        //    Quaternion leDiff = leZeroEuler * Quaternion.Inverse(skhandler.DefaultRotations.GetValueOrDefault(bone.Key));
-        //    //animator.SetBoneLocalRotation(bone.Key, leDiff * bone.Value );
-        //    animator.SetBoneLocalRotation(bone.Key, /*bone.Value */ skhandler.DefaultRotations.GetValueOrDefault(bone.Key));
-        //}
-
         skhandler.MoveAnimator();
     }
 
@@ -165,7 +139,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             // 1) Update target positions and rotations.
             ApplyAllRigRotationsOnAnimator();
 
-            // 2) Move actor position, effectively moving root position. (root relative position is (0,0,0) in the prefab)
+            // 2) Move gameobject position, effectively moving root position. (root relative position is (0,0,0) in the prefab)
             // This way, we have root motion and can easily apply effects following the main gameobject's transform.
             transform.position = skhandler.TargetBodyPositionWithHipOffset;
             transform.rotation = skhandler.TargetBodyOrientation;
@@ -173,23 +147,19 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             // 3) Manage Foot IK
             if (animator)
             {
-                //if the IK is active, set the position and rotation directly to the goal.
                 if (enableFootIK)
                 {
                     Vector3 ankleHeightVector = new Vector3 (0, ankleHeightOffset, 0);
 
+                    // If the retrieve bodies was called, the IK effectors should be updated
                     if(raisePoseWasUpdatedIKFlag)
                     {
                         PoseWasUpdatedIK();
                         raisePoseWasUpdatedIKFlag = false;
                     }
 
+                    // Apply height offset to avatar.
                     ManageHeightOffset();
-
-                    /// -----------------------------------------------------
-                    /// -----------------------------------------------------
-                    /// -----------------------------------------------------
-                    /// -----------------------------------------------------
 
                     // Set the right foot target position and rotation, if one has been assigned
                     if (RightFootTransform != null)
@@ -218,9 +188,8 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         if (successHit && dist < (thresholdEnterGroundedState))
                         {
                             effectorTargetPos = hit.point + ankleHeightVector;
-                            normalR = hit.normal;
                             groundedR = true;
-                            Vector3 forward = Vector3.ProjectOnPlane(animator.GetBoneTransform(HumanBodyBones.RightFoot).forward, hit.normal);
+                            Vector3 forward = Vector3.ProjectOnPlane(animator.GetBoneTransform(HumanBodyBones.RightToes).position - animator.GetBoneTransform(HumanBodyBones.RightFoot).position, Vector3.up);
                             animator.SetIKRotation(AvatarIKGoal.RightFoot, Quaternion.LookRotation(forward, hit.normal));
                         }
                         // move effector to floor and apply ik depending on distance to floor.
@@ -230,8 +199,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         {
                             effectorTargetPos = hit.point + ankleHeightVector;
                             groundedR = dist < (thresholdLeaveGroundedState);
-                            normalR = animator.GetBoneTransform(HumanBodyBones.RightFoot).up;
-                            Vector3 forward = Vector3.ProjectOnPlane(animator.GetBoneTransform(HumanBodyBones.RightFoot).forward, hit.normal);
+                            Vector3 forward = Vector3.ProjectOnPlane(animator.GetBoneTransform(HumanBodyBones.RightToes).position - animator.GetBoneTransform(HumanBodyBones.RightFoot).position, Vector3.up);
                             animator.SetIKRotation(AvatarIKGoal.RightFoot, Quaternion.LookRotation(forward, hit.normal));
                             animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, GetLinearIKRatio(dist, thresholdLeaveGroundedState * 2, thresholdLeaveGroundedState, ikRotationApplicationRatio));
                             animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, GetLinearIKRatio(dist, thresholdLeaveGroundedState * 2, thresholdLeaveGroundedState, ikPositionApplicationRatio));
@@ -240,8 +208,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         else
                         {
                             groundedR = false;
-                            normalR = animator.GetBoneTransform(HumanBodyBones.RightFoot).up;
-                            Vector3 forward = Vector3.ProjectOnPlane(animator.GetBoneTransform(HumanBodyBones.RightFoot).forward, Vector3.up);
+                            Vector3 forward = Vector3.ProjectOnPlane(animator.GetBoneTransform(HumanBodyBones.RightToes).position - animator.GetBoneTransform(HumanBodyBones.RightFoot).position, Vector3.up);
                             animator.SetIKRotation(AvatarIKGoal.RightFoot, Quaternion.LookRotation(forward, Vector3.up));
                             animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 0);
                             animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 0);
@@ -253,11 +220,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         animator.SetIKPosition(AvatarIKGoal.RightFoot, effectorTargetPos);
                     }
 
-                    /// -----------------------------------------------------
-                    /// -----------------------------------------------------
-                    /// -----------------------------------------------------
-                    /// -----------------------------------------------------
-
                     // Set the left foot target position and rotation, if one has been assigned
                     if (LeftFootTransform != null)
                     {
@@ -267,19 +229,12 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         animator.SetIKHintPosition(AvatarIKHint.LeftKnee, animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).position + animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg).forward * 0.15f);
                         animator.SetIKHintPositionWeight(AvatarIKHint.LeftKnee, 1);
 
-                        // init/prepare values
-                        //currentPosFootL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
-
                         // move foot target
                         Vector3 effectorTargetPos;
                         effectorTargetPos = targetLerpPosL;
-                        //effectorTargetPos = AccumulateLerpVec3(startLerpPosL, targetLerpPosL, ref curTValL, ref curLerpTimeL);
 
                         // start of the raycast: high above the foot.
                         posStartRay = effectorTargetPos + (Vector3.up * 5f);
-                        
-                        // default position for where ray hits. For debug/gizmo purpose only.
-                        //posHitRay = posStartRay + (Vector3.down * 2 * (groundedL ? thresholdLeaveGroundedState : thresholdEnterGroundedState));
 
                         // Fire raycast on 10m to find if there is any ground, to help to have a smooth transition between floored/not floored
                         Ray ray = new Ray(posStartRay, Vector3.down);
@@ -291,14 +246,9 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         // move effector to floor and fully apply ik
                         if (successHit && dist < (thresholdEnterGroundedState))
                         {
-                            //posHitRay = hit.point;
-                            //colorPosHitRay = Color.white;
                             effectorTargetPos = hit.point + ankleHeightVector;
-                            //effectorTargetPos = targetLerpPosL;
-                            //effectorTargetPos = CustomInterp(startLerpPosL, hit.point + new Vector3(0, ankleHeightOffset, 0), ref curLerpTimeL);
-                            normalL = hit.normal;
                             groundedL = true;
-                            Vector3 forward = Vector3.ProjectOnPlane(animator.GetBoneTransform(HumanBodyBones.LeftFoot).forward, hit.normal);
+                            Vector3 forward = Vector3.ProjectOnPlane(animator.GetBoneTransform(HumanBodyBones.LeftToes).position - animator.GetBoneTransform(HumanBodyBones.LeftFoot).position, Vector3.up);
                             animator.SetIKRotation(AvatarIKGoal.LeftFoot, Quaternion.LookRotation(forward, hit.normal));
                         }
                         // move effector to floor and apply ik depending on distance to floor.
@@ -306,14 +256,9 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         // Maybe a test on groundedL is needed, depending on visual results.
                         else if (successHit)
                         {
-                            //posHitRay = hit.point;
-                            //colorPosHitRay = Color.black;
                             effectorTargetPos = hit.point + ankleHeightVector;
-                            //effectorTargetPos = targetLerpPosL;
-                            //effectorTargetPos = CustomInterp(startLerpPosL, hit.point + new Vector3(0, ankleHeightOffset, 0), ref curLerpTimeL);
                             groundedL = dist < (thresholdLeaveGroundedState);
-                            normalL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).up;
-                            Vector3 forward = Vector3.ProjectOnPlane(animator.GetBoneTransform(HumanBodyBones.LeftFoot).forward, hit.normal);
+                            Vector3 forward = Vector3.ProjectOnPlane(animator.GetBoneTransform(HumanBodyBones.LeftToes).position - animator.GetBoneTransform(HumanBodyBones.LeftFoot).position, Vector3.up);
                             animator.SetIKRotation(AvatarIKGoal.LeftFoot, Quaternion.LookRotation(forward, hit.normal));
                             animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, GetLinearIKRatio(dist, thresholdLeaveGroundedState * 2, thresholdLeaveGroundedState, ikRotationApplicationRatio));
                             animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, GetLinearIKRatio(dist, thresholdLeaveGroundedState * 2, thresholdLeaveGroundedState, ikPositionApplicationRatio));
@@ -321,10 +266,8 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         }
                         else
                         {
-                            //colorPosHitRay = Color.black;
                             groundedL = false;
-                            normalL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).up;
-                            Vector3 forward = Vector3.ProjectOnPlane(animator.GetBoneTransform(HumanBodyBones.LeftFoot).forward, Vector3.up);
+                            Vector3 forward = Vector3.ProjectOnPlane(animator.GetBoneTransform(HumanBodyBones.LeftToes).position - animator.GetBoneTransform(HumanBodyBones.LeftFoot).position, Vector3.up);
                             animator.SetIKRotation(AvatarIKGoal.LeftFoot, Quaternion.LookRotation(forward, Vector3.up));
                             animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, 0);
                             animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 0);
@@ -334,7 +277,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
                         // set IK position and rotation
                         animator.SetIKPosition(AvatarIKGoal.LeftFoot, effectorTargetPos);
-
                     }
                 }
 
@@ -352,10 +294,11 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         }
     }
 
-    // computes distance between the projections of vec1 and vec2 on an horizontal plane
+    /// <summary>
+    /// Computes and returns distance between the projections of <paramref name="vec1"/> and <paramref name="vec2"/> on an horizontal plane
+    /// </summary>
     private float HorizontalDist(Vector3 vec1, Vector3 vec2)
     {
-        // Debug.Log("GroundedL:" + groundedL + " / Horizontal dist: " + Vector2.Distance(new Vector2(vec1.x, vec1.z), new Vector2(vec2.x, vec2.z)));
         return Vector2.Distance(new Vector2(vec1.x, vec1.z), new Vector2(vec2.x, vec2.z));
     }
 
@@ -382,7 +325,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         try
         {
             targetLerpPosL = Skhandler.currentJoints[Skhandler.currentLeftAnkleIndex];
-            //targetLerpPosL += rootHeightOffset;
         }
         catch (Exception e)
         {
@@ -394,7 +336,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         try
         {
             targetLerpPosR = Skhandler.currentJoints[skhandler.currentRightAnkleIndex];
-            //targetLerpPosR += rootHeightOffset;
         }
         catch (Exception e)
         {
@@ -423,17 +364,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                 ? new Vector3(startLerpPosR.x, targetLerpPosR.y, startLerpPosR.z)
                 : targetLerpPosR;
         }
-
-        // posHitRay = new Vector3(targetLerpPosL.x, targetLerpPosL.y, targetLerpPosL.z) - new Vector3(0,ankleHeightOffset,0);
-
-        // define totallerptime = 1/ODFrequency
-        // reset curlerptime
-        // curLerpTimeL = 0;
-        curLerpTimeR = 0;
-        curTValL = 0;
-        curTValR = 0;
-        totalLerpTime = 1 / bodyTrackingFrequency;
-        totalLerpTime *= smoothingFactor;
     }
 
     private Vector3 AccumulateLerpVec3(Vector3 startPos, Vector3 targetPos, ref float curTVal, ref float currentLerpTime)
@@ -476,7 +406,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// <param name="tMin">Threshold min: Distance above this value implies no application of IK.</param>
     /// <param name="tMax">Threshold max: Distance under this value implies full (depending on setting) application of IK.</param>
     /// <param name="rMax">Max ratio (default 1).</param>
-    /// <returns></returns>
+    /// <returns>Ratio of IK application between 0 and rmax, depending on d, tmin and tmax./returns>
     private float GetLinearIKRatio(float d, float tMin, float tMax, float rMax = 1)
     {
         return Mathf.Min(1,Mathf.Max(0, rMax * (tMin - d) / (tMin - tMax) ));
@@ -508,11 +438,8 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         ankleLPosBeforMove,
         ankleRPosBeforMove,
         ankleHeightOffset);
-        // /2 because it's called twice between two renders
-        //transform.position = skhandler.TargetBodyPositionWithHipOffset + rootHeightOffset / 2;
         transform.position = Skhandler.TargetBodyPositionWithHipOffset + rootHeightOffset / 2;
         transform.rotation = Skhandler.TargetBodyOrientation;
-        //Skhandler.RigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(Skhandler.TargetBodyPositionWithHipOffset + rootHeightOffset / 2, Skhandler.TargetBodyOrientation);
     }
 
     private void Update()
@@ -534,21 +461,10 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             heightOffsetter.CurrentheightOffset = 0;
         }
 
+        // manage animation if no ik pass or animator
         if(!ikPassIsEnabled)
         {
             Skhandler.Move();
-            //transform.position = skhandler.TargetBodyPositionWithHipOffset;
-            //transform.rotation = skhandler.TargetBodyOrientation;
         }
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = groundedL ? Color.red : Color.green;
-        Gizmos.DrawSphere(targetLerpPosL, .10f);
-        Gizmos.color = colorPosStartRay;
-        Gizmos.DrawCube(posStartRay, new Vector3(.25f, .05f, .25f));
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawSphere(posHitRay, .1f);
     }
 }
