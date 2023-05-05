@@ -10,10 +10,12 @@ public class VirtualCamController : MonoBehaviour
     public ZEDManager zedManager = null;
 
     private bool followRealCam = true;
-    private Quaternion currentRotation = Quaternion.identity;
-    private Vector3 currentPosition = Vector3.zero;
+    public Quaternion currentRotation = Quaternion.identity;
+    public Vector3 currentPosition = Vector3.zero;
     private float stepTranslation = 0.05f;
     private float stepRotation = 5f;
+
+    private bool initialized = false;
 
     [SerializeField]
     private KeyCode toLeft = KeyCode.Keypad4;
@@ -39,8 +41,13 @@ public class VirtualCamController : MonoBehaviour
     {
         transform.position = zedManager.transform.localPosition;
         transform.rotation = zedManager.transform.localRotation;
-        currentPosition = zedManager.transform.position;
-        currentRotation = zedManager.transform.rotation;
+    }
+
+    private void ResetCurrentCam()
+    {
+        initialized = true;
+        currentPosition = zedManager.transform.localPosition;
+        currentRotation = zedManager.transform.localRotation;
     }
 
     void ManageInput()
@@ -58,7 +65,11 @@ public class VirtualCamController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(toggleFollow)) { followRealCam = !followRealCam; }
+        if (Input.GetKeyDown(toggleFollow)) 
+        { 
+            if (!initialized) { ResetCurrentCam(); } 
+            followRealCam = !followRealCam; 
+        }
 
         if(followRealCam)
         {
