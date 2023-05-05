@@ -1077,7 +1077,7 @@ public class SkeletonHandler : ScriptableObject
     /// Updates SDK skeleton display.
     /// </summary>
     /// <param name="offsetSDK">In case the "displaySDKSkeleton" option is enabled in the ZEDSkeletonTrackingManager, the skeleton will be displayed with this offset.</param>
-    void UpdateSkeleton(Vector3 offsetSDK)
+    void UpdateSkeleton(Vector3 offsetSDK, bool mirrorMode = false)
     {
         float width = 0.025f;
         for (int j = 0; j < spheres.Length; j++)
@@ -1089,7 +1089,7 @@ public class SkeletonHandler : ScriptableObject
             }
             else
             {
-                spheres[j].transform.position = currentJoints[currentSpheresList[j]] + offsetSDK;
+                spheres[j].transform.position = mirrorMode ? (currentJoints[currentSpheresList[j]] + offsetSDK).mirror_x() : currentJoints[currentSpheresList[j]] + offsetSDK;
                 spheres[j].SetActive(true);
             }
         }
@@ -1144,12 +1144,12 @@ public class SkeletonHandler : ScriptableObject
 
             if (ZEDBodyTrackingManager.DisplayDebugSkeleton)
             {
-                UpdateSkeleton(ZEDBodyTrackingManager.OffsetDebugSkeleton);
+                UpdateSkeleton(ZEDBodyTrackingManager.OffsetDebugSkeleton, _mirrorOnYAxis);
             }
         }
         else
         {
-            UpdateSkeleton(Vector3.zero);
+            UpdateSkeleton(Vector3.zero, _mirrorOnYAxis);
         }
 
         zedSkeletonAnimator.RaisePoseWasUpdatedIKFlag();
