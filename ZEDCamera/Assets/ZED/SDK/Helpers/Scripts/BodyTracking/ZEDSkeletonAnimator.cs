@@ -379,14 +379,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             Debug.LogError(e.Message);
         }
 
-        if (filterSlidingMovementsOnGround)
-        {
-            Debug.Log("GroundedL:" + groundedL);
-            targetLerpPosL = (groundedL && HorizontalDist(startLerpPosL, targetLerpPosL) < groundedFreeDistance)
-                ? new Vector3(startLerpPosL.x, targetLerpPosL.y, startLerpPosL.z)
-                : targetLerpPosL;
-        }
-
         startLerpPosR = curEffectorPosR;
 
         try
@@ -399,13 +391,6 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             Debug.LogError(e.Message);
         }
 
-        //if (filterSlidingMovementsOnGround)
-        //{
-        //    targetLerpPosR = (groundedR && HorizontalDist(startLerpPosR, targetLerpPosR) < groundedFreeDistance)
-        //        ? new Vector3(startLerpPosR.x, targetLerpPosR.y, startLerpPosR.z)
-        //        : targetLerpPosR;
-        //}
-
         if (bodyTrackingManager && bodyTrackingManager.mirrorMode)
         {
             Vector3 vL = targetLerpPosL;
@@ -414,6 +399,22 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             targetLerpPosL = vR.mirror_x();
             targetLerpPosR = vL.mirror_x();
         }
+
+        if (filterSlidingMovementsOnGround)
+        {
+            targetLerpPosL = (groundedL && HorizontalDist(startLerpPosL, targetLerpPosL) < groundedFreeDistance)
+                ? new Vector3(startLerpPosL.x, targetLerpPosL.y, startLerpPosL.z)
+                : targetLerpPosL;
+        }
+
+        if (filterSlidingMovementsOnGround)
+        {
+            targetLerpPosR = (groundedR && HorizontalDist(startLerpPosR, targetLerpPosR) < groundedFreeDistance)
+                ? new Vector3(startLerpPosR.x, targetLerpPosR.y, startLerpPosR.z)
+                : targetLerpPosR;
+        }
+
+        // posHitRay = new Vector3(targetLerpPosL.x, targetLerpPosL.y, targetLerpPosL.z) - new Vector3(0,ankleHeightOffset,0);
 
         // define totallerptime = 1/ODFrequency
         // reset curlerptime
