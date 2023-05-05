@@ -111,6 +111,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     // if set to true, all animation will be handled by the MoveAnimator method of skeletonHandler in the OnAnimatorIk here.
     // If false, the Update function will handle the animation via the Move methode of skeletonHandler.
     private bool ikPassIsEnabled = false;
+    private bool raisePoseWasUpdatedIKFlag = false;
 
     #endregion
 
@@ -175,6 +176,14 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                 //if the IK is active, set the position and rotation directly to the goal.
                 if (enableFootIK)
                 {
+                    Vector3 ankleHeightVector = new Vector3 (0, ankleHeightOffset, 0);
+
+                    if(raisePoseWasUpdatedIKFlag)
+                    {
+                        PoseWasUpdatedIK();
+                        raisePoseWasUpdatedIKFlag = false;
+                    }
+
                     ManageHeightOffset();
 
                     // Set the right foot target position and rotation, if one has been assigned
@@ -341,11 +350,19 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     }
 
     /// <summary>
+    /// Sets raisePoseWasUpdatedIKFlag to true, so that the PoseWasUpdatedIK method will be called after the animation process in the IK pass.
+    /// </summary>
+    public void RaisePoseWasUpdatedIKFlag()
+    {
+        raisePoseWasUpdatedIKFlag = true;
+    }
+
+    /// <summary>
     /// Should be called each time the skeleton data is changed in the handler
     /// prepares new lerp data.
     /// Checks distance to filter feet parasite movements on floor.
     /// </summary>
-    public void PoseWasUpdatedIK()
+    private void PoseWasUpdatedIK()
     {
         float confAnkleLeft = skhandler.currentConfidences[Skhandler.currentLeftAnkleIndex];
         float confAnkleRight = skhandler.currentConfidences[Skhandler.currentRightAnkleIndex];

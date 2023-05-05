@@ -1152,7 +1152,7 @@ public class SkeletonHandler : ScriptableObject
             UpdateSkeleton(Vector3.zero);
         }
 
-        zedSkeletonAnimator.PoseWasUpdatedIK();
+        zedSkeletonAnimator.RaisePoseWasUpdatedIKFlag();
     }
 
     /// <summary>
