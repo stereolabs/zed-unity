@@ -6,15 +6,9 @@ public class HeightOffsetter : MonoBehaviour
 {
     #region vars
 
-    private ZEDSkeletonAnimator zedSkeletonAnimator = null;
-
     [Header("Main settings")]
 
-    [Tooltip("Height offset applied to transform each frame.")]
-    public Vector3 manualOffset = Vector3.zero;
-
-    [Tooltip("Automatic offset adjustment: Finds an automatic offset that sets both feet above ground, and at least one foot on the ground.")]
-    public bool automaticOffset = false;
+    ZEDBodyTrackingManager bodyTrackingManager;
 
     private float currentheightOffset = 0f;
 
@@ -44,9 +38,18 @@ public class HeightOffsetter : MonoBehaviour
 
     public float CurrentheightOffset { get => currentheightOffset; set => currentheightOffset = value; }
 
+
+    private void Awake()
+    {
+        bodyTrackingManager = FindObjectOfType<ZEDBodyTrackingManager>();
+        if (bodyTrackingManager == null)
+        {
+            Debug.LogError("ZEDManagerIK: No body tracking manager loaded!");
+        }
+    }
+
     private void Start()
     {
-        zedSkeletonAnimator = GetComponent<ZEDSkeletonAnimator>();
     }
 
     /// <summary>
@@ -62,7 +65,7 @@ public class HeightOffsetter : MonoBehaviour
     {
         Vector3 offsetToApply = new Vector3(0, currentheightOffset, 0);
 
-        if (automaticOffset)
+        if (bodyTrackingManager.automaticOffset)
         {
             // if both feet are visible/detected, attempt to correct the height of the skeleton's root
             if (!float.IsNaN(confFootL) && confFootL > 0 && !float.IsNaN(confFootR) && confFootR > 0)
@@ -112,18 +115,10 @@ public class HeightOffsetter : MonoBehaviour
         }
         else
         {
-            offsetToApply = manualOffset;
+            offsetToApply = bodyTrackingManager.manualOffset;
         }
 
         return offsetToApply;
-    }
-
-    /// <summary>
-    /// Sets the manual offset as height offset.
-    /// </summary>
-    public void ComputeRootHeightOffset()
-    {
-        zedSkeletonAnimator.RootHeightOffset = manualOffset;
     }
 
     /// <summary>
@@ -150,16 +145,16 @@ public class HeightOffsetter : MonoBehaviour
     {
         if (Input.GetKeyDown(increaseOffsetKey))
         {
-            manualOffset.y += offsetStep;
+            bodyTrackingManager.manualOffset.y += offsetStep;
         }
         else if (Input.GetKeyDown(decreaseOffsetKey))
         {
-            manualOffset.y -= offsetStep;
+            bodyTrackingManager.manualOffset.y -= offsetStep;
         }
 
         if (Input.GetKeyDown(toggleAutomaticOffsetKey))
         {
-            automaticOffset = !automaticOffset;
+            bodyTrackingManager.automaticOffset = !bodyTrackingManager.automaticOffset;
         }
     }
 }

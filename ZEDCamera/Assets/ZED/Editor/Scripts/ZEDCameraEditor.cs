@@ -490,6 +490,7 @@ public class ZEDCameraEditor : Editor
                 if (GUILayout.Button(pauselabel))
                 {
                     pauseSVOProperty.boolValue = !pauseSVOProperty.boolValue;
+                    manager.zedCamera.SetSVOPosition(manager.CurrentFrame);
                 }
                 EditorGUILayout.EndHorizontal();
                 GUI.enabled = true;
