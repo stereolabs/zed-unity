@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using UnityEditor;
+using System.Collections;
 
 #if ZED_URP
 using UnityEngine.Rendering.Universal;
@@ -22,9 +23,8 @@ public class ZEDBodyTrackingManager : MonoBehaviour
         "If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DSkeletonVisualizer commponents in the scene. ")]
     public ZEDManager zedManager;
 
-    [Tooltip("The camera view to display ZED images")]
-    public Camera viewCamera;
-
+    [Tooltip("Canvas on which the ZED's video feed is displayed. Used to mirror the video feed in mirror mode.")]
+    public GameObject cameraFrame;
 
 	/// <summary>
 	/// Activate skeleton tracking when play mode is on and ZED ready
@@ -104,6 +104,19 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
     #endregion
 
+    private void Awake()
+    {
+        if(cameraFrame == null)
+        {
+            Debug.LogError("ZEDBodyTrackingManager: Set Camera Frame. It is located under ZED_Rig_X -> Camera_X -> Frame.");
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+         Application.Quit();
+#endif
+        }
+    }
+
     /// <summary>
     /// Start this instance.
     /// </summary>
@@ -134,6 +147,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
     private void OnZEDReady()
     {
+        StartCoroutine(TimerToMirrorCanvas());
         if (startBodyTrackingAutomatically && !zedManager.IsBodyTrackingRunning)
         {
             zedManager.StartBodyTracking();
@@ -213,6 +227,22 @@ public class ZEDBodyTrackingManager : MonoBehaviour
             skelet.Value.GetAnimator().gameObject.SetActive(useAvatar);
         }
 
+    }
+
+    IEnumerator TimerToMirrorCanvas()
+    {
+        yield return new WaitForSeconds(1.0f);
+        MirrorCanvas(mirrorMode);
+    }
+
+    public void MirrorCanvas(bool mirror)
+    {
+        float newX = Mathf.Abs(cameraFrame.transform.localScale.x);
+        newX *= mirror? -1.0f : 1.0f;
+        cameraFrame.transform.localScale = new Vector3(
+            newX,
+            cameraFrame.transform.localScale.y,
+            cameraFrame.transform.localScale.z);   
     }
 
     /// <summary>
