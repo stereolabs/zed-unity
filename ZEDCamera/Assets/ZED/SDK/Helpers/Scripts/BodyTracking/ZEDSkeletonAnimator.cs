@@ -342,14 +342,15 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             Debug.LogError(e.Message);
         }
 
-        if (bodyTrackingManager && bodyTrackingManager.mirrorMode)
-        {
-            Vector3 vL = targetLerpPosL;
-            Vector3 vR = targetLerpPosR;
+        // mirroring now done in the animation
+        //if (bodyTrackingManager && bodyTrackingManager.mirrorMode)
+        //{
+        //    Vector3 vL = targetSDKPosL;
+        //    Vector3 vR = targetSDKPosR;
 
-            targetLerpPosL = vR.mirror_x();
-            targetLerpPosR = vL.mirror_x();
-        }
+        //    targetSDKPosL = vR.mirror_x();
+        //    targetSDKPosR = vL.mirror_x();
+        //}
 
         if (filterSlidingMovementsOnGround)
         {
@@ -432,13 +433,13 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         float confAnkleRight = skhandler.currentConfidences[Skhandler.currentRightAnkleIndex];
 
         //// height offset management
-        rootHeightOffset = heightOffsetter.ComputeRootHeightOffsetXFrames(
+        rootHeightOffset = heightOffsetter.ComputeRootHeightOffsetXFramesV2(
         confAnkleLeft,
         confAnkleRight,
         ankleLPosBeforMove,
         ankleRPosBeforMove,
         ankleHeightOffset);
-        transform.position = Skhandler.TargetBodyPositionWithHipOffset + rootHeightOffset / 2;
+        transform.position = Skhandler.TargetBodyPositionWithHipOffset + rootHeightOffset;
         transform.rotation = Skhandler.TargetBodyOrientation;
     }
 

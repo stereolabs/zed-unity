@@ -9,10 +9,12 @@ public class VirtualCamController : MonoBehaviour
     /// </summary>
     public ZEDManager zedManager = null;
 
-    private bool followRealCam = true;
-    public Quaternion currentRotation = Quaternion.identity;
-    public Vector3 currentPosition = Vector3.zero;
-    private float stepTranslation = 0.05f;
+    public bool followRealCam = true;
+    public bool enableControls = true;
+
+    private Quaternion currentRotation = Quaternion.identity;
+    private Vector3 currentPosition = Vector3.zero;
+    private float stepTranslation = 0.1f;
     private float stepRotation = 5f;
 
     private bool initialized = false;
@@ -39,8 +41,17 @@ public class VirtualCamController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if(followRealCam)
+    {
         transform.position = zedManager.transform.localPosition;
         transform.rotation = zedManager.transform.localRotation;
+    }
+        else
+        {
+            currentPosition = transform.position;
+            currentRotation = transform.rotation;
+            initialized = true;
+        }
     }
 
     private void ResetCurrentCam()
@@ -52,6 +63,8 @@ public class VirtualCamController : MonoBehaviour
 
     void ManageInput()
     {
+        if(enableControls)
+    {
         if (Input.GetKeyDown(toLeft)) { currentPosition += new Vector3(-stepTranslation, 0, 0); }
         if (Input.GetKeyDown(toRight)) { currentPosition += new Vector3(stepTranslation, 0, 0); }
         if (Input.GetKeyDown(down)) { currentPosition += new Vector3(0, -stepTranslation, 0); }
@@ -60,6 +73,7 @@ public class VirtualCamController : MonoBehaviour
         if (Input.GetKeyDown(forward)) { currentPosition += new Vector3(0, 0, stepTranslation); }
         if (Input.GetKeyDown(rolldown)) { currentRotation *= Quaternion.Euler(Vector3.right * stepRotation); }
         if (Input.GetKeyDown(rollup)) { currentRotation *= Quaternion.Euler(Vector3.right * -stepRotation); }
+    }
     }
 
     // Update is called once per frame
