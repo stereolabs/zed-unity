@@ -422,6 +422,10 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         {
             ManageHeightOffset();
         }
+        if (bodyTrackingManager.EnableInterpolation)
+        {
+            SmoothRotations();
+        }
     }
 
     /// <summary>
@@ -463,9 +467,22 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         }
 
         // manage animation if no ik pass or animator
-        if(!ikPassIsEnabled)
+        if (!ikPassIsEnabled)
         {
             Skhandler.Move();
         }
     }
+
+    private void SmoothRotations()
+    {
+        foreach(var bone in skhandler.currentHumanBodyBones)
+        {
+            if(bone != HumanBodyBones.LastBone)
+            {
+                animator.GetBoneTransform(bone).localRotation = Quaternion.Slerp(Skhandler.RigBoneRotationLastFrame[bone], animator.GetBoneTransform(bone).localRotation, bodyTrackingManager.smoothingFactor);
+                Skhandler.RigBoneRotationLastFrame[bone] = animator.GetBoneTransform(bone).localRotation;
+            }
+        }
+    }
+
 }

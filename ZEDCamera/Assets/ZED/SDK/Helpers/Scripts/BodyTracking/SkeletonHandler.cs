@@ -794,6 +794,7 @@ public class SkeletonHandler : ScriptableObject
     private Animator animator;
     private Dictionary<HumanBodyBones, RigBone> rigBone = null;
     private Dictionary<HumanBodyBones, Quaternion> rigBoneTarget = null;
+    private Dictionary<HumanBodyBones, Quaternion> rigBoneRotationLastFrame = null;
 
     private Dictionary<HumanBodyBones, Quaternion> default_rotations = null;
     private Dictionary<HumanBodyBones, Quaternion> defaultRotationsWorld = null;
@@ -821,6 +822,7 @@ public class SkeletonHandler : ScriptableObject
     public sl.BODY_FORMAT BodyFormat { get { return currentBodyFormat; } set { currentBodyFormat = value; UpdateCurrentValues(currentBodyFormat); } }
 
     public Dictionary<HumanBodyBones, RigBone> RigBone { get => rigBone; set => rigBone = value; }
+    public Dictionary<HumanBodyBones, Quaternion> RigBoneRotationLastFrame { get => rigBoneRotationLastFrame; set => rigBoneRotationLastFrame = value; }
 
     #endregion
 
@@ -903,6 +905,7 @@ public class SkeletonHandler : ScriptableObject
         // Init list of bones that will be updated by the data retrieved from the ZED SDK
         rigBone = new Dictionary<HumanBodyBones, RigBone>();
         rigBoneTarget = new Dictionary<HumanBodyBones, Quaternion>();
+        rigBoneRotationLastFrame = new Dictionary<HumanBodyBones, Quaternion>();
 
         default_rotations = new Dictionary<HumanBodyBones, Quaternion>();
         defaultRotationsWorld = new Dictionary<HumanBodyBones, Quaternion>();
@@ -922,6 +925,7 @@ public class SkeletonHandler : ScriptableObject
 
             }
             rigBoneTarget[bone] = Quaternion.identity;
+            rigBoneRotationLastFrame[bone] = Quaternion.identity;
         }
     }
 
@@ -931,6 +935,7 @@ public class SkeletonHandler : ScriptableObject
         GameObject.Destroy(skeleton);
         rigBone.Clear();
         rigBoneTarget.Clear();
+        rigBoneRotationLastFrame.Clear();
         default_rotations.Clear();
         Array.Clear(bones, 0, bones.Length);
         Array.Clear(spheres, 0, spheres.Length);
