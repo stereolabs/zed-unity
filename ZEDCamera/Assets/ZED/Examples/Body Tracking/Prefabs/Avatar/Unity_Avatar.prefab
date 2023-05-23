@@ -2287,17 +2287,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de97d242c6a58054885e66d2b56fe4c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manualOffset: {x: 0, y: 0, z: 0}
-  automaticOffset: 0
+  currentAutoHeightOffset: 0
   bufferSize_Sec: 2
   findFloorDistance: 2
   layersToHit:
     serializedVersion: 2
-    m_Bits: 65536
+    m_Bits: 16
   increaseOffsetKey: 273
   decreaseOffsetKey: 274
   toggleAutomaticOffsetKey: 111
   offsetStep: 0.02
+  thresholdDistCloseToFloor: 0.05
+  thresholdDurationOffsetError: 2
 --- !u!114 &-6824248431415980064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2310,24 +2311,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90982a9a211eb694ea6d767b43787f56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableFootIK: 1
-  filterSlidingMovementsOnGround: 1
-  thresholdEnterGroundedState: 0.1
-  thresholdLeaveGroundedState: 0.15
-  groundedFreeDistance: 0.1
+  thresholdEnterGroundedState: 0.08
+  thresholdLeaveGroundedState: 0.1
+  groundedFreeDistance: 0.025
   raycastDetectionLayers:
     serializedVersion: 2
     m_Bits: 65536
-  ikPositionApplicationRatio: 1
-  ikRotationApplicationRatio: 1
+  ikPositionApplicationRatio: 0
+  ikRotationApplicationRatio: 0
   LeftFootTransform: {fileID: 5968356429716412887}
   RightFootTransform: {fileID: 8807488752933314970}
   ankleHeightOffset: 0.102
   bodyTrackingManager: {fileID: 0}
-  toggleFootIK: 105
-  toggleFilterSlidingMovementsOnGround: 102
   resetAutomaticOffset: 114
   targetLerpPosMultiplier: 1
   colorPosStartRay: {r: 1, g: 1, b: 1, a: 1}
   colorAnkleRPlusHeightOffset: {r: 0.98929596, g: 0, b: 1, a: 1}
   colorPosHitRay: {r: 0, g: 0, b: 0, a: 1}
+  ikHintWeight: 1

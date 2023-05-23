@@ -1311,7 +1311,7 @@ public class SkeletonHandler : ScriptableObject
         // animatorization
         foreach (HumanBodyBones bone in currentHumanBodyBones)
         {
-            if (bone != HumanBodyBones.LastBone)
+            if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
             {
                 if (rigBone[bone].transform)
                 {
@@ -1319,7 +1319,21 @@ public class SkeletonHandler : ScriptableObject
                 }
             }
         }
+    }
 
+    /// <summary>
+    /// Pass the correct joints position, depending on index based on body format, to the CheckFootLock method of zedSkeletonAnimator.
+    /// Should be called only if enableFootLock is true in the ZEDBodyTrackingManager.
+    /// </summary>
+    public void CheckFootLockAnimator()
+    {
+        if(BodyFormat == sl.BODY_FORMAT.BODY_34)
+        {
+            zedSkeletonAnimator.CheckFootLock(currentJoints[JointType_34_AnkleLeft], currentJoints[JointType_34_AnkleRight]);
+        } else if (BodyFormat != sl.BODY_FORMAT.BODY_18)
+        {
+            zedSkeletonAnimator.CheckFootLock(currentJoints[JointType_LEFT_ANKLE], currentJoints[JointType_RIGHT_ANKLE]);
+        }
     }
 }
 

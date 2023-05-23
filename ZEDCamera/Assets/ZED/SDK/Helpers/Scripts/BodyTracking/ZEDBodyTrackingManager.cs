@@ -330,6 +330,10 @@ public class ZEDBodyTrackingManager : MonoBehaviour
                 worldJointsPos,
                 normalizedLocalJointsRot, worldGlobalRotation,
                 useAvatar, mirrorMode);
+            if (enableFootLocking)
+            {
+                handler.CheckFootLockAnimator();
+            }
         }
     }
 }
