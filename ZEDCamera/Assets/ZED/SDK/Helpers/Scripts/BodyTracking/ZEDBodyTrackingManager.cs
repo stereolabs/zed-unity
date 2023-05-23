@@ -29,14 +29,14 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 	/// <summary>
 	/// Activate skeleton tracking when play mode is on and ZED ready
 	/// </summary>
-	[Header("Game Control")]
+	[Header("------ Game Control ------")]
 
     public bool startBodyTrackingAutomatically = true;
 
     /// <summary>
     /// Vizualisation mode. Use a 3D model or only display the skeleton
     /// </summary>
-    [Header("Vizualisation Mode")]
+    [Header("------ Vizualisation Mode ------")]
     /// <summary>
     /// Display 3D avatar. If set to false, only display bones and joint
     /// </summary>
@@ -50,7 +50,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     public int maximumNumberOfDetections = (int)sl.Constant.MAX_OBJECTS;
 
     [Space(5)]
-    [Header("State Filters")]
+    [Header("------ State Filters ------")]
     [Tooltip("Display objects that are actively being tracked by object tracking, where valid positions are known. ")]
     public bool showON = true;
     /// <summary>
@@ -64,41 +64,73 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     [Tooltip("Display objects that are visible but not actively being tracked by object tracking (usually because object tracking is disabled in ZEDManager).")]
     public bool showOFF = false;
 
-    [Header("Avatar Control")]
+    [Header("------ Avatar Control ------")]
     /// <summary>
     /// Avatar game object
     /// </summary>
     [Tooltip("3D Rigged model.")]
     public GameObject avatar;
     public Material skeletonBaseMaterial;
-
-    [Space(10)]
-    [Tooltip("Height offset applied to transform each frame.")]
-    public Vector3 manualOffset = Vector3.zero;
-
-    [Tooltip("Automatic offset adjustment: Finds an automatic offset that sets both feet above ground, and at least one foot on the ground.")]
-    public bool automaticOffset = false;
-
-    [Space(20)]
     [Tooltip("Display bones and joints along 3D avatar")]
     [SerializeField]
-    private bool displayDebugSkeleton = false;
-    public static bool DisplayDebugSkeleton = false;
+    private bool displaySDKSkeleton = false;
+    public static bool DisplaySDKSkeleton = false;
     [SerializeField]
-    private Vector3 offsetDebugSkeleton = new Vector3(1f, 0f, 0f);
-    public static Vector3 OffsetDebugSkeleton = new Vector3(1f, 0f, 0f);
+    private Vector3 offsetSDKSkeleton = new Vector3(1f, 0f, 0f);
+    public static Vector3 OffsetSDKSkeleton = new Vector3(1f, 0f, 0f);
     [SerializeField]
     private bool logFusionMetrics = false;
     public static bool LogFusionMetrics = false;
-
-    [Space(5)]
     [Tooltip("Mirror the animation.")]
     public bool mirrorMode;
 
     private Dictionary<int,SkeletonHandler> avatarControlList;
     public Dictionary<int, SkeletonHandler> AvatarControlList { get => avatarControlList;}
+    public bool EnableSmoothing { get => enableSmoothing; set => enableSmoothing = value; }
+    public bool EnableFootIK { get => enableFootIK; set => enableFootIK = value; }
+    public bool EnableFootLocking { get => enableFootLocking; set => enableFootLocking = value; }
 
     private sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.BODY_38;
+    [Space(10)]
+    [Header("------ Heigh Offset ------")]
+    [Tooltip("Height offset applied to transform each frame.")]
+    public Vector3 manualOffset = Vector3.zero;
+    [Tooltip("Automatic offset adjustment: Finds an automatic offset that sets both feet above ground, and at least one foot on the ground.")]
+    public bool automaticOffset = false;
+    [Tooltip("Step in manual increase/decrease of offset.")]
+    public float offsetStep = 0.1f;
+
+    [Space(5)]
+    [Header("------ Animation Smoothing ------")]
+    [Range(0f, 1f)]
+    [Tooltip("Multiplier to the animation smoothing. 0 = no movement. 1 = no smoothing.")]
+    public float smoothingFactor = 0.15f;
+    [SerializeField]
+    [Tooltip("Enable animation smoothing or not (induces latency).")]
+    private bool enableSmoothing = true;
+
+    [Space(5)]
+    [Header("------ Foot Locking ------")]
+    [Tooltip("Threshold distance in meters to free.")]
+    public float thresholdFootLocking = 0.15f;
+    [SerializeField]
+    [Tooltip("Enable animation smoothing or not (induces latency).")]
+    private bool enableFootLocking = true;
+
+    [Space(5)]
+    [Header("------ IK Settings ------")]
+    [Tooltip("Enable foot IK (feet on ground when near it)")]
+    [SerializeField]
+    private bool enableFootIK = false;
+
+    [Space(5)]
+    [Header("------ Keyboard mapping ------")]
+    public KeyCode toggleFootIK = KeyCode.I;
+    public KeyCode toggleFootLock = KeyCode.F;
+    public KeyCode toggleMirrorMode = KeyCode.M;
+    public KeyCode toggleAutomaticHeightOffset = KeyCode.O;
+    public KeyCode increaseOffsetKey = KeyCode.UpArrow;
+    public KeyCode decreaseOffsetKey = KeyCode.DownArrow;
 
     //private float alpha = 0.1f;
 
@@ -207,8 +239,8 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
 	public void Update()
     {
-        DisplayDebugSkeleton = displayDebugSkeleton;
-        OffsetDebugSkeleton = offsetDebugSkeleton;
+        DisplaySDKSkeleton = displaySDKSkeleton;
+        OffsetSDKSkeleton = offsetSDKSkeleton;
         LogFusionMetrics = logFusionMetrics;    
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -218,7 +250,36 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Keypad0))
         {
-            displayDebugSkeleton = !displayDebugSkeleton;
+            displaySDKSkeleton = !displaySDKSkeleton;
+        }
+
+        if (Input.GetKeyDown(toggleFootIK))
+        {
+            enableFootIK = !enableFootIK;
+        }
+
+        if (Input.GetKeyDown(toggleFootLock))
+        {
+            enableFootLocking = !enableFootLocking;
+        }
+
+        if (Input.GetKeyDown(toggleMirrorMode))
+        {
+            mirrorMode = !mirrorMode;
+            MirrorCanvas(mirrorMode);
+        }
+
+        if (Input.GetKeyDown(increaseOffsetKey))
+        {
+            manualOffset.y += offsetStep;
+        }
+        else if (Input.GetKeyDown(decreaseOffsetKey))
+        {
+            manualOffset.y -= offsetStep;
+        }
+        if (Input.GetKeyDown(toggleAutomaticHeightOffset))
+        {
+            automaticOffset = !automaticOffset;
         }
 
         // Display avatars or not depending on useAvatar setting.

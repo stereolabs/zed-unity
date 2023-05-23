@@ -916,7 +916,7 @@ public class SkeletonHandler : ScriptableObject
             {
                 rigBone[bone] = new RigBone(humanoid, bone);
 
-                if (h.GetComponent<Animator>())
+                if (animator != null)
                 {
                     // Store rest pose rotations
                     default_rotations[bone] = animator.GetBoneTransform(bone).localRotation;
@@ -1144,16 +1144,16 @@ public class SkeletonHandler : ScriptableObject
         currentJoints = jointsPosition;
 
         humanoid.SetActive(useAvatar);
-        skeleton.SetActive(!useAvatar || ZEDBodyTrackingManager.DisplayDebugSkeleton);
+        skeleton.SetActive(!useAvatar || ZEDBodyTrackingManager.DisplaySDKSkeleton);
         usingAvatar = useAvatar;
 
         if (useAvatar)
         {
             SetHumanPoseControl(jointsPosition[0], rootRotation, jointsRotation, _mirrorOnYAxis);
 
-            if (ZEDBodyTrackingManager.DisplayDebugSkeleton)
+            if (ZEDBodyTrackingManager.DisplaySDKSkeleton)
             {
-                UpdateSkeleton(ZEDBodyTrackingManager.OffsetDebugSkeleton, _mirrorOnYAxis);
+                UpdateSkeleton(ZEDBodyTrackingManager.OffsetSDKSkeleton, _mirrorOnYAxis);
             }
         }
         else
