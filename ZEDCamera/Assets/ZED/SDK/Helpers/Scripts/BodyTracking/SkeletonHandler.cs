@@ -1269,7 +1269,7 @@ public class SkeletonHandler : ScriptableObject
 
     /// <summary>
     /// Propagate and un-propagate rotations.
-    /// </summary>
+    /// </summary>   
     public void MoveAnimator()
     {
         // Put in Ref Pose
@@ -1301,7 +1301,7 @@ public class SkeletonHandler : ScriptableObject
         }
         PropagateRestPoseRotations(0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
 
-        // Reposition root depending on hips position.
+        //Reposition root depending on hips position.
         if (rigBone[HumanBodyBones.Hips].transform)
         {
             TargetBodyPositionWithHipOffset = targetBodyPosition;

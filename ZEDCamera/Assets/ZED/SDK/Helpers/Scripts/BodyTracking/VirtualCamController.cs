@@ -42,10 +42,10 @@ public class VirtualCamController : MonoBehaviour
     void Start()
     {
         if(followRealCam)
-    {
-        transform.position = zedManager.transform.localPosition;
-        transform.rotation = zedManager.transform.localRotation;
-    }
+        {
+            transform.position = zedManager.transform.localPosition;
+            transform.rotation = zedManager.transform.localRotation;
+        }
         else
         {
             currentPosition = transform.position;
@@ -64,16 +64,16 @@ public class VirtualCamController : MonoBehaviour
     void ManageInput()
     {
         if(enableControls)
-    {
-        if (Input.GetKeyDown(toLeft)) { currentPosition += new Vector3(-stepTranslation, 0, 0); }
-        if (Input.GetKeyDown(toRight)) { currentPosition += new Vector3(stepTranslation, 0, 0); }
-        if (Input.GetKeyDown(down)) { currentPosition += new Vector3(0, -stepTranslation, 0); }
-        if (Input.GetKeyDown(up)) { currentPosition += new Vector3(0, stepTranslation, 0); }
-        if (Input.GetKeyDown(backward)) { currentPosition += new Vector3(0, 0, -stepTranslation); }
-        if (Input.GetKeyDown(forward)) { currentPosition += new Vector3(0, 0, stepTranslation); }
-        if (Input.GetKeyDown(rolldown)) { currentRotation *= Quaternion.Euler(Vector3.right * stepRotation); }
-        if (Input.GetKeyDown(rollup)) { currentRotation *= Quaternion.Euler(Vector3.right * -stepRotation); }
-    }
+        {
+            if (Input.GetKeyDown(toLeft)) { currentPosition += new Vector3(-stepTranslation, 0, 0); }
+            if (Input.GetKeyDown(toRight)) { currentPosition += new Vector3(stepTranslation, 0, 0); }
+            if (Input.GetKeyDown(down)) { currentPosition += new Vector3(0, -stepTranslation, 0); }
+            if (Input.GetKeyDown(up)) { currentPosition += new Vector3(0, stepTranslation, 0); }
+            if (Input.GetKeyDown(backward)) { currentPosition += new Vector3(0, 0, -stepTranslation); }
+            if (Input.GetKeyDown(forward)) { currentPosition += new Vector3(0, 0, stepTranslation); }
+            if (Input.GetKeyDown(rolldown)) { currentRotation *= Quaternion.Euler(Vector3.right * stepRotation); }
+            if (Input.GetKeyDown(rollup)) { currentRotation *= Quaternion.Euler(Vector3.right * -stepRotation); }
+        }
     }
 
     // Update is called once per frame

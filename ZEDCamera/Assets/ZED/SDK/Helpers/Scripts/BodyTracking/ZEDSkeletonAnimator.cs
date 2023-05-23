@@ -133,7 +133,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             // Debug
             posStartRay = ankleLocalPosL;// + animator.bodyPosition;
             Debug.LogWarning("distFootL: " + Vector3.Distance(hitPointL,ankleLocalPosL - new Vector3(0,ankleHeightOffset,0)));
-    }
+        }
 
         Ray rayR = new Ray(ankleLocalPosR + (Vector3.up * 5), Vector3.down);
         hitSuccessfulR = Physics.Raycast(rayR, out RaycastHit hitR, 10, raycastDetectionLayers);
@@ -466,16 +466,16 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     //}
 
     private void ManageHeightOffsetV2(Vector3 posAnkleL, Vector3 posAnkleR, Vector3 hitPointL, Vector3 hitPointR)
-        {
+    {
         rootHeightOffset = heightOffsetter.ComputeRootHeightOffsetFromRaycastInfo(posAnkleL, posAnkleR, hitPointL, hitPointR, ankleHeightOffset);
         if (animator != null) { animator.bodyPosition = Skhandler.TargetBodyPositionWithHipOffset /*animator.bodyPosition*/ + rootHeightOffset; }
         else { transform.position = Skhandler.TargetBodyPositionWithHipOffset + rootHeightOffset; }
-        }
+    }
 
     #region MonoBehaviour Functions
 
     private void Awake()
-        {
+    {
         bodyTrackingManager = FindObjectOfType<ZEDBodyTrackingManager>();
         if (bodyTrackingManager == null)
         {
@@ -503,13 +503,13 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         //    Debug.Log("nullanimator");
         //    Skhandler.Move();
         //}
-        }
+    }
 
     /// <summary>
     /// End of frame calls.
     /// </summary>
     private void LateUpdate()
-        {
+    {
         anklePosLastFrameL = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
         anklePosLastFrameR = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
 
@@ -532,7 +532,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         //    //skhandler.Move();
         //}
 
-        }
+    }
 
     #endregion
 
@@ -547,7 +547,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         foreach(var bone in skhandler.currentHumanBodyBones)
         {
             if(bone != HumanBodyBones.LastBone)
-        {
+            {
                 Quaternion squat = Quaternion.Slerp(
                         Skhandler.RigBoneRotationLastFrame[bone],
                         animator.GetBoneTransform(bone).localRotation,
@@ -563,9 +563,9 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// </summary>
     private void SmoothRotationsNoAnimator()
     {
-        foreach(var bone in skhandler.currentHumanBodyBones)
+        foreach (var bone in skhandler.currentHumanBodyBones)
         {
-            if(bone != HumanBodyBones.LastBone)
+            if (bone != HumanBodyBones.LastBone)
             {
                 Skhandler.RigBone[bone].transform.localRotation = 
                     Quaternion.Slerp(
@@ -574,8 +574,8 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                         bodyTrackingManager.smoothingFactor);
                 Skhandler.RigBoneRotationLastFrame[bone] = Skhandler.RigBone[bone].transform.localRotation;
             }
-            }
         }
+    }
 
     #endregion
 
