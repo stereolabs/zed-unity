@@ -233,7 +233,9 @@ public class DroneSpawner : MonoBehaviour
 			newClearRadius = clearRadius;
 
         //If we spawn the drone at that world point, it'll spawn inside a wall. Bring it between you and that wall. 
-		Quaternion directionToCamera = Quaternion.LookRotation(cam.transform.position - randomWorldPoint, Vector3.up);
+        Vector3 forward = cam.transform.position - randomWorldPoint;
+        if (forward == Vector3.zero) { forward = cam.transform.forward; }
+        Quaternion directionToCamera = Quaternion.LookRotation(forward, Vector3.up);
 		Vector3 closerWorldPoint = randomWorldPoint + directionToCamera * Vector3.forward * newClearRadius;
 
         //Check that distance isn't too close

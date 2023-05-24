@@ -1,9 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-#if UNITY_2019_3_OR_NEWER
 using UnityEngine.XR;
-#endif
 
 /// <summary>
 /// Fires a laser when the user issues a command.
@@ -82,15 +80,11 @@ public class LaserGun : MonoBehaviour
         if (objecttracker != null)
         {
 
-#if ZED_STEAM_VR
-            if (objecttracker.index >= 0)
-                yield break;
-#endif
-#if ZED_OCULUS
-            if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
-                yield break;
+            InputDeviceCharacteristics TrackedControllerFilter = InputDeviceCharacteristics.HeldInHand;
+            List<InputDevice> foundControllers = new List<InputDevice>();
+            InputDevices.GetDevicesWithCharacteristics(TrackedControllerFilter, foundControllers);
+            if (foundControllers.Count > 0) { yield break; }
 
-#endif
             // If it got here then there's no VR Controller connected
             int children = transform.childCount;
             for (int i = 0; i < children; ++i)
@@ -105,32 +99,11 @@ public class LaserGun : MonoBehaviour
             if (otherObjectTracker != null)
             {
                 int children = transform.childCount;
-#if ZED_STEAM_VR
-                foreach (ZEDControllerTracker trackers in otherObjectTracker)
-                {
-                    if (trackers.index >= 0)
-                    {
-                        for (int i = 0; i < children; ++i)
-                            transform.GetChild(i).gameObject.SetActive(false);
 
-                        this.enabled = false;
-                        yield break;
-                    }
-                }
-#endif
-#if ZED_OCULUS
-                if (OVRManager.isHmdPresent)
-                {
-                    if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
-                    {
-                        for (int i = 0; i < children; ++i)
-                            transform.GetChild(i).gameObject.SetActive(false);
+                for (int i = 0; i < children; ++i)
+                    transform.GetChild(i).gameObject.SetActive(false);
 
-                        //this.enabled = false;
-                        yield break;
-                    }
-                }
-#endif
+                yield break;
             }
         }
     }
@@ -173,43 +146,28 @@ public class LaserGun : MonoBehaviour
             buttondown = true;
         }
 
-#if ZED_OCULUS
-
         //Update whether the Touch controllers are active.
         int children = transform.childCount;
-        if (OVRManager.isHmdPresent)
+        InputDeviceCharacteristics TrackedControllerFilter = InputDeviceCharacteristics.HeldInHand;
+        List<InputDevice> foundControllers = new List<InputDevice>();
+        InputDevices.GetDevicesWithCharacteristics(TrackedControllerFilter, foundControllers);
+
+        if (foundControllers.Count > 0)
         {
-            if (OVRInput.GetConnectedControllers().ToString().ToLower().Contains("touch"))
-            {
-                for (int i = 0; i < children; ++i)
-                    transform.GetChild(i).gameObject.SetActive(true);
-
-            }
-            else
-            {
-                for (int i = 0; i < children; ++i)
-                    transform.GetChild(i).gameObject.SetActive(false);
-            }
+            for (int i = 0; i < children; ++i)
+                transform.GetChild(i).gameObject.SetActive(true);
         }
-
-        //We're controlling the fire Rate.  OVRInput doesn't have a GetDown function for the IndexTrigger. Only an axis output.
-        if (objecttracker != null)
+        else
         {
-            buttondown = objecttracker.CheckFireButton(ControllerButtonState.Down);
-            //OVRInput.Update();
+            for (int i = 0; i < children; ++i)
+                transform.GetChild(i).gameObject.SetActive(false);
         }
-
-
-
-#endif
-
-#if ZED_STEAM_VR
-        //Looks for any input from this controller through SteamVR
+         
+        //We're controlling the fire Rate.
         if (objecttracker != null)
         {
             buttondown = objecttracker.CheckFireButton(ControllerButtonState.Down);
         }
-#endif
 
         if (buttondown)
         {
@@ -285,13 +243,12 @@ public class LaserGun : MonoBehaviour
         }
 
         //Play a sound
-        if (audiosource)
+        if (audiosource && audiosource.enabled)
         {
             audiosource.Play();
         }
     }
 
-#if ZED_OCULUS
     /// <summary>
     /// Returns if this script is bound to an Oculus Touch controller that is currently not connected.
     /// For example, if it's a Right Controller but only the left is connected, it returns false.
@@ -304,14 +261,19 @@ public class LaserGun : MonoBehaviour
         if (objecttracker.deviceToTrack != ZEDControllerTracker.Devices.LeftController && objecttracker.deviceToTrack != ZEDControllerTracker.Devices.RightController)
             return true; //Not bound to a left or right controller, so let it live.
 
+        InputDeviceCharacteristics leftTrackedControllerFilter = InputDeviceCharacteristics.Left;
+        InputDeviceCharacteristics rightTrackedControllerFilter = InputDeviceCharacteristics.Right;
+        List<InputDevice> foundLeftControllers = new List<InputDevice>();
+        List<InputDevice> foundRightControllers = new List<InputDevice>();
 
-        string connectedcontrollers = OVRInput.GetConnectedControllers().ToString().ToLower();
-        if (connectedcontrollers == "touch") return true; //Both controllers are connected, so
-        if (objecttracker.deviceToTrack == ZEDControllerTracker.Devices.LeftController && connectedcontrollers == "ltouch") return true; //Left controller only.
-        if (objecttracker.deviceToTrack == ZEDControllerTracker.Devices.RightController && connectedcontrollers == "rtouch") return true; //Right controller only.
+        InputDevices.GetDevicesWithCharacteristics(leftTrackedControllerFilter, foundLeftControllers);
+        InputDevices.GetDevicesWithCharacteristics(rightTrackedControllerFilter, foundRightControllers);
+
+        if (objecttracker.deviceToTrack == ZEDControllerTracker.Devices.LeftController && foundLeftControllers.Count > 0) return true; //Left controller only.
+        if (objecttracker.deviceToTrack == ZEDControllerTracker.Devices.RightController && foundRightControllers.Count > 0) return true; //Right controller only.
+
 
         return false;
     }
-#endif
 
 }

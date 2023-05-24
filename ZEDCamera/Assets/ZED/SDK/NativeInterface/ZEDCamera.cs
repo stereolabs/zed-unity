@@ -285,7 +285,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(4, 0, 0);
+        public static readonly System.Version PluginVersion = new System.Version(4, 0, 2);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -2052,7 +2052,7 @@ namespace sl
             SetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC, 1);
             SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, 1);
 
-            SetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC_ROI,2, new sl.Rect(), true);
+            // SetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC_ROI,2, new sl.Rect(), true);
         }
 
         /// <summary>

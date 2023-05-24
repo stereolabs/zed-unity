@@ -120,7 +120,7 @@ public class ZEDTransformController : MonoBehaviour
         //Find the available VR controllers and assigning them to our List.
         yield return new WaitForSeconds(1f);
 
-        var trackers = FindObjectsOfType<ZEDControllerTracker>();
+        var trackers = FindObjectsOfType<ZEDControllerTracker_DemoInputs>();
         foreach (ZEDControllerTracker_DemoInputs tracker in trackers)
         {
             objectTrackers.Add(tracker);

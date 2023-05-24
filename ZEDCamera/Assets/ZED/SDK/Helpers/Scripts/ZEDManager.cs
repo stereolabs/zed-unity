@@ -1738,24 +1738,6 @@ public class ZEDManager : MonoBehaviour
 
     #region CHECK_AR
 
-    private bool hasXRDevice()
-    {
-#if UNITY_2020_1_OR_NEWER
-        var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
-        SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
-        foreach (var xrDisplay in xrDisplaySubsystems)
-        {
-            if (xrDisplay.running)
-            {
-                return true;
-            }
-        }
-        return false;
-#else
-        return XRDevice.isPresent;
-#endif
-    }
-
     /// <summary>
     /// Checks if this GameObject is a stereo rig. Requires a child object called 'Camera_eyes' and
     /// two cameras as children of that object, one with stereoTargetEye set to Left, the other two Right.
@@ -1765,7 +1747,6 @@ public class ZEDManager : MonoBehaviour
     {
         zedRigRoot = gameObject.transform; //The object moved by tracking. By default it's this Transform. May get changed.
 
-        bool devicePresent = hasXRDevice(); //May not need.
         //Set first left eye
         Component[] cams = gameObject.GetComponentsInChildren<Camera>();
         //Camera firstmonocam = null;
@@ -1827,9 +1808,17 @@ public class ZEDManager : MonoBehaviour
                 zedRigRoot = camLeftTransform.parent; //Make the camera's parent object (Camera_eyes in the ZED_Rig_Stereo prefab) the new zedRigRoot to be tracked.
             }
 
-            if (hasXRDevice() && allowARPassThrough)
+            if (ZEDSupportFunctions.hasXRDevice() && allowARPassThrough)
             {
                 isStereoRig = true;
+
+                List<XRInputSubsystem> subsystems = new List<XRInputSubsystem>();
+                SubsystemManager.GetInstances<XRInputSubsystem>(subsystems);
+                for (int i = 0; i < subsystems.Count; i++)
+                {
+                     subsystems[i].TrySetTrackingOriginMode(TrackingOriginModeFlags.Device);
+                     subsystems[i].TryRecenter();
+                }
             }
             else
             {
@@ -2179,7 +2168,8 @@ public class ZEDManager : MonoBehaviour
             sl.AI_Model_status status = sl.ZEDCamera.CheckAIModelStatus(sl.AI_MODELS.NEURAL_DEPTH, 0);
             if (!status.optimized)
             {
-                var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_DEPTH)); //Assign thread.
+                Debug.Log("NEURAL Not optimized");
+                /*var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_DEPTH)); //Assign thread.
                 threadOptim.Start();
 
                 while (optimStatus != sl.ERROR_CODE.SUCCESS)
@@ -2193,7 +2183,8 @@ public class ZEDManager : MonoBehaviour
                     Debug.LogWarning($"Optimizing neural model ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds.ToString("N2")} seconds.");
                     yield return new WaitForSeconds(5.0f);
                 }
-                threadOptim.Join();
+                threadOptim.Join();*/
+                watch.Stop();
             }
         }
 
@@ -2295,7 +2286,7 @@ public class ZEDManager : MonoBehaviour
     void AdjustZEDRigCameraPosition()
     {
         //Vector3 rightCameraOffset = new Vector3(zedCamera.Baseline, 0.0f, 0.0f);
-        if (isStereoRig && hasXRDevice()) //Using AR pass-through mode.
+        if (isStereoRig && ZEDSupportFunctions.hasXRDevice()) //Using AR pass-through mode.
         {
             //zedRigRoot transform (origin of the global camera) is placed on the HMD headset. Therefore, we move the
             //camera in front of it by offsetHmdZEDPosition to compensate for the ZED's position on the headset.
@@ -2549,7 +2540,7 @@ public class ZEDManager : MonoBehaviour
             trackerThread.Join();
 
 
-        if (isStereoRig && hasXRDevice())
+        if (isStereoRig && ZEDSupportFunctions.hasXRDevice())
         {
             ZEDMixedRealityPlugin.Pose pose = arRig.InitTrackingAR();
             OriginPosition = pose.translation;
@@ -2710,7 +2701,7 @@ public class ZEDManager : MonoBehaviour
 
             isCameraTracked = true;
 
-            if (hasXRDevice() && isStereoRig) //AR pass-through mode.
+            if (ZEDSupportFunctions.hasXRDevice() && isStereoRig) //AR pass-through mode.
             {
                 if (calibrationHasChanged) //If the HMD offset calibration file changed during runtime.
                 {
@@ -2738,7 +2729,7 @@ public class ZEDManager : MonoBehaviour
                     zedRigRoot.localPosition = zedPosition;
             }
         }
-        else if (hasXRDevice() && isStereoRig) //ZED tracking is off but HMD tracking is on. Fall back to that.
+        else if (ZEDSupportFunctions.hasXRDevice() && isStereoRig) //ZED tracking is off but HMD tracking is on. Fall back to that.
         {
             isCameraTracked = true;
             arRig.ExtractLatencyPose(imageTimeStamp); //Find what HMD's pose was at ZED image's timestamp for latency compensation.
@@ -2756,7 +2747,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     void UpdateHmdPose()
     {
-        if (IsStereoRig && hasXRDevice())
+        if (IsStereoRig && ZEDSupportFunctions.hasXRDevice())
             arRig.CollectPose(); //Save headset pose with current timestamp.
     }
 
@@ -2798,7 +2789,7 @@ public class ZEDManager : MonoBehaviour
 
             if (isZEDTracked)
                 trackingState = ZEDTrackingState.ToString();
-            else if (hasXRDevice() && isStereoRig)
+            else if (ZEDSupportFunctions.hasXRDevice() && isStereoRig)
                 trackingState = "HMD Tracking";
             else
                 trackingState = "Camera Not Tracked";
@@ -3247,7 +3238,9 @@ public class ZEDManager : MonoBehaviour
         sl.AI_Model_status status = sl.ZEDCamera.CheckAIModelStatus(sl.ZEDCamera.cvtDetection(bodyTrackingModel, bodyFormat), 0);
         if (!status.optimized)
         {
-            var threadOptim = new Thread(() => OptimizeModel(sl.ZEDCamera.cvtDetection(bodyTrackingModel, bodyFormat))); //Assign thread.
+            Debug.Log(bodyTrackingModel + " Not optimized");
+
+            /*var threadOptim = new Thread(() => OptimizeModel(sl.ZEDCamera.cvtDetection(bodyTrackingModel, bodyFormat))); //Assign thread.
             threadOptim.Start();
 
             while (optimStatus != sl.ERROR_CODE.SUCCESS)
@@ -3261,7 +3254,7 @@ public class ZEDManager : MonoBehaviour
                 yield return new WaitForSeconds(5.0f);
             }
 
-            threadOptim.Join();
+            threadOptim.Join();*/
         }
 
         pauseSVOReading = oldpausestate;
@@ -3476,13 +3469,9 @@ public class ZEDManager : MonoBehaviour
         arRig.quadCenter = centerScreen.transform;
 
         ZEDMixedRealityPlugin.OnHmdCalibChanged += CalibrationHasChanged;
-        if (hasXRDevice())
+        if (ZEDSupportFunctions.hasXRDevice())
         {
-#if UNITY_2019_1_OR_NEWER
             HMDDevice = XRSettings.loadedDeviceName;
-#else
-            HMDDevice = XRDevice.model;
-#endif
         }
 
         return zedRigDisplayer;
