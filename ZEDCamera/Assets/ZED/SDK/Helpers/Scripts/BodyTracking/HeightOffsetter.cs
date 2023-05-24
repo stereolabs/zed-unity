@@ -94,10 +94,14 @@ public class HeightOffsetter : MonoBehaviour
         }
     }
 
-    // Check if the lowest (highest offset value) foot is close enough to ground to reset the timer
+    /// <summary>
+    /// Check if the lowest foot is close enough to ground to reset the timer.
+    /// </summary>
+    /// <returns>False if lowest foot is too far from the virtual floor. True else.</returns>
     private bool LowestFootIsCloseToGround(float offsetL, float offsetR)
     {
-        return offsetL >= offsetR ? Mathf.Abs(offsetL) <= thresholdDistCloseToFloor : Mathf.Abs(offsetR) <= thresholdDistCloseToFloor;
+        bool b = offsetL <= offsetR ? Mathf.Abs(offsetL) <= thresholdDistCloseToFloor : Mathf.Abs(offsetR) <= thresholdDistCloseToFloor;
+        return b;
     }
 
     private void RecalculateOffset(float offsetToApplyL, float offsetToApplyR, out float targetAutoHeightOffset)

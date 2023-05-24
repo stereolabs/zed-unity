@@ -233,6 +233,10 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             //                animator.SetIKRotation(AvatarIKGoal.RightFoot, Quaternion.LookRotation(forward, hit.normal));
             //                animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, GetLinearIKRatio(dist, thresholdLeaveGroundedState * 2, thresholdLeaveGroundedState, ikRotationApplicationRatio));
             //                animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, GetLinearIKRatio(dist, thresholdLeaveGroundedState * 2, thresholdLeaveGroundedState, ikPositionApplicationRatio));
+            // Manage Height Offset (using data from last frame, unapplying the previous offset is necessary.)
+            ManageHeightOffset(anklePosLastFrameL - new Vector3(0f,heightOffsetter.CurrentheightOffset,0f),
+                anklePosLastFrameR - new Vector3(0f, heightOffsetter.CurrentheightOffset, 0f), 
+                hitPointL,hitPointR);
 
             //            }
             //            else
@@ -465,10 +469,10 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     //    //transform.rotation = Skhandler.TargetBodyOrientation;
     //}
 
-    private void ManageHeightOffsetV2(Vector3 posAnkleL, Vector3 posAnkleR, Vector3 hitPointL, Vector3 hitPointR)
+    private void ManageHeightOffset(Vector3 posAnkleL, Vector3 posAnkleR, Vector3 hitPointL, Vector3 hitPointR)
     {
         rootHeightOffset = heightOffsetter.ComputeRootHeightOffsetFromRaycastInfo(posAnkleL, posAnkleR, hitPointL, hitPointR, ankleHeightOffset);
-        if (animator != null) { animator.bodyPosition = Skhandler.TargetBodyPositionWithHipOffset /*animator.bodyPosition*/ + rootHeightOffset; }
+        if (animator != null) { animator.bodyPosition = Skhandler.TargetBodyPositionWithHipOffset + rootHeightOffset; }
         else { transform.position = Skhandler.TargetBodyPositionWithHipOffset + rootHeightOffset; }
     }
 
