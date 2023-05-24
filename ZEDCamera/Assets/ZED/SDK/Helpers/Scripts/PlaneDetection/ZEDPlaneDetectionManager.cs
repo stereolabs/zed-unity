@@ -620,21 +620,6 @@ public class ZEDPlaneDetectionEditor : Editor
         GUIContent visiblegamelabel = new GUIContent("Visible in Game", "Whether the planes are drawn in Unity's Game view.");
         isVisibleInSceneOption.boolValue = EditorGUILayout.Toggle(visiblescenelabel, isVisibleInSceneOption.boolValue);
 
-#if !UNITY_2018_1_OR_NEWER
-        if (!isVisibleInSceneOption.boolValue)
-        {
-            //Older Unity versions have a bug that will spam errors if Visible In Scene is disabled. Warn the user. 
-            GUIStyle warningmessagestyle = new GUIStyle(EditorStyles.label);
-            warningmessagestyle.normal.textColor = Color.gray;
-            warningmessagestyle.wordWrap = true;
-            warningmessagestyle.fontSize = 9;
-
-            string warningtext = "Warning: Disabling Visible in Scene causes Unity versions 2017 and lower to spam error messages. This is due to a Unity bug and does not effect the scene.";
-            Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(warningtext, ""), warningmessagestyle);
-            EditorGUI.LabelField(labelrect, warningtext, warningmessagestyle);
-        }
-#endif
-
         isVisibleInGameOption.boolValue = EditorGUILayout.Toggle(visiblegamelabel, isVisibleInGameOption.boolValue);
 
         GUIContent overridematlabel = new GUIContent("Override Material: ", "Material applied to all planes if visible. If left empty, default materials will be applied depending on the plane type.");

@@ -4,10 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-#if ZED_STEAM_VR
-using Valve.VR;
-#endif
-
 /// <summary>
 /// Lets the user choose the tracked object that the ZED is anchored to, for the MR calibration scene. 
 /// Works by spawning a prefab button for each tracked object, complete with graphics, and arranging them
@@ -100,30 +96,15 @@ public class ChooseTrackedObjectMenu : MonoBehaviour
     public Transform instructionsText;
     public float textBottomMargin = 0.2f;
 
-#if ZED_STEAM_VR
-    /// <summary>
-    /// Action we'll invoke when a controller is connected/disconnected. Cached as it's a lambda function, and we need to
-    /// remove that listener in OnDestroy(). 
-    /// </summary>
-    private UnityAction<int, bool> deviceConnectedAction;
-#endif
+    public const int LEFT = 0;
+    public const int RIGHT = 1;
 
-#if ZED_OCULUS
-    public const int TOUCH_INDEX_LEFT = 0;
-    public const int TOUCH_INDEX_RIGHT = 1;
-#endif
 
     // Use this for initialization
     void Start()
     {
         FindTrackedObjects(); //TODO: Make this happen in Update() at regular intervals, and clean up existing devices. 
         MessageDisplay.DisplayMessageAll("Which object is holding the ZED?");
-
-#if ZED_STEAM_VR
-        //Subscribe to controllers being connected/disconnected so we can update the available devices. 
-        deviceConnectedAction = (x, y) => FindTrackedObjects();
-        SteamVR_Events.DeviceConnected.AddListener(deviceConnectedAction);
-#endif
     }
 
 
@@ -137,49 +118,21 @@ public class ChooseTrackedObjectMenu : MonoBehaviour
         //Make sure it's valid. 
         ZEDControllerTracker.Devices trackeddevice = ZEDControllerTracker.Devices.Hmd; //Can't be HMD at end - will catch. 
 
-#if ZED_STEAM_VR
-        ETrackedDeviceClass dclass = OpenVR.System.GetTrackedDeviceClass((uint)deviceindex);
-        if (dclass == ETrackedDeviceClass.GenericTracker) trackeddevice = ZEDControllerTracker.Devices.ViveTracker;
-        else if (dclass == ETrackedDeviceClass.Controller)
-        {
-            ETrackedControllerRole role = OpenVR.System.GetControllerRoleForTrackedDeviceIndex((uint)deviceindex);
-            if (role == ETrackedControllerRole.LeftHand) trackeddevice = ZEDControllerTracker.Devices.LeftController;
-            else if (role == ETrackedControllerRole.RightHand) trackeddevice = ZEDControllerTracker.Devices.RightController;
-            else
-            {
-                Debug.Log("Couldn't assign to device of index " + deviceindex + " as it's a controller with an unknown role.");
-            }
-            //TODO: Make sure this works for a third controller. 
-        }
-#endif
-
-#if ZED_OCULUS
-        if(deviceindex == TOUCH_INDEX_LEFT)
+        if(deviceindex == LEFT)
         {
             trackeddevice = ZEDControllerTracker.Devices.LeftController;
         }
-        else if (deviceindex == TOUCH_INDEX_RIGHT)
+        else if (deviceindex == RIGHT)
         {
             trackeddevice = ZEDControllerTracker.Devices.RightController;
         }
-#endif
         //Set up the anchor object, and readjust controllers if needed. 
         zedAnchor.gameObject.SetActive(true);
 
         zedAnchor.controllerTracker.deviceToTrack = trackeddevice;
 
-#if ZED_STEAM_VR
-        leftController.index = tempLeftController.index;
-#endif
-
         switch (trackeddevice)
         {
-#if ZED_STEAM_VR
-            case ZEDControllerTracker.Devices.ViveTracker:
-                leftController.index = tempLeftController.index;
-                leftController.gameObject.SetActive(true);
-                break;
-#endif
             case ZEDControllerTracker.Devices.LeftController:
                 bellyMenu.gameObject.SetActive(true);
                 break;
@@ -212,9 +165,6 @@ public class ChooseTrackedObjectMenu : MonoBehaviour
 
     private void OnDestroy()
     {
-#if ZED_STEAM_VR
-        SteamVR_Events.DeviceConnected.RemoveListener(deviceConnectedAction);
-#endif
     }
 
     /// <summary>
@@ -230,32 +180,6 @@ public class ChooseTrackedObjectMenu : MonoBehaviour
         allButtons.Clear();
 
         List<ChooseTrackedObjectButton> newbuttons = new List<ChooseTrackedObjectButton>();
-
-#if ZED_STEAM_VR
-        for (uint i = 0; i < 14; i++)
-        {
-            var error = ETrackedPropertyError.TrackedProp_Success;
-            var chsnresult = new System.Text.StringBuilder((int)64);
-            OpenVR.System.GetStringTrackedDeviceProperty(i, ETrackedDeviceProperty.Prop_ControllerType_String, chsnresult, 64, ref error);
-
-            if (error == ETrackedPropertyError.TrackedProp_Success && chsnresult.ToString() != "")
-            {
-                //Create tracked object button. 
-                ChooseTrackedObjectButton button;
-                CreateTrackedObjectPrefab(i, out button);
-                if (button != null)
-                {
-                    newbuttons.Add(button);
-                }
-            }
-        }
-
-        //allButtons.Clear();
-        foreach (ChooseTrackedObjectButton button in newbuttons)
-        {
-            allButtons.Add(button);
-        }
-#elif ZED_OCULUS
         /*//Warn the user if they don't have both controllers connected, because they need one to hold the ZED
         //and another to calibrate. 
         OVRInput.Controller controllers = OVRInput.GetConnectedControllers();
@@ -267,14 +191,14 @@ public class ChooseTrackedObjectMenu : MonoBehaviour
 
         //Make a left controller button. 
         ChooseTrackedObjectButton leftButton;
-        CreateTrackedObjectPrefab(TOUCH_INDEX_LEFT, out leftButton);
+        CreateTrackedObjectPrefab(LEFT, out leftButton);
         if (leftButton != null) allButtons.Add(leftButton);
 
         //Make a right controller button. 
         ChooseTrackedObjectButton rightButton;
-        CreateTrackedObjectPrefab(TOUCH_INDEX_RIGHT, out rightButton);
+        CreateTrackedObjectPrefab(RIGHT, out rightButton);
         if (rightButton != null) allButtons.Add(rightButton);
-#endif
+
         ArrangeIntoGrid(allButtons, objectWidth, objectHeight, maxColumns);
     }
 
@@ -286,47 +210,14 @@ public class ChooseTrackedObjectMenu : MonoBehaviour
     private GameObject CreateTrackedObjectPrefab(uint deviceindex, out ChooseTrackedObjectButton scriptref)
     {
         string label = "ERROR";
-
-#if ZED_STEAM_VR
-        ETrackedDeviceClass dclass = OpenVR.System.GetTrackedDeviceClass(deviceindex);
-        ETrackedControllerRole role = OpenVR.System.GetControllerRoleForTrackedDeviceIndex(deviceindex);
-
-        if (!(dclass == ETrackedDeviceClass.Controller || dclass == ETrackedDeviceClass.GenericTracker))
-        {
-            //Debug.LogError("Tried to create button for tracked device of index " + deviceindex + ", but it's role is " + dclass + ".");
-            scriptref = null;
-            return null;
-        }
-
-        if (role == ETrackedControllerRole.LeftHand)
+        if (deviceindex == LEFT)
         {
             label = "Left\r\nController";
         }
-        else if (role == ETrackedControllerRole.RightHand)
+        else if (deviceindex == RIGHT)
         {
             label = "Right\r\nController";
         }
-        else if (dclass == ETrackedDeviceClass.GenericTracker)
-        {
-            label = "Tracker";
-        }
-        else
-        {
-            //Debug.LogError("Tried to create button for tracked device of index " + deviceindex + " with an invalid role/device class combo: " +
-            //    role + " / " + dclass);
-            scriptref = null;
-            return null;
-        }
-#elif ZED_OCULUS
-        if (deviceindex == TOUCH_INDEX_LEFT)
-        {
-            label = "Left\r\nController";
-        }
-        else if (deviceindex == TOUCH_INDEX_RIGHT)
-        {
-            label = "Right\r\nController";
-        }
-#endif
 
         GameObject buttongo = Instantiate(chooseObjectButtonPrefab, transform, false);
         scriptref = buttongo.GetComponentInChildren<ChooseTrackedObjectButton>();
