@@ -111,8 +111,6 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
     [Space(5)]
     [Header("------ Foot Locking ------")]
-    [Tooltip("Threshold distance in meters to free.")]
-    public float thresholdFootLocking = 0.15f;
     [SerializeField]
     [Tooltip("Enable animation smoothing or not (induces latency).")]
     private bool enableFootLocking = true;
