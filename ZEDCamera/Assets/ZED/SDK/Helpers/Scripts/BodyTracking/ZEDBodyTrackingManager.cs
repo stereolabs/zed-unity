@@ -102,9 +102,8 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
     [Space(5)]
     [Header("------ Animation Smoothing ------")]
-    [Range(0f, 1f)]
     [Tooltip("Multiplier to the animation smoothing. 0 = no movement. 1 = no smoothing.")]
-    public float smoothingFactor = 0.15f;
+    public float smoothingFactor = 5f;
     [SerializeField]
     [Tooltip("Enable animation smoothing or not (induces latency).")]
     private bool enableSmoothing = true;

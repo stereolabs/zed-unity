@@ -2267,7 +2267,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 0f92df3c2e41e7e4e8ecb7034c0ad1c2, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -2306,14 +2306,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90982a9a211eb694ea6d767b43787f56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  thresholdEnterGroundedState: 0.08
-  thresholdLeaveGroundedState: 0.1
-  groundedFreeDistance: 0.025
+  thresholdEnterGroundedState: 0.03
+  thresholdLeaveGroundedState: 0.2
+  thresholdFootLock: 0.025
   raycastDetectionLayers:
     serializedVersion: 2
     m_Bits: 65536
-  ikPositionApplicationRatio: 0
-  ikRotationApplicationRatio: 0
+  ikPositionApplicationRatio: 1
+  ikRotationApplicationRatio: 1
   LeftFootTransform: {fileID: 5968356429716412887}
   RightFootTransform: {fileID: 8807488752933314970}
   ankleHeightOffset: 0.102

@@ -1163,8 +1163,6 @@ public class SkeletonHandler : ScriptableObject
         {
             UpdateSkeleton(Vector3.zero, _mirrorOnYAxis);
         }
-
-        zedSkeletonAnimator.RaisePoseWasUpdatedIKFlag();
     }
 
     /// <summary>
@@ -1261,6 +1259,7 @@ public class SkeletonHandler : ScriptableObject
 
     /// <summary>
     /// Update the 3D avatar display.
+    /// Used to animate a rig without AnimatorController component.
     /// </summary>
     public void Move()
     {
@@ -1271,7 +1270,7 @@ public class SkeletonHandler : ScriptableObject
     }
 
     /// <summary>
-    /// Propagate and un-propagate rotations.
+    /// Propagate rotations and set them to the animator.
     /// </summary>   
     public void MoveAnimator(bool smoothingEnabled, float smoothValue)
     {
@@ -1283,8 +1282,6 @@ public class SkeletonHandler : ScriptableObject
                 if (rigBone[bone].transform)
                 {
                     rigBone[bone].transform.localRotation = default_rotations[bone];
-                    //animator.SetBoneLocalRotation(bone, rigBone[bone].transform.localRotation);
-                    //rigBone[bone].transform.localRotation = default_rotations[bone];
                 }
             }
         }
