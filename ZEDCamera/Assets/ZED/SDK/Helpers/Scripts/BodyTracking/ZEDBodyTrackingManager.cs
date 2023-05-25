@@ -110,16 +110,13 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     private bool enableSmoothing = true;
 
     [Space(5)]
-    [Header("------ Foot Locking ------")]
-    [SerializeField]
-    [Tooltip("Enable animation smoothing or not (induces latency).")]
-    private bool enableFootLocking = true;
-
-    [Space(5)]
     [Header("------ IK Settings ------")]
     [Tooltip("Enable foot IK (feet on ground when near it)")]
     [SerializeField]
     private bool enableFootIK = false;
+    [SerializeField]
+    [Tooltip("Enable animation smoothing or not (induces latency).")]
+    private bool enableFootLocking = true;
 
     [Space(5)]
     [Header("------ Keyboard mapping ------")]
