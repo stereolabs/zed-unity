@@ -182,10 +182,10 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             // Get raycast information from feet
             RaycastManagementAnimator(out hitSuccessfulL, out hitSuccessfulR, out hitPointL, out hitPointR, out hitNormalL, out hitNormalR, anklePosLastFrameL, anklePosLastFrameR);
 
-            // Manage Height Offset (using data from last frame, unapplying the previous offset is necessary.)
-            ManageHeightOffset(anklePosLastFrameL - new Vector3(0f,heightOffsetter.CurrentheightOffset,0f),
-                anklePosLastFrameR - new Vector3(0f, heightOffsetter.CurrentheightOffset, 0f), 
-                hitPointL,hitPointR);
+            // Manage Height Offset
+            ManageHeightOffset(GetWorldPosCurrentState(HumanBodyBones.LeftFoot),
+                GetWorldPosCurrentState(HumanBodyBones.RightFoot),
+                hitPointL, hitPointR);
 
             if (bodyTrackingManager.EnableFootIK)
             {
