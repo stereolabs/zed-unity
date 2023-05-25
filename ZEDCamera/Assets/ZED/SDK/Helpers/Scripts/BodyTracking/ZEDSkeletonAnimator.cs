@@ -107,12 +107,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// </summary>
     void ApplyAllRigRotationsOnAnimator()
     {
-        skhandler.MoveAnimator();
-
-        if (bodyTrackingManager.EnableSmoothing)
-        {
-            SmoothRotationsAnimator();
-        }
+        skhandler.MoveAnimator(bodyTrackingManager.EnableSmoothing, bodyTrackingManager.smoothingFactor);
     }
 
     /// Raycast based on previous feet's positions in previous frame.

@@ -801,7 +801,10 @@ public class SkeletonHandler : ScriptableObject
 
     private Vector3 targetBodyPosition = new Vector3(0.0f, 0.0f, 0.0f);
     private Vector3 targetBodyPositionWithHipOffset = new Vector3(0.0f, 0.0f, 0.0f);
+    private Vector3 targetBodyPositionLastFrame = Vector3.zero; // smoothing var
     private Quaternion targetBodyOrientation = Quaternion.identity;
+    private Quaternion targetBodyOrientationSmoothed = Quaternion.identity;
+    private Quaternion targetBodyOrientationLastFrame = Quaternion.identity; // smoothing var
 
     private bool usingAvatar = true;
 
@@ -815,7 +818,7 @@ public class SkeletonHandler : ScriptableObject
     public Dictionary<HumanBodyBones, Quaternion> RigBoneTarget { get => rigBoneTarget; set => rigBoneTarget = value; }
     public Dictionary<HumanBodyBones, Quaternion> DefaultRotations { get => default_rotations; }
     public Dictionary<HumanBodyBones, Quaternion> DefaultRotationsWorld { get => defaultRotationsWorld; }
-    public Quaternion TargetBodyOrientation { get => targetBodyOrientation; set => targetBodyOrientation = value; }
+    public Quaternion TargetBodyOrientationSmoothed { get => targetBodyOrientationSmoothed; set => targetBodyOrientationSmoothed = value; }
     public Vector3 TargetBodyPositionWithHipOffset { get => targetBodyPositionWithHipOffset; set => targetBodyPositionWithHipOffset = value; }
 
     private sl.BODY_FORMAT currentBodyFormat = sl.BODY_FORMAT.BODY_38;
@@ -1270,7 +1273,7 @@ public class SkeletonHandler : ScriptableObject
     /// <summary>
     /// Propagate and un-propagate rotations.
     /// </summary>   
-    public void MoveAnimator()
+    public void MoveAnimator(bool smoothingEnabled, float smoothValue)
     {
         // Put in Ref Pose
         foreach (HumanBodyBones bone in currentHumanBodyBones)
@@ -1301,24 +1304,59 @@ public class SkeletonHandler : ScriptableObject
         }
         PropagateRestPoseRotations(0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
 
-        //Reposition root depending on hips position.
-        if (rigBone[HumanBodyBones.Hips].transform)
+        //Add offset to hips for body34.
+        if (BodyFormat == sl.BODY_FORMAT.BODY_34)
+        {
+            TargetBodyPositionWithHipOffset = targetBodyPosition + (0.1f * rigBone[HumanBodyBones.Hips].transform.up);
+        }
+        else
         {
             TargetBodyPositionWithHipOffset = targetBodyPosition;
-            //rigBone[HumanBodyBones.Hips].transform.SetPositionAndRotation(TargetBodyPositionWithHipOffset, targetBodyOrientation);
         }
+        targetBodyOrientationSmoothed = targetBodyOrientation;
 
         // animatorization
-        foreach (HumanBodyBones bone in currentHumanBodyBones)
+        if (!smoothingEnabled)
         {
-            if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
+            foreach (HumanBodyBones bone in currentHumanBodyBones)
             {
-                if (rigBone[bone].transform)
+                if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
                 {
-                    animator.SetBoneLocalRotation(bone, rigBone[bone].transform.localRotation);
+                    if (rigBone[bone].transform)
+                    {
+                        animator.SetBoneLocalRotation(bone, rigBone[bone].transform.localRotation);
+                    }
                 }
             }
         }
+        else // smoothing enabled
+        {
+            targetBodyPositionWithHipOffset = Vector3.Lerp(targetBodyPositionLastFrame, targetBodyPositionWithHipOffset, smoothValue);
+            targetBodyPositionLastFrame = targetBodyPositionWithHipOffset;
+
+            targetBodyOrientationSmoothed = Quaternion.Slerp(
+                targetBodyOrientationLastFrame,
+                targetBodyOrientationSmoothed,
+                smoothValue);
+            targetBodyOrientationLastFrame = targetBodyOrientationSmoothed;
+
+            foreach (HumanBodyBones bone in currentHumanBodyBones)
+            {
+                if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
+                {
+                    if (rigBone[bone].transform)
+                    {
+                        Quaternion squat = Quaternion.Slerp(
+                                RigBoneRotationLastFrame[bone],
+                                rigBone[bone].transform.localRotation,
+                                smoothValue);
+                        animator.SetBoneLocalRotation(bone, squat);
+                        RigBoneRotationLastFrame[bone] = squat;
+                    }
+                }
+            }
+        }
+
     }
 
     /// <summary>
