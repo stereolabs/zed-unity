@@ -7,7 +7,6 @@ public class AimAt : MonoBehaviour
 {
     public ZEDManager zedManager = null;
     public ZEDBodyTrackingManager zedBodyTrackingManager = null;
-    public UnityEngine.UI.Text txtfps = null;
     public Vector3 target = Vector3.zero;
     private bool mirrored = false;
 
@@ -20,7 +19,7 @@ public class AimAt : MonoBehaviour
         }
         if (zedBodyTrackingManager == null)
         {
-            Debug.LogError("zedBodyTrackingManager is null. Please set a ZedManager.");
+            Debug.LogError("zedBodyTrackingManager is null. Please set a zedBodyTrackingManager.");
             Application.Quit();
         }
     }
@@ -29,7 +28,6 @@ public class AimAt : MonoBehaviour
     {
         zedManager.OnBodyTracking += OnBodyTrackingFrame;
         mirrored = zedBodyTrackingManager.mirrorMode;
-        if(txtfps != null) { StartCoroutine(UpdateFPS()); }
     }
 
     private void OnBodyTrackingFrame(BodyTrackingFrame bodyFrame)
@@ -50,12 +48,4 @@ public class AimAt : MonoBehaviour
         transform.LookAt (target);
     }
 
-    private IEnumerator UpdateFPS()
-    {
-        while(true) {
-            txtfps.text = Mathf.Floor(1.0f / Time.deltaTime) + "\nfps";
-            yield return new WaitForSeconds(.1f);
-        }
-
-    }
 }
