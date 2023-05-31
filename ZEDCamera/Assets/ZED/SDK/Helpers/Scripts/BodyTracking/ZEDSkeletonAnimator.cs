@@ -13,10 +13,10 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     #region inspector vars
 
     [Header("IK SETTINGS")]
-    [Tooltip("Distance (between sole and environment under it) under which a foot is considered on the floor.")]
-    public float thresholdEnterGroundedState = .14f;
-    [Tooltip("Distance (between sole and environment under it) under which a foot is considered on the floor. Used to check if the foot is still on the floor.")]
-    public float thresholdLeaveGroundedState = .18f;
+    [Tooltip("Distance (between sole and environment under it) under which a foot is considered fully on the floor for IK calculation. Full foot IK application ratio will be applied.")]
+    public float thresholdEnterGroundedState = .03f;
+    [Tooltip("Distance (between sole and environment under it) under which the IK will be gradually applied. Above this, no foot IK is applied.")]
+    public float thresholdLeaveGroundedState = .2f;
     [Tooltip("Radius of movements filtered when the filterMovementsOnGround parameter is enabled.")]
     public float thresholdFootLock = .05f;
     [Tooltip("Layers detected as floor for the IK")]
