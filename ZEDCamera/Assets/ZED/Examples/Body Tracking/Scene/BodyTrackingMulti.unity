@@ -240,11 +240,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4899bf235f2a6974288bc0989e3dd88f, type: 3}
---- !u!1 &732761126 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1215292335019620, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
-  m_PrefabInstance: {fileID: 1007624042}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1007624042
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -546,9 +541,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
---- !u!1 &1007624043 stripped
+--- !u!1 &1080472610 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1215292335019620, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1795562263255876, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
   m_PrefabInstance: {fileID: 1007624042}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1283831068
@@ -637,7 +632,7 @@ PrefabInstance:
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: cameraFrame
       value: 
-      objectReference: {fileID: 1007624043}
+      objectReference: {fileID: 1080472610}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: enableFootIK
       value: 1
@@ -681,6 +676,10 @@ PrefabInstance:
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: offsetDebugSkeleton.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
+      propertyPath: footLockingSmoothingValue
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: maximumNumberOfDetections

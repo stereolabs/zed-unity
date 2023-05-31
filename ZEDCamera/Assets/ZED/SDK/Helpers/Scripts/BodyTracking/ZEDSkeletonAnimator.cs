@@ -142,7 +142,8 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                 curIKTargetRotL = FindIKTargetRotation(hitNormalL,
                     animator.GetBoneTransform(HumanBodyBones.LeftToes).position,
                     animator.GetBoneTransform(HumanBodyBones.LeftFoot).position,
-                    Skhandler.TargetBodyOrientationSmoothed);
+                    Skhandler.TargetBodyOrientationSmoothed,
+                    curIKTargetRotL);
 
                 // Set effectors and application ratios
                 if (hitSuccessfulL)
@@ -178,7 +179,8 @@ public class ZEDSkeletonAnimator : MonoBehaviour
                 curIKTargetRotR = FindIKTargetRotation(hitNormalR,
                     animator.GetBoneTransform(HumanBodyBones.RightToes).position,
                     animator.GetBoneTransform(HumanBodyBones.RightFoot).position,
-                    Skhandler.TargetBodyOrientationSmoothed);
+                    Skhandler.TargetBodyOrientationSmoothed,
+                    curIKTargetRotR);
 
                 // Set effectors and application ratios
                 if (hitSuccessfulR)
@@ -316,14 +318,14 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             {
                 return Vector3.Lerp(prevIKTargetPos,
                     new Vector3(targetFootLock.x, hitPoint.y + ankleHeightOffset, targetFootLock.z),
-                    bodyTrackingManager.smoothingValue);
+                    bodyTrackingManager.footLockingSmoothingValue);
             } else
             {
                 targetFootLock = hitPoint + new Vector3(0, ankleHeightOffset, 0);
                 return Vector3.Lerp(
                 prevIKTargetPos,
                 hitPoint + new Vector3(0, ankleHeightOffset, 0),
-                bodyTrackingManager.EnableSmoothing ? bodyTrackingManager.smoothingValue : 1f);
+                bodyTrackingManager.footLockingSmoothingValue);
             }
         }            
         else
@@ -331,7 +333,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             return Vector3.Lerp(
             prevIKTargetPos, 
             hitPoint + new Vector3(0, ankleHeightOffset, 0), 
-            bodyTrackingManager.EnableSmoothing ? bodyTrackingManager.smoothingValue : 1f );
+            bodyTrackingManager.footLockingSmoothingValue );
         }
     }
 
@@ -342,10 +344,10 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// <param name="toePos">Toes position. Used to correctly orient the foot following its forward direction.</param>
     /// <param name="anklePos">Ankle position. Used to correctly orient the foot following its forward direction.</param>
     /// <returns></returns>
-    private Quaternion FindIKTargetRotation(Vector3 hitNormal, Vector3 toePos, Vector3 anklePos, Quaternion rootOrientation)
+    private Quaternion FindIKTargetRotation(Vector3 hitNormal, Vector3 toePos, Vector3 anklePos, Quaternion rootOrientation, Quaternion curFootRotation)
     {
         Vector3 forward = Vector3.ProjectOnPlane(rootOrientation * (toePos - anklePos), Vector3.up);
-        return Quaternion.LookRotation(forward, hitNormal);
+        return Quaternion.Slerp(curFootRotation,Quaternion.LookRotation(forward, hitNormal), bodyTrackingManager.footLockingSmoothingValue);
     }
 
     private Vector3 FindIKHintPosition(HumanBodyBones kneeBone)

@@ -113,6 +113,8 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     [SerializeField]
     [Tooltip("Enable animation smoothing or not (induces latency).")]
     private bool enableFootLocking = true;
+    [Tooltip("Foot locking smoothing setting. 0 = won't move. 1 = no smoothing, very snappy.\nValues closer to 0 induce more latency, but improve fluidity."), Range(0f, 1f)]
+    public float footLockingSmoothingValue = .2f;
 
     [Space(5)]
     [Header("------ Keyboard mapping ------")]
