@@ -76,11 +76,8 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     private bool displaySDKSkeleton = false;
     public static bool DisplaySDKSkeleton = false;
     [SerializeField]
-    private Vector3 offsetSDKSkeleton = new Vector3(1f, 0f, 0f);
-    public static Vector3 OffsetSDKSkeleton = new Vector3(1f, 0f, 0f);
-    [SerializeField]
-    private bool logFusionMetrics = false;
-    public static bool LogFusionMetrics = false;
+    private Vector3 offsetSDKSkeleton = new Vector3(0f, 0f, 0f);
+    public static Vector3 OffsetSDKSkeleton = new Vector3(0f, 0f, 0f);
     [Tooltip("Mirror the animation.")]
     public bool mirrorMode;
 
@@ -102,8 +99,8 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
     [Space(5)]
     [Header("------ Animation Smoothing ------")]
-    [Tooltip("Multiplier to the animation smoothing. 0 = no movement. 1 = no smoothing.")]
-    public float smoothingFactor = 5f;
+    [Tooltip("Animation smoothing setting. 0 = no movement. 1 = no smoothing.\nValues closer to 0 induce more latency."), Range(0f,1f)]
+    public float smoothingValue = 1f;
     [SerializeField]
     [Tooltip("Enable animation smoothing or not (induces latency).")]
     private bool enableSmoothing = true;
@@ -234,8 +231,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 	public void Update()
     {
         DisplaySDKSkeleton = displaySDKSkeleton;
-        OffsetSDKSkeleton = offsetSDKSkeleton;
-        LogFusionMetrics = logFusionMetrics;    
+        OffsetSDKSkeleton = offsetSDKSkeleton;  
 
         if (Input.GetKeyDown(KeyCode.Space))
         {

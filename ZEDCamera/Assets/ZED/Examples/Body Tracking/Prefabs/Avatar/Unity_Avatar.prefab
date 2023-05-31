@@ -2265,7 +2265,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 66802e5a34626b24dbef0a7ad7ee47ef, type: 3}
   m_Controller: {fileID: 9100000, guid: 0f92df3c2e41e7e4e8ecb7034c0ad1c2, type: 2}
-  m_CullingMode: 1
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -2314,13 +2314,5 @@ MonoBehaviour:
     m_Bits: 65536
   ikPositionApplicationRatio: 1
   ikRotationApplicationRatio: 1
-  LeftFootTransform: {fileID: 5968356429716412887}
-  RightFootTransform: {fileID: 8807488752933314970}
   ankleHeightOffset: 0.102
-  bodyTrackingManager: {fileID: 0}
   resetAutomaticOffset: 114
-  targetLerpPosMultiplier: 1
-  colorPosStartRay: {r: 1, g: 1, b: 1, a: 1}
-  colorAnkleRPlusHeightOffset: {r: 0.98929596, g: 0, b: 1, a: 1}
-  colorPosHitRay: {r: 0, g: 0, b: 0, a: 1}
-  ikHintWeight: 1

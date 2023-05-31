@@ -27,7 +27,7 @@ public class HeightOffsetter : MonoBehaviour
 
     // Duration of successive height offset error frames that should trigger a reset of the auto offset, in seconds.
     [SerializeField] private float thresholdDurationOffsetError = 3f;
-    private float durationOffsetError = 4f;
+    private float durationOffsetError = 0f;
     private float lastCallTime = 0f;
 
     #endregion
@@ -39,6 +39,7 @@ public class HeightOffsetter : MonoBehaviour
         {
             Debug.LogError("ZEDManagerIK: No body tracking manager loaded!");
         }
+        lastCallTime = Time.time;
     }
 
     /// <summary>

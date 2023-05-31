@@ -70,7 +70,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// </summary>
     void ApplyAllRigRotationsOnAnimator()
     {
-        skhandler.MoveAnimator(bodyTrackingManager.EnableSmoothing, bodyTrackingManager.smoothingFactor * Time.deltaTime);
+        skhandler.MoveAnimator(bodyTrackingManager.EnableSmoothing, bodyTrackingManager.smoothingValue);
     }
 
     /// <summary>
