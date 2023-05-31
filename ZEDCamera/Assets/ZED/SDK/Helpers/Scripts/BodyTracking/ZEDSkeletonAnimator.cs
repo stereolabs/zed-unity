@@ -70,7 +70,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// </summary>
     void ApplyAllRigRotationsOnAnimator()
     {
-        skhandler.MoveAnimator(bodyTrackingManager.EnableSmoothing, bodyTrackingManager.smoothingValue);
+        skhandler.MoveAnimator(bodyTrackingManager.EnableSmoothing, Mathf.Clamp(1 - bodyTrackingManager.smoothingValue, 0, 1));
     }
 
     /// <summary>
@@ -312,20 +312,21 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// <returns>The effector target position</returns>
     private Vector3 FindIKTargetPosition(bool footLock, Vector3 hitPoint, Vector3 prevIKTargetPos, bool grounded, ref Vector3 targetFootLock)
     {
+        float flsmooth = Mathf.Clamp(1 - bodyTrackingManager.footLockingSmoothingValue,0,1);
         if (bodyTrackingManager.EnableFootLocking)
         {
             if (footLock && grounded)
             {
                 return Vector3.Lerp(prevIKTargetPos,
                     new Vector3(targetFootLock.x, hitPoint.y + ankleHeightOffset, targetFootLock.z),
-                    bodyTrackingManager.footLockingSmoothingValue);
+                    flsmooth);
             } else
             {
                 targetFootLock = hitPoint + new Vector3(0, ankleHeightOffset, 0);
                 return Vector3.Lerp(
                 prevIKTargetPos,
                 hitPoint + new Vector3(0, ankleHeightOffset, 0),
-                bodyTrackingManager.footLockingSmoothingValue);
+                flsmooth);
             }
         }            
         else
@@ -333,7 +334,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             return Vector3.Lerp(
             prevIKTargetPos, 
             hitPoint + new Vector3(0, ankleHeightOffset, 0), 
-            bodyTrackingManager.footLockingSmoothingValue );
+            flsmooth);
         }
     }
 
@@ -347,7 +348,7 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     private Quaternion FindIKTargetRotation(Vector3 hitNormal, Vector3 toePos, Vector3 anklePos, Quaternion rootOrientation, Quaternion curFootRotation)
     {
         Vector3 forward = Vector3.ProjectOnPlane(rootOrientation * (toePos - anklePos), Vector3.up);
-        return Quaternion.Slerp(curFootRotation,Quaternion.LookRotation(forward, hitNormal), bodyTrackingManager.footLockingSmoothingValue);
+        return Quaternion.Slerp(curFootRotation,Quaternion.LookRotation(forward, hitNormal), Mathf.Clamp(1 - bodyTrackingManager.footLockingSmoothingValue, 0, 1));
     }
 
     private Vector3 FindIKHintPosition(HumanBodyBones kneeBone)

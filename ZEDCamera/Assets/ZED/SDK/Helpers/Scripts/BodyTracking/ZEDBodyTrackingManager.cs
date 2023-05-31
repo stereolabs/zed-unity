@@ -99,7 +99,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
     [Space(5)]
     [Header("------ Animation Smoothing ------")]
-    [Tooltip("Animation smoothing setting. 0 = no movement. 1 = no smoothing.\nValues closer to 0 induce more latency."), Range(0f,1f)]
+    [Tooltip("Animation smoothing setting. 0 = No latency, no smoothing. 1 = \"Full latency\" so no movement.\n Tweak this value depending on your framerate, and the fps of the camera."), Range(0f,1f)]
     public float smoothingValue = 1f;
     [SerializeField]
     [Tooltip("Enable animation smoothing or not (induces latency).")]
@@ -113,8 +113,8 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     [SerializeField]
     [Tooltip("Enable animation smoothing or not (induces latency).")]
     private bool enableFootLocking = true;
-    [Tooltip("Foot locking smoothing setting. 0 = won't move. 1 = no smoothing, very snappy.\nValues closer to 0 induce more latency, but improve fluidity."), Range(0f, 1f)]
-    public float footLockingSmoothingValue = .2f;
+    [Tooltip("Foot locking smoothing setting. 0 = No latency, no smoothing. 1 = \"Full latency\" so no movement.\n Tweak this value depending on your framerate, and the fps of the camera.\nValues closer to 1 induce more latency, but improve fluidity."), Range(0f, 1f)]
+    public float footLockingSmoothingValue = .8f;
 
     [Space(5)]
     [Header("------ Keyboard mapping ------")]
