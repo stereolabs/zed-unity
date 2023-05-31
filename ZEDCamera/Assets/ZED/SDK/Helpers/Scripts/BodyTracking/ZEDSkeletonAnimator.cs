@@ -307,25 +307,31 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// <param name="prevIKTargetPos">IK target on the previous frame. Should be replaced with the output of this function.</param>
     /// <param name="grounded">If the foot is close enough to the ground to have full ik application.</param>
     /// <param name="targetFootLock">Updated only if foot is unlocked. Target to lerp toward.</param>
-    /// <returns></returns>
+    /// <returns>The effector target position</returns>
     private Vector3 FindIKTargetPosition(bool footLock, Vector3 hitPoint, Vector3 prevIKTargetPos, bool grounded, ref Vector3 targetFootLock)
     {
         if (bodyTrackingManager.EnableFootLocking)
         {
             if (footLock && grounded)
             {
-                return new Vector3(prevIKTargetPos.x, hitPoint.y + ankleHeightOffset, prevIKTargetPos.z); 
-                //return Vector3.Lerp(prevIKTargetPos, targetFootLock, Time.deltaTime * 5f);
+                return Vector3.Lerp(prevIKTargetPos,
+                    new Vector3(targetFootLock.x, hitPoint.y + ankleHeightOffset, targetFootLock.z),
+                    bodyTrackingManager.smoothingValue);
             } else
             {
-                return hitPoint + new Vector3(0, ankleHeightOffset, 0);
-                //targetFootLock = hitPoint + new Vector3(0, ankleHeightOffset, 0);
-                //return Vector3.Lerp(prevIKTargetPos, targetFootLock, Time.deltaTime * 5f);
+                targetFootLock = hitPoint + new Vector3(0, ankleHeightOffset, 0);
+                return Vector3.Lerp(
+                prevIKTargetPos,
+                hitPoint + new Vector3(0, ankleHeightOffset, 0),
+                bodyTrackingManager.EnableSmoothing ? bodyTrackingManager.smoothingValue : 1f);
             }
         }            
         else
         {
-            return hitPoint + new Vector3(0,ankleHeightOffset,0);
+            return Vector3.Lerp(
+            prevIKTargetPos, 
+            hitPoint + new Vector3(0, ankleHeightOffset, 0), 
+            bodyTrackingManager.EnableSmoothing ? bodyTrackingManager.smoothingValue : 1f );
         }
     }
 
