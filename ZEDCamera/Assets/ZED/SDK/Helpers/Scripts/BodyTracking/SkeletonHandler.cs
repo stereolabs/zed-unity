@@ -794,12 +794,17 @@ public class SkeletonHandler : ScriptableObject
     private Animator animator;
     private Dictionary<HumanBodyBones, RigBone> rigBone = null;
     private Dictionary<HumanBodyBones, Quaternion> rigBoneTarget = null;
+    private Dictionary<HumanBodyBones, Quaternion> rigBoneRotationLastFrame = null;
 
     private Dictionary<HumanBodyBones, Quaternion> default_rotations = null;
+    private Dictionary<HumanBodyBones, Quaternion> defaultRotationsWorld = null;
 
     private Vector3 targetBodyPosition = new Vector3(0.0f, 0.0f, 0.0f);
     private Vector3 targetBodyPositionWithHipOffset = new Vector3(0.0f, 0.0f, 0.0f);
+    private Vector3 targetBodyPositionLastFrame = Vector3.zero; // smoothing var
     private Quaternion targetBodyOrientation = Quaternion.identity;
+    private Quaternion targetBodyOrientationSmoothed = Quaternion.identity;
+    private Quaternion targetBodyOrientationLastFrame = Quaternion.identity; // smoothing var
 
     private bool usingAvatar = true;
 
@@ -811,11 +816,16 @@ public class SkeletonHandler : ScriptableObject
     }
 
     public Dictionary<HumanBodyBones, Quaternion> RigBoneTarget { get => rigBoneTarget; set => rigBoneTarget = value; }
-    public Quaternion TargetBodyOrientation { get => targetBodyOrientation; set => targetBodyOrientation = value; }
+    public Dictionary<HumanBodyBones, Quaternion> DefaultRotations { get => default_rotations; }
+    public Dictionary<HumanBodyBones, Quaternion> DefaultRotationsWorld { get => defaultRotationsWorld; }
+    public Quaternion TargetBodyOrientationSmoothed { get => targetBodyOrientationSmoothed; set => targetBodyOrientationSmoothed = value; }
     public Vector3 TargetBodyPositionWithHipOffset { get => targetBodyPositionWithHipOffset; set => targetBodyPositionWithHipOffset = value; }
 
     private sl.BODY_FORMAT currentBodyFormat = sl.BODY_FORMAT.BODY_38;
     public sl.BODY_FORMAT BodyFormat { get { return currentBodyFormat; } set { currentBodyFormat = value; UpdateCurrentValues(currentBodyFormat); } }
+
+    public Dictionary<HumanBodyBones, RigBone> RigBone { get => rigBone; set => rigBone = value; }
+    public Dictionary<HumanBodyBones, Quaternion> RigBoneRotationLastFrame { get => rigBoneRotationLastFrame; set => rigBoneRotationLastFrame = value; }
 
     #endregion
 
@@ -898,8 +908,10 @@ public class SkeletonHandler : ScriptableObject
         // Init list of bones that will be updated by the data retrieved from the ZED SDK
         rigBone = new Dictionary<HumanBodyBones, RigBone>();
         rigBoneTarget = new Dictionary<HumanBodyBones, Quaternion>();
+        rigBoneRotationLastFrame = new Dictionary<HumanBodyBones, Quaternion>();
 
         default_rotations = new Dictionary<HumanBodyBones, Quaternion>();
+        defaultRotationsWorld = new Dictionary<HumanBodyBones, Quaternion>();
 
         foreach (HumanBodyBones bone in currentHumanBodyBones)
         {
@@ -907,14 +919,16 @@ public class SkeletonHandler : ScriptableObject
             {
                 rigBone[bone] = new RigBone(humanoid, bone);
 
-                if (h.GetComponent<Animator>())
+                if (animator != null)
                 {
                     // Store rest pose rotations
                     default_rotations[bone] = animator.GetBoneTransform(bone).localRotation;
+                    defaultRotationsWorld[bone] = animator.GetBoneTransform(bone).rotation;
                 }
 
             }
             rigBoneTarget[bone] = Quaternion.identity;
+            rigBoneRotationLastFrame[bone] = Quaternion.identity;
         }
     }
 
@@ -924,6 +938,7 @@ public class SkeletonHandler : ScriptableObject
         GameObject.Destroy(skeleton);
         rigBone.Clear();
         rigBoneTarget.Clear();
+        rigBoneRotationLastFrame.Clear();
         default_rotations.Clear();
         Array.Clear(bones, 0, bones.Length);
         Array.Clear(spheres, 0, spheres.Length);
@@ -1047,6 +1062,7 @@ public class SkeletonHandler : ScriptableObject
         for (int i = 0; i < bones.Length; i++)
         {
             GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            //cylinder.layer = LayerMask.NameToLayer("tagInvisibleToZED");
             cylinder.GetComponent<Renderer>().material = skBaseMat;
             skBaseMat.color = color;
             cylinder.transform.parent = skeleton.transform;
@@ -1055,6 +1071,7 @@ public class SkeletonHandler : ScriptableObject
         for (int j = 0; j < spheres.Length; j++)
         {
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            //sphere.layer = LayerMask.NameToLayer("tagInvisibleToZED");
             sphere.GetComponent<Renderer>().material = skBaseMat;
             skBaseMat.color = color;
             sphere.transform.localScale = (BodyFormat == sl.BODY_FORMAT.BODY_70 && j >= JointType_70_LEFT_HAND_THUMB_1) 
@@ -1064,13 +1081,15 @@ public class SkeletonHandler : ScriptableObject
             sphere.name = currentSpheresList[j].ToString();
             spheres[j] = sphere;
         }
+
+        skeleton.layer = LayerMask.NameToLayer("tagInvisibleToZED");
     }
 
     /// <summary>
     /// Updates SDK skeleton display.
     /// </summary>
     /// <param name="offsetSDK">In case the "displaySDKSkeleton" option is enabled in the ZEDSkeletonTrackingManager, the skeleton will be displayed with this offset.</param>
-    void UpdateSkeleton(Vector3 offsetSDK)
+    void UpdateSkeleton(Vector3 offsetSDK, bool mirrorMode = false)
     {
         float width = 0.025f;
         for (int j = 0; j < spheres.Length; j++)
@@ -1082,7 +1101,7 @@ public class SkeletonHandler : ScriptableObject
             }
             else
             {
-                spheres[j].transform.position = currentJoints[currentSpheresList[j]] + offsetSDK;
+                spheres[j].transform.position = mirrorMode ? (currentJoints[currentSpheresList[j]] + offsetSDK).mirror_x() : currentJoints[currentSpheresList[j]] + offsetSDK;
                 spheres[j].SetActive(true);
             }
         }
@@ -1128,24 +1147,22 @@ public class SkeletonHandler : ScriptableObject
         currentJoints = jointsPosition;
 
         humanoid.SetActive(useAvatar);
-        skeleton.SetActive(!useAvatar || ZEDBodyTrackingManager.DisplayDebugSkeleton);
+        skeleton.SetActive(!useAvatar || ZEDBodyTrackingManager.DisplaySDKSkeleton);
         usingAvatar = useAvatar;
 
         if (useAvatar)
         {
             SetHumanPoseControl(jointsPosition[0], rootRotation, jointsRotation, _mirrorOnYAxis);
 
-            if (ZEDBodyTrackingManager.DisplayDebugSkeleton)
+            if (ZEDBodyTrackingManager.DisplaySDKSkeleton)
             {
-                UpdateSkeleton(ZEDBodyTrackingManager.OffsetDebugSkeleton);
+                UpdateSkeleton(ZEDBodyTrackingManager.OffsetSDKSkeleton, _mirrorOnYAxis);
             }
         }
         else
         {
-            UpdateSkeleton(Vector3.zero);
+            UpdateSkeleton(Vector3.zero, _mirrorOnYAxis);
         }
-
-        zedSkeletonAnimator.PoseWasUpdatedIK();
     }
 
     /// <summary>
@@ -1242,12 +1259,115 @@ public class SkeletonHandler : ScriptableObject
 
     /// <summary>
     /// Update the 3D avatar display.
+    /// Used to animate a rig without AnimatorController component.
     /// </summary>
     public void Move()
     {
         if (usingAvatar)
         {
             MoveAvatar();
+        }
+    }
+
+    /// <summary>
+    /// Propagate rotations and set them to the animator.
+    /// </summary>   
+    public void MoveAnimator(bool smoothingEnabled, float smoothValue)
+    {
+        // Put in Ref Pose
+        foreach (HumanBodyBones bone in currentHumanBodyBones)
+        {
+            if (bone != HumanBodyBones.LastBone)
+            {
+                if (rigBone[bone].transform)
+                {
+                    rigBone[bone].transform.localRotation = default_rotations[bone];
+                }
+            }
+        }
+
+        PropagateRestPoseRotations(0, rigBone, default_rotations[0], false);
+
+        for (int i = 0; i < currentHumanBodyBones.Length; i++)
+        {
+            if (currentHumanBodyBones[i] != HumanBodyBones.LastBone && rigBone[currentHumanBodyBones[i]].transform)
+            {
+                if (currentParentIds[i] != -1)
+                {
+                    Quaternion newRotation = rigBoneTarget[currentHumanBodyBones[i]] * rigBone[currentHumanBodyBones[i]].transform.localRotation;
+                    rigBone[currentHumanBodyBones[i]].transform.localRotation = newRotation;
+                }
+            }
+        }
+        PropagateRestPoseRotations(0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
+
+        //Add offset to hips for body34.
+        if (BodyFormat == sl.BODY_FORMAT.BODY_34)
+        {
+            TargetBodyPositionWithHipOffset = targetBodyPosition + (0.1f * rigBone[HumanBodyBones.Hips].transform.up);
+        }
+        else
+        {
+            TargetBodyPositionWithHipOffset = targetBodyPosition;
+        }
+        targetBodyOrientationSmoothed = targetBodyOrientation;
+
+        // animatorization
+        if (!smoothingEnabled)
+        {
+            foreach (HumanBodyBones bone in currentHumanBodyBones)
+            {
+                if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
+                {
+                    if (rigBone[bone].transform)
+                    {
+                        animator.SetBoneLocalRotation(bone, rigBone[bone].transform.localRotation);
+                    }
+                }
+            }
+        }
+        else // smoothing enabled
+        {
+            targetBodyPositionWithHipOffset = Vector3.Lerp(targetBodyPositionLastFrame, targetBodyPositionWithHipOffset, smoothValue);
+            targetBodyPositionLastFrame = targetBodyPositionWithHipOffset;
+
+            targetBodyOrientationSmoothed = Quaternion.Slerp(
+                targetBodyOrientationLastFrame,
+                targetBodyOrientationSmoothed,
+                smoothValue);
+            targetBodyOrientationLastFrame = targetBodyOrientationSmoothed;
+
+            foreach (HumanBodyBones bone in currentHumanBodyBones)
+            {
+                if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
+                {
+                    if (rigBone[bone].transform)
+                    {
+                        Quaternion squat = Quaternion.Slerp(
+                                RigBoneRotationLastFrame[bone],
+                                rigBone[bone].transform.localRotation,
+                                smoothValue);
+                        animator.SetBoneLocalRotation(bone, squat);
+                        RigBoneRotationLastFrame[bone] = squat;
+                    }
+                }
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// Pass the correct joints position, depending on index based on body format, to the CheckFootLock method of zedSkeletonAnimator.
+    /// Should be called only if enableFootLock is true in the ZEDBodyTrackingManager.
+    /// </summary>
+    public void CheckFootLockAnimator()
+    {
+        if(BodyFormat == sl.BODY_FORMAT.BODY_34)
+        {
+            zedSkeletonAnimator.CheckFootLock(currentJoints[JointType_34_AnkleLeft], currentJoints[JointType_34_AnkleRight]);
+        } else if (BodyFormat != sl.BODY_FORMAT.BODY_18)
+        {
+            zedSkeletonAnimator.CheckFootLock(currentJoints[JointType_LEFT_ANKLE], currentJoints[JointType_RIGHT_ANKLE]);
         }
     }
 }

@@ -2207,8 +2207,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9029239706945640940}
-  m_LocalRotation: {x: 0.00000026126588, y: 0.0000002898029, z: -0.0000151803315,
-    w: 1}
+  m_LocalRotation: {x: 0.00000026126588, y: 0.0000002898029, z: -0.0000151803315, w: 1}
   m_LocalPosition: {x: 0.000001012353, y: 1.0017784, z: -0.011370468}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2265,10 +2264,10 @@ Animator:
   m_GameObject: {fileID: 9118140948381514423}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 66802e5a34626b24dbef0a7ad7ee47ef, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 1
+  m_Controller: {fileID: 9100000, guid: 0f92df3c2e41e7e4e8ecb7034c0ad1c2, type: 2}
+  m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -2288,17 +2287,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de97d242c6a58054885e66d2b56fe4c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manualOffset: {x: 0, y: 0, z: 0}
-  automaticOffset: 0
-  bufferSize_Sec: 2
+  currentAutoHeightOffset: 0
   findFloorDistance: 2
   layersToHit:
     serializedVersion: 2
     m_Bits: 65536
-  increaseOffsetKey: 273
-  decreaseOffsetKey: 274
-  toggleAutomaticOffsetKey: 111
-  offsetStep: 0.1
+  thresholdDistCloseToFloor: 0.05
+  thresholdDurationOffsetError: 2
 --- !u!114 &-6824248431415980064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2311,24 +2306,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90982a9a211eb694ea6d767b43787f56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enableFootIK: 0
-  filterSlidingMovementsOnGround: 0
-  thresholdEnterGroundedState: 0.15
-  thresholdLeaveGroundedState: 0.19
-  groundedFreeDistance: 0.15
+  thresholdEnterGroundedState: 0.03
+  thresholdLeaveGroundedState: 0.2
+  thresholdFootLock: 0.025
   raycastDetectionLayers:
     serializedVersion: 2
     m_Bits: 65536
   ikPositionApplicationRatio: 1
   ikRotationApplicationRatio: 1
-  LeftFootTransform: {fileID: 5968356429716412887}
-  RightFootTransform: {fileID: 8807488752933314970}
   ankleHeightOffset: 0.102
-  bodyTrackingManager: {fileID: 0}
-  toggleFootIK: 105
-  toggleFilterSlidingMovementsOnGround: 102
   resetAutomaticOffset: 114
-  targetLerpPosMultiplier: 1
-  colorAnkleRBeforeMove: {r: 0.9154093, g: 1, b: 0, a: 1}
-  colorAnkleRPlusHeightOffset: {r: 0.98929596, g: 0, b: 1, a: 1}
-  colorAnkleRAfterMove: {r: 0, g: 0.9230871, b: 1, a: 1}

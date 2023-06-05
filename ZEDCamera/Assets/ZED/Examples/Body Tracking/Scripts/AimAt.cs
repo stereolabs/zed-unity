@@ -6,7 +6,9 @@ using UnityEngine;
 public class AimAt : MonoBehaviour
 {
     public ZEDManager zedManager = null;
+    public ZEDBodyTrackingManager zedBodyTrackingManager = null;
     public Vector3 target = Vector3.zero;
+    private bool mirrored = false;
 
     private void Awake()
     {
@@ -15,11 +17,17 @@ public class AimAt : MonoBehaviour
             Debug.LogError("zedManager is null. Please set a ZedManager.");
             Application.Quit();
         }
+        if (zedBodyTrackingManager == null)
+        {
+            Debug.LogError("zedBodyTrackingManager is null. Please set a zedBodyTrackingManager.");
+            Application.Quit();
+        }
     }
 
     private void Start()
     {
         zedManager.OnBodyTracking += OnBodyTrackingFrame;
+        mirrored = zedBodyTrackingManager.mirrorMode;
     }
 
     private void OnBodyTrackingFrame(BodyTrackingFrame bodyFrame)
@@ -27,6 +35,10 @@ public class AimAt : MonoBehaviour
         if(bodyFrame.bodyCount > 0)
         {
             target = bodyFrame.detectedBodies[0].Get3DWorldPosition();
+            if (mirrored)
+            {
+                target = new Vector3(-target.x, target.y, target.z);
+            }
         }
     }
 
@@ -35,4 +47,5 @@ public class AimAt : MonoBehaviour
     {
         transform.LookAt (target);
     }
+
 }

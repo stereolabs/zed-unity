@@ -134,22 +134,22 @@ PrefabInstance:
     - target: {fileID: 1863105970153930926, guid: 4899bf235f2a6974288bc0989e3dd88f,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 355.55554
+      value: 284
       objectReference: {fileID: 0}
     - target: {fileID: 1863105970153930926, guid: 4899bf235f2a6974288bc0989e3dd88f,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 200
+      value: 160
       objectReference: {fileID: 0}
     - target: {fileID: 1863105970153930926, guid: 4899bf235f2a6974288bc0989e3dd88f,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 197
+      value: 150.6
       objectReference: {fileID: 0}
     - target: {fileID: 1863105970153930926, guid: 4899bf235f2a6974288bc0989e3dd88f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 120
+      value: 509.1
       objectReference: {fileID: 0}
     - target: {fileID: 1863105970403500751, guid: 4899bf235f2a6974288bc0989e3dd88f,
         type: 3}
@@ -341,7 +341,7 @@ PrefabInstance:
     - target: {fileID: 114177934168037988, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: viewMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -356,7 +356,7 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
       propertyPath: depthMode
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42,
         type: 3}
@@ -630,6 +630,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
+--- !u!1 &1080472610 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1795562263255876, guid: 76db3eb81fd21ae45bab5204e324ae42,
+    type: 3}
+  m_PrefabInstance: {fileID: 1007624042}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1283831068
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -722,7 +728,7 @@ PrefabInstance:
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
         type: 3}
       propertyPath: mirrorMode
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
         type: 3}
@@ -734,6 +740,16 @@ PrefabInstance:
       propertyPath: zedManager
       value: 
       objectReference: {fileID: 1786428179}
+    - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
+        type: 3}
+      propertyPath: cameraFrame
+      value: 
+      objectReference: {fileID: 1080472610}
+    - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
+        type: 3}
+      propertyPath: enableFootIK
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
         type: 3}
       propertyPath: smoothFactor
@@ -756,6 +772,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
         type: 3}
+      propertyPath: smoothingValue
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
+        type: 3}
+      propertyPath: automaticOffset
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
+        type: 3}
+      propertyPath: smoothingFactor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
+        type: 3}
+      propertyPath: enableFootLocking
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
+        type: 3}
+      propertyPath: displaySDKSkeleton
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
+        type: 3}
       propertyPath: displayDebugSkeleton
       value: 0
       objectReference: {fileID: 0}
@@ -771,13 +812,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
         type: 3}
+      propertyPath: footLockingSmoothingValue
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
+        type: 3}
       propertyPath: maximumNumberOfDetections
       value: 75
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5,
         type: 3}
       propertyPath: startBodyTrackingAutomatically
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800442, guid: ca18a88838151284380d84fc86d327e5,
         type: 3}

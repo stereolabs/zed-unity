@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using UnityEditor;
+using System.Collections;
 
 #if ZED_URP
 using UnityEngine.Rendering.Universal;
@@ -22,21 +23,20 @@ public class ZEDBodyTrackingManager : MonoBehaviour
         "If you want to visualize detections from multiple ZEDs at once you will need multiple ZED3DSkeletonVisualizer commponents in the scene. ")]
     public ZEDManager zedManager;
 
-    [Tooltip("The camera view to display ZED images")]
-    public Camera viewCamera;
-
+    [Tooltip("Canvas on which the ZED's video feed is displayed. Used to mirror the video feed in mirror mode.")]
+    public GameObject cameraFrame;
 
 	/// <summary>
 	/// Activate skeleton tracking when play mode is on and ZED ready
 	/// </summary>
-	[Header("Game Control")]
+	[Header("------ Game Control ------")]
 
     public bool startBodyTrackingAutomatically = true;
 
     /// <summary>
     /// Vizualisation mode. Use a 3D model or only display the skeleton
     /// </summary>
-    [Header("Vizualisation Mode")]
+    [Header("------ Vizualisation Mode ------")]
     /// <summary>
     /// Display 3D avatar. If set to false, only display bones and joint
     /// </summary>
@@ -50,7 +50,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     public int maximumNumberOfDetections = (int)sl.Constant.MAX_OBJECTS;
 
     [Space(5)]
-    [Header("State Filters")]
+    [Header("------ State Filters ------")]
     [Tooltip("Display objects that are actively being tracked by object tracking, where valid positions are known. ")]
     public bool showON = true;
     /// <summary>
@@ -64,38 +64,83 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     [Tooltip("Display objects that are visible but not actively being tracked by object tracking (usually because object tracking is disabled in ZEDManager).")]
     public bool showOFF = false;
 
-    [Header("Avatar Control")]
+    [Header("------ Avatar Control ------")]
     /// <summary>
     /// Avatar game object
     /// </summary>
     [Tooltip("3D Rigged model.")]
     public GameObject avatar;
     public Material skeletonBaseMaterial;
-
-    [Space(20)]
     [Tooltip("Display bones and joints along 3D avatar")]
     [SerializeField]
-    private bool displayDebugSkeleton = false;
-    public static bool DisplayDebugSkeleton = false;
+    private bool displaySDKSkeleton = false;
+    public static bool DisplaySDKSkeleton = false;
     [SerializeField]
-    private Vector3 offsetDebugSkeleton = new Vector3(1f, 0f, 0f);
-    public static Vector3 OffsetDebugSkeleton = new Vector3(1f, 0f, 0f);
-    [SerializeField]
-    private bool logFusionMetrics = false;
-    public static bool LogFusionMetrics = false;
-
-    [Space(5)]
+    private Vector3 offsetSDKSkeleton = new Vector3(0f, 0f, 0f);
+    public static Vector3 OffsetSDKSkeleton = new Vector3(0f, 0f, 0f);
     [Tooltip("Mirror the animation.")]
     public bool mirrorMode;
 
     private Dictionary<int,SkeletonHandler> avatarControlList;
     public Dictionary<int, SkeletonHandler> AvatarControlList { get => avatarControlList;}
+    public bool EnableSmoothing { get => enableSmoothing; set => enableSmoothing = value; }
+    public bool EnableFootIK { get => enableFootIK; set => enableFootIK = value; }
+    public bool EnableFootLocking { get => enableFootLocking; set => enableFootLocking = value; }
 
     private sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.BODY_38;
+    [Space(10)]
+    [Header("------ Heigh Offset ------")]
+    [Tooltip("Height offset applied to transform each frame.")]
+    public Vector3 manualOffset = Vector3.zero;
+    [Tooltip("Automatic offset adjustment: Finds an automatic offset that sets both feet above ground, and at least one foot on the ground.")]
+    public bool automaticOffset = false;
+    [Tooltip("Step in manual increase/decrease of offset.")]
+    public float offsetStep = 0.1f;
+
+    [Space(5)]
+    [Header("------ Animation Smoothing ------")]
+    [Tooltip("Animation smoothing setting. 0 = No latency, no smoothing. 1 = \"Full latency\" so no movement.\n Tweak this value depending on your framerate, and the fps of the camera."), Range(0f,1f)]
+    public float smoothingValue = 1f;
+    [SerializeField]
+    [Tooltip("Enable animation smoothing or not (induces latency).")]
+    private bool enableSmoothing = true;
+
+    [Space(5)]
+    [Header("------ IK Settings ------")]
+    [Tooltip("Enable foot IK (feet on ground when near it)")]
+    [SerializeField]
+    private bool enableFootIK = false;
+    [SerializeField]
+    [Tooltip("Enable animation smoothing or not (induces latency).")]
+    private bool enableFootLocking = true;
+    [Tooltip("Foot locking smoothing setting. 0 = No latency, no smoothing. 1 = \"Full latency\" so no movement.\n Tweak this value depending on your framerate, and the fps of the camera.\nValues closer to 1 induce more latency, but improve fluidity."), Range(0f, 1f)]
+    public float footLockingSmoothingValue = .8f;
+
+    [Space(5)]
+    [Header("------ Keyboard mapping ------")]
+    public KeyCode toggleFootIK = KeyCode.I;
+    public KeyCode toggleFootLock = KeyCode.F;
+    public KeyCode toggleMirrorMode = KeyCode.M;
+    public KeyCode toggleAutomaticHeightOffset = KeyCode.O;
+    public KeyCode increaseOffsetKey = KeyCode.UpArrow;
+    public KeyCode decreaseOffsetKey = KeyCode.DownArrow;
 
     //private float alpha = 0.1f;
 
     #endregion
+
+    private void Awake()
+    {
+        if(cameraFrame == null)
+        {
+            Debug.LogError("ZEDBodyTrackingManager: Set Camera Frame. It is located under ZED_Rig_X -> Camera_X -> Frame.");
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+         Application.Quit();
+#endif
+        }
+    }
 
     /// <summary>
     /// Start this instance.
@@ -127,6 +172,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
     private void OnZEDReady()
     {
+        StartCoroutine(TimerToMirrorCanvas());
         if (startBodyTrackingAutomatically && !zedManager.IsBodyTrackingRunning)
         {
             zedManager.StartBodyTracking();
@@ -186,26 +232,70 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
 	public void Update()
     {
-        DisplayDebugSkeleton = displayDebugSkeleton;
-        OffsetDebugSkeleton = offsetDebugSkeleton;
-        LogFusionMetrics = logFusionMetrics;    
+        DisplaySDKSkeleton = displaySDKSkeleton;
+        OffsetSDKSkeleton = offsetSDKSkeleton;  
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             useAvatar = !useAvatar;
         }
 
-        // Adjust the 3D avatar to the bones rotations from the SDK each frame.
-        // These rotations are stored, and updated each time data is received from Fusion.
-        if (useAvatar)
+        if (Input.GetKeyDown(KeyCode.Keypad0))
         {
-            foreach (var skelet in avatarControlList)
-            {
-                skelet.Value.Move();
-            }
+            displaySDKSkeleton = !displaySDKSkeleton;
         }
 
-        UpdateViewCameraPosition();
+        if (Input.GetKeyDown(toggleFootIK))
+        {
+            enableFootIK = !enableFootIK;
+        }
+
+        if (Input.GetKeyDown(toggleFootLock))
+        {
+            enableFootLocking = !enableFootLocking;
+        }
+
+        if (Input.GetKeyDown(toggleMirrorMode))
+        {
+            mirrorMode = !mirrorMode;
+            MirrorCanvas(mirrorMode);
+        }
+
+        if (Input.GetKeyDown(increaseOffsetKey))
+        {
+            manualOffset.y += offsetStep;
+        }
+        else if (Input.GetKeyDown(decreaseOffsetKey))
+        {
+            manualOffset.y -= offsetStep;
+        }
+        if (Input.GetKeyDown(toggleAutomaticHeightOffset))
+        {
+            automaticOffset = !automaticOffset;
+        }
+
+        // Display avatars or not depending on useAvatar setting.
+        foreach (var skelet in avatarControlList)
+        {
+            skelet.Value.GetAnimator().gameObject.SetActive(useAvatar);
+        }
+
+    }
+
+    IEnumerator TimerToMirrorCanvas()
+    {
+        yield return new WaitForSeconds(1.0f);
+        MirrorCanvas(mirrorMode);
+    }
+
+    public void MirrorCanvas(bool mirror)
+    {
+        float newX = Mathf.Abs(cameraFrame.transform.localScale.x);
+        newX *= mirror? -1.0f : 1.0f;
+        cameraFrame.transform.localScale = new Vector3(
+            newX,
+            cameraFrame.transform.localScale.y,
+            cameraFrame.transform.localScale.z);   
     }
 
     /// <summary>
@@ -216,12 +306,12 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     private void UpdateAvatarControl(SkeletonHandler handler, sl.BodyData data)
 	{
         Vector3[] worldJointsPos = new Vector3[handler.currentKeypointsCount]; 
-        Quaternion[] worldJointsRot = new Quaternion[handler.currentKeypointsCount];
+        Quaternion[] normalizedLocalJointsRot = new Quaternion[handler.currentKeypointsCount];
 
         for (int i = 0; i < worldJointsPos.Length; i++)
         {
             worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.keypoint[i]);
-            worldJointsRot[i] = data.localOrientationPerJoint[i].normalized;
+            normalizedLocalJointsRot[i] = data.localOrientationPerJoint[i].normalized;
         }
         Quaternion worldGlobalRotation = zedManager.GetZedRootTansform().rotation * data.globalRootOrientation;
 
@@ -230,15 +320,12 @@ public class ZEDBodyTrackingManager : MonoBehaviour
             handler.SetConfidences(data.keypointConfidence);
             handler.SetControlWithJointPosition(
                 worldJointsPos,
-                worldJointsRot, worldGlobalRotation,
+                normalizedLocalJointsRot, worldGlobalRotation,
                 useAvatar, mirrorMode);
+            if (enableFootLocking)
+            {
+                handler.CheckFootLockAnimator();
+            }
         }
-
-    }
-
-    void UpdateViewCameraPosition()
-    {
-        viewCamera.transform.position = zedManager.transform.localPosition;
-        viewCamera.transform.rotation = zedManager.transform.localRotation;
     }
 }

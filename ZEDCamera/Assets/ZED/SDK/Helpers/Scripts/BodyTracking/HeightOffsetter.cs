@@ -6,21 +6,13 @@ public class HeightOffsetter : MonoBehaviour
 {
     #region vars
 
-    private ZEDSkeletonAnimator zedSkeletonAnimator = null;
-
     [Header("Main settings")]
 
-    [Tooltip("Height offset applied to transform each frame.")]
-    public Vector3 manualOffset = Vector3.zero;
+    ZEDBodyTrackingManager bodyTrackingManager;
 
-    [Tooltip("Automatic offset adjustment: Finds an automatic offset that sets both feet above ground, and at least one foot on the ground.")]
-    public bool automaticOffset = false;
-
-    private float currentheightOffset = 0f;
-
-    [Tooltip("Lenght in sec of the buffer used to compute the automatic offset.")]
-    public float bufferSize_Sec = 2.0f;
-    private LinkedList<float> feetOffsetBuffer = new LinkedList<float>();
+    [SerializeField]
+    private float currentAutoHeightOffset = 0f;
+    public float CurrentheightOffset { get => currentAutoHeightOffset; set => currentAutoHeightOffset = value; }
 
     [Header("Finding the ground")]
 
@@ -30,136 +22,108 @@ public class HeightOffsetter : MonoBehaviour
     [Tooltip("Which layers to use when searching the floor above or under.")]
     public LayerMask layersToHit;
 
-    [Header("Keyboard controls")]
-    public KeyCode increaseOffsetKey = KeyCode.UpArrow;
-    public KeyCode decreaseOffsetKey = KeyCode.DownArrow;
-    [Tooltip("Toggle Manual/Automatic offset.")]
-    public KeyCode toggleAutomaticOffsetKey = KeyCode.O;
-    [Tooltip("Step in increase/decrease of offset.")]
-    public float offsetStep = 0.1f;
+    // Threshold to detect height offset error, in meters.
+    [SerializeField] private float thresholdDistCloseToFloor = 0.02f;
 
-    private readonly float feetAlpha = 1.0f;
+    // Duration of successive height offset error frames that should trigger a reset of the auto offset, in seconds.
+    [SerializeField] private float thresholdDurationOffsetError = 3f;
+    private float durationOffsetError = 0f;
+    private float lastCallTime = 0f;
 
     #endregion
 
-    public float CurrentheightOffset { get => currentheightOffset; set => currentheightOffset = value; }
-
-    private void Start()
+    private void Awake()
     {
-        zedSkeletonAnimator = GetComponent<ZEDSkeletonAnimator>();
+        bodyTrackingManager = FindObjectOfType<ZEDBodyTrackingManager>();
+        if (bodyTrackingManager == null)
+        {
+            Debug.LogError("ZEDManagerIK: No body tracking manager loaded!");
+        }
+        lastCallTime = Time.time;
     }
 
     /// <summary>
-    /// Find an automatic offset that sets both feet above ground, and at least one foot on the ground.
-    /// Uses the HeightOffsetStabilized bool value from the ZEDSkeletonAnimator to know when to stop and settle on the current offset.
+    /// Find an offset that sets both feet above ground, and at least one foot on the ground.
     /// </summary>
-    /// <param name="confFootL">Current confidence for the left foot.</param>
-    /// <param name="confFootR">Current confidence for the right foot.</param>
-    /// <param name="lastPosFootL">Current position of the left foot.</param>
-    /// <param name="lastPosFootR">Current position of the right foot.</param>
-    /// <param name="ankleHeightOffset">Height (Y) difference between the "Foot" bone of the animator and the sole of the foot.</param>
-    public Vector3 ComputeRootHeightOffsetXFrames(float confFootL, float confFootR, Vector3 lastPosFootL, Vector3 lastPosFootR, float ankleHeightOffset)
+    /// <returns>Offset to apply to avatar to stick it to the ground. Offset should be added, not subtracted.</returns>
+    public Vector3 ComputeRootHeightOffsetFromRaycastInfo(Vector3 posAnkleL, Vector3 posAnkleR, Vector3 hitPointL, Vector3 hitPointR, float ankleHeightOffset)
     {
-        Vector3 offsetToApply = new Vector3(0, currentheightOffset, 0);
-
-        if (automaticOffset)
+        if (bodyTrackingManager.automaticOffset)
         {
-            // if both feet are visible/detected, attempt to correct the height of the skeleton's root
-            if (!float.IsNaN(confFootL) && confFootL > 0 && !float.IsNaN(confFootR) && confFootR > 0)
+            // Oriented distances from soles (ankle + offset) to virtual object below or above
+            // Positive : Foot is under ground. Negative: Foot is above ground.
+            float offsetToApplyL = hitPointL.y - posAnkleL.y + ankleHeightOffset;
+            float offsetToApplyR = hitPointR.y - posAnkleR.y + ankleHeightOffset;
+
+            // If 1 foot at least is within search for floor range
+            if (Mathf.Abs(offsetToApplyL) < findFloorDistance || Mathf.Abs(offsetToApplyR) < findFloorDistance)
             {
-                Ray rayL = new Ray(lastPosFootL + (Vector3.up * findFloorDistance), Vector3.down);
-                bool rayUnderFootHitL = Physics.Raycast(rayL, out RaycastHit hitL, findFloorDistance * 2, layersToHit);
-                Ray rayR = new Ray(lastPosFootR + (Vector3.up * findFloorDistance), Vector3.down);
-                bool rayUnderFootHitR = Physics.Raycast(rayR, out RaycastHit hitR, findFloorDistance * 2, layersToHit);
-
-                float footFloorDistanceL = 0;
-                float footFloorDistanceR = 0;
-
-                //// "Oriented distance" between the soles and the ground (can be negative)
-                if (rayUnderFootHitL) { footFloorDistanceL = (lastPosFootL.y - ankleHeightOffset) - hitL.point.y; }
-                if (rayUnderFootHitR) { footFloorDistanceR = (lastPosFootR.y - ankleHeightOffset) - hitR.point.y; }
-
-                float minFootFloorDistance = 0;
-
-                // If both feet are under the ground, use the max value instead of the min value.
-                if (footFloorDistanceL < 0 && footFloorDistanceR < 0)
+                // Check if lowest foot is close enough to the floor to reset the timer
+                if (LowestFootIsCloseToGround(offsetToApplyL, offsetToApplyR))
                 {
-                    minFootFloorDistance = -1.0f * Mathf.Max(Mathf.Abs(footFloorDistanceL), Mathf.Abs(footFloorDistanceR));
-                    currentheightOffset = feetAlpha * minFootFloorDistance + (1 - feetAlpha) * currentheightOffset;
-                }
-                else if (footFloorDistanceL >= 0 && footFloorDistanceR >= 0)
-                {
-                    minFootFloorDistance = Mathf.Min(Mathf.Abs(footFloorDistanceL), Mathf.Abs(footFloorDistanceR));
-
-                    // The feet offset is added in the buffer of size "bufferSize". If the buffer is already full, remove the oldest value (the first)
-                    if (feetOffsetBuffer.Count >= bufferSize_Sec * 1.0 / Time.deltaTime)
-                    {
-                        feetOffsetBuffer.RemoveFirst();
-                    }
-                    feetOffsetBuffer.AddLast(minFootFloorDistance);
-
-                    // Continuous adjustment: The feet offset is the min element of this buffer.
-                    minFootFloorDistance = /*-1 **/ MinOfLinkedList(ref feetOffsetBuffer);
-                    currentheightOffset = feetAlpha * minFootFloorDistance + (1 - feetAlpha) * currentheightOffset;
+                    durationOffsetError = 0f;
+                    return new Vector3(0, currentAutoHeightOffset, 0);
                 }
                 else
                 {
-                    minFootFloorDistance = /*-1 **/ Mathf.Min(footFloorDistanceL, footFloorDistanceR);
-                    currentheightOffset = feetAlpha * minFootFloorDistance + (1 - feetAlpha) * currentheightOffset;
+                    float time = Time.time;
+                    durationOffsetError += time - lastCallTime;
+                    lastCallTime = time;
+
+                    if(durationOffsetError > thresholdDurationOffsetError)
+                    {
+                        float startAutoHeightOffset = currentAutoHeightOffset;
+                        RecalculateOffset(offsetToApplyL, offsetToApplyR, out float targetAutoHeightOffset);
+                        StartCoroutine(LerpAutoOffset(.5f, startAutoHeightOffset, targetAutoHeightOffset));
+                        durationOffsetError = 0f;
+                        return new Vector3(0, currentAutoHeightOffset, 0);
+                    }
+                    else // error estimation in progress, don't change offset
+                    {
+                        return new Vector3(0, currentAutoHeightOffset, 0);
+                    }
                 }
             }
-            offsetToApply = new Vector3(0, currentheightOffset, 0);
-        }
-        else
+            else // both feet too far: don't change current offset
+            {
+                return new Vector3(0, currentAutoHeightOffset, 0);
+            }
+        } 
+        else // Automatic offset disabled
         {
-            offsetToApply = manualOffset;
+            return bodyTrackingManager.manualOffset;
         }
-
-        return offsetToApply;
     }
 
     /// <summary>
-    /// Sets the manual offset as height offset.
+    /// Check if the lowest foot is close enough to ground to reset the timer.
     /// </summary>
-    public void ComputeRootHeightOffset()
+    /// <returns>False if lowest foot is too far from the virtual floor. True else.</returns>
+    private bool LowestFootIsCloseToGround(float offsetL, float offsetR)
     {
-        zedSkeletonAnimator.RootHeightOffset = manualOffset;
+        bool b = offsetL <= offsetR ? Mathf.Abs(offsetL) <= thresholdDistCloseToFloor : Mathf.Abs(offsetR) <= thresholdDistCloseToFloor;
+        return b;
     }
 
-    /// <summary>
-    /// Utility function to find the minimum value in a buffer.
-    /// </summary>
-    /// <param name="buf">The buffer.</param>
-    /// <returns>The minimal value.</returns>
-    private float MinOfLinkedList(ref LinkedList<float> buf)
+    private void RecalculateOffset(float offsetToApplyL, float offsetToApplyR, out float targetAutoHeightOffset)
     {
-        float min = float.MaxValue;
-
-        foreach (float e in buf)
-        {
-            if (e < min)
-                min = e;
-        }
-        return min;
+        targetAutoHeightOffset = Mathf.Max(offsetToApplyL, offsetToApplyR);
     }
 
-    /// <summary>
-    /// Manage offset with keyboard.
-    /// </summary>
-    public void Update()
+    IEnumerator LerpAutoOffset(float timeToLerp, float startValue, float targetValue)
     {
-        if (Input.GetKeyDown(increaseOffsetKey))
-        {
-            manualOffset.y += offsetStep;
-        }
-        else if (Input.GetKeyDown(decreaseOffsetKey))
-        {
-            manualOffset.y -= offsetStep;
-        }
+        if(timeToLerp <= 0) { currentAutoHeightOffset = targetValue; yield break; }
 
-        if (Input.GetKeyDown(toggleAutomaticOffsetKey))
+        float lerptime = 0;
+        float lerpVal;
+
+        while (lerptime < timeToLerp)
         {
-            automaticOffset = !automaticOffset;
+            lerpVal = lerptime / timeToLerp;
+            currentAutoHeightOffset = Mathf.Lerp(startValue, targetValue, lerpVal);
+            lerptime += Time.deltaTime;
+            yield return 0;
         }
+        durationOffsetError = 0f;
     }
 }
