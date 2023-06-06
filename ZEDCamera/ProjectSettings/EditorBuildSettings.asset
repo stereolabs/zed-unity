@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/LocalTests/BodyTrackingSingle-InteractiveDisplay.unity
-    guid: 19242dece05f5bb44859413988d19a77
+    path: Assets/ZED/Examples/Body Tracking/Scene/BodyTrackingSingle.unity
+    guid: fde415f3a792698449059817de3b89cf
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: b01ff3b0ada68094c85372aebce0fd81, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 664e825db1d49ae41be6cef83adddb78, type: 2}
