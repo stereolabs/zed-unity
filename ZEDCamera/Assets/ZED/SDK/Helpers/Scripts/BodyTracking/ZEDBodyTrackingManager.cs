@@ -106,7 +106,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     private bool enableSmoothing = true;
 
     [Space(5)]
-    [Header("------ IK Settings ------")]
+    [Header("------ Experimental - IK Settings ------")]
     [Tooltip("Enable foot IK (feet on ground when near it)")]
     [SerializeField]
     private bool enableFootIK = false;
