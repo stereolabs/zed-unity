@@ -19,7 +19,19 @@ public class EnableWhenReady : MonoBehaviour {
         if (ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_04) != null)
             ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_04).OnZEDReady += zedIsReady;
 
-    }
+		if (ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_05) != null)
+			ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_05).OnZEDReady += zedIsReady;
+
+		if (ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_06) != null)
+			ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_06).OnZEDReady += zedIsReady;
+
+		if (ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_07) != null)
+			ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_07).OnZEDReady += zedIsReady;
+
+		if (ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_08) != null)
+			ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_08).OnZEDReady += zedIsReady;
+
+	}
 	
 	// Update is called once per frame
 	void zedIsReady () {

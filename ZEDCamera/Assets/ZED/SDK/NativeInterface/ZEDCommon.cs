@@ -31,8 +31,12 @@ namespace sl
 		CAMERA_ID_01,
 		CAMERA_ID_02,
 		CAMERA_ID_03,
-		CAMERA_ID_04
-	};
+		CAMERA_ID_04,
+        CAMERA_ID_05,
+        CAMERA_ID_06,
+        CAMERA_ID_07,
+        CAMERA_ID_08
+    };
 
 
     public enum INPUT_TYPE
@@ -48,7 +52,7 @@ namespace sl
     /// </summary>
     public enum Constant
 	{
-		MAX_CAMERA_PLUGIN = 4,
+		MAX_CAMERA_PLUGIN = 8,
 		PLANE_DISTANCE = 10,
         MAX_OBJECTS = 75,
         MAX_BATCH_SIZE = 200
