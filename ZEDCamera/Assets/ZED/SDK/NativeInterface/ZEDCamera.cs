@@ -2967,15 +2967,15 @@ namespace sl
                 }
             
             }
-            else if (bodyFormat == sl.BODY_FORMAT.BODY_70)
-            {
-                switch (m_in)
-                {
-                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST:     m_out = sl.AI_MODELS.HUMAN_BODY_70_FAST_DETECTION; break;
-                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM:   m_out = sl.AI_MODELS.HUMAN_BODY_70_MEDIUM_DETECTION; break;
-                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_ACCURATE: m_out = sl.AI_MODELS.HUMAN_BODY_70_ACCURATE_DETECTION; break;
-                }
-            }
+            //else if (bodyFormat == sl.BODY_FORMAT.BODY_70)
+            //{
+            //    switch (m_in)
+            //    {
+            //        case sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST:     m_out = sl.AI_MODELS.HUMAN_BODY_70_FAST_DETECTION; break;
+            //        case sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM:   m_out = sl.AI_MODELS.HUMAN_BODY_70_MEDIUM_DETECTION; break;
+            //        case sl.BODY_TRACKING_MODEL.HUMAN_BODY_ACCURATE: m_out = sl.AI_MODELS.HUMAN_BODY_70_ACCURATE_DETECTION; break;
+            //    }
+            //}
             else
             {
                 switch (m_in)
