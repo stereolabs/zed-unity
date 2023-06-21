@@ -539,7 +539,7 @@ namespace sl
          */
         [DllImport(nameDll, EntryPoint = "sl_enable_positional_tracking_unity")]
         private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, 
-            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, System.Text.StringBuilder aeraFilePath = null);
+            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSTIONAL_TRACKING_MODE mode = sl.POSTIONAL_TRACKING_MODE.STANDARD, System.Text.StringBuilder aeraFilePath = null);
 
         [DllImport(nameDll, EntryPoint = "sl_disable_positional_tracking")]
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
@@ -1354,11 +1354,11 @@ namespace sl
         /// <param name="areaFilePath"> (optional) file of spatial memory file that has to be loaded to relocate in the scene.</param>
         /// <returns></returns>
         public sl.ERROR_CODE EnableTracking(ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = true, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, bool trackingIsStatic = false,
-            bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, string areaFilePath = "")
+            bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSTIONAL_TRACKING_MODE mode = POSTIONAL_TRACKING_MODE.STANDARD, string areaFilePath = "")
         {
             sl.ERROR_CODE trackingStatus = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
             trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(CameraID, ref quat, ref vec, enableSpatialMemory, enablePoseSmoothing, enableFloorAlignment, 
-                trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
+                trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, mode, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
             return trackingStatus;
         }
 

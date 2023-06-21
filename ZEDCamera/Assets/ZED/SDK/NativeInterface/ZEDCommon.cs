@@ -1337,6 +1337,21 @@ namespace sl
     }
 
     /// <summary>
+    /// Lists the mode of positional tracking that can be used.
+    /// </summary>
+    public enum POSTIONAL_TRACKING_MODE
+    {
+        /// <summary>
+        ///  Default mode, best compromise in performance and accuracy
+        /// </summary>
+        STANDARD,
+        /// <summary>
+        /// Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power 
+        /// </summary>
+        QUALITY
+    }
+
+    /// <summary>
     /// SVO compression modes.
     /// </summary>
     public enum SVO_COMPRESSION_MODE

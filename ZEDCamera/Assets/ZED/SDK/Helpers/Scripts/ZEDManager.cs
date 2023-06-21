@@ -270,6 +270,12 @@ public class ZEDManager : MonoBehaviour
     public string pathSpatialMemory;
 
     /// <summary>
+    /// Positional tracking mode used. Can be used to improve accuracy in some type of scene at the cost of longer runtime.
+    /// </summary>
+    [HideInInspector]
+    public sl.POSTIONAL_TRACKING_MODE mode;
+
+    /// <summary>
     /// Estimate initial position by detecting the floor.
     /// </summary>
     [HideInInspector]
@@ -2580,7 +2586,7 @@ public class ZEDManager : MonoBehaviour
             }
 
             sl.ERROR_CODE err = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
-                enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, pathSpatialMemory));
+                enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, mode, pathSpatialMemory));
 
             //Now enable the tracking with the proper parameters.
             if (!(enableTracking = (err == sl.ERROR_CODE.SUCCESS)))
@@ -3788,7 +3794,7 @@ public class ZEDManager : MonoBehaviour
             {
                 //Enables tracking and initializes the first position of the camera.
                 if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic,
-                    enableIMUFusion, depthMinRange, setGravityAsOrigin, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
+                    enableIMUFusion, depthMinRange, setGravityAsOrigin, mode, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
                 {
                     isZEDTracked = false;
                     throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
