@@ -214,7 +214,8 @@ public class ZEDToOpenCVRetriever : MonoBehaviour
             Mat buffermat = GetOpenCVBufferMat(zedCam.ImageHeight, zedCam.ImageWidth, SLMatType2CVMatType(mattype));
 
             //copyToMat(zedmat.GetPtr(), cvMat);
-            MatUtils.copyFromMat(buffermat, zedmat.GetPtr());
+            //MatUtils.copyFromMat(buffermat, zedmat.GetPtr());
+            MatUtils.copyToMat(zedmat.GetPtr(), buffermat);
 
             ConvertColorSpace(buffermat, ref cvMat, conversionatend); 
             //Mat convertedmat = ConvertColorSpace(buffermat, conversionatend); 
