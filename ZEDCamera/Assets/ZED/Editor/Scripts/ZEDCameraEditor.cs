@@ -51,6 +51,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty pathSMProperty;
     private SerializedProperty floorAsOriginProperty;
     private SerializedProperty trackingIsStaticProperty;
+    private SerializedProperty positionalTrackingModeProperty;
 
     //Rendering Prop
     private SerializedProperty depthOcclusionProperty;
@@ -260,6 +261,7 @@ public class ZEDCameraEditor : Editor
         pathSMProperty = serializedObject.FindProperty("pathSpatialMemory");
         floorAsOriginProperty = serializedObject.FindProperty("setFloorAsOrigin");
         trackingIsStaticProperty = serializedObject.FindProperty("trackingIsStatic");
+        positionalTrackingModeProperty = serializedObject.FindProperty("positionalTrackingMode");
 
 
         ///Rendering Serialized Properties
@@ -595,6 +597,8 @@ public class ZEDCameraEditor : Editor
             "Can be useful for stationary cameras where you still need tracking enabled, such as in Object Detection.");
         trackingIsStaticProperty.boolValue = EditorGUILayout.Toggle(trackingIsStaticPropertyLabel, trackingIsStaticProperty.boolValue);
 
+        GUIContent positionalTrackingModePropertyLabel = new GUIContent("Positional Tracking Mode", "Lists the mode of positional tracking that can be used.");
+        positionalTrackingModeProperty.enumValueIndex = (int)(sl.POSTIONAL_TRACKING_MODE)EditorGUILayout.EnumPopup(positionalTrackingModePropertyLabel, (sl.POSTIONAL_TRACKING_MODE)positionalTrackingModeProperty.enumValueIndex);
 
         EditorGUI.indentLevel--;
 
