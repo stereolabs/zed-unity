@@ -236,7 +236,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1863105970403500755, guid: 4899bf235f2a6974288bc0989e3dd88f, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4899bf235f2a6974288bc0989e3dd88f, type: 3}
@@ -302,7 +302,7 @@ PrefabInstance:
     - target: {fileID: 20287226139793380, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: m_TargetTexture
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 8400000, guid: e0e43b005e1a1f347b4924d258914f0b, type: 2}
     - target: {fileID: 20287226139793380, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: m_projectionMatrixMode
       value: 1
@@ -667,7 +667,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: automaticOffset
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: enableSmoothing
@@ -776,7 +776,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9016204339639754600, guid: 62e39df6ad8e382478dc56a09ed786f9, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 62e39df6ad8e382478dc56a09ed786f9, type: 3}

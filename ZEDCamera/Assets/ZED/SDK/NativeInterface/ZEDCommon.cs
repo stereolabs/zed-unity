@@ -1969,7 +1969,7 @@ namespace sl
         BODY_18,
         BODY_34=1,
         BODY_38=2,
-        //BODY_70=3,
+        BODY_70=3,
     };
 
     /// <summary>
@@ -2356,7 +2356,7 @@ namespace sl
         /// Expressed in pixels on the original image resolution, [0,0] is the top left corner.
         /// \warning in some cases, eg. body partially out of the image, some keypoint can not be detected, they will have negatives coordinates.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 70)]
         public Vector2[] keypoint2D;
         /// <summary>
         /// \brief A set of useful points representing the human body, expressed in 3D.
@@ -2364,22 +2364,22 @@ namespace sl
         /// Defined in \ref sl:InitParameters::UNIT, expressed in \ref RuntimeParameters::measure3D_reference_frame.
 	    /// \warning in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 70)]
         public Vector3[] keypoint;
         /// <summary>
         /// Per keypoint detection confidence, can not be lower than the \ref ObjectDetectionRuntimeParameters::detection_confidence_threshold.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 70)]
         public float[] keypointConfidence;
         /// <summary>
         /// Per keypoint local position (the position of the child keypoint with respect to its parent expressed in its parent coordinate frame)
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 70)]
         public Vector3[] localPositionPerJoint;
         /// <summary>
         /// Per keypoint local orientation
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 70)]
         public Quaternion[] localOrientationPerJoint;
         /// <summary>
         ///  global root orientation of the skeleton. The orientation is also represented by a quaternion with the same format as \ref local_orientation_per_joint

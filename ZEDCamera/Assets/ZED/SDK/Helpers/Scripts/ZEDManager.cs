@@ -3201,7 +3201,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     public void StartBodyTracking()
     {
-        if (bodyFormat != sl.BODY_FORMAT.BODY_18 && bodyFormat != sl.BODY_FORMAT.BODY_34 && bodyFormat != sl.BODY_FORMAT.BODY_38 /*&& bodyFormat != sl.BODY_FORMAT.BODY_70*/)
+        if (bodyFormat != sl.BODY_FORMAT.BODY_18 && bodyFormat != sl.BODY_FORMAT.BODY_34 && bodyFormat != sl.BODY_FORMAT.BODY_38 && bodyFormat != sl.BODY_FORMAT.BODY_70)
         {
             Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34 or BODY_38.");
 #if UNITY_EDITOR
