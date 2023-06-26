@@ -146,6 +146,14 @@ namespace sl
         public int y;
         public int width;
         public int height;
+
+        Rect(int x_ = 0, int y_ = 0, int width_= 0, int height_= 0)
+        {
+            this.x = x_;
+            this.y = y_;
+            this.width = width_;
+            this.height = height_;
+        }
     };
 
     public enum CAMERA_STATE

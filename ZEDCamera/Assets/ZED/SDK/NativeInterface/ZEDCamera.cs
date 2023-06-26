@@ -2051,8 +2051,6 @@ namespace sl
             SetCameraSettings(sl.CAMERA_SETTINGS.AUTO_WHITEBALANCE, 1);
             SetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC, 1);
             SetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, 1);
-
-            // SetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC_ROI,2, new sl.Rect(), true);
         }
 
         /// <summary>
