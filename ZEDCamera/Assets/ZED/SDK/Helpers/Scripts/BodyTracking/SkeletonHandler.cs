@@ -871,7 +871,7 @@ public class SkeletonHandler : ScriptableObject
                 currentKeypointsCount = JointType_70_COUNT;
                 break;
             default:
-                Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34, BODY_38 or BODY_70.");
+                Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34 or BODY_38.");
 #if UNITY_EDITOR
                 EditorApplication.ExitPlaymode();
 #else
@@ -1074,9 +1074,10 @@ public class SkeletonHandler : ScriptableObject
             //sphere.layer = LayerMask.NameToLayer("tagInvisibleToZED");
             sphere.GetComponent<Renderer>().material = skBaseMat;
             skBaseMat.color = color;
-            sphere.transform.localScale = (BodyFormat == sl.BODY_FORMAT.BODY_70 && j >= JointType_70_LEFT_HAND_THUMB_1) 
+            sphere.transform.localScale = (BodyFormat == sl.BODY_FORMAT.BODY_70 && j >= JointType_70_LEFT_HAND_THUMB_1)
                 ? new Vector3(width, width, width)
                 : new Vector3(width * 2, width * 2, width * 2);
+            //sphere.transform.localScale = new Vector3(width * 2, width * 2, width * 2);
             sphere.transform.parent = skeleton.transform;
             sphere.name = currentSpheresList[j].ToString();
             spheres[j] = sphere;
@@ -1119,10 +1120,11 @@ public class SkeletonHandler : ScriptableObject
 
             bones[i].SetActive(true);
             Vector3 offset = end - start;
-            // if hands, thinner cylinders
-            Vector3 scale = (BodyFormat == sl.BODY_FORMAT.BODY_70 && i >= 29 )
-                ? new Vector3(width/2f, offset.magnitude / 2.0f, width/2f)
+            // if hands Body70, thinner cylinders
+            Vector3 scale = (BodyFormat == sl.BODY_FORMAT.BODY_70 && i >= 29)
+                ? new Vector3(width / 2f, offset.magnitude / 2.0f, width / 2f)
                 : new Vector3(width, offset.magnitude / 2.0f, width);
+            //Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
             Vector3 position = start + (offset / 2.0f);
 
             bones[i].transform.position = position;

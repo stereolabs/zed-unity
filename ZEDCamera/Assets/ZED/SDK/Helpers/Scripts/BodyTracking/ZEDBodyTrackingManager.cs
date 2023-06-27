@@ -155,6 +155,11 @@ public class ZEDBodyTrackingManager : MonoBehaviour
             zedManager = FindObjectOfType<ZEDManager>();
         }
 
+        if(avatar.GetComponent<Animator>().runtimeAnimatorController == null)
+        {
+            Debug.LogWarning("Animator has no animator controller. Animation from ZED plugin will not work.");
+        }
+
 		if (zedManager)
         {
 

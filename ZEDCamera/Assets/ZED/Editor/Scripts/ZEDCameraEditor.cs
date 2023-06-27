@@ -51,6 +51,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty pathSMProperty;
     private SerializedProperty floorAsOriginProperty;
     private SerializedProperty trackingIsStaticProperty;
+    private SerializedProperty positionalTrackingModeProperty;
 
     //Rendering Prop
     private SerializedProperty depthOcclusionProperty;
@@ -147,6 +148,7 @@ public class ZEDCameraEditor : Editor
     // runtime params
     private SerializedProperty BT_Confidence;
     private SerializedProperty BT_MinimumKPThresh;
+    private SerializedProperty BT_SkSmoothing;
 
     /// <summary>
     /// Layout option used to draw the '...' button for opening a File Explorer window to find a mesh file.
@@ -259,6 +261,7 @@ public class ZEDCameraEditor : Editor
         pathSMProperty = serializedObject.FindProperty("pathSpatialMemory");
         floorAsOriginProperty = serializedObject.FindProperty("setFloorAsOrigin");
         trackingIsStaticProperty = serializedObject.FindProperty("trackingIsStatic");
+        positionalTrackingModeProperty = serializedObject.FindProperty("positionalTrackingMode");
 
 
         ///Rendering Serialized Properties
@@ -317,6 +320,7 @@ public class ZEDCameraEditor : Editor
         BT_BodySelection = serializedObject.FindProperty("bodySelection");
 
         BT_Confidence = serializedObject.FindProperty("bodyTrackingConfidenceThreshold");
+        BT_SkSmoothing = serializedObject.FindProperty("bodyTrackingSkeletonSmoothing");
         //Recording Serialized Properties
         svoOutputFileNameProperty = serializedObject.FindProperty("svoOutputFileName");
         svoOutputCompressionModeProperty = serializedObject.FindProperty("svoOutputCompressionMode");
@@ -593,6 +597,8 @@ public class ZEDCameraEditor : Editor
             "Can be useful for stationary cameras where you still need tracking enabled, such as in Object Detection.");
         trackingIsStaticProperty.boolValue = EditorGUILayout.Toggle(trackingIsStaticPropertyLabel, trackingIsStaticProperty.boolValue);
 
+        GUIContent positionalTrackingModePropertyLabel = new GUIContent("Positional Tracking Mode", "Lists the mode of positional tracking that can be used.");
+        positionalTrackingModeProperty.enumValueIndex = (int)(sl.POSTIONAL_TRACKING_MODE)EditorGUILayout.EnumPopup(positionalTrackingModePropertyLabel, (sl.POSTIONAL_TRACKING_MODE)positionalTrackingModeProperty.enumValueIndex);
 
         EditorGUI.indentLevel--;
 
@@ -1015,6 +1021,9 @@ public class ZEDCameraEditor : Editor
             GUIContent BodyTrackingConfidenceLabel = new GUIContent("Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
             "an object exists to report it.\r\n\nEx: If the threshold is 80, then only objects where the SDK is 80% sure or greater will appear in the list of detected objects.");
             BT_Confidence.intValue = EditorGUILayout.IntSlider(BodyTrackingConfidenceLabel, BT_Confidence.intValue, 1, 99);
+
+            GUIContent BT_SkSmoothingLabel = new GUIContent("Skeleton Smoothing", "From 0 (no smoothing) to 1 (max smoothing), amount of smoothing applied to the skeleton data during the fitting. Higher values will have more latency, but less jitter.");
+            BT_SkSmoothing.floatValue = EditorGUILayout.Slider(BT_SkSmoothingLabel, BT_SkSmoothing.floatValue, 0, 1.0f);
 
             GUI.enabled = cameraIsReady;
 

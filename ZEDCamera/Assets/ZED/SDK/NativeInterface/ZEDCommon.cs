@@ -146,6 +146,14 @@ namespace sl
         public int y;
         public int width;
         public int height;
+
+        Rect(int x_ = 0, int y_ = 0, int width_= 0, int height_= 0)
+        {
+            this.x = x_;
+            this.y = y_;
+            this.width = width_;
+            this.height = height_;
+        }
     };
 
     public enum CAMERA_STATE
@@ -1337,6 +1345,21 @@ namespace sl
     }
 
     /// <summary>
+    /// Lists the mode of positional tracking that can be used.
+    /// </summary>
+    public enum POSTIONAL_TRACKING_MODE
+    {
+        /// <summary>
+        ///  Default mode, best compromise in performance and accuracy
+        /// </summary>
+        STANDARD,
+        /// <summary>
+        /// Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power 
+        /// </summary>
+        QUALITY
+    }
+
+    /// <summary>
     /// SVO compression modes.
     /// </summary>
     public enum SVO_COMPRESSION_MODE
@@ -2236,6 +2259,11 @@ namespace sl
         /// It is useful for example to remove unstable fitting results when a skeleton is partially occluded. 
         /// </summary>
         public int minimumKeypointsThreshold;
+        /// <summary>
+        /// This value controls the smoothing of the fitted fused skeleton.
+        /// It is ranged from 0 (low smoothing) and 1 (high smoothing)
+        /// </summary>
+        public float skeletonSmoothing;
     };
 
     /// <summary>

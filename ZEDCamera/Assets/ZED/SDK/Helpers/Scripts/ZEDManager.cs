@@ -270,6 +270,12 @@ public class ZEDManager : MonoBehaviour
     public string pathSpatialMemory;
 
     /// <summary>
+    /// Positional tracking mode used. Can be used to improve accuracy in some type of scene at the cost of longer runtime.
+    /// </summary>
+    [HideInInspector]
+    public sl.POSTIONAL_TRACKING_MODE positionalTrackingMode;
+
+    /// <summary>
     /// Estimate initial position by detecting the floor.
     /// </summary>
     [HideInInspector]
@@ -688,6 +694,12 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public int bodyTrackingConfidenceThreshold = 60;
+
+    /// <summary>
+    /// Ratio of SDK skeleton smoothing application. 0 is none, 1 is max smoothing.
+    /// </summary>
+    [HideInInspector]
+    public float bodyTrackingSkeletonSmoothing = 0.2f;
 
     /// <summary>
     /// Whether the body tracking module has been activated successfully.
@@ -2574,7 +2586,7 @@ public class ZEDManager : MonoBehaviour
             }
 
             sl.ERROR_CODE err = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
-                enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, pathSpatialMemory));
+                enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode, pathSpatialMemory));
 
             //Now enable the tracking with the proper parameters.
             if (!(enableTracking = (err == sl.ERROR_CODE.SUCCESS)))
@@ -3191,7 +3203,7 @@ public class ZEDManager : MonoBehaviour
     {
         if (bodyFormat != sl.BODY_FORMAT.BODY_18 && bodyFormat != sl.BODY_FORMAT.BODY_34 && bodyFormat != sl.BODY_FORMAT.BODY_38 && bodyFormat != sl.BODY_FORMAT.BODY_70)
         {
-            Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34, BODY_38 or BODY_70.");
+            Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34 or BODY_38.");
 #if UNITY_EDITOR
             EditorApplication.ExitPlaymode();
 #else
@@ -3276,6 +3288,8 @@ public class ZEDManager : MonoBehaviour
 
             bodyTrackingRuntimeParams.detectionConfidenceThreshold = bodyTrackingConfidenceThreshold;
             bodyTrackingRuntimeParams.minimumKeypointsThreshold = bodyTrackingMinimumKPThreshold;
+            bodyTrackingRuntimeParams.skeletonSmoothing = bodyTrackingSkeletonSmoothing;
+
 
             sl.ERROR_CODE err = zedCamera.EnableBodyTracking(ref bt_param);
             if (err == sl.ERROR_CODE.SUCCESS)
@@ -3317,6 +3331,7 @@ public class ZEDManager : MonoBehaviour
         //Update the runtime parameters in case the user made changes.
         bodyTrackingRuntimeParams.detectionConfidenceThreshold = bodyTrackingConfidenceThreshold;
         bodyTrackingRuntimeParams.minimumKeypointsThreshold = bodyTrackingMinimumKPThreshold;
+        bodyTrackingRuntimeParams.skeletonSmoothing = bodyTrackingSkeletonSmoothing;
 
         if (bodyTrackingImageSyncMode == false) RetrieveBodyTrackingFrame(); //If true, this is called in the AcquireImages function in the image acquisition thread.
 
@@ -3779,7 +3794,7 @@ public class ZEDManager : MonoBehaviour
             {
                 //Enables tracking and initializes the first position of the camera.
                 if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic,
-                    enableIMUFusion, depthMinRange, setGravityAsOrigin, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
+                    enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
                 {
                     isZEDTracked = false;
                     throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
