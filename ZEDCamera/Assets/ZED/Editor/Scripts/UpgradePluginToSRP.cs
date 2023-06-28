@@ -32,7 +32,7 @@ public class UpgradePluginToSRP
 
         string zedRigMonoPath = "Assets/ZED/Prefabs/ZED_Rig_Mono.prefab";
         string zedRigStereoPath = "Assets/ZED/Prefabs/ZED_Rig_Stereo.prefab";
-        string zedGreenScreenPath = "Assets/ZED/Examples/GreenScreen/Prefabs/ZED_GreenScreen.prefab";
+        string zedGreenScreenPath = "Assets/ZED/Examples/Green Screen/Prefabs/ZED_GreenScreen.prefab";
         string zedPlanetariumPath = "Assets/ZED/Examples/Planetarium/Prefabs/Planetarium.prefab";
 
 
