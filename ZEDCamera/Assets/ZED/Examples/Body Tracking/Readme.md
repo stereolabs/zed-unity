@@ -77,3 +77,7 @@ You get the Object Detection data from ZEDManager and can access it once Object 
 - GetSDKObjectsFrame(): Returns the original ObjectsFrameSDK object from the most recently-detected frame.
 - OnObjectDetection: An event that is called whenever a new frame has been detected, with the abstracted DetectionFrame object as the argument.
 - OnObjectDetection_SDKData: An event that is called whenever a new frame has been detected, with the original ObjectsFrameSDK object as the argument.
+
+# Third party assets
+
+- Eric avatar from [RenderPeople](https://renderpeople.com/free-3d-people/)
