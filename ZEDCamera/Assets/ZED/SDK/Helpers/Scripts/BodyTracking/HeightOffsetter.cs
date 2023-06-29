@@ -19,8 +19,6 @@ public class HeightOffsetter : MonoBehaviour
     [Tooltip("Max height difference between feet and floor that will trigger the application of the offset." +
         "\nIf the floor is further than this value, above or under, the height will not be offset.")]
     public float findFloorDistance = 2f;
-    [Tooltip("Which layers to use when searching the floor above or under.")]
-    public LayerMask layersToHit;
 
     // Threshold to detect height offset error, in meters.
     [SerializeField] private float thresholdDistCloseToFloor = 0.02f;
