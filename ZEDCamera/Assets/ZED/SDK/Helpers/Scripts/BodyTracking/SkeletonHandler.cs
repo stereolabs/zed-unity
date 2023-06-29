@@ -1333,6 +1333,8 @@ public class SkeletonHandler : ScriptableObject
             targetBodyPositionWithHipOffset = Vector3.Lerp(targetBodyPositionLastFrame, targetBodyPositionWithHipOffset, smoothValue);
             targetBodyPositionLastFrame = targetBodyPositionWithHipOffset;
 
+            if (float.IsNaN(targetBodyOrientationLastFrame.w)) { Debug.LogWarning("NaN value detected. This can happen if \"SHOW_OFF\" is enabled in BodyTrackingManager."); targetBodyOrientationLastFrame = targetBodyOrientation; }
+
             targetBodyOrientationSmoothed = Quaternion.Slerp(
                 targetBodyOrientationLastFrame,
                 targetBodyOrientationSmoothed,
