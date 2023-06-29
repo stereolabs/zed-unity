@@ -1158,7 +1158,7 @@ public class SkeletonHandler : ScriptableObject
 
             if (ZEDBodyTrackingManager.DisplaySDKSkeleton)
             {
-                UpdateSkeleton(ZEDBodyTrackingManager.OffsetSDKSkeleton, _mirrorOnYAxis);
+                UpdateSkeleton(ZEDBodyTrackingManager.OffsetSDKSkeleton + (ZEDBodyTrackingManager.ApplyHeighOffsetToSDKSkeleton?zedSkeletonAnimator.RootHeightOffset:Vector3.zero), _mirrorOnYAxis);
             }
         }
         else

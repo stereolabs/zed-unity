@@ -76,6 +76,9 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     private bool displaySDKSkeleton = false;
     public static bool DisplaySDKSkeleton = false;
     [SerializeField]
+    private bool applyHeighOffsetToSDKSkeleton = false;
+    public static bool ApplyHeighOffsetToSDKSkeleton = false;
+    [SerializeField]
     private Vector3 offsetSDKSkeleton = new Vector3(0f, 0f, 0f);
     public static Vector3 OffsetSDKSkeleton = new Vector3(0f, 0f, 0f);
     [Tooltip("Mirror the animation.")]
@@ -239,6 +242,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     {
         DisplaySDKSkeleton = displaySDKSkeleton;
         OffsetSDKSkeleton = offsetSDKSkeleton;  
+        ApplyHeighOffsetToSDKSkeleton = applyHeighOffsetToSDKSkeleton;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
