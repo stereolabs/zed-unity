@@ -1055,7 +1055,7 @@ public class SkeletonHandler : ScriptableObject
         spheres = new GameObject[currentSpheresList.Length];
 
         skeleton = new GameObject { name = "Skeleton_ID_" + person_id };
-        float width = 0.025f;
+        float width = 0.0125f;
 
         Color color = colors[person_id % colors.Length];
 
@@ -1092,7 +1092,7 @@ public class SkeletonHandler : ScriptableObject
     /// <param name="offsetSDK">In case the "displaySDKSkeleton" option is enabled in the ZEDSkeletonTrackingManager, the skeleton will be displayed with this offset.</param>
     void UpdateSkeleton(Vector3 offsetSDK, bool mirrorMode = false)
     {
-        float width = 0.025f;
+        float width = 0.0125f;
         for (int j = 0; j < spheres.Length; j++)
         {
             if (sl.ZEDCommon.IsVector3NaN(currentJoints[currentSpheresList[j]]))
