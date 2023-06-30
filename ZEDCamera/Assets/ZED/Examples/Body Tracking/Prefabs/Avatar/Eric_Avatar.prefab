@@ -2053,11 +2053,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentAutoHeightOffset: 0
   findFloorDistance: 2
-  layersToHit:
-    serializedVersion: 2
-    m_Bits: 65536
   thresholdDistCloseToFloor: 0.02
-  thresholdDurationOffsetError: 3
+  thresholdDurationOffsetError: 1.5
 --- !u!114 &-386330854788914422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2080,6 +2077,7 @@ MonoBehaviour:
   ikRotationApplicationRatio: 1
   ankleHeightOffset: 0.131
   resetAutomaticOffset: 114
+  canSpawn: 0
 --- !u!1 &6213582807712980654
 GameObject:
   m_ObjectHideFlags: 0

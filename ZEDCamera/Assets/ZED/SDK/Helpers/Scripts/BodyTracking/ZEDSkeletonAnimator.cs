@@ -265,6 +265,17 @@ public class ZEDSkeletonAnimator : MonoBehaviour
         else { transform.position = Skhandler.TargetBodyPositionWithHipOffset + rootHeightOffset; }
     }
 
+    #region Delayed Spawn
+
+    [HideInInspector]
+    public bool canSpawn = false;
+    public void TryShowAvatar(bool newVisibility)
+    {
+        gameObject.SetActive(canSpawn && newVisibility);
+    }
+
+    #endregion
+
     #region MonoBehaviour Functions
 
     private void Awake()

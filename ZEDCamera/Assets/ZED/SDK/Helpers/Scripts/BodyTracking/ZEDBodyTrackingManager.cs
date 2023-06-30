@@ -195,9 +195,28 @@ public class ZEDBodyTrackingManager : MonoBehaviour
         }
     }
 
-	/// <summary>
-	/// Updates the skeleton data from ZEDCamera call and send it to Skeleton Handler script.
-	/// </summary>
+    
+    /// <summary>
+    /// Coroutine to spawn an avatar only after it's been detected for a set duration.
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator InstanciateAvatarWithDelay(float delay, DetectedBody dbody)
+    {
+        SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
+        handler.Create(avatar, bodyFormat);
+        handler.InitSkeleton(dbody.rawBodyData.id, new Material(skeletonBaseMaterial));
+
+        avatarControlList.Add(dbody.rawBodyData.id, handler);
+        UpdateAvatarControl(handler, dbody.rawBodyData);
+        handler.GetAnimator().gameObject.SetActive(false);
+        yield return new WaitForSeconds(delay);
+
+        if (avatarControlList.ContainsKey(dbody.rawBodyData.id)) handler.zedSkeletonAnimator.canSpawn=true;
+    }
+
+    /// <summary>
+    /// Updates the skeleton data from ZEDCamera call and send it to Skeleton Handler script.
+    /// </summary>
     private void UpdateSkeletonData(BodyTrackingFrame dframe)
     {
 		List<int> remainingKeyList = new List<int>(avatarControlList.Keys);
@@ -220,12 +239,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 			{
                 if (avatarControlList.Count < maximumNumberOfDetections)
                 {
-                    SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
-                    Vector3 spawnPosition = zedManager.GetZedRootTansform().TransformPoint(dbody.rawBodyData.position);
-                    handler.Create(avatar, bodyFormat);
-                    handler.InitSkeleton(person_id, new Material(skeletonBaseMaterial));
-                    avatarControlList.Add(person_id, handler);
-                    UpdateAvatarControl(handler, dbody.rawBodyData);
+                    StartCoroutine(InstanciateAvatarWithDelay(3f,dbody));
                 }
 			}
 		}
@@ -286,7 +300,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
         // Display avatars or not depending on useAvatar setting.
         foreach (var skelet in avatarControlList)
         {
-            skelet.Value.GetAnimator().gameObject.SetActive(useAvatar);
+            skelet.Value.zedSkeletonAnimator.TryShowAvatar(useAvatar);
         }
 
     }

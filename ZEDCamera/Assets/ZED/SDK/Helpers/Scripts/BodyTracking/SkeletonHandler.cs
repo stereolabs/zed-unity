@@ -790,7 +790,7 @@ public class SkeletonHandler : ScriptableObject
     public GameObject[] spheres;
 
     private GameObject humanoid;
-    private ZEDSkeletonAnimator zedSkeletonAnimator = null;
+    public ZEDSkeletonAnimator zedSkeletonAnimator = null;
     private Animator animator;
     private Dictionary<HumanBodyBones, RigBone> rigBone = null;
     private Dictionary<HumanBodyBones, Quaternion> rigBoneTarget = null;
