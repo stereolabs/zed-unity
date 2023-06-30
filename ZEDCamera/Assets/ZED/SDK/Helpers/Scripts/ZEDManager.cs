@@ -3043,8 +3043,8 @@ public class ZEDManager : MonoBehaviour
             objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.ELECTRONICS] = OD_electronicsDetectionConfidenceThreshold;
             objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = OD_fruitVegetableDetectionConfidenceThreshold;
             objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.SPORT] = OD_sportDetectionConfidenceThreshold;
+ 
             objectDetectionRuntimeParameters.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
-
             objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
             objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.VEHICLE] = Convert.ToInt32(objectClassVehicleFilter);
             objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.BAG] = Convert.ToInt32(objectClassBagFilter);
@@ -3096,19 +3096,24 @@ public class ZEDManager : MonoBehaviour
 
         //Update the runtime parameters in case the user made changes.
         objectDetectionRuntimeParameters.objectConfidenceThreshold = new int[(int)sl.OBJECT_CLASS.LAST];
-        objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
-        objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
-        objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
         objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.PERSON] = OD_personDetectionConfidenceThreshold;
         objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.VEHICLE] = OD_vehicleDetectionConfidenceThreshold;
         objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.BAG] = OD_bagDetectionConfidenceThreshold;
         objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.ANIMAL] = OD_animalDetectionConfidenceThreshold;
         objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.ELECTRONICS] = OD_electronicsDetectionConfidenceThreshold;
         objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = OD_fruitVegetableDetectionConfidenceThreshold;
+        objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.SPORT] = OD_sportDetectionConfidenceThreshold;
+
+
         objectDetectionRuntimeParameters.objectClassFilter = new int[(int)sl.OBJECT_CLASS.LAST];
         objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.PERSON] = Convert.ToInt32(objectClassPersonFilter);
         objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.VEHICLE] = Convert.ToInt32(objectClassVehicleFilter);
         objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.BAG] = Convert.ToInt32(objectClassBagFilter);
+        objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.ANIMAL] = Convert.ToInt32(objectClassAnimalFilter);
+        objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
+        objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
+        objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.SPORT] = Convert.ToInt32(objectClassSportFilter);
+
 
 
         if (objectDetectionImageSyncMode == false) RetrieveObjectDetectionFrame(); //If true, this is called in the AcquireImages function in the image acquisition thread.
