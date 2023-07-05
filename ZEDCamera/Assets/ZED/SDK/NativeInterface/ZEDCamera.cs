@@ -1059,12 +1059,6 @@ namespace sl
             [MarshalAs(UnmanagedType.U1)]
             public bool enableImageEnhancement;
             /// <summary>
-            /// Set an optional file path where the SDK can find a file containing the calibration information of the camera computed by OpenCV.
-            /// <remarks> Using this will disable the factory calibration of the camera. </remarks>
-            /// <warning> Erroneous calibration values can lead to poor SDK modules accuracy. </warning>
-            /// </summary>
-            public string optionalOpencvCalibrationFile;
-            /// <summary>
             /// Define a timeout in seconds after which an error is reported if the \ref open() command fails.
             /// Set to '-1' to try to open the camera endlessly without returning error in case of failure.
             /// Set to '0' to return error in case of failure at the first attempt.
@@ -1113,7 +1107,6 @@ namespace sl
                 depthStabilization = init.depthStabilization;
                 sensorsRequired = init.sensorsRequired;
                 enableImageEnhancement = init.enableImageEnhancement;
-                optionalOpencvCalibrationFile = init.optionalOpencvCalibrationFile;
                 openTimeoutSec = init.openTimeoutSec;
                 asyncGrabRecovery = init.asyncGrabCameraRecovery;
                 grabComputeCappingFPS = init.grabComputeCappingFPS;
