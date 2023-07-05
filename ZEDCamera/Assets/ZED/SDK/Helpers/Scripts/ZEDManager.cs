@@ -129,7 +129,18 @@ public class ZEDManager : MonoBehaviour
     /// the grab() will exit after a short period and return the ERROR_CODE::CAMERA_REBOOTING warning.
     /// </summary>
     [HideInInspector]
-    public bool asyncGrabRecovery = false;
+    public bool asyncGrabCameraRecovery = false;
+
+    /// <summary>
+    /// Define a computation upper limit to the grab frequency. 0 means setting is ignored.
+    /// This can be useful to get a known constant fixed rate or limit the computation load while keeping a short exposure time by setting a high camera capture framerate.
+	/// The value should be inferior to the InitParameters::camera_fps and strictly positive.It has no effect when reading an SVO file.
+	/// This is an upper limit and won't make a difference if the computation is slower than the desired compute capping fps.
+	/// Internally the grab function always tries to get the latest available image while respecting the desired fps as much as possible.
+    /// default is 0.
+    /// </summary>
+    [HideInInspector]
+    public float grabComputeCappingFPS = 0f;
 
     /// <summary>
     /// SVO loop back option
@@ -2040,7 +2051,8 @@ public class ZEDManager : MonoBehaviour
         initParameters.cameraDisableSelfCalib = !enableSelfCalibration;
         initParameters.optionalOpencvCalibrationFile = opencvCalibFile;
         initParameters.openTimeoutSec = openTimeoutSec;
-        initParameters.asyncGrabRecovery = asyncGrabRecovery;
+        initParameters.asyncGrabCameraRecovery = asyncGrabCameraRecovery;
+        initParameters.grabComputeCappingFPS = grabComputeCappingFPS;
 
         //Check if this rig is a stereo rig. Will set isStereoRig accordingly.
         CheckStereoMode();

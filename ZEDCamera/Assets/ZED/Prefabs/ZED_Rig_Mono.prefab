@@ -55,7 +55,8 @@ MonoBehaviour:
   svoInputFileName: Assets/Recording.svo
   opencvCalibFile: 
   openTimeoutSec: 5
-  asyncGrabRecovery: 0
+  asyncGrabCameraRecovery: 0
+  grabComputeCappingFPS: 0
   svoLoopBack: 1
   svoRealTimeMode: 0
   currentFrame: 0
@@ -68,6 +69,7 @@ MonoBehaviour:
   enableTracking: 1
   enableSpatialMemory: 1
   pathSpatialMemory: 
+  positionalTrackingMode: 0
   setFloorAsOrigin: 1
   trackingIsStatic: 0
   mappingResolutionPreset: 1
@@ -113,6 +115,7 @@ MonoBehaviour:
   bodySelection: 0
   bodyTrackingMinimumKPThreshold: 1
   bodyTrackingConfidenceThreshold: 25
+  bodyTrackingSkeletonSmoothing: 0.2
   depthOcclusion: 1
   postProcessing: 1
   m_cameraBrightness: 100

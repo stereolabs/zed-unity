@@ -1634,14 +1634,26 @@ namespace sl
         /// Set to '0' to return error in case of failure at the first attempt.
         /// This parameter only impacts the LIVE mode.
         /// </summary>
-        public float openTimeoutSec;
+        public float openTimeoutSec = 5f;
+
         /// <summary>
         /// 	Define the behavior of the automatic camera recovery during grab() function call. When async is enabled and there's an issue with the communication with the camera
         /// the grab() will exit after a short period and return the ERROR_CODE::CAMERA_REBOOTING warning.The recovery will run in the background until the correct communication is restored.
         /// When async_grab_camera_recovery is false, the grab() function is blocking and will return only once the camera communication is restored or the timeout is reached.
         /// The default behavior is synchronous, like previous ZED SDK versions
         /// </summary>
-        public bool asyncGrabRecovery;
+        public bool asyncGrabCameraRecovery = false;
+
+
+        /// </summary>
+        /// Define a computation upper limit to the grab frequency. 0 means that the setting is ignored.
+        /// This can be useful to get a known constant fixed rate or limit the computation load while keeping a short exposure time by setting a high camera capture framerate.
+        /// The value should be inferior to the InitParameters::camera_fps and strictly positive. It has no effect when reading an SVO file.
+        /// This is an upper limit and won't make a difference if the computation is slower than the desired compute capping fps.
+        /// Internally the grab function always tries to get the latest available image while respecting the desired fps as much as possible.
+        /// Default value is 0.
+        /// </summary>
+        public float grabComputeCappingFPS = 0f;
 
         /// <summary>
         /// Constructor. Sets default initialization parameters recommended for Unity.
@@ -1674,7 +1686,8 @@ namespace sl
             this.enableImageEnhancement = true;
             this.optionalOpencvCalibrationFile = "";
             this.openTimeoutSec = 5.0f;
-            this.asyncGrabRecovery = false;
+            this.asyncGrabCameraRecovery = false;
+            this.grabComputeCappingFPS = 0f;
         }
     }
 

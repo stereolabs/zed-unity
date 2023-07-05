@@ -320,6 +320,7 @@ namespace sl
 
         /*
         * Opening function (Opens camera and creates textures).
+        * Some initparameters are passed as arguments to facilitate Marshalling.
         */
         [DllImport(nameDll, EntryPoint = "sl_open_camera")]
         private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, uint serialNumber, System.Text.StringBuilder svoPath, System.Text.StringBuilder ipStream, int portStream, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
@@ -1078,6 +1079,15 @@ namespace sl
             /// </summary>
            [MarshalAs(UnmanagedType.U1)]
             public bool asyncGrabRecovery;
+            /// </summary>
+            /// Define a computation upper limit to the grab frequency. 0 means that the setting is ignored.
+            /// This can be useful to get a known constant fixed rate or limit the computation load while keeping a short exposure time by setting a high camera capture framerate.
+            /// The value should be inferior to the InitParameters::camera_fps and strictly positive. It has no effect when reading an SVO file.
+            /// This is an upper limit and won't make a difference if the computation is slower than the desired compute capping fps.
+            /// Internally the grab function always tries to get the latest available image while respecting the desired fps as much as possible.
+            /// Default value is 0.
+            /// </summary>
+            public float grabComputeCappingFPS;
 
             /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
@@ -1105,7 +1115,8 @@ namespace sl
                 enableImageEnhancement = init.enableImageEnhancement;
                 optionalOpencvCalibrationFile = init.optionalOpencvCalibrationFile;
                 openTimeoutSec = init.openTimeoutSec;
-                asyncGrabRecovery = init.asyncGrabRecovery;
+                asyncGrabRecovery = init.asyncGrabCameraRecovery;
+                grabComputeCappingFPS = init.grabComputeCappingFPS;
             }
         }
 
