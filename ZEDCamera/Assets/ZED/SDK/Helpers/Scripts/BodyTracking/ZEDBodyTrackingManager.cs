@@ -64,6 +64,11 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     [Tooltip("Display objects that are visible but not actively being tracked by object tracking (usually because object tracking is disabled in ZEDManager).")]
     public bool showOFF = false;
 
+    [Tooltip("Delay before spawning an avatar. At the end, the tracking state is checked, and if the filters pass then the avatar is spawned.\n" +
+        "Use this to reduce popups of avatars in case of partial occlusion/tracked people at the edges of the ZED's frustum.")]
+    public float delayBeforeSpawn= 1f;
+
+
     [Header("------ Avatar Control ------")]
     /// <summary>
     /// Avatar game object
@@ -239,7 +244,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 			{
                 if (avatarControlList.Count < maximumNumberOfDetections)
                 {
-                    StartCoroutine(InstanciateAvatarWithDelay(3f,dbody));
+                    StartCoroutine(InstanciateAvatarWithDelay(delayBeforeSpawn, dbody));
                 }
 			}
 		}
