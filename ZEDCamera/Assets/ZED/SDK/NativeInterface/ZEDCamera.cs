@@ -1023,7 +1023,7 @@ namespace sl
             /// 0 means a low temporal smmoothing behavior(for highly dynamic scene),
             /// 100 means a high temporal smoothing behavior(for static scene)
             /// </summary>
-            public float depthStabilization;
+            public int depthStabilization;
             /// <summary>
             /// Minimum distance from the camera from which depth will be computed, in the defined coordinateUnit.
             /// </summary>

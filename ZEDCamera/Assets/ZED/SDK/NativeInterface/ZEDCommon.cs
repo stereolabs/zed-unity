@@ -1601,7 +1601,7 @@ namespace sl
         /// 0 means a low temporal smmoothing behavior(for highly dynamic scene),
         /// 100 means a high temporal smoothing behavior(for static scene)
         /// </summary>
-        public float depthStabilization;
+        public int depthStabilization;
 		/// <summary>
 		/// Optional path for searching configuration (calibration) file SNxxxx.conf. (introduced in ZED SDK 2.6)
 		/// </summary>
@@ -1678,7 +1678,7 @@ namespace sl
             this.sdkGPUId = -1;
             this.sdkVerboseLogFile = "";
             this.enableRightSideMeasure = false;
-            this.depthStabilization = -1.0f;
+            this.depthStabilization = -1;
 			this.optionalSettingsPath = "";
 			this.sensorsRequired = false;
             this.ipStream = "";

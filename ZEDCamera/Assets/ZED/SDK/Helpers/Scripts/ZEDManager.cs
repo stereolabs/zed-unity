@@ -1318,7 +1318,7 @@ public class ZEDManager : MonoBehaviour
     /// the depth stabilize smooth range is [0, 100]
     /// 0 means a low temporal smmoothing behavior(for highly dynamic scene),
     /// 100 means a high temporal smoothing behavior(for static scene)
-    private float depthStabilization = -1f;
+    private int depthStabilization = -1;
     /// <summary>
     /// Indicates if Sensors( IMU,...) is needed/required. For most applications, it is required.
     /// Sensors are transmitted through USB2.0 lines. If USB2 is not available (USB3.0 only extension for example), set it to false.
