@@ -1323,7 +1323,7 @@ MonoBehaviour:
   currentAutoHeightOffset: 0
   findFloorDistance: 2
   thresholdDistCloseToFloor: 0.02
-  thresholdDurationOffsetError: 3
+  thresholdDurationOffsetError: 1.5
 --- !u!114 &2778931348753956473
 MonoBehaviour:
   m_ObjectHideFlags: 0

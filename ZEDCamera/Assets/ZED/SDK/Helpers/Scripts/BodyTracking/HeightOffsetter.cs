@@ -24,7 +24,7 @@ public class HeightOffsetter : MonoBehaviour
     [SerializeField] private float thresholdDistCloseToFloor = 0.02f;
 
     // Duration of successive height offset error frames that should trigger a reset of the auto offset, in seconds.
-    [SerializeField] private float thresholdDurationOffsetError = 3f;
+    [SerializeField] private float thresholdDurationOffsetError = 1.5f;
     private float durationOffsetError = 0f;
     private float lastCallTime = 0f;
 
