@@ -129,7 +129,18 @@ public class ZEDManager : MonoBehaviour
     /// the grab() will exit after a short period and return the ERROR_CODE::CAMERA_REBOOTING warning.
     /// </summary>
     [HideInInspector]
-    public bool asyncGrabRecovery = false;
+    public bool asyncGrabCameraRecovery = false;
+
+    /// <summary>
+    /// Define a computation upper limit to the grab frequency. 0 means setting is ignored.
+    /// This can be useful to get a known constant fixed rate or limit the computation load while keeping a short exposure time by setting a high camera capture framerate.
+	/// The value should be inferior to the InitParameters::camera_fps and strictly positive.It has no effect when reading an SVO file.
+	/// This is an upper limit and won't make a difference if the computation is slower than the desired compute capping fps.
+	/// Internally the grab function always tries to get the latest available image while respecting the desired fps as much as possible.
+    /// default is 0.
+    /// </summary>
+    [HideInInspector]
+    public float grabComputeCappingFPS = 0f;
 
     /// <summary>
     /// SVO loop back option
@@ -1307,7 +1318,7 @@ public class ZEDManager : MonoBehaviour
     /// the depth stabilize smooth range is [0, 100]
     /// 0 means a low temporal smmoothing behavior(for highly dynamic scene),
     /// 100 means a high temporal smoothing behavior(for static scene)
-    private float depthStabilization = -1f;
+    private int depthStabilization = -1;
     /// <summary>
     /// Indicates if Sensors( IMU,...) is needed/required. For most applications, it is required.
     /// Sensors are transmitted through USB2.0 lines. If USB2 is not available (USB3.0 only extension for example), set it to false.
@@ -2040,7 +2051,8 @@ public class ZEDManager : MonoBehaviour
         initParameters.cameraDisableSelfCalib = !enableSelfCalibration;
         initParameters.optionalOpencvCalibrationFile = opencvCalibFile;
         initParameters.openTimeoutSec = openTimeoutSec;
-        initParameters.asyncGrabRecovery = asyncGrabRecovery;
+        initParameters.asyncGrabCameraRecovery = asyncGrabCameraRecovery;
+        initParameters.grabComputeCappingFPS = grabComputeCappingFPS;
 
         //Check if this rig is a stereo rig. Will set isStereoRig accordingly.
         CheckStereoMode();
@@ -3206,7 +3218,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     public void StartBodyTracking()
     {
-        if (bodyFormat != sl.BODY_FORMAT.BODY_18 && bodyFormat != sl.BODY_FORMAT.BODY_34 && bodyFormat != sl.BODY_FORMAT.BODY_38 && bodyFormat != sl.BODY_FORMAT.BODY_70)
+        if (bodyFormat != sl.BODY_FORMAT.BODY_18 && bodyFormat != sl.BODY_FORMAT.BODY_34 && bodyFormat != sl.BODY_FORMAT.BODY_38)
         {
             Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34 or BODY_38.");
 #if UNITY_EDITOR

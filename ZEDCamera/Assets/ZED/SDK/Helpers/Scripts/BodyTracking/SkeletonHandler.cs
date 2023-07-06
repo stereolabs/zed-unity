@@ -52,50 +52,6 @@ public class SkeletonHandler : ScriptableObject
         JointType_38_LEFT_HAND_PINKY_1 = 36, // knuckle
         JointType_38_RIGHT_HAND_PINKY_1 = 37,
         JointType_38_COUNT = 38,
-        // --------- Body 70 specific
-        // Left hand
-        JointType_70_LEFT_HAND_THUMB_1 = 30,
-        JointType_70_LEFT_HAND_THUMB_2 = 31,
-        JointType_70_LEFT_HAND_THUMB_3 = 32,
-        JointType_70_LEFT_HAND_THUMB_4 = 33, // tip
-        JointType_70_LEFT_HAND_INDEX_1 = 34, // knuckle
-        JointType_70_LEFT_HAND_INDEX_2 = 35,
-        JointType_70_LEFT_HAND_INDEX_3 = 36,
-        JointType_70_LEFT_HAND_INDEX_4 = 37, // tip
-        JointType_70_LEFT_HAND_MIDDLE_1 = 38,
-        JointType_70_LEFT_HAND_MIDDLE_2 = 39,
-        JointType_70_LEFT_HAND_MIDDLE_3 = 40,
-        JointType_70_LEFT_HAND_MIDDLE_4 = 41,
-        JointType_70_LEFT_HAND_RING_1 = 42,
-        JointType_70_LEFT_HAND_RING_2 = 43,
-        JointType_70_LEFT_HAND_RING_3 = 44,
-        JointType_70_LEFT_HAND_RING_4 = 45,
-        JointType_70_LEFT_HAND_PINKY_1 = 46,
-        JointType_70_LEFT_HAND_PINKY_2 = 47,
-        JointType_70_LEFT_HAND_PINKY_3 = 48,
-        JointType_70_LEFT_HAND_PINKY_4 = 49,
-        // Right hand
-        JointType_70_RIGHT_HAND_THUMB_1 = 50,
-        JointType_70_RIGHT_HAND_THUMB_2 = 51,
-        JointType_70_RIGHT_HAND_THUMB_3 = 52,
-        JointType_70_RIGHT_HAND_THUMB_4 = 53,
-        JointType_70_RIGHT_HAND_INDEX_1 = 54,
-        JointType_70_RIGHT_HAND_INDEX_2 = 55,
-        JointType_70_RIGHT_HAND_INDEX_3 = 56,
-        JointType_70_RIGHT_HAND_INDEX_4 = 57,
-        JointType_70_RIGHT_HAND_MIDDLE_1 = 58,
-        JointType_70_RIGHT_HAND_MIDDLE_2 = 59,
-        JointType_70_RIGHT_HAND_MIDDLE_3 = 60,
-        JointType_70_RIGHT_HAND_MIDDLE_4 = 61,
-        JointType_70_RIGHT_HAND_RING_1 = 62,
-        JointType_70_RIGHT_HAND_RING_2 = 63,
-        JointType_70_RIGHT_HAND_RING_3 = 64,
-        JointType_70_RIGHT_HAND_RING_4 = 65,
-        JointType_70_RIGHT_HAND_PINKY_1 = 66,
-        JointType_70_RIGHT_HAND_PINKY_2 = 67,
-        JointType_70_RIGHT_HAND_PINKY_3 = 68,
-        JointType_70_RIGHT_HAND_PINKY_4 = 69,
-        JointType_70_COUNT = 70,
         // --------- Body34
         JointType_34_Head = 26,
         JointType_34_Neck = 3,
@@ -171,85 +127,6 @@ public class SkeletonHandler : ScriptableObject
     JointType_RIGHT_ANKLE, JointType_RIGHT_HEEL,
     JointType_RIGHT_ANKLE, JointType_RIGHT_BIG_TOE,
     JointType_RIGHT_ANKLE, JointType_RIGHT_SMALL_TOE
-    };
-
-    // List of bones (pair of joints) for BODY_70. Used for Skeleton mode.
-    private static readonly int[] bonesList70 = new int[] {
-    // Torso
-    JointType_PELVIS, JointType_SPINE_1,
-    JointType_SPINE_1, JointType_SPINE_2,
-    JointType_SPINE_2, JointType_SPINE_3,
-    JointType_SPINE_3, JointType_NECK,
-    JointType_PELVIS, JointType_LEFT_HIP,
-    JointType_PELVIS, JointType_RIGHT_HIP,
-    JointType_NECK, JointType_NOSE,
-    JointType_NECK, JointType_LEFT_CLAVICLE,
-    JointType_LEFT_CLAVICLE, JointType_LEFT_SHOULDER,
-    JointType_NECK, JointType_RIGHT_CLAVICLE,
-    JointType_RIGHT_CLAVICLE, JointType_RIGHT_SHOULDER,
-    JointType_NOSE, JointType_LEFT_EYE,
-    JointType_LEFT_EYE, JointType_LEFT_EAR,
-    JointType_NOSE, JointType_RIGHT_EYE,
-    JointType_RIGHT_EYE, JointType_RIGHT_EAR,
-    // legs
-    JointType_LEFT_HIP, JointType_LEFT_KNEE,
-    JointType_LEFT_KNEE, JointType_LEFT_ANKLE,
-    JointType_LEFT_ANKLE, JointType_LEFT_HEEL,
-    JointType_LEFT_ANKLE, JointType_LEFT_BIG_TOE,
-    JointType_LEFT_ANKLE, JointType_LEFT_SMALL_TOE,
-    JointType_RIGHT_HIP, JointType_RIGHT_KNEE,
-    JointType_RIGHT_KNEE, JointType_RIGHT_ANKLE,
-    JointType_RIGHT_ANKLE, JointType_RIGHT_HEEL,
-    JointType_RIGHT_ANKLE, JointType_RIGHT_BIG_TOE,
-    JointType_RIGHT_ANKLE, JointType_RIGHT_SMALL_TOE,
-    // Left arm
-    JointType_LEFT_SHOULDER, JointType_LEFT_ELBOW,
-    JointType_LEFT_ELBOW, JointType_LEFT_WRIST,
-    // right arm
-    JointType_RIGHT_SHOULDER, JointType_RIGHT_ELBOW,
-    JointType_RIGHT_ELBOW, JointType_RIGHT_WRIST,
-    // left hand
-    JointType_LEFT_WRIST, JointType_70_LEFT_HAND_THUMB_1,
-    JointType_70_LEFT_HAND_THUMB_1, JointType_70_LEFT_HAND_THUMB_2,
-    JointType_70_LEFT_HAND_THUMB_2, JointType_70_LEFT_HAND_THUMB_3,
-    JointType_70_LEFT_HAND_THUMB_3, JointType_70_LEFT_HAND_THUMB_4,
-    JointType_LEFT_WRIST, JointType_70_LEFT_HAND_INDEX_1,
-    JointType_70_LEFT_HAND_INDEX_1, JointType_70_LEFT_HAND_INDEX_2,
-    JointType_70_LEFT_HAND_INDEX_2, JointType_70_LEFT_HAND_INDEX_3,
-    JointType_70_LEFT_HAND_INDEX_3, JointType_70_LEFT_HAND_INDEX_4,
-    JointType_LEFT_WRIST, JointType_70_LEFT_HAND_MIDDLE_1,
-    JointType_70_LEFT_HAND_MIDDLE_1, JointType_70_LEFT_HAND_MIDDLE_2,
-    JointType_70_LEFT_HAND_MIDDLE_2, JointType_70_LEFT_HAND_MIDDLE_3,
-    JointType_70_LEFT_HAND_MIDDLE_3, JointType_70_LEFT_HAND_MIDDLE_4,
-    JointType_LEFT_WRIST, JointType_70_LEFT_HAND_RING_1,
-    JointType_70_LEFT_HAND_RING_1, JointType_70_LEFT_HAND_RING_2,
-    JointType_70_LEFT_HAND_RING_2, JointType_70_LEFT_HAND_RING_3,
-    JointType_70_LEFT_HAND_RING_3, JointType_70_LEFT_HAND_RING_4,
-    JointType_LEFT_WRIST, JointType_70_LEFT_HAND_PINKY_1,
-    JointType_70_LEFT_HAND_PINKY_1, JointType_70_LEFT_HAND_PINKY_2,
-    JointType_70_LEFT_HAND_PINKY_2, JointType_70_LEFT_HAND_PINKY_3,
-    JointType_70_LEFT_HAND_PINKY_3, JointType_70_LEFT_HAND_PINKY_4,
-    // right hand
-    JointType_RIGHT_WRIST, JointType_70_RIGHT_HAND_THUMB_1,
-    JointType_70_RIGHT_HAND_THUMB_1, JointType_70_RIGHT_HAND_THUMB_2,
-    JointType_70_RIGHT_HAND_THUMB_2, JointType_70_RIGHT_HAND_THUMB_3,
-    JointType_70_RIGHT_HAND_THUMB_3, JointType_70_RIGHT_HAND_THUMB_4,
-    JointType_RIGHT_WRIST, JointType_70_RIGHT_HAND_INDEX_1,
-    JointType_70_RIGHT_HAND_INDEX_1, JointType_70_RIGHT_HAND_INDEX_2,
-    JointType_70_RIGHT_HAND_INDEX_2, JointType_70_RIGHT_HAND_INDEX_3,
-    JointType_70_RIGHT_HAND_INDEX_3, JointType_70_RIGHT_HAND_INDEX_4,
-    JointType_RIGHT_WRIST, JointType_70_RIGHT_HAND_MIDDLE_1,
-    JointType_70_RIGHT_HAND_MIDDLE_1, JointType_70_RIGHT_HAND_MIDDLE_2,
-    JointType_70_RIGHT_HAND_MIDDLE_2, JointType_70_RIGHT_HAND_MIDDLE_3,
-    JointType_70_RIGHT_HAND_MIDDLE_3, JointType_70_RIGHT_HAND_MIDDLE_4,
-    JointType_RIGHT_WRIST, JointType_70_RIGHT_HAND_RING_1,
-    JointType_70_RIGHT_HAND_RING_1, JointType_70_RIGHT_HAND_RING_2,
-    JointType_70_RIGHT_HAND_RING_2, JointType_70_RIGHT_HAND_RING_3,
-    JointType_70_RIGHT_HAND_RING_3, JointType_70_RIGHT_HAND_RING_4,
-    JointType_RIGHT_WRIST, JointType_70_RIGHT_HAND_PINKY_1,
-    JointType_70_RIGHT_HAND_PINKY_1, JointType_70_RIGHT_HAND_PINKY_2,
-    JointType_70_RIGHT_HAND_PINKY_2, JointType_70_RIGHT_HAND_PINKY_3,
-    JointType_70_RIGHT_HAND_PINKY_3, JointType_70_RIGHT_HAND_PINKY_4
     };
 
     // List of bones (pair of joints) for BODY_34. Used for Skeleton mode.
@@ -329,84 +206,6 @@ public class SkeletonHandler : ScriptableObject
         JointType_38_RIGHT_HAND_MIDDLE_4,
         JointType_38_LEFT_HAND_PINKY_1, // knuckle
         JointType_38_RIGHT_HAND_PINKY_1
-    };
-
-    // List of joint that will be rendered as a sphere in the Skeleton mode.
-    // These are the joints with a rotation information (not the hands in order to not clutter the display)
-    private static readonly int[] sphereList70 = new int[] {
-        JointType_PELVIS,
-        JointType_SPINE_1,
-        JointType_SPINE_2,
-        JointType_SPINE_3,
-        JointType_NECK,
-        JointType_NOSE,
-        JointType_LEFT_EYE,
-        JointType_RIGHT_EYE,
-        JointType_LEFT_EAR,
-        JointType_RIGHT_EAR,
-        JointType_LEFT_CLAVICLE,
-        JointType_RIGHT_CLAVICLE,
-        JointType_LEFT_SHOULDER,
-        JointType_RIGHT_SHOULDER,
-        JointType_LEFT_ELBOW,
-        JointType_RIGHT_ELBOW,
-        JointType_LEFT_WRIST,
-        JointType_RIGHT_WRIST,
-        JointType_LEFT_HIP,
-        JointType_RIGHT_HIP,
-        JointType_LEFT_KNEE,
-        JointType_RIGHT_KNEE,
-        JointType_LEFT_ANKLE,
-        JointType_RIGHT_ANKLE,
-        JointType_LEFT_BIG_TOE,
-        JointType_RIGHT_BIG_TOE,
-        JointType_LEFT_SMALL_TOE,
-        JointType_RIGHT_SMALL_TOE,
-        JointType_LEFT_HEEL,
-        JointType_RIGHT_HEEL,
-        // --------- Body 70 specific
-        // Left hand
-        JointType_70_LEFT_HAND_THUMB_1,
-        JointType_70_LEFT_HAND_THUMB_2,
-        JointType_70_LEFT_HAND_THUMB_3,
-        JointType_70_LEFT_HAND_THUMB_4, // tip
-        JointType_70_LEFT_HAND_INDEX_1, // knuckle
-        JointType_70_LEFT_HAND_INDEX_2,
-        JointType_70_LEFT_HAND_INDEX_3,
-        JointType_70_LEFT_HAND_INDEX_4, // tip
-        JointType_70_LEFT_HAND_MIDDLE_1,
-        JointType_70_LEFT_HAND_MIDDLE_2,
-        JointType_70_LEFT_HAND_MIDDLE_3,
-        JointType_70_LEFT_HAND_MIDDLE_4,
-        JointType_70_LEFT_HAND_RING_1,
-        JointType_70_LEFT_HAND_RING_2,
-        JointType_70_LEFT_HAND_RING_3,
-        JointType_70_LEFT_HAND_RING_4,
-        JointType_70_LEFT_HAND_PINKY_1,
-        JointType_70_LEFT_HAND_PINKY_2,
-        JointType_70_LEFT_HAND_PINKY_3,
-        JointType_70_LEFT_HAND_PINKY_4,
-        // Right hand
-        JointType_70_RIGHT_HAND_THUMB_1,
-        JointType_70_RIGHT_HAND_THUMB_2,
-        JointType_70_RIGHT_HAND_THUMB_3,
-        JointType_70_RIGHT_HAND_THUMB_4,
-        JointType_70_RIGHT_HAND_INDEX_1,
-        JointType_70_RIGHT_HAND_INDEX_2,
-        JointType_70_RIGHT_HAND_INDEX_3,
-        JointType_70_RIGHT_HAND_INDEX_4,
-        JointType_70_RIGHT_HAND_MIDDLE_1,
-        JointType_70_RIGHT_HAND_MIDDLE_2,
-        JointType_70_RIGHT_HAND_MIDDLE_3,
-        JointType_70_RIGHT_HAND_MIDDLE_4,
-        JointType_70_RIGHT_HAND_RING_1,
-        JointType_70_RIGHT_HAND_RING_2,
-        JointType_70_RIGHT_HAND_RING_3,
-        JointType_70_RIGHT_HAND_RING_4,
-        JointType_70_RIGHT_HAND_PINKY_1,
-        JointType_70_RIGHT_HAND_PINKY_2,
-        JointType_70_RIGHT_HAND_PINKY_3,
-        JointType_70_RIGHT_HAND_PINKY_4
     };
 
     // List of joint that will be rendered as a sphere in the Skeleton mode.
@@ -496,81 +295,6 @@ public class SkeletonHandler : ScriptableObject
         17
     };
 
-    // Indexes of bones' parents for BODY_70
-    private static readonly int[] parentsIdx_70 = new int[]
-    {
-        -1,
-        0,
-        1,
-        2,
-        3,
-        4,
-        4,
-        4,
-        4,
-        4,
-        3,
-        3,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        0,
-        0,
-        18,
-        19,
-        20,
-        21,
-        22,
-        23,
-        22,
-        23,
-        22,
-        23,
-        16,
-        30,
-        31,
-        32,
-        16,
-        30,
-        31,
-        32,
-        16,
-        30,
-        31,
-        32,
-        16,
-        30,
-        31,
-        32,
-        16,
-        30,
-        31,
-        32,
-        17,
-        50,
-        51,
-        52,
-        17,
-        50,
-        51,
-        52,
-        17,
-        50,
-        51,
-        52,
-        17,
-        50,
-        51,
-        52,
-        17,
-        50,
-        51,
-        52
-    };
-
     // Indexes of bones' parents for BODY_34 
     private static readonly int[] parentsIdx_34 = new int[]
     {
@@ -653,83 +377,6 @@ public class SkeletonHandler : ScriptableObject
     };
 
     // Bones output by the ZED SDK (in this order)
-    private static HumanBodyBones[] humanBones70 = new HumanBodyBones[] {
-    HumanBodyBones.Hips,
-    HumanBodyBones.Spine,
-    HumanBodyBones.Chest,
-    HumanBodyBones.UpperChest,
-    HumanBodyBones.Neck,
-    HumanBodyBones.LastBone, // Nose
-    HumanBodyBones.LastBone, // Left Eye
-    HumanBodyBones.LastBone, // Right Eye
-    HumanBodyBones.LastBone, // Left Ear
-    HumanBodyBones.LastBone, // Right Ear
-    HumanBodyBones.LeftShoulder,
-    HumanBodyBones.RightShoulder,
-    HumanBodyBones.LeftUpperArm,
-    HumanBodyBones.RightUpperArm,
-    HumanBodyBones.LeftLowerArm,
-    HumanBodyBones.RightLowerArm,
-    HumanBodyBones.LeftHand, // Left Wrist
-    HumanBodyBones.RightHand, // Left Wrist
-    HumanBodyBones.LeftUpperLeg, // Left Hip
-    HumanBodyBones.RightUpperLeg, // Right Hip
-    HumanBodyBones.LeftLowerLeg,
-    HumanBodyBones.RightLowerLeg,
-    HumanBodyBones.LeftFoot,
-    HumanBodyBones.RightFoot,
-    HumanBodyBones.LastBone, // Left Big Toe
-    HumanBodyBones.LastBone, // Right Big Toe
-    HumanBodyBones.LastBone, // Left Small Toe
-    HumanBodyBones.LastBone, // Right Small Toe
-    HumanBodyBones.LastBone, // Left Heel
-    HumanBodyBones.LastBone, // Right Heel
-    // Left Hand
-    HumanBodyBones.LeftThumbProximal,
-    HumanBodyBones.LeftThumbIntermediate,
-    HumanBodyBones.LeftThumbDistal,
-    HumanBodyBones.LastBone, // Left Hand Thumb Tip
-    HumanBodyBones.LeftIndexProximal,
-    HumanBodyBones.LeftIndexIntermediate,
-    HumanBodyBones.LeftIndexDistal,
-    HumanBodyBones.LastBone, // Left Hand Index Tip
-    HumanBodyBones.LeftMiddleProximal,
-    HumanBodyBones.LeftMiddleIntermediate,
-    HumanBodyBones.LeftMiddleDistal,
-    HumanBodyBones.LastBone, // Left Hand Middle Tip
-    HumanBodyBones.LeftRingProximal,
-    HumanBodyBones.LeftRingIntermediate,
-    HumanBodyBones.LeftRingDistal,
-    HumanBodyBones.LastBone, // Left Hand Ring Tip
-    HumanBodyBones.LeftLittleProximal,
-    HumanBodyBones.LeftLittleIntermediate,
-    HumanBodyBones.LeftLittleDistal,
-    HumanBodyBones.LastBone, // Left Hand Pinky Tip
-    // Right Hand
-    HumanBodyBones.RightThumbProximal,
-    HumanBodyBones.RightThumbIntermediate,
-    HumanBodyBones.RightThumbDistal,
-    HumanBodyBones.LastBone, // Right Hand Thumb Tip
-    HumanBodyBones.RightIndexProximal,
-    HumanBodyBones.RightIndexIntermediate,
-    HumanBodyBones.RightIndexDistal,
-    HumanBodyBones.LastBone, // Right Hand Index Tip
-    HumanBodyBones.RightMiddleProximal,
-    HumanBodyBones.RightMiddleIntermediate,
-    HumanBodyBones.RightMiddleDistal,
-    HumanBodyBones.LastBone, // Right Hand Middle Tip
-    HumanBodyBones.RightRingProximal,
-    HumanBodyBones.RightRingIntermediate,
-    HumanBodyBones.RightRingDistal,
-    HumanBodyBones.LastBone, // Right Hand Ring Tip
-    HumanBodyBones.RightLittleProximal,
-    HumanBodyBones.RightLittleIntermediate,
-    HumanBodyBones.RightLittleDistal,
-    HumanBodyBones.LastBone, // Right Hand Pinky Tip
-    HumanBodyBones.LastBone // Last
-    };
-
-    // Bones output by the ZED SDK (in this order)
     private static HumanBodyBones[] humanBones34 = new HumanBodyBones[] {
     HumanBodyBones.Hips,
     HumanBodyBones.Spine,
@@ -772,11 +419,9 @@ public class SkeletonHandler : ScriptableObject
 
     public Vector3[] joints34 = new Vector3[jointType_34_COUNT];
     public Vector3[] joints38 = new Vector3[JointType_38_COUNT];
-    public Vector3[] joints70 = new Vector3[JointType_70_COUNT];
     public Vector3[] currentJoints;
     public float[] confidences34 = new float[jointType_34_COUNT];
     public float[] confidences38 = new float[JointType_38_COUNT];
-    public float[] confidences70 = new float[JointType_70_COUNT];
     public float[] currentConfidences;
     public int[] currentSpheresList;
     public int[] currentBonesList;
@@ -859,17 +504,6 @@ public class SkeletonHandler : ScriptableObject
                 currentRightAnkleIndex = JointType_RIGHT_ANKLE;
                 currentKeypointsCount = JointType_38_COUNT;
                 break;
-            case sl.BODY_FORMAT.BODY_70:
-                currentConfidences = confidences70;
-                currentJoints = joints70;
-                currentHumanBodyBones = humanBones70;
-                currentSpheresList = sphereList70;
-                currentBonesList = bonesList70;
-                currentParentIds = parentsIdx_70;
-                currentLeftAnkleIndex = JointType_LEFT_ANKLE;
-                currentRightAnkleIndex = JointType_RIGHT_ANKLE;
-                currentKeypointsCount = JointType_70_COUNT;
-                break;
             default:
                 Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34 or BODY_38.");
 #if UNITY_EDITOR
@@ -894,7 +528,7 @@ public class SkeletonHandler : ScriptableObject
     /// Create the avatar control
     /// </summary>
     /// <param name="h">The humanoid GameObject prefab.</param>
-    /// <param name="body_format">The Body model to apply (38 or 70 bones).</param>
+    /// <param name="body_format">The Body model to apply (34 or 38 bones).</param>
     public void Create(GameObject h, sl.BODY_FORMAT body_format)
     {
         humanoid = (GameObject)Instantiate(h, Vector3.zero, Quaternion.identity);
@@ -1074,10 +708,7 @@ public class SkeletonHandler : ScriptableObject
             //sphere.layer = LayerMask.NameToLayer("tagInvisibleToZED");
             sphere.GetComponent<Renderer>().material = skBaseMat;
             skBaseMat.color = color;
-            sphere.transform.localScale = (BodyFormat == sl.BODY_FORMAT.BODY_70 && j >= JointType_70_LEFT_HAND_THUMB_1)
-                ? new Vector3(width, width, width)
-                : new Vector3(width * 2, width * 2, width * 2);
-            //sphere.transform.localScale = new Vector3(width * 2, width * 2, width * 2);
+            sphere.transform.localScale = new Vector3(width * 2, width * 2, width * 2);
             sphere.transform.parent = skeleton.transform;
             sphere.name = currentSpheresList[j].ToString();
             spheres[j] = sphere;
@@ -1120,11 +751,7 @@ public class SkeletonHandler : ScriptableObject
 
             bones[i].SetActive(true);
             Vector3 offset = end - start;
-            // if hands Body70, thinner cylinders
-            Vector3 scale = (BodyFormat == sl.BODY_FORMAT.BODY_70 && i >= 29)
-                ? new Vector3(width / 2f, offset.magnitude / 2.0f, width / 2f)
-                : new Vector3(width, offset.magnitude / 2.0f, width);
-            //Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
+            Vector3 scale = new Vector3(width, offset.magnitude / 2.0f, width);
             Vector3 position = start + (offset / 2.0f);
 
             bones[i].transform.position = position;
@@ -1272,6 +899,11 @@ public class SkeletonHandler : ScriptableObject
     }
 
     /// <summary>
+    /// Ignore the smoothing on the first frame to not have the lerp from 0-pose as first animation.
+    /// </summary>
+    private bool firstFrame = true;
+
+    /// <summary>
     /// Propagate rotations and set them to the animator.
     /// </summary>   
     public void MoveAnimator(bool smoothingEnabled, float smoothValue)
@@ -1315,20 +947,7 @@ public class SkeletonHandler : ScriptableObject
         targetBodyOrientationSmoothed = targetBodyOrientation;
 
         // animatorization
-        if (!smoothingEnabled)
-        {
-            foreach (HumanBodyBones bone in currentHumanBodyBones)
-            {
-                if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
-                {
-                    if (rigBone[bone].transform)
-                    {
-                        animator.SetBoneLocalRotation(bone, rigBone[bone].transform.localRotation);
-                    }
-                }
-            }
-        }
-        else // smoothing enabled
+        if (smoothingEnabled && !firstFrame)
         {
             targetBodyPositionWithHipOffset = Vector3.Lerp(targetBodyPositionLastFrame, targetBodyPositionWithHipOffset, smoothValue);
             targetBodyPositionLastFrame = targetBodyPositionWithHipOffset;
@@ -1356,6 +975,23 @@ public class SkeletonHandler : ScriptableObject
                     }
                 }
             }
+        }
+        else // smoothing disabled
+        {
+            targetBodyOrientationLastFrame = targetBodyOrientationSmoothed;
+            targetBodyPositionLastFrame = targetBodyPositionWithHipOffset;
+            foreach (HumanBodyBones bone in currentHumanBodyBones)
+            {
+                if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
+                {
+                    if (rigBone[bone].transform)
+                    {
+                        animator.SetBoneLocalRotation(bone, rigBone[bone].transform.localRotation);
+                        RigBoneRotationLastFrame[bone] = rigBone[bone].transform.localRotation;
+                    }
+                }
+            }
+            firstFrame = false;
         }
 
     }

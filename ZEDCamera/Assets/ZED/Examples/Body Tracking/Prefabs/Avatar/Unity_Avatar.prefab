@@ -2289,11 +2289,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentAutoHeightOffset: 0
   findFloorDistance: 2
-  layersToHit:
-    serializedVersion: 2
-    m_Bits: 65536
-  thresholdDistCloseToFloor: 0.05
-  thresholdDurationOffsetError: 2
+  thresholdDistCloseToFloor: 0.02
+  thresholdDurationOffsetError: 1.5
 --- !u!114 &-6824248431415980064
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2308,7 +2305,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   thresholdEnterGroundedState: 0.03
   thresholdLeaveGroundedState: 0.2
-  thresholdFootLock: 0.025
+  thresholdFootLock: 0.05
   raycastDetectionLayers:
     serializedVersion: 2
     m_Bits: 65536
@@ -2316,3 +2313,4 @@ MonoBehaviour:
   ikRotationApplicationRatio: 1
   ankleHeightOffset: 0.102
   resetAutomaticOffset: 114
+  canSpawn: 0

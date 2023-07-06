@@ -1601,7 +1601,7 @@ namespace sl
         /// 0 means a low temporal smmoothing behavior(for highly dynamic scene),
         /// 100 means a high temporal smoothing behavior(for static scene)
         /// </summary>
-        public float depthStabilization;
+        public int depthStabilization;
 		/// <summary>
 		/// Optional path for searching configuration (calibration) file SNxxxx.conf. (introduced in ZED SDK 2.6)
 		/// </summary>
@@ -1634,14 +1634,26 @@ namespace sl
         /// Set to '0' to return error in case of failure at the first attempt.
         /// This parameter only impacts the LIVE mode.
         /// </summary>
-        public float openTimeoutSec;
+        public float openTimeoutSec = 5f;
+
         /// <summary>
-        /// 	Define the behavior of the automatic camera recovery during grab() function call. When async is enabled and there's an issue with the communication with the camera
+        /// Define the behavior of the automatic camera recovery during grab() function call. When async is enabled and there's an issue with the communication with the camera
         /// the grab() will exit after a short period and return the ERROR_CODE::CAMERA_REBOOTING warning.The recovery will run in the background until the correct communication is restored.
         /// When async_grab_camera_recovery is false, the grab() function is blocking and will return only once the camera communication is restored or the timeout is reached.
         /// The default behavior is synchronous, like previous ZED SDK versions
         /// </summary>
-        public bool asyncGrabRecovery;
+        public bool asyncGrabCameraRecovery = false;
+
+
+        /// </summary>
+        /// Define a computation upper limit to the grab frequency. 0 means that the setting is ignored.
+        /// This can be useful to get a known constant fixed rate or limit the computation load while keeping a short exposure time by setting a high camera capture framerate.
+        /// The value should be inferior to the InitParameters::camera_fps and strictly positive. It has no effect when reading an SVO file.
+        /// This is an upper limit and won't make a difference if the computation is slower than the desired compute capping fps.
+        /// Internally the grab function always tries to get the latest available image while respecting the desired fps as much as possible.
+        /// Default value is 0.
+        /// </summary>
+        public float grabComputeCappingFPS = 0f;
 
         /// <summary>
         /// Constructor. Sets default initialization parameters recommended for Unity.
@@ -1666,7 +1678,7 @@ namespace sl
             this.sdkGPUId = -1;
             this.sdkVerboseLogFile = "";
             this.enableRightSideMeasure = false;
-            this.depthStabilization = -1.0f;
+            this.depthStabilization = -1;
 			this.optionalSettingsPath = "";
 			this.sensorsRequired = false;
             this.ipStream = "";
@@ -1674,7 +1686,8 @@ namespace sl
             this.enableImageEnhancement = true;
             this.optionalOpencvCalibrationFile = "";
             this.openTimeoutSec = 5.0f;
-            this.asyncGrabRecovery = false;
+            this.asyncGrabCameraRecovery = false;
+            this.grabComputeCappingFPS = 0f;
         }
     }
 
@@ -1976,8 +1989,7 @@ namespace sl
     {
         BODY_18,
         BODY_34=1,
-        BODY_38=2,
-        BODY_70=3,
+        BODY_38=2
     };
 
     /// <summary>
@@ -2364,7 +2376,7 @@ namespace sl
         /// Expressed in pixels on the original image resolution, [0,0] is the top left corner.
         /// \warning in some cases, eg. body partially out of the image, some keypoint can not be detected, they will have negatives coordinates.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 70)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
         public Vector2[] keypoint2D;
         /// <summary>
         /// \brief A set of useful points representing the human body, expressed in 3D.
@@ -2372,22 +2384,22 @@ namespace sl
         /// Defined in \ref sl:InitParameters::UNIT, expressed in \ref RuntimeParameters::measure3D_reference_frame.
 	    /// \warning in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 70)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
         public Vector3[] keypoint;
         /// <summary>
         /// Per keypoint detection confidence, can not be lower than the \ref ObjectDetectionRuntimeParameters::detection_confidence_threshold.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 70)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
         public float[] keypointConfidence;
         /// <summary>
         /// Per keypoint local position (the position of the child keypoint with respect to its parent expressed in its parent coordinate frame)
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 70)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
         public Vector3[] localPositionPerJoint;
         /// <summary>
         /// Per keypoint local orientation
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 70)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
         public Quaternion[] localOrientationPerJoint;
         /// <summary>
         ///  global root orientation of the skeleton. The orientation is also represented by a quaternion with the same format as \ref local_orientation_per_joint
@@ -2576,69 +2588,57 @@ namespace sl
         /// <summary>
         /// related to sl.DETECTION_MODEL.MULTI_CLASS_BOX
         /// </summary>
-        MULTI_CLASS_FAST_DETECTION,
+        MULTI_CLASS_FAST_DETECTION=0,
         /// <summary>
         /// related to sl.DETECTION_MODEL.MULTI_CLASS_BOX_MEDIUM
         /// </summary>
-        MULTI_CLASS_MEDIUM_DETECTION,
+        MULTI_CLASS_MEDIUM_DETECTION=1,
         /// <summary>
         /// related to sl.DETECTION_MODEL.MULTI_CLASS_BOX_ACCURATE
         /// </summary>
-        MULTI_CLASS_ACCURATE_DETECTION,
+        MULTI_CLASS_ACCURATE_DETECTION=2,
         /// <summary>
         /// related to sl.DETECTION_MODEL.HUMAN_BODY_FAST
         /// </summary>
-        HUMAN_BODY_FAST_DETECTION,
+        HUMAN_BODY_FAST_DETECTION=3,
         /// <summary>
         /// related to sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
         /// </summary>
-        HUMAN_BODY_MEDIUM_DETECTION,
+        HUMAN_BODY_MEDIUM_DETECTION=4,
         /// <summary>
         /// related to sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE
         /// </summary>
-        HUMAN_BODY_ACCURATE_DETECTION,
+        HUMAN_BODY_ACCURATE_DETECTION=5,
         /// <summary>
         /// related to sl.DETECTION_MODEL.HUMAN_BODY_FAST
         /// </summary>
-        HUMAN_BODY_38_FAST_DETECTION,
+        HUMAN_BODY_38_FAST_DETECTION=6,
         /// <summary>
         /// related to sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
         /// </summary>
-        HUMAN_BODY_38_MEDIUM_DETECTION,
+        HUMAN_BODY_38_MEDIUM_DETECTION=7,
         /// <summary>
         /// related to sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE
         /// </summary>
-        HUMAN_BODY_38_ACCURATE_DETECTION,
+        HUMAN_BODY_38_ACCURATE_DETECTION=8,
         /// <summary>
         /// related to sl.DETECTION_MODEL.HUMAN_BODY_FAST
         /// </summary>
-        HUMAN_BODY_70_FAST_DETECTION,
-        /// <summary>
-        /// related to sl.DETECTION_MODEL.HUMAN_BODY_MEDIUM
-        /// </summary>
-        HUMAN_BODY_70_MEDIUM_DETECTION,
-        /// <summary>
-        /// related to sl.DETECTION_MODEL.HUMAN_BODY_ACCURATE
-        /// </summary>
-        HUMAN_BODY_70_ACCURATE_DETECTION,
+        PERSON_HEAD_FAST_DETECTION=12,
         /// <summary>
         /// related to sl.DETECTION_MODEL.PERSON_HEAD
         /// </summary>
-        PERSON_HEAD_FAST_DETECTION,
-        /// <summary>
-        /// related to sl.DETECTION_MODEL.PERSON_HEAD
-        /// </summary>
-        PERSON_HEAD_ACCURATE_DETECTION,
+        PERSON_HEAD_ACCURATE_DETECTION=13,
         /// <summary>
         /// related to sl.BatchParameters.enable
         /// </summary>
-        REID_ASSOCIATION,
+        REID_ASSOCIATION=14,
         /// <summary>
         /// related to sl.DETECTION_MODEL.NEURAL
         /// </summary>
-        NEURAL_DEPTH,
+        NEURAL_DEPTH=15,
 
-        LAST
+        LAST=16
     };
 
     /// <summary>
@@ -2754,84 +2754,6 @@ namespace sl
         LEFT_HAND_PINKY_1 = 36, 
         RIGHT_HAND_PINKY_1 = 37,
         LAST = 38
-    };
-
-    enum BODY_70_PARTS
-    {
-        PELVIS = 0,
-        SPINE_1 = 1,
-        SPINE_2 = 2,
-        SPINE_3 = 3,
-        NECK = 4,
-        NOSE = 5,
-        LEFT_EYE = 6,
-        RIGHT_EYE = 7,
-        LEFT_EAR = 8,
-        RIGHT_EAR = 9,
-        LEFT_CLAVICLE = 10,
-        RIGHT_CLAVICLE = 11,
-        LEFT_SHOULDER = 12,
-        RIGHT_SHOULDER = 13,
-        LEFT_ELBOW = 14,
-        RIGHT_ELBOW = 15,
-        LEFT_WRIST = 16,
-        RIGHT_WRIST = 17,
-        LEFT_HIP = 18,
-        RIGHT_HIP = 19,
-        LEFT_KNEE = 20,
-        RIGHT_KNEE = 21,
-        LEFT_ANKLE = 22,
-        RIGHT_ANKLE = 23,
-        LEFT_BIG_TOE = 24,
-        RIGHT_BIG_TOE = 25,
-        LEFT_SMALL_TOE = 26,
-        RIGHT_SMALL_TOE = 27,
-        LEFT_HEEL = 28,
-        RIGHT_HEEL = 29,
-        // Hands
-        // Left
-        LEFT_HAND_THUMB_1 = 30,
-        LEFT_HAND_THUMB_2 = 31,
-        LEFT_HAND_THUMB_3 = 32,
-        LEFT_HAND_THUMB_4 = 33,
-        LEFT_HAND_INDEX_1 = 34,
-        LEFT_HAND_INDEX_2 = 35,
-        LEFT_HAND_INDEX_3 = 36,
-        LEFT_HAND_INDEX_4 = 37,
-        LEFT_HAND_MIDDLE_1 = 38,
-        LEFT_HAND_MIDDLE_2 = 39,
-        LEFT_HAND_MIDDLE_3 = 40,
-        LEFT_HAND_MIDDLE_4 = 41,
-        LEFT_HAND_RING_1 = 42,
-        LEFT_HAND_RING_2 = 43,
-        LEFT_HAND_RING_3 = 44,
-        LEFT_HAND_RING_4 = 45,
-        LEFT_HAND_PINKY_1 = 46,
-        LEFT_HAND_PINKY_2 = 47,
-        LEFT_HAND_PINKY_3 = 48,
-        LEFT_HAND_PINKY_4 = 49,
-        // Right
-        RIGHT_HAND_THUMB_1 = 50,
-        RIGHT_HAND_THUMB_2 = 51,
-        RIGHT_HAND_THUMB_3 = 52,
-        RIGHT_HAND_THUMB_4 = 53,
-        RIGHT_HAND_INDEX_1 = 54,
-        RIGHT_HAND_INDEX_2 = 55,
-        RIGHT_HAND_INDEX_3 = 56,
-        RIGHT_HAND_INDEX_4 = 57,
-        RIGHT_HAND_MIDDLE_1 = 58,
-        RIGHT_HAND_MIDDLE_2 = 59,
-        RIGHT_HAND_MIDDLE_3 = 60,
-        RIGHT_HAND_MIDDLE_4 = 61,
-        RIGHT_HAND_RING_1 = 62,
-        RIGHT_HAND_RING_2 = 63,
-        RIGHT_HAND_RING_3 = 64,
-        RIGHT_HAND_RING_4 = 65,
-        RIGHT_HAND_PINKY_1 = 66,
-        RIGHT_HAND_PINKY_2 = 67,
-        RIGHT_HAND_PINKY_3 = 68,
-        RIGHT_HAND_PINKY_4 = 69,
-        LAST = 70
     };
 
     /// <summary>

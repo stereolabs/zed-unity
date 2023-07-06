@@ -163,6 +163,9 @@ public class ZEDCameraEditor : Editor
     SerializedProperty enableSelfCalibrationProperty;
     SerializedProperty enableIMUFusionProperty;
     SerializedProperty opencvCalibFilePath;
+    SerializedProperty openTimeoutSecProperty;
+    SerializedProperty asyncGrabCameraRecoveryProperty;
+    SerializedProperty grabComputeCappingFPSProperty;
 
     // Rendering Prop
     private int arlayer;
@@ -358,6 +361,9 @@ public class ZEDCameraEditor : Editor
         enableImageEnhancementProperty = serializedObject.FindProperty("enableImageEnhancement");
         enableFillModeProperty = serializedObject.FindProperty("enableFillMode");
         opencvCalibFilePath = serializedObject.FindProperty("opencvCalibFile");
+        openTimeoutSecProperty = serializedObject.FindProperty("openTimeoutSec");
+        asyncGrabCameraRecoveryProperty = serializedObject.FindProperty("asyncGrabCameraRecovery");
+        grabComputeCappingFPSProperty = serializedObject.FindProperty("grabComputeCappingFPS");
 
         //Video Settings Serialized Properties
         videoSettingsInitModeProperty = serializedObject.FindProperty("videoSettingsInitMode");
@@ -1015,7 +1021,6 @@ public class ZEDCameraEditor : Editor
 
             GUIContent BodyTrackingMinKeypointsLabel = new GUIContent("Minimum Visible Keypoints", "Minimum number of keypoints tracked by the SDK on a body to report it" +
             "as a body.\r\n\nTweak this value depending on your application. Keep in mind that some parts of the body have a lot of keypoints (e.g. hands and face).");
-            // BT_MinimumKPThresh.intValue = EditorGUILayout.IntSlider(BodyTrackingMinKeypointsLabel, BT_MinimumKPThresh.intValue, 1, 70);
             BT_MinimumKPThresh.intValue = EditorGUILayout.IntField(BodyTrackingMinKeypointsLabel, BT_MinimumKPThresh.intValue);
 
             GUIContent BodyTrackingConfidenceLabel = new GUIContent("Confidence Threshold", "Detection sensitivity.Represents how sure the SDK must be that " +
@@ -1218,6 +1223,24 @@ public class ZEDCameraEditor : Editor
 
             GUIContent openCalibPathlabel = new GUIContent("Opencv Calibration File ", "Optional, Set an optional file path where the SDK can find a file containing the calibration information of the camera computed by OpenCV. ");
             opencvCalibFilePath.stringValue = EditorGUILayout.TextField(openCalibPathlabel, opencvCalibFilePath.stringValue);
+
+            GUIContent openTimeoutSecLabel = new GUIContent("Open() Timeout Duration", "Define a timeout in seconds after which an error is reported if the open() command fails.\n" +
+                "Set to '-1' to try to open the camera endlessly without returning error in case of failure.\n" +
+                "Set to '0' to return error in case of failure at the first attempt.\n" +
+                "This parameter only impacts the LIVE mode.");
+            openTimeoutSecProperty.floatValue = EditorGUILayout.FloatField(openTimeoutSecLabel, openTimeoutSecProperty.floatValue);
+
+            GUIContent asyncGrabCameraRecoveryLabel = new GUIContent("Enable Async Grab Camera Recovery", "If enabled, if there's an issue with the communication with the camera, the grab() will exit after a short period and return the ERROR_CODE::CAMERA_REBOOTING warning.\n" +
+                "The recovery will run in the background until the correct communication is restored." +
+                "When disabled, the grab() function is blocking and will return only once the camera communication is restored or the timeout is reached." +
+                "Default is disabled.");
+            asyncGrabCameraRecoveryProperty.boolValue = EditorGUILayout.Toggle(asyncGrabCameraRecoveryLabel, asyncGrabCameraRecoveryProperty.boolValue);
+
+            GUIContent grabComputeCappingFPSLabel = new GUIContent("Grab Frequency Upper Limit", "This can be useful to get a known constant fixed rate or limit the computation load while keeping a short exposure time by setting a high camera capture framerate.\n" +
+                "The value should be inferior to the InitParameters.CameraFPS and strictly positive. It has no effect when reading an SVO file.\n" +
+                "This is an upper limit and won't make a difference if the computation is slower than the desired compute capping fps." +
+                "Default is 0, which means that the setting is not used.");
+            grabComputeCappingFPSProperty.floatValue = EditorGUILayout.FloatField(grabComputeCappingFPSLabel, grabComputeCappingFPSProperty.floatValue);
 
             GUILayout.Space(12);
 
