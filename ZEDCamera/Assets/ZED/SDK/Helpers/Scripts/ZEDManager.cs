@@ -301,6 +301,21 @@ public class ZEDManager : MonoBehaviour
     /////////////////////////////////////////////////////////////////////////
     ///////////////////////// Spatial Mapping ///////////////////////////////
     /////////////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Controls the spread of plane by checking the position difference.
+    /// Default is 0.15 meters.
+    /// </summary>
+    [HideInInspector]
+    public float planeDetectionMaxDistanceThreshold = 0.15f;
+
+    /// <summary>
+    /// Controls the spread of plane by checking the angle difference.
+    /// Default is 15 degrees.
+    /// </summary>
+    [HideInInspector]
+    public float planeDetectioNormalSimilarityThreshold = 15.0f;
+
     /// <summary>
     /// Resolution setting for the scan. A higher resolution creates more submeshes and uses more memory, but is more accurate.
     /// </summary>

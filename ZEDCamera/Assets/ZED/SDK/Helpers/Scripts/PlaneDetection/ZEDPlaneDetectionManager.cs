@@ -374,8 +374,10 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
         sl.ZEDCamera zedcam = manager.zedCamera;
         Camera cam = manager.GetMainCamera();
 
+        sl.PlaneDetectionParameters planeParameters = new sl.PlaneDetectionParameters(manager.planeDetectionMaxDistanceThreshold, manager.planeDetectioNormalSimilarityThreshold);
+
         ZEDPlaneGameObject.PlaneData plane = new ZEDPlaneGameObject.PlaneData();
-        if (zedcam.findPlaneAtHit(ref plane, screenPos) == sl.ERROR_CODE.SUCCESS) //We found a plane. 
+        if (zedcam.findPlaneAtHit(ref plane, screenPos, ref planeParameters) == sl.ERROR_CODE.SUCCESS) //We found a plane. 
         {
             int numVertices, numTriangles = 0;
             zedcam.convertHitPlaneToMesh(planeMeshVertices, planeMeshTriangles, out numVertices, out numTriangles);

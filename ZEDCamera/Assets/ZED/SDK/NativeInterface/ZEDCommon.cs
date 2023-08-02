@@ -1790,6 +1790,36 @@ namespace sl
     }
 
     /// <summary>
+    /// Sets the plane detection parameters.
+    /// </summary>
+    public class PlaneDetectionParameters
+    {
+        /// <summary>
+        /// Controls the spread of plane by checking the position difference.
+        /// Default is 0.15 meters.
+        /// </summary>
+        public float maxDistanceThreshold = 0.15f;
+
+        /// <summary>
+        /// Controls the spread of plane by checking the angle difference.
+        /// Default is 15 degrees.
+        /// </summary>
+        public float normalSimilarityThreshold = 15.0f;
+
+        public PlaneDetectionParameters()
+        {
+            this.maxDistanceThreshold = 0.15f;
+            this.normalSimilarityThreshold = 15.0f;
+        }
+        public PlaneDetectionParameters(float maxDistanceThreshold, float normalSimilarityThreshold)
+        {
+            this.maxDistanceThreshold = maxDistanceThreshold;
+            this.normalSimilarityThreshold = normalSimilarityThreshold;
+        }
+    }
+
+
+    /// <summary>
     ///brief Lists available compression modes for SVO recording.
     /// </summary>
     public enum FLIP_MODE
