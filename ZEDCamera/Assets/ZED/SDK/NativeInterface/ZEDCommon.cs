@@ -473,7 +473,7 @@ namespace sl
         /// <summary>
         /// Distortion coefficients.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U8, SizeConst = 5)]
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U8, SizeConst = 12)]
         public double[] disto;
 
         /// <summary>
@@ -492,6 +492,11 @@ namespace sl
         /// Camera's current resolution.
         /// </summary>
         public Resolution resolution;
+        /// <summary>
+        /// Real focal length in millimeters
+        /// </summary>
+        public float focalLengthMetric;
+
     };
 
     /// <summary>
