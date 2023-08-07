@@ -2659,21 +2659,21 @@ namespace sl
         /// <summary>
         /// related to sl.DETECTION_MODEL.HUMAN_BODY_FAST
         /// </summary>
-        PERSON_HEAD_FAST_DETECTION=12,
+        PERSON_HEAD_FAST_DETECTION=9,
         /// <summary>
         /// related to sl.DETECTION_MODEL.PERSON_HEAD
         /// </summary>
-        PERSON_HEAD_ACCURATE_DETECTION=13,
+        PERSON_HEAD_ACCURATE_DETECTION=10,
         /// <summary>
         /// related to sl.BatchParameters.enable
         /// </summary>
-        REID_ASSOCIATION=14,
+        REID_ASSOCIATION=11,
         /// <summary>
         /// related to sl.DETECTION_MODEL.NEURAL
         /// </summary>
-        NEURAL_DEPTH=15,
+        NEURAL_DEPTH=12,
 
-        LAST=16
+        LAST=13
     };
 
     /// <summary>
