@@ -152,10 +152,8 @@ public class DetectedBody
             Vector2 rawcoord;
             rawcoord.x = bodyData.boundingBox2D[i].x * scaleForCanvasUnityError + cxoffset;
             rawcoord.y = detectingZEDManager.zedCamera.ImageHeight - bodyData.boundingBox2D[i].y + cyoffset;
-            
-            //Terrible hack to compensate for bug in Unity that scales the Canvas very improperly if you have certain (necessary) values on the projection matrix. 
-            rawcoord.y = (rawcoord.y - (zedimageheight / 2f)) * scaleForCanvasUnityError + (zedimageheight / 2f);
 
+            flippedYimagecoords[i] = rawcoord;
         }
 
         return flippedYimagecoords;

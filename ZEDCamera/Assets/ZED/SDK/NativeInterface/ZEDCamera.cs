@@ -651,7 +651,7 @@ namespace sl
         private static extern IntPtr dllz_find_floor_plane(int cameraID, out Quaternion rotation, out Vector3 translation, Quaternion priorQuaternion, Vector3 priorTranslation);
 
         [DllImport(nameDll, EntryPoint = "sl_find_plane_at_hit")]
-        private static extern IntPtr dllz_find_plane_at_hit(int cameraID, Vector2 HitPixel, bool refine);
+        private static extern IntPtr dllz_find_plane_at_hit(int cameraID, Vector2 HitPixel, ref sl_PlaneDetectionParameters plane_params, bool refine);
 
         [DllImport(nameDll, EntryPoint = "sl_convert_floorplane_to_mesh")]
         private static extern int dllz_convert_floorplane_to_mesh(int cameraID, Vector3[] vertices, int[] triangles, out int numVertices, out int numTriangles);
@@ -2673,13 +2673,23 @@ namespace sl
         }
 
         /// <summary>
+        /// DLL-friendly version of PlaneDetectionParameters (found in ZEDCommon.cs).
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct sl_PlaneDetectionParameters
+        {
+            public float maxDistanceThreshold;
+            public float normalSimilarityThreshold;
+        };
+
+        /// <summary>
         /// Checks for a plane in the real world at given screen-space coordinates.
         /// Use ZEDPlaneDetectionManager.DetectPlaneAtHit() for a higher-level version that turns planes into GameObjects.
         /// </summary>
         /// <param name="plane">Data on the detected plane.</param>
         /// <param name="screenPos">Point on the ZED image to check for a plane.</param>
         /// <returns></returns>
-        public sl.ERROR_CODE findPlaneAtHit(ref ZEDPlaneGameObject.PlaneData plane, Vector2 screenPos)
+        public sl.ERROR_CODE findPlaneAtHit(ref ZEDPlaneGameObject.PlaneData plane, Vector2 screenPos, ref PlaneDetectionParameters planeDetectionParameters)
         {
             IntPtr p = IntPtr.Zero;
             Quaternion out_quat = Quaternion.identity;
@@ -2690,7 +2700,11 @@ namespace sl
             posX = Mathf.Clamp(posX, 0, ImageWidth);
             posY = Mathf.Clamp(posY, 0, ImageHeight);
 
-            p = dllz_find_plane_at_hit(CameraID, new Vector2(posX, posY), true);
+            sl_PlaneDetectionParameters plane_params = new sl_PlaneDetectionParameters();
+            plane_params.maxDistanceThreshold = planeDetectionParameters.maxDistanceThreshold;
+            plane_params.normalSimilarityThreshold = planeDetectionParameters.normalSimilarityThreshold;
+
+            p = dllz_find_plane_at_hit(CameraID, new Vector2(posX, posY), ref plane_params, false);
             plane.Bounds = new Vector3[256];
 
             if (p != IntPtr.Zero)

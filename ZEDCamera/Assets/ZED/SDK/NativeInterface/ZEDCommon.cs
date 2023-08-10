@@ -473,7 +473,7 @@ namespace sl
         /// <summary>
         /// Distortion coefficients.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U8, SizeConst = 5)]
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U8, SizeConst = 12)]
         public double[] disto;
 
         /// <summary>
@@ -492,6 +492,11 @@ namespace sl
         /// Camera's current resolution.
         /// </summary>
         public Resolution resolution;
+        /// <summary>
+        /// Real focal length in millimeters
+        /// </summary>
+        public float focalLengthMetric;
+
     };
 
     /// <summary>
@@ -1790,6 +1795,36 @@ namespace sl
     }
 
     /// <summary>
+    /// Sets the plane detection parameters.
+    /// </summary>
+    public class PlaneDetectionParameters
+    {
+        /// <summary>
+        /// Controls the spread of plane by checking the position difference.
+        /// Default is 0.15 meters.
+        /// </summary>
+        public float maxDistanceThreshold = 0.15f;
+
+        /// <summary>
+        /// Controls the spread of plane by checking the angle difference.
+        /// Default is 15 degrees.
+        /// </summary>
+        public float normalSimilarityThreshold = 15.0f;
+
+        public PlaneDetectionParameters()
+        {
+            this.maxDistanceThreshold = 0.15f;
+            this.normalSimilarityThreshold = 15.0f;
+        }
+        public PlaneDetectionParameters(float maxDistanceThreshold, float normalSimilarityThreshold)
+        {
+            this.maxDistanceThreshold = maxDistanceThreshold;
+            this.normalSimilarityThreshold = normalSimilarityThreshold;
+        }
+    }
+
+
+    /// <summary>
     ///brief Lists available compression modes for SVO recording.
     /// </summary>
     public enum FLIP_MODE
@@ -2624,21 +2659,21 @@ namespace sl
         /// <summary>
         /// related to sl.DETECTION_MODEL.HUMAN_BODY_FAST
         /// </summary>
-        PERSON_HEAD_FAST_DETECTION=12,
+        PERSON_HEAD_FAST_DETECTION=9,
         /// <summary>
         /// related to sl.DETECTION_MODEL.PERSON_HEAD
         /// </summary>
-        PERSON_HEAD_ACCURATE_DETECTION=13,
+        PERSON_HEAD_ACCURATE_DETECTION=10,
         /// <summary>
         /// related to sl.BatchParameters.enable
         /// </summary>
-        REID_ASSOCIATION=14,
+        REID_ASSOCIATION=11,
         /// <summary>
         /// related to sl.DETECTION_MODEL.NEURAL
         /// </summary>
-        NEURAL_DEPTH=15,
+        NEURAL_DEPTH=12,
 
-        LAST=16
+        LAST=13
     };
 
     /// <summary>

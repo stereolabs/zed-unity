@@ -174,9 +174,8 @@ public class DetectedObject
             Vector2 rawcoord;
             rawcoord.x = objectData.boundingBox2D[i].x * scaleForCanvasUnityError + cxoffset;
             rawcoord.y = detectingZEDManager.zedCamera.ImageHeight - objectData.boundingBox2D[i].y + cyoffset;
-            
-            //Terrible hack to compensate for bug in Unity that scales the Canvas very improperly if you have certain (necessary) values on the projection matrix. 
-            rawcoord.y = (rawcoord.y - (zedimageheight / 2f)) * scaleForCanvasUnityError + (zedimageheight / 2f);
+
+            flippedYimagecoords[i] = rawcoord;
         }
 
         return flippedYimagecoords;
@@ -318,6 +317,7 @@ public class DetectedObject
             if (maskTexture == null)
             {
                 IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
+                
                 if (maskpointer != IntPtr.Zero)
                 {
                     maskTexture = ZEDMatToTexture_CPU(maskMat, false);

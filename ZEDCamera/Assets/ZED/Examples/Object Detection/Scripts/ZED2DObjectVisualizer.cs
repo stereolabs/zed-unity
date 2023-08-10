@@ -223,6 +223,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
         List<int> activeids = liveBBoxes.Keys.ToList();
 
         List<DetectedObject> newobjects = dframe.GetFilteredObjectList(showONTracked, showSEARCHINGTracked, showOFFTracked);
+
         //Test just setting box to first available.
         foreach (DetectedObject dobj in newobjects)
         {
@@ -246,6 +247,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
             //Adjust the size of the RectTransform to encompass the object.
             bbox.sizeDelta = new Vector2(objrect.width, objrect.height);
             bbox.anchoredPosition = new Vector2(objrect.x, objrect.y);
+
 
             //Apply the mask.
             if (showObjectMask)
@@ -308,7 +310,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
             //Adjust the size of the RectTransform to encompass the object.
             bbox.sizeDelta = new Vector2(objrect.width, objrect.height);
             bbox.anchoredPosition = new Vector2(objrect.x, objrect.y);
-
+           
             //Apply the mask.
             if (showObjectMask)
             {
