@@ -317,6 +317,7 @@ public class DetectedObject
             if (maskTexture == null)
             {
                 IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
+                
                 if (maskpointer != IntPtr.Zero)
                 {
                     maskTexture = ZEDMatToTexture_CPU(maskMat, false);

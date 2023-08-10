@@ -3185,6 +3185,7 @@ public class ZEDManager : MonoBehaviour
         sl.Objects objsbuffer = new sl.Objects();
 
         sl.ERROR_CODE res = zedCamera.RetrieveObjects(ref objectDetectionRuntimeParameters, ref objsbuffer, objectDetectionInstanceID);
+
         if (res == sl.ERROR_CODE.SUCCESS && objsbuffer.isNew != 0)
         {
             if (objectDetection2DMask)
