@@ -436,6 +436,7 @@ public class SkeletonHandler : ScriptableObject
 
     private GameObject humanoid;
     public ZEDSkeletonAnimator zedSkeletonAnimator = null;
+    public ZEDBodyTrackingManager zedBodyTrackingManager = null;
     private Animator animator;
     private Dictionary<HumanBodyBones, RigBone> rigBone = null;
     private Dictionary<HumanBodyBones, Quaternion> rigBoneTarget = null;
@@ -529,7 +530,7 @@ public class SkeletonHandler : ScriptableObject
     /// </summary>
     /// <param name="h">The humanoid GameObject prefab.</param>
     /// <param name="body_format">The Body model to apply (34 or 38 bones).</param>
-    public void Create(GameObject h, sl.BODY_FORMAT body_format)
+    public void Create(GameObject h, sl.BODY_FORMAT body_format, ZEDBodyTrackingManager btmanager)
     {
         humanoid = (GameObject)Instantiate(h, Vector3.zero, Quaternion.identity);
         animator = humanoid.GetComponent<Animator>();
@@ -538,6 +539,7 @@ public class SkeletonHandler : ScriptableObject
 
         zedSkeletonAnimator = humanoid.GetComponent<ZEDSkeletonAnimator>();
         zedSkeletonAnimator.Skhandler = this;
+        zedSkeletonAnimator.BodyTrackingManager = btmanager;
 
         // Init list of bones that will be updated by the data retrieved from the ZED SDK
         rigBone = new Dictionary<HumanBodyBones, RigBone>();
