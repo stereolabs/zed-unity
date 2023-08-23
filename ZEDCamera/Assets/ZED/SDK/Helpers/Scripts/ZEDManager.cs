@@ -3105,7 +3105,7 @@ public class ZEDManager : MonoBehaviour
     {
         if (zedCamera != null && running)
         {
-            zedCamera.DisableObjectDetection();
+            zedCamera.DisableObjectDetection(objectDetectionInstanceID);
             if (OnStopObjectDetection != null)
             {
                 OnStopObjectDetection();
@@ -3349,7 +3349,7 @@ public class ZEDManager : MonoBehaviour
     {
         if (zedCamera != null && running)
         {
-            zedCamera.DisableBodyTracking();
+            zedCamera.DisableBodyTracking(bodyTrackingInstanceID);
             bodyTrackingRunning = false;
         }
     }

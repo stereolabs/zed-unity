@@ -2891,11 +2891,11 @@ namespace sl
         /// <summary>
         /// Disable object detection module and release the resources.
         /// </summary>
-        public void DisableObjectDetection()
+        public void DisableObjectDetection(uint objectDetectionInstanceID = 0)
         {
             lock (grabLock)
             {
-                dllz_disable_object_detection(CameraID, 0, false);
+                dllz_disable_object_detection(CameraID, objectDetectionInstanceID, false);
             }
         }
 
@@ -3013,11 +3013,11 @@ namespace sl
         /// <summary>
         /// Disable body tracking module and release the resources.
         /// </summary>
-        public void DisableBodyTracking()
+        public void DisableBodyTracking(uint bodyTrackingInstanceID = 1)
         {
             lock (grabLock)
             {
-                dllz_disable_body_tracking(CameraID, 0, false);
+                dllz_disable_body_tracking(CameraID, bodyTrackingInstanceID, false);
             }
         }
 
