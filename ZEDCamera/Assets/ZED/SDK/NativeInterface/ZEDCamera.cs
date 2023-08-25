@@ -285,7 +285,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(4, 0, 4);
+        public static readonly System.Version PluginVersion = new System.Version(4, 0, 6);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
