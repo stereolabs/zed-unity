@@ -143,6 +143,26 @@ public class ZEDManager : MonoBehaviour
     public float grabComputeCappingFPS = 0f;
 
     /// <summary>
+    /// Define a computation upper limit to the grab frequency. 0 means setting is ignored.
+    /// This can be useful to get a known constant fixed rate or limit the computation load while keeping a short exposure time by setting a high camera capture framerate.
+	/// The value should be inferior to the InitParameters::camera_fps and strictly positive.It has no effect when reading an SVO file.
+	/// This is an upper limit and won't make a difference if the computation is slower than the desired compute capping fps.
+	/// Internally the grab function always tries to get the latest available image while respecting the desired fps as much as possible.
+    /// default is 0.
+    /// </summary>
+    [HideInInspector]
+    public bool enableImageValidityCheck = false;
+
+    //Depth ROI Settings
+    [HideInInspector]
+    public float depthFarThresholdMeter = 2.5f;
+    [HideInInspector]
+    public float imageHeightRatioCutoff = 0.5f;
+    [HideInInspector]
+    public bool autoApplyROI = true;
+
+
+    /// <summary>
     /// SVO loop back option
     /// </summary>
     [HideInInspector]
@@ -2068,6 +2088,7 @@ public class ZEDManager : MonoBehaviour
         initParameters.openTimeoutSec = openTimeoutSec;
         initParameters.asyncGrabCameraRecovery = asyncGrabCameraRecovery;
         initParameters.grabComputeCappingFPS = grabComputeCappingFPS;
+        initParameters.enableImageValidityCheck = enableImageValidityCheck;
 
         //Check if this rig is a stereo rig. Will set isStereoRig accordingly.
         CheckStereoMode();
@@ -2186,7 +2207,6 @@ public class ZEDManager : MonoBehaviour
         {
             initQuittingHandle.WaitOne(0); //Makes sure we haven't been turned off early, which only happens in Destroy() from OnApplicationQuit().
             if (forceCloseInit) break;
-
             lastInitStatus = zedCamera.Open(ref initParameters);
             timeout++;
             numberTriesOpening++;
@@ -3105,7 +3125,7 @@ public class ZEDManager : MonoBehaviour
     {
         if (zedCamera != null && running)
         {
-            zedCamera.DisableObjectDetection();
+            zedCamera.DisableObjectDetection(objectDetectionInstanceID);
             if (OnStopObjectDetection != null)
             {
                 OnStopObjectDetection();
@@ -3349,7 +3369,7 @@ public class ZEDManager : MonoBehaviour
     {
         if (zedCamera != null && running)
         {
-            zedCamera.DisableBodyTracking();
+            zedCamera.DisableBodyTracking(bodyTrackingInstanceID);
             bodyTrackingRunning = false;
         }
     }
