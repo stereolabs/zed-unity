@@ -1380,15 +1380,15 @@ namespace sl
         /// <summary>
         ///  The region of interest auto detection is initializing.
         /// </summary>
-        SL_REGION_OF_INTEREST_AUTO_DETECTION_STATE_RUNNING,
+        RUNNING,
         /// <summary>
         ///  The region of interest mask is ready, if auto_apply was enabled, the region of interest mask is being used.
         /// </summary>
-        SL_REGION_OF_INTEREST_AUTO_DETECTION_STATE_READY,
+        READY,
         /// <summary>
         ///  The region of interest auto detection is not enabled.
         /// </summary>
-        SL_REGION_OF_INTEREST_AUTO_DETECTION_STATE_NOT_ENABLED,
+        ENABLED,
     }
 
     /// <summary>

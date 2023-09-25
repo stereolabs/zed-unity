@@ -153,15 +153,6 @@ public class ZEDManager : MonoBehaviour
     [HideInInspector]
     public bool enableImageValidityCheck = false;
 
-    //Depth ROI Settings
-    [HideInInspector]
-    public float depthFarThresholdMeter = 2.5f;
-    [HideInInspector]
-    public float imageHeightRatioCutoff = 0.5f;
-    [HideInInspector]
-    public bool autoApplyROI = true;
-
-
     /// <summary>
     /// SVO loop back option
     /// </summary>
