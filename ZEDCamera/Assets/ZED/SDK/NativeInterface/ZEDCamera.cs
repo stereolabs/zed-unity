@@ -285,7 +285,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(4, 0, 6);
+        public static readonly System.Version PluginVersion = new System.Version(4, 0, 7);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -413,6 +413,9 @@ namespace sl
          * Camera control functions.
          */
 
+        [DllImport(nameDll, EntryPoint = "sl_is_camera_setting_supported")]
+        private static extern bool dllz_is_video_setting_supported(int id, int setting);
+
         [DllImport(nameDll, EntryPoint = "sl_set_video_settings")]
         private static extern void dllz_set_video_settings(int id, int mode, int value);
 
@@ -499,16 +502,18 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_get_svo_position")]
         private static extern int dllz_get_svo_position(int cameraID);
 
+        [DllImport(nameDll, EntryPoint = "sl_get_svo_position_at_timestamp")]
+        private static extern int dllz_get_svo_position_at_timestamp(int cameraID, ulong timestamp);
 
         /*
          * Depth Sensing utils functions.
          */
-         /* Removed as of ZED SDK v3.0.
-        [DllImport(nameDll, EntryPoint = "set_confidence_threshold")]
-        private static extern void dllz_set_confidence_threshold(int cameraID, int threshold);
-        [DllImport(nameDll, EntryPoint = "set_depth_max_range_value")]
-        private static extern void dllz_set_depth_max_range_value(int cameraID, float distanceMax);
-        */
+        /* Removed as of ZED SDK v3.0.
+       [DllImport(nameDll, EntryPoint = "set_confidence_threshold")]
+       private static extern void dllz_set_confidence_threshold(int cameraID, int threshold);
+       [DllImport(nameDll, EntryPoint = "set_depth_max_range_value")]
+       private static extern void dllz_set_depth_max_range_value(int cameraID, float distanceMax);
+       */
 
         [DllImport(nameDll, EntryPoint = "sl_get_confidence_threshold")]
         private static extern int dllz_get_confidence_threshold(int cameraID);
@@ -1084,6 +1089,16 @@ namespace sl
             public float grabComputeCappingFPS;
 
             /// <summary>
+            ///  Enable or disable the image validity verification.
+            ///  This will perform additional verification on the image to identify corrupted data. This verification is done in the grab function and requires some computations.
+            ///  If an issue is found, the grab function will output a warning as sl::ERROR_CODE::CORRUPTED_FRAME.
+            ///  This version doesn't detect frame tearing currently.
+            ///  \n default: disabled
+            /// </summary>
+            [MarshalAs(UnmanagedType.U1)]
+            public bool enableImageValidityCheck;
+
+            /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
             /// </summary>
             /// <param name="init"></param>
@@ -1110,6 +1125,7 @@ namespace sl
                 openTimeoutSec = init.openTimeoutSec;
                 asyncGrabRecovery = init.asyncGrabCameraRecovery;
                 grabComputeCappingFPS = init.grabComputeCappingFPS;
+                enableImageValidityCheck = init.enableImageValidityCheck;
             }
         }
 
@@ -1130,7 +1146,8 @@ namespace sl
                 initParameters.cameraFPS = (int)fpsMax;
             }
             dll_initParameters initP = new dll_initParameters(initParameters); //DLL-friendly version of InitParameters.
-            initP.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP; //Left-hand, Y-up is Unity's coordinate system, so we match that.
+            initP.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP; //Left-hand, Y-up is Unity's coordinate system, so we match that
+
             int v = dllz_open(CameraID, ref initP, initParameters.serialNumber,
                 new System.Text.StringBuilder(initParameters.pathSVO, initParameters.pathSVO.Length),
                 new System.Text.StringBuilder(initParameters.ipStream, initParameters.ipStream.Length),
@@ -1320,6 +1337,16 @@ namespace sl
         public int GetSVOPosition()
         {
             return dllz_get_svo_position(CameraID);
+        }
+
+        /// <summary>
+        /// Retrieves the frame index within the SVO file corresponding to the provided timestamp.
+        /// </summary>
+        /// <param name="timestamp">The target timestamp for which the frame index is to be determined.</param>
+        /// <returns>The frame index within the SVO file that aligns with the given timestamp. Returns -1 if the timestamp falls outside the bounds of the SVO file.</returns>
+        public int GetSVOPositionAtTimestamp(ulong timestamp)
+        {
+            return dllz_get_svo_position_at_timestamp(CameraID, timestamp);
         }
 
         /// <summary>
@@ -1979,6 +2006,16 @@ namespace sl
                     m[i, j] = f[i * 4 + j];
                 }
             }
+        }
+
+        /// <summary>
+        /// Test if the video setting is supported by the camera
+        /// setting : The video setting to test
+        /// true if the \ref SL_VIDEO_SETTINGS is supported by the camera, false otherwise
+        /// </summary>
+        public bool IsCameraSettingSupported(CAMERA_SETTINGS setting)
+        {
+            return dllz_is_video_setting_supported(CameraID, (int)setting);
         }
 
         /// <summary>

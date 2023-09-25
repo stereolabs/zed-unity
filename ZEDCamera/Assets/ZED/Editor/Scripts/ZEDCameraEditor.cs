@@ -166,6 +166,7 @@ public class ZEDCameraEditor : Editor
     SerializedProperty openTimeoutSecProperty;
     SerializedProperty asyncGrabCameraRecoveryProperty;
     SerializedProperty grabComputeCappingFPSProperty;
+    SerializedProperty enableImageValidityCheckProperty;
 
     // Rendering Prop
     private int arlayer;
@@ -364,6 +365,7 @@ public class ZEDCameraEditor : Editor
         openTimeoutSecProperty = serializedObject.FindProperty("openTimeoutSec");
         asyncGrabCameraRecoveryProperty = serializedObject.FindProperty("asyncGrabCameraRecovery");
         grabComputeCappingFPSProperty = serializedObject.FindProperty("grabComputeCappingFPS");
+        enableImageValidityCheckProperty = serializedObject.FindProperty("enableImageValidityCheck");
 
         //Video Settings Serialized Properties
         videoSettingsInitModeProperty = serializedObject.FindProperty("videoSettingsInitMode");
@@ -1242,9 +1244,17 @@ public class ZEDCameraEditor : Editor
                 "Default is 0, which means that the setting is not used.");
             grabComputeCappingFPSProperty.floatValue = EditorGUILayout.FloatField(grabComputeCappingFPSLabel, grabComputeCappingFPSProperty.floatValue);
 
+            GUIContent enableImageValidityCheckLabel = new GUIContent("Enable Image Validity Check", "Enable or disable the image validity verification." +
+                "\nThis will perform additional verification on the image to identify corrupted data. This verification is done in the grab function and requires some computations." +
+                "\nIf an issue is found, the grab function will output a warning as sl::ERROR_CODE::CORRUPTED_FRAME." +
+                "This version currently doesn't detect frame tearing." +
+                "\nDefault: disabled");
+            enableImageValidityCheckProperty.boolValue = EditorGUILayout.Toggle(enableImageValidityCheckLabel, enableImageValidityCheckProperty.boolValue);
+
             GUILayout.Space(12);
 
             EditorGUI.indentLevel--;
+
 
             EditorGUILayout.LabelField("AR Passthrough Settings", EditorStyles.boldLabel);
             GUILayout.Space(5);

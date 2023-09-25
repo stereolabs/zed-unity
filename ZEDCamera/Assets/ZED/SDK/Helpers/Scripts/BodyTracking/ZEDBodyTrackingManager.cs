@@ -208,7 +208,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     IEnumerator InstanciateAvatarWithDelay(float delay, DetectedBody dbody)
     {
         SkeletonHandler handler = ScriptableObject.CreateInstance<SkeletonHandler>();
-        handler.Create(avatar, bodyFormat);
+        handler.Create(avatar, bodyFormat, this);
         handler.InitSkeleton(dbody.rawBodyData.id, new Material(skeletonBaseMaterial));
 
         avatarControlList.Add(dbody.rawBodyData.id, handler);

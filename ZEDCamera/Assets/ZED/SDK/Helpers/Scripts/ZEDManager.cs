@@ -143,6 +143,17 @@ public class ZEDManager : MonoBehaviour
     public float grabComputeCappingFPS = 0f;
 
     /// <summary>
+    /// Define a computation upper limit to the grab frequency. 0 means setting is ignored.
+    /// This can be useful to get a known constant fixed rate or limit the computation load while keeping a short exposure time by setting a high camera capture framerate.
+	/// The value should be inferior to the InitParameters::camera_fps and strictly positive.It has no effect when reading an SVO file.
+	/// This is an upper limit and won't make a difference if the computation is slower than the desired compute capping fps.
+	/// Internally the grab function always tries to get the latest available image while respecting the desired fps as much as possible.
+    /// default is 0.
+    /// </summary>
+    [HideInInspector]
+    public bool enableImageValidityCheck = false;
+
+    /// <summary>
     /// SVO loop back option
     /// </summary>
     [HideInInspector]
@@ -2068,6 +2079,7 @@ public class ZEDManager : MonoBehaviour
         initParameters.openTimeoutSec = openTimeoutSec;
         initParameters.asyncGrabCameraRecovery = asyncGrabCameraRecovery;
         initParameters.grabComputeCappingFPS = grabComputeCappingFPS;
+        initParameters.enableImageValidityCheck = enableImageValidityCheck;
 
         //Check if this rig is a stereo rig. Will set isStereoRig accordingly.
         CheckStereoMode();
@@ -2186,7 +2198,6 @@ public class ZEDManager : MonoBehaviour
         {
             initQuittingHandle.WaitOne(0); //Makes sure we haven't been turned off early, which only happens in Destroy() from OnApplicationQuit().
             if (forceCloseInit) break;
-
             lastInitStatus = zedCamera.Open(ref initParameters);
             timeout++;
             numberTriesOpening++;
@@ -3562,17 +3573,12 @@ public class ZEDManager : MonoBehaviour
     }
     #endregion
 
-    /// <summary>
-    /// Closes out the current stream, then starts it up again while maintaining tracking data.
-    /// Used when the zed becomes unplugged, or you want to change a setting at runtime that
-    /// requires re-initializing the camera.
-    /// </summary>
-    public void Reset()
+    public void Close()
     {
         //Save tracking
         if (enableTracking && isTrackingEnable)
         {
-            zedCamera.GetPosition(ref zedOrientation, ref zedPosition);
+            if (zedCamera != null) zedCamera.GetPosition(ref zedOrientation, ref zedPosition);
         }
 
         CloseManager();
@@ -3581,6 +3587,16 @@ public class ZEDManager : MonoBehaviour
         running = false;
         numberTriesOpening = 0;
         forceCloseInit = false;
+    }
+
+    /// <summary>
+    /// Closes out the current stream, then starts it up again while maintaining tracking data.
+    /// Used when the zed becomes unplugged, or you want to change a setting at runtime that
+    /// requires re-initializing the camera.
+    /// </summary>
+    public void Reset()
+    {
+        Close();
 
         Awake();
     }

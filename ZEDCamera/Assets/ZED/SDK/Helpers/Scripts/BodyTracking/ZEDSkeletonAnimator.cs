@@ -280,17 +280,13 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
     private void Awake()
     {
-        bodyTrackingManager = FindObjectOfType<ZEDBodyTrackingManager>();
-        if (bodyTrackingManager == null)
-        {
-            Debug.LogError("ZEDManagerIK: No body tracking manager loaded!");
-        }
         heightOffsetter = GetComponent<HeightOffsetter>();
     }
 
     void Start()
     {
         animator = GetComponent<Animator>();
+        heightOffsetter.bodyTrackingManager = bodyTrackingManager;
     }
 
     private void Update()

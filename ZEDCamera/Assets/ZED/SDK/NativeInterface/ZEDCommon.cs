@@ -816,6 +816,13 @@ namespace sl
     /// </remarks>
     public enum ERROR_CODE
     {
+        /// <summary>
+        /// The image could be corrupted, Enabled with the parameter InitParameters::enableImageValidityCheck.
+        /// </summary>
+        CORRUPTED_FRAME = -2,
+        /// <summary>
+        /// The camera is currently rebooting.
+        /// </summary>
         CAMERA_REBOOTING = -1,
         /// <summary>
         /// Operation was successful.
@@ -1131,6 +1138,7 @@ namespace sl
 
     /// <summary>
     ///  Lists available camera settings for the ZED camera (contrast, hue, saturation, gain, etc.)
+    ///  The settings specific for GMSL cameras are currently not supported.
     /// </summary>
     public enum CAMERA_SETTINGS
     {
@@ -1362,6 +1370,25 @@ namespace sl
         /// Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power 
         /// </summary>
         QUALITY
+    }
+
+    /// <summary>
+    /// Lists the mode of positional tracking that can be used.
+    /// </summary>
+    public enum REGION_OF_INTEREST_AUTO_DETECTION_STATE
+    {
+        /// <summary>
+        ///  The region of interest auto detection is initializing.
+        /// </summary>
+        RUNNING,
+        /// <summary>
+        ///  The region of interest mask is ready, if auto_apply was enabled, the region of interest mask is being used.
+        /// </summary>
+        READY,
+        /// <summary>
+        ///  The region of interest auto detection is not enabled.
+        /// </summary>
+        ENABLED,
     }
 
     /// <summary>
@@ -1661,6 +1688,15 @@ namespace sl
         public float grabComputeCappingFPS = 0f;
 
         /// <summary>
+        ///  Enable or disable the image validity verification.
+        ///  This will perform additional verification on the image to identify corrupted data. This verification is done in the grab function and requires some computations.
+        ///  If an issue is found, the grab function will output a warning as sl::ERROR_CODE::CORRUPTED_FRAME.
+        ///  This version doesn't detect frame tearing currently.
+        ///  \n default: disabled
+        /// </summary>
+        public bool enableImageValidityCheck = false;
+
+        /// <summary>
         /// Constructor. Sets default initialization parameters recommended for Unity.
         /// </summary>
         public InitParameters()
@@ -1693,6 +1729,7 @@ namespace sl
             this.openTimeoutSec = 5.0f;
             this.asyncGrabCameraRecovery = false;
             this.grabComputeCappingFPS = 0f;
+            this.enableImageValidityCheck = false;
         }
     }
 
