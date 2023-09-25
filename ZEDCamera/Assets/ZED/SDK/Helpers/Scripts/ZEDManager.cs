@@ -3562,17 +3562,12 @@ public class ZEDManager : MonoBehaviour
     }
     #endregion
 
-    /// <summary>
-    /// Closes out the current stream, then starts it up again while maintaining tracking data.
-    /// Used when the zed becomes unplugged, or you want to change a setting at runtime that
-    /// requires re-initializing the camera.
-    /// </summary>
-    public void Reset()
+    public void Close()
     {
         //Save tracking
         if (enableTracking && isTrackingEnable)
         {
-            zedCamera.GetPosition(ref zedOrientation, ref zedPosition);
+            if (zedCamera != null) zedCamera.GetPosition(ref zedOrientation, ref zedPosition);
         }
 
         CloseManager();
@@ -3581,6 +3576,16 @@ public class ZEDManager : MonoBehaviour
         running = false;
         numberTriesOpening = 0;
         forceCloseInit = false;
+    }
+
+    /// <summary>
+    /// Closes out the current stream, then starts it up again while maintaining tracking data.
+    /// Used when the zed becomes unplugged, or you want to change a setting at runtime that
+    /// requires re-initializing the camera.
+    /// </summary>
+    public void Reset()
+    {
+        Close();
 
         Awake();
     }
