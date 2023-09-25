@@ -285,7 +285,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(4, 0, 6);
+        public static readonly System.Version PluginVersion = new System.Version(4, 0, 7);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -499,16 +499,18 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_get_svo_position")]
         private static extern int dllz_get_svo_position(int cameraID);
 
+        [DllImport(nameDll, EntryPoint = "sl_get_svo_position_at_timestamp")]
+        private static extern int dllz_get_svo_position_at_timestamp(int cameraID, ulong timestamp);
 
         /*
          * Depth Sensing utils functions.
          */
-         /* Removed as of ZED SDK v3.0.
-        [DllImport(nameDll, EntryPoint = "set_confidence_threshold")]
-        private static extern void dllz_set_confidence_threshold(int cameraID, int threshold);
-        [DllImport(nameDll, EntryPoint = "set_depth_max_range_value")]
-        private static extern void dllz_set_depth_max_range_value(int cameraID, float distanceMax);
-        */
+        /* Removed as of ZED SDK v3.0.
+       [DllImport(nameDll, EntryPoint = "set_confidence_threshold")]
+       private static extern void dllz_set_confidence_threshold(int cameraID, int threshold);
+       [DllImport(nameDll, EntryPoint = "set_depth_max_range_value")]
+       private static extern void dllz_set_depth_max_range_value(int cameraID, float distanceMax);
+       */
 
         [DllImport(nameDll, EntryPoint = "sl_get_confidence_threshold")]
         private static extern int dllz_get_confidence_threshold(int cameraID);
@@ -1320,6 +1322,16 @@ namespace sl
         public int GetSVOPosition()
         {
             return dllz_get_svo_position(CameraID);
+        }
+
+        /// <summary>
+        /// Retrieves the frame index within the SVO file corresponding to the provided timestamp.
+        /// </summary>
+        /// <param name="timestamp">The target timestamp for which the frame index is to be determined.</param>
+        /// <returns>The frame index within the SVO file that aligns with the given timestamp. Returns -1 if the timestamp falls outside the bounds of the SVO file.</returns>
+        public int GetSVOPositionAtTimestamp(ulong timestamp)
+        {
+            return dllz_get_svo_position_at_timestamp(CameraID, timestamp);
         }
 
         /// <summary>
@@ -2891,11 +2903,11 @@ namespace sl
         /// <summary>
         /// Disable object detection module and release the resources.
         /// </summary>
-        public void DisableObjectDetection(uint objectDetectionInstanceID = 0)
+        public void DisableObjectDetection()
         {
             lock (grabLock)
             {
-                dllz_disable_object_detection(CameraID, objectDetectionInstanceID, false);
+                dllz_disable_object_detection(CameraID, 0, false);
             }
         }
 
@@ -3013,11 +3025,11 @@ namespace sl
         /// <summary>
         /// Disable body tracking module and release the resources.
         /// </summary>
-        public void DisableBodyTracking(uint bodyTrackingInstanceID = 1)
+        public void DisableBodyTracking()
         {
             lock (grabLock)
             {
-                dllz_disable_body_tracking(CameraID, bodyTrackingInstanceID, false);
+                dllz_disable_body_tracking(CameraID, 0, false);
             }
         }
 

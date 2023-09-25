@@ -8,7 +8,7 @@ public class HeightOffsetter : MonoBehaviour
 
     [Header("Main settings")]
 
-    ZEDBodyTrackingManager bodyTrackingManager;
+    public ZEDBodyTrackingManager bodyTrackingManager;
 
     [SerializeField]
     private float currentAutoHeightOffset = 0f;
