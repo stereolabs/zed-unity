@@ -413,6 +413,9 @@ namespace sl
          * Camera control functions.
          */
 
+        [DllImport(nameDll, EntryPoint = "sl_is_camera_setting_supported")]
+        private static extern bool dllz_is_video_setting_supported(int id, int setting);
+
         [DllImport(nameDll, EntryPoint = "sl_set_video_settings")]
         private static extern void dllz_set_video_settings(int id, int mode, int value);
 
@@ -1086,6 +1089,16 @@ namespace sl
             public float grabComputeCappingFPS;
 
             /// <summary>
+            ///  Enable or disable the image validity verification.
+            ///  This will perform additional verification on the image to identify corrupted data. This verification is done in the grab function and requires some computations.
+            ///  If an issue is found, the grab function will output a warning as sl::ERROR_CODE::CORRUPTED_FRAME.
+            ///  This version doesn't detect frame tearing currently.
+            ///  \n default: disabled
+            /// </summary>
+            [MarshalAs(UnmanagedType.U1)]
+            public bool enableImageValidityCheck;
+
+            /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
             /// </summary>
             /// <param name="init"></param>
@@ -1112,6 +1125,7 @@ namespace sl
                 openTimeoutSec = init.openTimeoutSec;
                 asyncGrabRecovery = init.asyncGrabCameraRecovery;
                 grabComputeCappingFPS = init.grabComputeCappingFPS;
+                enableImageValidityCheck = init.enableImageValidityCheck;
             }
         }
 
@@ -1133,6 +1147,11 @@ namespace sl
             }
             dll_initParameters initP = new dll_initParameters(initParameters); //DLL-friendly version of InitParameters.
             initP.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP; //Left-hand, Y-up is Unity's coordinate system, so we match that.
+
+            //initP.depthMinimumDistance = 1.0f;
+            
+            Debug.Log("Depth max: " + initP.depthMaximumDistance + " / depth min: " + initP.depthMinimumDistance);
+
             int v = dllz_open(CameraID, ref initP, initParameters.serialNumber,
                 new System.Text.StringBuilder(initParameters.pathSVO, initParameters.pathSVO.Length),
                 new System.Text.StringBuilder(initParameters.ipStream, initParameters.ipStream.Length),
@@ -1991,6 +2010,16 @@ namespace sl
                     m[i, j] = f[i * 4 + j];
                 }
             }
+        }
+
+        /// <summary>
+        /// Test if the video setting is supported by the camera
+        /// setting : The video setting to test
+        /// true if the \ref SL_VIDEO_SETTINGS is supported by the camera, false otherwise
+        /// </summary>
+        public bool IsCameraSettingSupported(CAMERA_SETTINGS setting)
+        {
+            return dllz_is_video_setting_supported(CameraID, (int)setting);
         }
 
         /// <summary>

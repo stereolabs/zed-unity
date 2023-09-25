@@ -166,6 +166,12 @@ public class ZEDCameraEditor : Editor
     SerializedProperty openTimeoutSecProperty;
     SerializedProperty asyncGrabCameraRecoveryProperty;
     SerializedProperty grabComputeCappingFPSProperty;
+    SerializedProperty enableImageValidityCheckProperty;
+
+    // Depth ROI settings
+    SerializedProperty depthFarThresholdMeterProperty;
+    SerializedProperty imageHeightRatioCutoffProperty;
+    SerializedProperty autoApplyROIProperty;
 
     // Rendering Prop
     private int arlayer;
@@ -364,6 +370,12 @@ public class ZEDCameraEditor : Editor
         openTimeoutSecProperty = serializedObject.FindProperty("openTimeoutSec");
         asyncGrabCameraRecoveryProperty = serializedObject.FindProperty("asyncGrabCameraRecovery");
         grabComputeCappingFPSProperty = serializedObject.FindProperty("grabComputeCappingFPS");
+        enableImageValidityCheckProperty = serializedObject.FindProperty("enableImageValidityCheck");
+
+        //Depth ROI Settings
+        depthFarThresholdMeterProperty = serializedObject.FindProperty("depthFarThresholdMeter");
+        imageHeightRatioCutoffProperty = serializedObject.FindProperty("imageHeightRatioCutoff");
+        autoApplyROIProperty = serializedObject.FindProperty("autoApplyROI");
 
         //Video Settings Serialized Properties
         videoSettingsInitModeProperty = serializedObject.FindProperty("videoSettingsInitMode");
@@ -1241,6 +1253,35 @@ public class ZEDCameraEditor : Editor
                 "This is an upper limit and won't make a difference if the computation is slower than the desired compute capping fps." +
                 "Default is 0, which means that the setting is not used.");
             grabComputeCappingFPSProperty.floatValue = EditorGUILayout.FloatField(grabComputeCappingFPSLabel, grabComputeCappingFPSProperty.floatValue);
+
+            GUIContent enableImageValidityCheckLabel = new GUIContent("Enable Image Validity Check", "Enable or disable the image validity verification." +
+                "\nThis will perform additional verification on the image to identify corrupted data. This verification is done in the grab function and requires some computations." +
+                "\nIf an issue is found, the grab function will output a warning as sl::ERROR_CODE::CORRUPTED_FRAME." +
+                "This version currently doesn't detect frame tearing." +
+                "\nDefault: disabled");
+            enableImageValidityCheckProperty.boolValue = EditorGUILayout.Toggle(enableImageValidityCheckLabel, enableImageValidityCheckProperty.boolValue);
+
+            GUILayout.Space(12);
+
+            EditorGUI.indentLevel--;
+
+
+
+            EditorGUILayout.LabelField("Depth ROI settings", EditorStyles.boldLabel);
+            GUILayout.Space(5);
+
+            EditorGUI.indentLevel++;
+
+            GUIContent depthFarThresholdMeterPropertyLabel = new GUIContent("Depth Far Threshold (m)", "Filtering how far object in the ROI should be considered, this is useful for a vehicle for instance." +
+                "\nDefault: 2.5 meters.");
+            depthFarThresholdMeterProperty.floatValue = EditorGUILayout.Slider(depthFarThresholdMeterPropertyLabel, depthFarThresholdMeterProperty.floatValue, 0f, 40f);
+
+            GUIContent imageHeightRatioCutoffPropertyLabel = new GUIContent("Image Heigh Ratio Cutoff", "By default, only the lower half of the image is considered, it can be useful to filter out the sky." +
+                "\nDefault: 0.5, corresponds to the lower half of the image.");
+            imageHeightRatioCutoffProperty.floatValue = EditorGUILayout.Slider(imageHeightRatioCutoffPropertyLabel, imageHeightRatioCutoffProperty.floatValue, 0f, 1f);
+
+            GUIContent autoApplyROIPropertyLabel = new GUIContent("Auto-apply ROI", "Once computed the ROI computed will be automatically applied. Enabled by default.");
+            autoApplyROIProperty.boolValue = EditorGUILayout.Toggle(autoApplyROIPropertyLabel, autoApplyROIProperty.boolValue);
 
             GUILayout.Space(12);
 
