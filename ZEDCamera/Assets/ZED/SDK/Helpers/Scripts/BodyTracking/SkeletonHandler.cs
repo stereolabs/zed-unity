@@ -413,6 +413,66 @@ public class SkeletonHandler : ScriptableObject
    // HumanBodyBones.LastBone, // Left Heel
    // HumanBodyBones.LastBone, // Right Heel
     };
+
+    // Hip bone and above.
+    // These are used to animate the upperbody in upper body mode
+    private static HumanBodyBones[] humanBonesUpperBody = new HumanBodyBones[] {
+    HumanBodyBones.Spine,
+    HumanBodyBones.Chest,
+    HumanBodyBones.UpperChest,
+    HumanBodyBones.Neck,
+    HumanBodyBones.LeftShoulder,
+    HumanBodyBones.RightShoulder,
+    HumanBodyBones.LeftUpperArm,
+    HumanBodyBones.RightUpperArm,
+    HumanBodyBones.LeftLowerArm,
+    HumanBodyBones.RightLowerArm,
+    HumanBodyBones.LeftHand, // Left Wrist
+    HumanBodyBones.RightHand, // Left Wrist
+    // Left Hand
+    HumanBodyBones.LeftThumbProximal,
+    HumanBodyBones.LeftThumbIntermediate,
+    HumanBodyBones.LeftThumbDistal,
+    HumanBodyBones.LastBone, // Left Hand Thumb Tip
+    HumanBodyBones.LeftIndexProximal,
+    HumanBodyBones.LeftIndexIntermediate,
+    HumanBodyBones.LeftIndexDistal,
+    HumanBodyBones.LastBone, // Left Hand Index Tip
+    HumanBodyBones.LeftMiddleProximal,
+    HumanBodyBones.LeftMiddleIntermediate,
+    HumanBodyBones.LeftMiddleDistal,
+    HumanBodyBones.LastBone, // Left Hand Middle Tip
+    HumanBodyBones.LeftRingProximal,
+    HumanBodyBones.LeftRingIntermediate,
+    HumanBodyBones.LeftRingDistal,
+    HumanBodyBones.LastBone, // Left Hand Ring Tip
+    HumanBodyBones.LeftLittleProximal,
+    HumanBodyBones.LeftLittleIntermediate,
+    HumanBodyBones.LeftLittleDistal,
+    HumanBodyBones.LastBone, // Left Hand Pinky Tip
+    // Right Hand
+    HumanBodyBones.RightThumbProximal,
+    HumanBodyBones.RightThumbIntermediate,
+    HumanBodyBones.RightThumbDistal,
+    HumanBodyBones.LastBone, // Right Hand Thumb Tip
+    HumanBodyBones.RightIndexProximal,
+    HumanBodyBones.RightIndexIntermediate,
+    HumanBodyBones.RightIndexDistal,
+    HumanBodyBones.LastBone, // Right Hand Index Tip
+    HumanBodyBones.RightMiddleProximal,
+    HumanBodyBones.RightMiddleIntermediate,
+    HumanBodyBones.RightMiddleDistal,
+    HumanBodyBones.LastBone, // Right Hand Middle Tip
+    HumanBodyBones.RightRingProximal,
+    HumanBodyBones.RightRingIntermediate,
+    HumanBodyBones.RightRingDistal,
+    HumanBodyBones.LastBone, // Right Hand Ring Tip
+    HumanBodyBones.RightLittleProximal,
+    HumanBodyBones.RightLittleIntermediate,
+    HumanBodyBones.RightLittleDistal,
+    HumanBodyBones.LastBone, // Right Hand Pinky Tip
+    HumanBodyBones.LastBone // Last
+    };
     #endregion
 
     #region vars
@@ -472,6 +532,9 @@ public class SkeletonHandler : ScriptableObject
 
     public Dictionary<HumanBodyBones, RigBone> RigBone { get => rigBone; set => rigBone = value; }
     public Dictionary<HumanBodyBones, Quaternion> RigBoneRotationLastFrame { get => rigBoneRotationLastFrame; set => rigBoneRotationLastFrame = value; }
+
+    private int id = -1;
+    public int ID { get => id; set => id = value; }
 
     #endregion
 
@@ -687,6 +750,7 @@ public class SkeletonHandler : ScriptableObject
     /// <param name="skBaseMat">Material for the skeleton.</param>
     public void InitSkeleton(int person_id, Material skBaseMat)
     {
+        ID = person_id;
         bones = new GameObject[currentBonesList.Length / 2];
         spheres = new GameObject[currentSpheresList.Length];
 
@@ -1012,6 +1076,119 @@ public class SkeletonHandler : ScriptableObject
             zedSkeletonAnimator.CheckFootLock(currentJoints[JointType_LEFT_ANKLE], currentJoints[JointType_RIGHT_ANKLE]);
         }
     }
+
+    /// -----------------------------------------
+    /// ------------ UPPER BODY MODE ------------
+    /// -----------------------------------------
+    #region upper body mode
+
+    public Vector3 rootVelocity;
+
+    /// <summary>
+    /// To be called from the Skeleton Tracking Manager in Update.
+    /// </summary>
+    public void UpdateNavigationDataUpperBody()
+    {
+        TargetBodyPositionWithHipOffset = targetBodyPosition;
+        zedSkeletonAnimator.UpdateNavigationAndLegAnimationData();
+    }
+
+    /// <summary>
+    /// To be called from the Skeleton Tracking Manager in LateUpdate.
+    /// </summary>
+    public void MoveAnimatorUpperBody(bool smoothingEnabled, float smoothValue)
+    {
+        MoveUpperBody(smoothingEnabled, smoothValue);
+        zedSkeletonAnimator.UpdateNavigationAndLegAnimationData();
+    }
+
+    private void MoveUpperBody(bool smoothingEnabled, float smoothValue)
+    {
+        // Put in Ref Pose
+        foreach (HumanBodyBones bone in humanBonesUpperBody)
+        {
+            if (bone != HumanBodyBones.LastBone)
+            {
+                if (rigBone.ContainsKey(bone) && rigBone[bone].transform)
+                {
+                    rigBone[bone].transform.localRotation = default_rotations[bone];
+                }
+            }
+        }
+
+        PropagateRestPoseRotations(0, rigBone, default_rotations[0], false);
+
+        for (int i = 0; i < currentHumanBodyBones.Length; i++)
+        {
+            if (Array.IndexOf(humanBonesUpperBody, currentHumanBodyBones[i]) > -1
+                && currentHumanBodyBones[i] != HumanBodyBones.LastBone
+                && rigBone[currentHumanBodyBones[i]].transform)
+            {
+                if (currentParentIds[i] != -1)
+                {
+                    Quaternion newRotation = rigBoneTarget[currentHumanBodyBones[i]] * rigBone[currentHumanBodyBones[i]].transform.localRotation;
+                    rigBone[currentHumanBodyBones[i]].transform.localRotation = newRotation;
+                }
+            }
+        }
+        PropagateRestPoseRotations(0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
+
+
+        //Add offset to hips for body34.
+        if (BodyFormat == sl.BODY_FORMAT.BODY_34)
+        {
+            TargetBodyPositionWithHipOffset = targetBodyPosition + (0.1f * rigBone[HumanBodyBones.Hips].transform.up);
+        }
+        else
+        {
+            TargetBodyPositionWithHipOffset = targetBodyPosition;
+        }
+        targetBodyOrientationSmoothed = targetBodyOrientation;
+
+        // animatorization
+        if (!smoothingEnabled)
+        {
+            foreach (HumanBodyBones bone in currentHumanBodyBones)
+            {
+                if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
+                {
+                    if (rigBone[bone].transform)
+                    {
+                        animator.SetBoneLocalRotation(bone, rigBone[bone].transform.localRotation);
+                    }
+                }
+            }
+        }
+        else // smoothing enabled
+        {
+            targetBodyPositionWithHipOffset = Vector3.Lerp(targetBodyPositionLastFrame, targetBodyPositionWithHipOffset, smoothValue);
+            targetBodyPositionLastFrame = targetBodyPositionWithHipOffset;
+
+            targetBodyOrientationSmoothed = Quaternion.Slerp(
+                targetBodyOrientationLastFrame,
+                targetBodyOrientationSmoothed,
+                smoothValue);
+            targetBodyOrientationLastFrame = targetBodyOrientationSmoothed;
+
+            foreach (HumanBodyBones bone in currentHumanBodyBones)
+            {
+                if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
+                {
+                    if (rigBone[bone].transform)
+                    {
+                        Quaternion squat = Quaternion.Slerp(
+                                RigBoneRotationLastFrame[bone],
+                                rigBone[bone].transform.localRotation,
+                                smoothValue);
+                        animator.SetBoneLocalRotation(bone, squat);
+                        RigBoneRotationLastFrame[bone] = squat;
+                    }
+                }
+            }
+        }
+    }
+    #endregion
+
 }
 
 public static class TransformExtensions

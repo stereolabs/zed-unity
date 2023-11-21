@@ -361,14 +361,21 @@ public class DetectedBody
     {
         int width = zedmat.GetWidth(); //Shorthand. 
         int height = zedmat.GetHeight();
-        
+
         IntPtr maskpointer = zedmat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
         if (maskpointer != IntPtr.Zero && zedmat.IsInit() && width > 0 && height > 0)
         {
             byte[] texbytes = new byte[zedmat.GetStepBytes() * height];
-            System.Runtime.InteropServices.Marshal.Copy(maskpointer, texbytes, 0, texbytes.Length);
-
-
+            try
+            {
+                System.Runtime.InteropServices.Marshal.Copy(maskpointer, texbytes, 0, texbytes.Length);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+                return null;
+            }
+          
             if (flipYcoords)
             {
                 byte[] flippedbytes = new byte[texbytes.Length];

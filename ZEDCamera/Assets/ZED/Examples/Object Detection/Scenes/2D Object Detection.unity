@@ -373,7 +373,7 @@ MonoBehaviour:
   - {r: 0.412, g: 0.4, b: 0.804, a: 1}
   - {r: 1, g: 0.725, b: 0, a: 1}
   - {r: 0.989, g: 0.388, b: 0.419, a: 1}
-  showObjectMask: 0
+  showObjectMask: 1
   showONTracked: 1
   showSEARCHINGTracked: 0
   showOFFTracked: 1
@@ -611,7 +611,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: bodyTrackingFoldoutOpen
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: estimateInitialPosition
@@ -643,7 +643,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: objectDetectionFoldoutOpen
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: objectDetectionImageSyncMode
