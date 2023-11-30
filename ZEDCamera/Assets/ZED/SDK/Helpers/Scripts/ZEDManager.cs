@@ -2508,9 +2508,8 @@ public class ZEDManager : MonoBehaviour
                     float camera_fps = zedCamera.GetCameraFPS();
                     cameraFPS = camera_fps.ToString() + " FPS";
 #endif
-
                     //Update object detection here if using object sync.
-                    if (objectDetectionRunning && objectDetectionImageSyncMode == true && requestobjectsframe)
+                    if (objectDetectionRunning && objectDetectionImageSyncMode && requestobjectsframe)
                     {
                         if (objectDetectionModel == sl.OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
                         {
@@ -2521,7 +2520,7 @@ public class ZEDManager : MonoBehaviour
                     }
 
                     //Update body tracking here if using object sync.
-                    if (bodyTrackingRunning && bodyTrackingImageSyncMode == true && requestBodiesframe)
+                    if (bodyTrackingRunning && bodyTrackingImageSyncMode && requestBodiesframe)
                     {
                         RetrieveBodyTrackingFrame();
                     }
@@ -2773,7 +2772,7 @@ public class ZEDManager : MonoBehaviour
             }
             else //Not AR pass-through mode.
             {
-                zedRigRoot.localRotation = zedOrientation;
+                //zedRigRoot.localRotation = zedOrientation;
                 if (!ZEDSupportFunctions.IsVector3NaN(zedPosition))
                     zedRigRoot.localPosition = zedPosition;
             }
@@ -3063,7 +3062,7 @@ public class ZEDManager : MonoBehaviour
             odIsStarting = true;
             Debug.LogWarning("Starting Object Detection. This may take a moment.");
 
-
+            objectDetectionImageSyncMode = true;
             sl.ObjectDetectionParameters od_param = new sl.ObjectDetectionParameters();
             od_param.instanceModuleID = objectDetectionInstanceID;
             od_param.imageSync = objectDetectionImageSyncMode;

@@ -534,10 +534,11 @@ public class ZED2DObjectVisualizer : MonoBehaviour
         {
             lastShowObjectMaskValue = showObjectMask;
             if (!zedManager) zedManager = ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_01);
-            if (showObjectMask == true && zedManager != null && zedManager.objectDetection2DMask == false)
+            bool ShowMaskIsEnabled = detectionMode == DetectionMode.BodyTracking ? zedManager.bodyTracking2DMask : zedManager.objectDetection2DMask;
+            if (showObjectMask == true && zedManager != null && !ShowMaskIsEnabled)
             {
-                Debug.LogError("ZED2DObjectVisualizer has showObjectMask enabled, but its ZEDManager has objectDetection2DMask disabled. " +
-                "objectDetection2DMask must be enabled when Object Detection is started or masks will not be visible.");
+                Debug.LogError("ZED2DObjectVisualizer has showObjectMask enabled, but its ZEDManager has objectDetection2DMask/bodyTracking2DMask disabled, depending on which detection mode you are using. " +
+                "objectDetection2DMask/bodyTracking2DMask must be enabled when Object Detection / Body Tracking is started or masks will not be visible.");
             }
         }
     }

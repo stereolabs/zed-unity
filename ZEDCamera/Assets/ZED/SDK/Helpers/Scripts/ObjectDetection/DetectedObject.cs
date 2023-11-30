@@ -391,7 +391,6 @@ public class DetectedObject
             byte[] texbytes = new byte[zedmat.GetStepBytes() * height];
             System.Runtime.InteropServices.Marshal.Copy(maskpointer, texbytes, 0, texbytes.Length);
 
-
             if (flipYcoords)
             {
                 byte[] flippedbytes = new byte[texbytes.Length];
@@ -413,7 +412,7 @@ public class DetectedObject
         }
         else
         {
-            Debug.LogError("Pointer to texture was null - returning null.");
+            //Debug.LogError("Pointer to texture was null - returning null.");
             return null;
         }
     }

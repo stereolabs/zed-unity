@@ -70,7 +70,14 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     /// </summary>
     void ApplyAllRigRotationsOnAnimator()
     {
-        skhandler.MoveAnimator(bodyTrackingManager.EnableSmoothing, 1 - Mathf.Clamp(bodyTrackingManager.smoothingValue, 0, 0.99f));
+        if (bodyTrackingManager.bodyMode == sl.BODY_KEYPOINTS_SELECTION.FULL)
+        {
+            skhandler.MoveAnimator(bodyTrackingManager.EnableSmoothing, 1 - Mathf.Clamp(bodyTrackingManager.smoothingValue, 0, 0.99f));
+        }
+        else if (bodyTrackingManager.bodyMode == sl.BODY_KEYPOINTS_SELECTION.UPPER_BODY)
+        {
+            skhandler.MoveAnimatorUpperBody(bodyTrackingManager.EnableSmoothing, Mathf.Clamp(1 - bodyTrackingManager.smoothingValue, 0, 1));
+        }
     }
 
     /// <summary>
@@ -113,7 +120,10 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             ApplyAllRigRotationsOnAnimator();
 
             // 2) Set root position/rotation
-            animator.bodyPosition = skhandler.TargetBodyPositionWithHipOffset;
+            //animator.bodyPosition = skhandler.TargetBodyPositionWithHipOffset;
+            animator.bodyPosition = bodyTrackingManager.bodyMode == sl.BODY_KEYPOINTS_SELECTION.FULL
+                ? skhandler.TargetBodyPositionWithHipOffset
+                : new Vector3(skhandler.TargetBodyPositionWithHipOffset.x, animator.bodyPosition.y, skhandler.TargetBodyPositionWithHipOffset.z);
             animator.bodyRotation = skhandler.TargetBodyOrientationSmoothed;
 
             // Store raycast info data
@@ -217,6 +227,45 @@ public class ZEDSkeletonAnimator : MonoBehaviour
             }
             
         }
+    }
+
+    /// -----------------------------------------
+    /// ------------ UPPER BODY MODE ------------
+    /// -----------------------------------------
+
+    Vector3 smoothDeltaPosition = Vector3.zero;
+    Vector3 velocity = Vector3.zero;
+
+    public void UpdateNavigationAndLegAnimationData()
+    {
+        // Stabilize Y position
+        RaycastHit raycastHit = new RaycastHit();
+        if (Physics.Raycast(skhandler.TargetBodyPositionWithHipOffset + new Vector3(0, 1, 0),
+            Vector3.down, out raycastHit, 3f))
+        {
+            //transform.position = new Vector3(skhandler.TargetBodyPositionWithHipOffset.x, raycastHit.point.y, skhandler.TargetBodyPositionWithHipOffset.z);
+            skhandler.TargetBodyPositionWithHipOffset = new Vector3(skhandler.TargetBodyPositionWithHipOffset.x, raycastHit.point.y, skhandler.TargetBodyPositionWithHipOffset.z);
+        }
+        else
+        {
+            //transform.position = new Vector3 (skhandler.TargetBodyPositionWithHipOffset.x, 0, skhandler.TargetBodyPositionWithHipOffset.z);
+            skhandler.TargetBodyPositionWithHipOffset = new Vector3(skhandler.TargetBodyPositionWithHipOffset.x, 0, skhandler.TargetBodyPositionWithHipOffset.z);
+        }
+
+
+        // Take only rotation on Y axis.
+        //transform.rotation = Quaternion.Euler(0,skhandler.TargetBodyOrientationSmoothed.eulerAngles.y,0);
+        Skhandler.TargetBodyOrientationSmoothed = Quaternion.Euler(0, skhandler.TargetBodyOrientationSmoothed.eulerAngles.y, 0);
+        transform.rotation = skhandler.TargetBodyOrientationSmoothed;
+
+        // Find anim speed depending on if going forward or backward
+        float sc = Vector3.Dot(transform.forward, skhandler.rootVelocity);
+        float animSpeed = sc >= 0
+            ? skhandler.rootVelocity.magnitude
+            : -1f * skhandler.rootVelocity.magnitude;
+
+        animator.SetFloat("Forward", animSpeed, 0.1f, Time.deltaTime);
+       
     }
 
     /// <summary>

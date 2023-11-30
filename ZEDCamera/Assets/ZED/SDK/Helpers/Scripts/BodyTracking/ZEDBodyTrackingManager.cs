@@ -88,6 +88,9 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     public static Vector3 OffsetSDKSkeleton = new Vector3(0f, 0f, 0f);
     [Tooltip("Mirror the animation.")]
     public bool mirrorMode;
+    [Tooltip("Which body mode to use: \nFULL_BODY uses the root position to move the avatar and the local rotations to animate all the limbs." +
+    "\nUPPER_BODY uses the navigation system and animates the legs to match the movement in space, and animates the body from the hips and above with the local rotations from the ZED SDK.")]
+    public sl.BODY_KEYPOINTS_SELECTION bodyMode = sl.BODY_KEYPOINTS_SELECTION.FULL;
 
     private Dictionary<int,SkeletonHandler> avatarControlList;
     public Dictionary<int, SkeletonHandler> AvatarControlList { get => avatarControlList;}
@@ -354,6 +357,8 @@ public class ZEDBodyTrackingManager : MonoBehaviour
             {
                 handler.CheckFootLockAnimator();
             }
+            // For Upper-body mode
+            handler.rootVelocity = data.velocity;
         }
     }
 }
