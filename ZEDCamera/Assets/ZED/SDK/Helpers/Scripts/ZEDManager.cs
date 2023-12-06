@@ -2772,7 +2772,7 @@ public class ZEDManager : MonoBehaviour
             }
             else //Not AR pass-through mode.
             {
-                //zedRigRoot.localRotation = zedOrientation;
+                zedRigRoot.localRotation = zedOrientation;
                 if (!ZEDSupportFunctions.IsVector3NaN(zedPosition))
                     zedRigRoot.localPosition = zedPosition;
             }
