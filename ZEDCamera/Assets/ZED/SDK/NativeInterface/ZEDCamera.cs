@@ -959,7 +959,7 @@ namespace sl
         public bool CreateCamera(int cameraID, bool verbose)
         {
             string infoSystem = SystemInfo.graphicsDeviceType.ToString().ToUpper();
-            if (!infoSystem.Equals("DIRECT3D11") && !infoSystem.Equals("OPENGLCORE"))
+            if (!infoSystem.Equals("DIRECT3D11") && !infoSystem.Equals("OPENGLCORE") && !infoSystem.Equals("VULKAN"))
             {
                 throw new Exception("The graphic library [" + infoSystem + "] is not supported");
             }
@@ -977,6 +977,11 @@ namespace sl
             cameraReady = false;
             dllz_close(CameraID);
             DestroyAllTexture();
+        }
+        public void Close()
+        {
+            dllz_close(CameraID);
+            dllz_unload_instance(CameraID);
         }
 
         /// <summary>
