@@ -1592,7 +1592,7 @@ public class ZEDManager : MonoBehaviour
     /// Gets the center transform, which is the transform moved by the tracker in AR mode.
     /// This is the root object in ZED_Rig_Mono, and Camera_eyes in ZED_Rig_Stereo.
     /// </summary>
-    public Transform GetZedRootTansform()
+    public Transform GetZedRootTransform()
     {
         return zedRigRoot;
     }
