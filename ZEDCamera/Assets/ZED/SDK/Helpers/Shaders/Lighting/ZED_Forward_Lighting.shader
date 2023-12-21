@@ -118,8 +118,10 @@
 				#ifdef NO_DEPTH
 					#if SHADER_API_D3D11
 						outDepth = 0;
-					#elif SHADER_API_GLCORE
+					#elif SHADER_API_GLCORE 
 						outDepth = 1000;//fake infinite depth
+					#elif SHADER_API_VULKAN
+						outDepth = 0;
 					#endif
 				#else
 					outDepth = computeDepthXYZ(zed_xyz.z);
