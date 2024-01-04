@@ -341,10 +341,10 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
         for (int i = 0; i < worldJointsPos.Length; i++)
         {
-            worldJointsPos[i] = zedManager.GetZedRootTansform().TransformPoint(data.keypoint[i]);
+            worldJointsPos[i] = zedManager.GetZedRootTransform().TransformPoint(data.keypoint[i]);
             normalizedLocalJointsRot[i] = data.localOrientationPerJoint[i].normalized;
         }
-        Quaternion worldGlobalRotation = zedManager.GetZedRootTansform().rotation * data.globalRootOrientation;
+        Quaternion worldGlobalRotation = zedManager.GetZedRootTransform().rotation * data.globalRootOrientation;
 
         if (data.localOrientationPerJoint.Length > 0 && data.keypoint.Length > 0 && data.keypointConfidence.Length > 0)
         {

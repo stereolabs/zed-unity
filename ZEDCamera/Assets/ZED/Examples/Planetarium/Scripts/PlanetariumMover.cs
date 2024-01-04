@@ -175,7 +175,7 @@ public class PlanetariumMover : MonoBehaviour
 
         Quaternion gravity = Quaternion.identity;
 
-        gravity = Quaternion.FromToRotation(manager.GetZedRootTansform().up, Vector3.up);
+        gravity = Quaternion.FromToRotation(manager.GetZedRootTransform().up, Vector3.up);
         planetarium.transform.localPosition += manager.GetMainCameraTransform().right * axisH * speedMove * Time.deltaTime;
         planetarium.transform.localPosition += gravity * manager.GetMainCameraTransform().forward * axisV * speedMove * Time.deltaTime;
 
