@@ -120,7 +120,7 @@ Shader "ZED/ZED Forward Lighting URP"
 						outDepth = 0;
 			#endif
 			#else
-						outDepth = computeDepthXYZ(zed_xyz.z);
+						outDepth = computeDepthXYZ(zed_z);
 			#endif
 
 
