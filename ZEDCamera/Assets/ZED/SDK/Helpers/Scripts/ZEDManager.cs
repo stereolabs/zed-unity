@@ -56,7 +56,7 @@ public class ZEDManager : MonoBehaviour
     /// at C:/ProgramData/stereolabs/SL_Unity_wrapper.txt. This helps find issues that may occur within
     /// the protected .dll, but can decrease performance.
     /// </summary>
-    private bool wrapperVerbose = true;
+    private bool wrapperVerbose = false;
 
     /// <summary>
     /// Current instance of the ZED Camera, which handles calls to the Unity wrapper .dll.
@@ -2080,6 +2080,7 @@ public class ZEDManager : MonoBehaviour
         initParameters.asyncGrabCameraRecovery = asyncGrabCameraRecovery;
         initParameters.grabComputeCappingFPS = grabComputeCappingFPS;
         initParameters.enableImageValidityCheck = enableImageValidityCheck;
+	initParameters.sdkVerbose = wrapperVerbose ? 1 : 0;
 
         //Check if this rig is a stereo rig. Will set isStereoRig accordingly.
         CheckStereoMode();
