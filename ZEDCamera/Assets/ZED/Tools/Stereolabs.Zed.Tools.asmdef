@@ -1,0 +1,16 @@
+{
+    "name": "Stereolabs.Zed.Tools",
+    "rootNamespace": "",
+    "references": [
+        "GUID:2b8b9fa7df37c564899cda0a96289857"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
