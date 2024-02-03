@@ -93,9 +93,9 @@ public class HideFromWrongCameras : MonoBehaviour
         foreach(Camera rendcam in cams)
         {
             if (rendcam == renderableCamera || //Draw if it's the camera that this frame is designated for.
-                rendcam.name.ToLower().Contains("scenecamera") || //Draw if it's the camera from the Unity Editor Scene window. 
-                (rendcam.name.ToLower().Contains("preview") && rendcam.transform.position == renderableCamera.transform.position && rendcam.transform.rotation == renderableCamera.transform.rotation) || //Editor preview.
-                (showInNonZEDCameras == true && !zedCamList.Contains(rendcam) && !rendcam.name.ToLower().Contains("preview"))) //All other cameras, other than other ZED cameras and preview cameras, if the user wants. 
+                rendcam.name.Contains("scenecamera", System.StringComparison.OrdinalIgnoreCase) || //Draw if it's the camera from the Unity Editor Scene window. 
+                (rendcam.name.Contains("preview", System.StringComparison.OrdinalIgnoreCase) && rendcam.transform.position == renderableCamera.transform.position && rendcam.transform.rotation == renderableCamera.transform.rotation) || //Editor preview.
+                (showInNonZEDCameras == true && !zedCamList.Contains(rendcam) && !rendcam.name.Contains("preview", System.StringComparison.OrdinalIgnoreCase))) //All other cameras, other than other ZED cameras and preview cameras, if the user wants. 
             {
                 DrawCanvas(rendcam);
             }
@@ -124,7 +124,7 @@ public class HideFromWrongCameras : MonoBehaviour
         //rend.enabled = false;
 
          //If it's a Unity scene camera, always show it. 
-        if (currentcam.name.ToLower().Contains("scenecamera")) //There are more robust ways of checking this, but they are expensive. 
+        if (currentcam.name.Contains("scenecamera", System.StringComparison.OrdinalIgnoreCase)) //There are more robust ways of checking this, but they are expensive. 
         {
             rend.enabled = true;
             return;
@@ -139,7 +139,7 @@ public class HideFromWrongCameras : MonoBehaviour
         {
             rend.enabled = false; //Those cameras can only render one quad, and it's not this one. 
         }
-        else if (currentcam.name.ToLower().Contains("preview") &&
+        else if (currentcam.name.Contains("preview", System.StringComparison.OrdinalIgnoreCase) &&
             currentcam.transform.position == renderableCamera.transform.position && currentcam.transform.rotation == renderableCamera.transform.rotation)
         {
             //Unity editor Preview camera. Transform check is to assure it's the corresponding preview camera. 

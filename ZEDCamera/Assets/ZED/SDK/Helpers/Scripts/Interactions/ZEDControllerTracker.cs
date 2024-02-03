@@ -189,8 +189,7 @@ public class ZEDControllerTracker : MonoBehaviour
 
                     //Delay the saved values inside GetValuePosition() by a factor of latencyCompensation in milliseconds.
                     p = GetValuePosition(1, (float)(latencyCompensation / 1000.0f));
-                    transform.position = p.translation; //Assign new delayed Position
-                    transform.rotation = p.rotation; //Assign new delayed Rotation.
+                    transform.SetPositionAndRotation(p.translation, p.rotation); //Assign new delayed Rotation.
                 }
         }
     }

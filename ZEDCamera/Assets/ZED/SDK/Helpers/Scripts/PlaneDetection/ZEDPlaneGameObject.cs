@@ -453,7 +453,7 @@ public class ZEDPlaneGameObject : MonoBehaviour
         lastRenderState = rend.enabled;
         if (!rend.enabled) return; //We weren't going to render this object anyway, so skip the rest of the logic. 
 
-        if (currentcam.name.ToLower().Contains("scenecamera"))
+        if (currentcam.name.Contains("scenecamera", System.StringComparison.OrdinalIgnoreCase))
         {
             rend.enabled = ZEDPlaneDetectionManager.isSceneDisplay;
 

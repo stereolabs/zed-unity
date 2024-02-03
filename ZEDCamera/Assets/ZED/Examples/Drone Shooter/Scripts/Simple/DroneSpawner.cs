@@ -98,8 +98,7 @@ public class DroneSpawner : MonoBehaviour
     {
         get
         {
-            if (currentdrone == null && respawncountdown <= 0) return true;
-            else return false;
+            return currentdrone == null && respawncountdown <= 0;
         }
     }
 
@@ -281,8 +280,8 @@ public class DroneSpawner : MonoBehaviour
 		dronecomponent.SetMySpawner(this);
 
         //Set the drone's transform values
-		dronego.transform.position = newspawnposition; //Assign the random Pos generated in CheckRandomSpawnLocation();
-		dronego.transform.rotation = Quaternion.LookRotation(zedManager.GetMainCameraTransform().position - spawnPosition, Vector3.up); //Make it look at the player.
+		dronego.transform.SetPositionAndRotation(newspawnposition, 
+            Quaternion.LookRotation(zedManager.GetMainCameraTransform().position - spawnPosition, Vector3.up)); //Make it look at the player.
 
         return dronecomponent;
 

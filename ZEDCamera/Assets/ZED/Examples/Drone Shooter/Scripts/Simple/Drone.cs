@@ -346,8 +346,7 @@ public class Drone : MonoBehaviour, ILaserable
         }
         //Creat a laser object
         GameObject laser = Instantiate(LaserPrefab);
-		laser.transform.position = laseranchor.transform.position;
-		laser.transform.rotation = Quaternion.LookRotation(randompoint - laseranchor.transform.position);
+		laser.transform.SetPositionAndRotation(laseranchor.transform.position, Quaternion.LookRotation(randompoint - laseranchor.transform.position));
 
         //Play the Particle effect.
         muzzleflashfx.Play();

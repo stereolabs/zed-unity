@@ -934,10 +934,7 @@ namespace sl
         /// <param name="Device brand.">Type.</param>
         public static bool CheckUSBDeviceConnected(USB_DEVICE Type)
         {
-            if (dllz_find_usb_device(Type))
-                return true;
-            else
-                return false;
+            return dllz_find_usb_device(Type);
         }
 
 
@@ -2797,10 +2794,7 @@ namespace sl
         public bool IsStreamingEnabled()
         {
             int res = dllz_is_streaming_enabled(CameraID);
-            if (res == 1)
-                return true;
-            else
-                return false;
+            return res == 1;
         }
 
         /// <summary>

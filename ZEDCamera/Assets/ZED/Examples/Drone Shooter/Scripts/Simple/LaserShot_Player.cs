@@ -64,8 +64,7 @@ public class LaserShot_Player : ZEDProjectile
 		if (explosionPrefab) //Only spawn an explosion if we have a prefab to spawn
         {
 			GameObject explosion = Instantiate(explosionPrefab);
-            explosion.transform.position = position;
-            explosion.transform.rotation = Quaternion.LookRotation(normal);
+            explosion.transform.SetPositionAndRotation(position, Quaternion.LookRotation(normal));
         }
     }
 }

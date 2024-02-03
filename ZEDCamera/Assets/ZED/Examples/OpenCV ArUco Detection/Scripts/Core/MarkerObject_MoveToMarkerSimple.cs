@@ -15,10 +15,9 @@ public class MarkerObject_MoveToMarkerSimple : MarkerObject
 {
     public override void MarkerDetectedSingle(Vector3 worldposition, Quaternion worldrotation)
     {
-        gameObject.SetActive(true); 
+        gameObject.SetActive(true);
 
-        transform.position = worldposition;
-        transform.rotation = worldrotation;
+        transform.SetPositionAndRotation(worldposition, worldrotation);
     }
 
     public override void MarkerNotDetected()

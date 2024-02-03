@@ -19,10 +19,7 @@ namespace sl
 		public const string NameDLL = "sl_unitywrapper";
         public static bool IsVector3NaN(Vector3 input)
         {
-            if (float.IsNaN(input.x) || float.IsNaN(input.y) || float.IsNaN(input.z))
-                return true;
-            else
-                return false;
+            return float.IsNaN(input.x) || float.IsNaN(input.y) || float.IsNaN(input.z);
         }
     }
 

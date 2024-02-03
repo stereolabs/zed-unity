@@ -92,10 +92,7 @@ public class ZEDOffsetController : MonoBehaviour
     /// <returns>True if such a component exists and is used to handle the offset.</returns>
     public bool TrackerComponentExist()
     {
-        if (controllerTracker != null)
-            return true;
-        else
-            return false;
+        return controllerTracker != null;
     }
 
     private void OnEnable()
@@ -214,8 +211,13 @@ public class ZEDOffsetController : MonoBehaviour
                 }
             }
         }
+
+#if NEW_TRANSFORM_API
+        transform.SetLocalPositionAndRotation(position, Quaternion.Euler(eulerRotation.x, eulerRotation.y, eulerRotation.z));
+#else
         transform.localPosition = position;
         transform.localRotation = Quaternion.Euler(eulerRotation.x, eulerRotation.y, eulerRotation.z);
+#endif
     }
 
     /// <summary>

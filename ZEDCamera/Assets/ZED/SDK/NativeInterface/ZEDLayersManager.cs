@@ -19,9 +19,6 @@ public struct ZEDLayers
 [InitializeOnLoad]
 public static class ZEDLayersManager
 {
-
-
-
     static ZEDLayersManager()
     {
         CreateLayer(ZEDLayers.ID_tagInvisibleToZED, ZEDLayers.tagInvisibleToZED);
@@ -46,7 +43,7 @@ public static class ZEDLayersManager
                 }
             }
 
-            if (layers.GetArrayElementAtIndex(layerIndex).stringValue == "")
+            if (layers.GetArrayElementAtIndex(layerIndex).stringValue?.Length == 0)
             {
                 layers.GetArrayElementAtIndex(layerIndex).stringValue = layerName;
                 serializedObject.ApplyModifiedProperties();

@@ -1,3 +1,4 @@
+using log4net.Util;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,13 +44,16 @@ public class VirtualCamController : MonoBehaviour
     {
         if(followRealCam)
         {
-            transform.position = zedManager.transform.localPosition;
-            transform.rotation = zedManager.transform.localRotation;
+            transform.SetPositionAndRotation(zedManager.transform.localPosition, zedManager.transform.localRotation);
         }
         else
         {
+#if NEW_TRANSFORM_API
+            transform.GetPositionAndRotation(out currentPosition, out currentRotation);
+#else
             currentPosition = transform.position;
             currentRotation = transform.rotation;
+#endif
             initialized = true;
         }
     }
@@ -57,8 +61,12 @@ public class VirtualCamController : MonoBehaviour
     private void ResetCurrentCam()
     {
         initialized = true;
+#if NEW_TRANSFORM_API
+        zedManager.transform.GetLocalPositionAndRotation(out currentPosition, out currentRotation);
+#else
         currentPosition = zedManager.transform.localPosition;
         currentRotation = zedManager.transform.localRotation;
+#endif
     }
 
     void ManageInput()
@@ -79,22 +87,20 @@ public class VirtualCamController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(toggleFollow)) 
-        { 
-            if (!initialized) { ResetCurrentCam(); } 
-            followRealCam = !followRealCam; 
+        if (Input.GetKeyDown(toggleFollow))
+        {
+            if (!initialized) { ResetCurrentCam(); }
+            followRealCam = !followRealCam;
         }
 
         if(followRealCam)
         {
-            transform.position = zedManager.transform.localPosition;
-            transform.rotation = zedManager.transform.localRotation;
+            transform.SetPositionAndRotation(zedManager.transform.localPosition, zedManager.transform.localRotation);
         }
         else
         {
             ManageInput();
-            transform.position = currentPosition; 
-            transform.rotation = currentRotation;
+            transform.SetPositionAndRotation(currentPosition, currentRotation);
         }
     }
 }

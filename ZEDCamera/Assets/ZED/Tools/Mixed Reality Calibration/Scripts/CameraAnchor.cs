@@ -106,8 +106,12 @@ public class CameraAnchor : MonoBehaviour
     {
         RegisterUndoablePose();
 
+#if NEW_TRANSFORM_API
+        zedManager.transform.SetLocalPositionAndRotation(localpos, localrot);
+#else
         zedManager.transform.localPosition = localpos;
         zedManager.transform.localRotation = localrot;
+#endif
     }
 
     /// <summary>
@@ -122,8 +126,13 @@ public class CameraAnchor : MonoBehaviour
 
         if (uselocal) //Local space. 
         {
+#if NEW_TRANSFORM_API
+            zedManager.transform.SetLocalPositionAndRotation(zedManager.transform.localPosition + posoffset,
+                                                                rotoffset * zedManager.transform.localRotation);
+#else
             zedManager.transform.localPosition += posoffset;
             zedManager.transform.localRotation = rotoffset * zedManager.transform.localRotation;
+#endif
         }
         else //World space. 
         {
@@ -152,7 +161,7 @@ public class CameraAnchor : MonoBehaviour
             incrementalUndoTimer = MIN_TIME_BETWEEN_INCREMENTAL_UNDOS;
         }
 
-        Vector3 velocity = translation * maxTranslateMPS * Time.deltaTime;
+        Vector3 velocity = maxTranslateMPS * Time.deltaTime * translation;
         zedManager.transform.localPosition += zedManager.transform.localRotation * velocity;
     }
 
@@ -176,7 +185,7 @@ public class CameraAnchor : MonoBehaviour
             incrementalUndoTimer = MIN_TIME_BETWEEN_INCREMENTAL_UNDOS;
         }
 
-        Vector3 angvelocity = rotation * maxRotateDPS * Time.deltaTime;
+        Vector3 angvelocity = maxRotateDPS * Time.deltaTime * rotation;
         zedManager.transform.localRotation *= Quaternion.Euler(angvelocity);
         //zedManager.transform.localEulerAngles += angvelocity;
     }
@@ -212,8 +221,12 @@ public class CameraAnchor : MonoBehaviour
         redoStack.Push(pose);
 
         //Apply historical pose to the ZED. 
+#if NEW_TRANSFORM_API
+        zedManager.transform.SetLocalPositionAndRotation(undoPose.position, undoPose.rotation);
+#else
         zedManager.transform.localPosition = undoPose.position;
         zedManager.transform.localRotation = undoPose.rotation;
+#endif
 
         //redoStack.Push(undoPose); //Remember what you undid so it can be redone. 
     }
@@ -229,8 +242,12 @@ public class CameraAnchor : MonoBehaviour
         AnchorPose redoPose = redoStack.Pop(); //Get last pose from the stack and remove it. 
 
         //Re-apply that pose to the ZED. 
+#if NEW_TRANSFORM_API
+        zedManager.transform.SetLocalPositionAndRotation(redoPose.position, redoPose.rotation);
+#else
         zedManager.transform.localPosition = redoPose.position;
         zedManager.transform.localRotation = redoPose.rotation;
+#endif
 
         undoStack.Push(redoPose); //Put that action back on the undo stack so you could repeat this process again if you wanted. 
     }
@@ -381,8 +398,12 @@ public class CameraAnchor : MonoBehaviour
             }
         }
 
+#if NEW_TRANSFORM_API
+        zedManager.transform.SetLocalPositionAndRotation(localpos, Quaternion.Euler(localrot));
+#else
         zedManager.transform.localPosition = localpos;
         zedManager.transform.localRotation = Quaternion.Euler(localrot);
+#endif
 
         print("Loaded past calibration from file: " + filePath);
     }
@@ -400,6 +421,5 @@ public class CameraAnchor : MonoBehaviour
             position = pos;
             rotation = rot;
         }
-
     }
 }

@@ -234,8 +234,7 @@ public class LaserGun : MonoBehaviour
     {
         //Create the shot and position/rotate it accordingly.
         GameObject blastershot = Instantiate(laserShotPrefab);
-        blastershot.transform.position = laserSpawnLocation != null ? laserSpawnLocation.transform.position : transform.position;
-        blastershot.transform.rotation = laserSpawnLocation != null ? laserSpawnLocation.transform.rotation : transform.rotation;
+        blastershot.transform.SetPositionAndRotation(laserSpawnLocation != null ? laserSpawnLocation.transform.position : transform.position, laserSpawnLocation != null ? laserSpawnLocation.transform.rotation : transform.rotation);
 
         if (laserPointerBeadHolder != null && pointerbead.transform.localPosition != Vector3.zero)
         {

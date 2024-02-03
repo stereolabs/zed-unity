@@ -413,7 +413,7 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         ready = false;
 
         // If using Vive, change ZED's settings to compensate for different screen.
-        if (getXRModelName().ToLower().Contains("vive"))
+        if (getXRModelName().Contains("vive", System.StringComparison.OrdinalIgnoreCase))
         {
             zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.CONTRAST, 3);
             zedCamera.SetCameraSettings(sl.CAMERA_SETTINGS.SATURATION, 3);
@@ -466,10 +466,8 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         if (manager.zedCamera.IsCameraReady)
         {
             k.Timestamp = manager.zedCamera.GetCurrentTimeStamp();
-            if (k.Timestamp >= 0)
-            {
-                dllz_latency_corrector_add_key_pose(ref k.Translation, ref k.Orientation, k.Timestamp); //Poses are handled by the wrapper.
-            }
+            
+            dllz_latency_corrector_add_key_pose(ref k.Translation, ref k.Orientation, k.Timestamp); //Poses are handled by the wrapper.
         }
     }
 
@@ -508,9 +506,12 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
         head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 headPosition);
         head.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion headRotation);
 
+#if NEW_TRANSFORM_API
+        finalCenterEye.transform.SetLocalPositionAndRotation(headPosition, headRotation);
+#else
         finalCenterEye.transform.localPosition = headPosition;
-		finalCenterEye.transform.localRotation = headRotation;
-
+        finalCenterEye.transform.localRotation = headRotation;
+#endif
         Quaternion r;
 
         //Modified code to ensure view in HMD does not play like a movie screen
@@ -523,11 +524,14 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
             r = latencyPose.rotation;
         }
         // End of modified code
-
-		//Plane's distance from the final camera never changes, but it's rotated around it based on the latency pose.
-		quadCenter.localRotation = r;
+        //Plane's distance from the final camera never changes, but it's rotated around it based on the latency pose.
+#if NEW_TRANSFORM_API
+        quadCenter.SetLocalPositionAndRotation(finalCenterEye.transform.localPosition + r * (offset), r);
+#else
+        quadCenter.localRotation = r;
 		quadCenter.localPosition = finalCenterEye.transform.localPosition + r * (offset);
-	}
+#endif
+    }
 
     /// <summary>
     /// Initialize the ZED's tracking with the current HMD position and HMD-ZED calibration.
@@ -674,8 +678,13 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
                     nodeState.TryGetRotation(out Quaternion rot);
                     nodeState.TryGetPosition(out Vector3 pos);
 
+#if NEW_TRANSFORM_API
+                    quadCenter.SetLocalPositionAndRotation(pos + quadCenter.localRotation * offset, rot);
+#else
                     quadCenter.localRotation = rot;
                     quadCenter.localPosition = pos + quadCenter.localRotation * offset;
+#endif
+
                 }
             }
         }
@@ -698,10 +707,14 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
                 head.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 headPosition);
                 head.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion headRotation);
 
-				quadCenter.localRotation = headRotation;
+#if NEW_TRANSFORM_API
+                quadCenter.SetLocalPositionAndRotation(headPosition + quadCenter.localRotation * offset, headRotation);
+#else
+                quadCenter.localRotation = headRotation;
 				quadCenter.localPosition = headPosition + quadCenter.localRotation * offset;
-			}
-		}
+#endif
+            }
+        }
 	}
 #endif
 

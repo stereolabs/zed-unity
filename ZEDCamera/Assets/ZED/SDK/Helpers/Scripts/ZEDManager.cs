@@ -2115,7 +2115,7 @@ public class ZEDManager : MonoBehaviour
 
         }
 
-        versionZED = "[SDK]: " + sl.ZEDCamera.GetSDKVersion().ToString() + " [Plugin]: " + sl.ZEDCamera.PluginVersion.ToString();
+        versionZED = "[SDK]: " + sl.ZEDCamera.GetSDKVersion() + " [Plugin]: " + sl.ZEDCamera.PluginVersion.ToString();
 
 
         //Behavior specific to AR pass-through mode.
@@ -2340,11 +2340,37 @@ public class ZEDManager : MonoBehaviour
             //zedRigRoot transform (origin of the global camera) is placed on the HMD headset. Therefore, we move the
             //camera in front of it by offsetHmdZEDPosition to compensate for the ZED's position on the headset.
             //If values are wrong, tweak calibration file created in ZEDMixedRealityPlugin.
+#if NEW_TRANSFORM_API
+            camLeftTransform.SetLocalPositionAndRotation(arRig.HmdToZEDCalibration.translation, arRig.HmdToZEDCalibration.rotation);
+
+            if (camRightTransform)
+            {
+                camRightTransform.SetLocalPositionAndRotation(camLeftTransform.localPosition + new Vector3(zedCamera.Baseline, 0.0f, 0.0f), 
+                                                                camLeftTransform.localRotation);
+            }
+        }
+        else if (camLeftTransform && camRightTransform) //Using stereo rig, but no VR headset.
+        {
+            //When no VR HMD is available, simply put the origin at the left camera.
+            camLeftTransform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            camRightTransform.SetLocalPositionAndRotation(new Vector3(zedCamera.Baseline, 0.0f, 0.0f), Quaternion.identity);
+        }
+        else //Using mono rig (ZED_Rig_Mono). No offset needed.
+        {
+            if (GetMainCameraTransform())
+            {
+                GetMainCameraTransform().SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            }
+        }
+#else
             camLeftTransform.localPosition = arRig.HmdToZEDCalibration.translation;
             camLeftTransform.localRotation = arRig.HmdToZEDCalibration.rotation;
 
-            if (camRightTransform) camRightTransform.localPosition = camLeftTransform.localPosition + new Vector3(zedCamera.Baseline, 0.0f, 0.0f); //Space the eyes apart.
-            if (camRightTransform) camRightTransform.localRotation = camLeftTransform.localRotation;
+            if (camRightTransform)
+            {
+                camRightTransform.localPosition = camLeftTransform.localPosition + new Vector3(zedCamera.Baseline, 0.0f, 0.0f); //Space the eyes apart.
+                camRightTransform.localRotation = camLeftTransform.localRotation;
+            }
         }
         else if (camLeftTransform && camRightTransform) //Using stereo rig, but no VR headset.
         {
@@ -2362,6 +2388,7 @@ public class ZEDManager : MonoBehaviour
                 GetMainCameraTransform().localRotation = Quaternion.identity;
             }
         }
+#endif
     }
 
     /// <summary>
@@ -2436,7 +2463,7 @@ public class ZEDManager : MonoBehaviour
         }
 
     }
-    #endregion
+#endregion
 
     #region IMAGE_ACQUIZ
     /// <summary>
@@ -2603,9 +2630,12 @@ public class ZEDManager : MonoBehaviour
         }
 
         //Set the original transform for the Rig
+#if NEW_TRANSFORM_API
+        zedRigRoot.SetLocalPositionAndRotation(OriginPosition, OriginRotation);
+#else
         zedRigRoot.localPosition = OriginPosition;
         zedRigRoot.localRotation = OriginRotation;
-
+#endif
     }
 
     /// <summary>
@@ -2722,8 +2752,12 @@ public class ZEDManager : MonoBehaviour
                             Debug.LogError("ZED Tracking disabled: Not available during SVO playback when Loop is enabled.");
                         }
                     }
+#if NEW_TRANSFORM_API
+                    zedRigRoot.SetLocalPositionAndRotation(initialPosition, initialRotation);
+#else
                     zedRigRoot.localPosition = initialPosition;
                     zedRigRoot.localRotation = initialRotation;
+#endif
                 }
             }
 
@@ -2759,8 +2793,12 @@ public class ZEDManager : MonoBehaviour
 
                 arRig.ExtractLatencyPose(imageTimeStamp); //Find what HMD's pose was at ZED image's timestamp for latency compensation.
                 arRig.AdjustTrackingAR(zedPosition, zedOrientation, out r, out v, setIMUPriorInAR);
+#if NEW_TRANSFORM_API
+                zedRigRoot.SetLocalPositionAndRotation(v, r);
+#else
                 zedRigRoot.localRotation = r;
                 zedRigRoot.localPosition = v;
+#endif
                 //Debug.DrawLine(new Vector3(0, 0.05f, 0), (r * Vector3.one * 5) + new Vector3(0, 0.05f, 0), Color.red);
                 //Debug.DrawLine(Vector3.zero, zedOrientation * Vector3.one * 5, Color.green);
 
@@ -2781,8 +2819,12 @@ public class ZEDManager : MonoBehaviour
         {
             isCameraTracked = true;
             arRig.ExtractLatencyPose(imageTimeStamp); //Find what HMD's pose was at ZED image's timestamp for latency compensation.
+#if NEW_TRANSFORM_API
+            zedRigRoot.SetLocalPositionAndRotation(arRig.LatencyPose().translation, arRig.LatencyPose().rotation);
+#else
             zedRigRoot.localRotation = arRig.LatencyPose().rotation;
             zedRigRoot.localPosition = arRig.LatencyPose().translation;
+#endif
         }
         else //The ZED is not tracked by itself or an HMD.
             isCameraTracked = false;
@@ -2884,8 +2926,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     public void StartSpatialMapping()
     {
-        transform.position = Vector3.zero;
-        transform.rotation = Quaternion.identity;
+        transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
         spatialMapping.StartStatialMapping(sl.SPATIAL_MAP_TYPE.MESH, mappingResolutionPreset, mappingRangePreset, isMappingTextured);
     }
 
@@ -3697,7 +3738,7 @@ public class ZEDManager : MonoBehaviour
 
         int value = 0;
         zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.AEC_AGC, ref value);
-        if (value == 0) videoAutoGainExposure = false; else videoAutoGainExposure = true;
+        videoAutoGainExposure = value != 0;
         if (!videoAutoGainExposure)
         {
             zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.GAIN, ref videoGain);
@@ -3705,7 +3746,7 @@ public class ZEDManager : MonoBehaviour
         }
 
         zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.AUTO_WHITEBALANCE, ref value);
-        if (value == 0) videoAutoWhiteBalance = false; else videoAutoWhiteBalance = true;
+        videoAutoWhiteBalance = value != 0;
 
         if (!videoAutoWhiteBalance)
         {
@@ -3713,7 +3754,7 @@ public class ZEDManager : MonoBehaviour
         }
 
         zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, ref value);
-        if (value == 0) videoLEDStatus = false; else videoLEDStatus = true;
+        videoLEDStatus = value != 0;
     }
 
     private void ApplyLocalVideoSettingsToZED()

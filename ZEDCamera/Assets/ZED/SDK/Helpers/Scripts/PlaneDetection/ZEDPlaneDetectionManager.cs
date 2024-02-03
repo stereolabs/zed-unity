@@ -210,8 +210,7 @@ public class ZEDPlaneDetectionManager : MonoBehaviour
         holder = new GameObject();
         holder.name = "[ZED Planes]";
         holder.transform.parent = this.transform;
-        holder.transform.position = Vector3.zero;
-        holder.transform.rotation = Quaternion.identity;
+        holder.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
         StaticBatchingUtility.Combine(holder);
 
         //initialize Vertices/Triangles with enough length

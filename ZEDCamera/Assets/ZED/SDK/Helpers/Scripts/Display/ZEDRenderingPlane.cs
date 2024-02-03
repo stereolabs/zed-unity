@@ -533,12 +533,12 @@ public class ZEDRenderingPlane : MonoBehaviour
             cam.farClipPlane = farplane;
             //mainCamera.nearClipPlane = 0.1f;
             //mainCamera.farClipPlane = 500.0f;
-            scale(canvas.gameObject, GetFOVYFromProjectionMatrix(cam.projectionMatrix));
+            scale(canvas, GetFOVYFromProjectionMatrix(cam.projectionMatrix));
             cam.fieldOfView = zedCamera.VerticalFieldOfView * Mathf.Rad2Deg;
         }
         else //Just scale the screen.
         {
-            scale(canvas.gameObject, cam.fieldOfView);
+            scale(canvas, cam.fieldOfView);
         }
     }
 
@@ -888,8 +888,12 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// </summary>
     private void CreateRenderTexture()
     {
+#if NEW_TRANSFORM_API
+        transform.SetLocalPositionAndRotation(new Vector3(0, 0, 0), Quaternion.identity);
+#else
         transform.localRotation = Quaternion.identity;
         transform.localPosition = new Vector3(0, 0, 0);
+#endif
         if (cam.stereoTargetEye != StereoTargetEyeMask.None && zedManager.IsStereoRig == true)
         {
             if (zedCamera != null && zedCamera.IsCameraReady)
@@ -913,8 +917,12 @@ public class ZEDRenderingPlane : MonoBehaviour
 	private void SetTextures(sl.ZEDCamera zedCamera, sl.VIEW_MODE view_mode)
     {
         float baseline = zedCamera.Baseline;
+#if NEW_TRANSFORM_API
+        canvas.transform.SetLocalPositionAndRotation(new Vector3(0, 0, 0), Quaternion.identity);
+#else
         canvas.transform.localRotation = Quaternion.identity;
         canvas.transform.localPosition = new Vector3(0, 0, 0);
+#endif
 
         if (zedManager.IsStereoRig == true && cam.stereoTargetEye != StereoTargetEyeMask.None)
         {

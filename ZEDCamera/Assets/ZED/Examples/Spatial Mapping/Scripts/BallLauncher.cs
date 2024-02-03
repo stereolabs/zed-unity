@@ -135,8 +135,7 @@ public class BallLauncher : MonoBehaviour
                 {
                     projectiles[countsphere % SPHERE_NB].SetActive(true);
                 }
-                projectiles[countsphere % SPHERE_NB].transform.rotation = launcher.transform.rotation;
-                projectiles[countsphere % SPHERE_NB].transform.position = launcher.transform.position;
+                projectiles[countsphere % SPHERE_NB].transform.SetPositionAndRotation(launcher.transform.position, launcher.transform.rotation);
                 float offsetAngleX = 0.0f;
                 float offsetAngleY = 0.0f;
 

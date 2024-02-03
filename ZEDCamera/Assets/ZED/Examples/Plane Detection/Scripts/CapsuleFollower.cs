@@ -52,12 +52,7 @@ public class CapsuleFollower : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        if (target.transform.parent.gameObject.activeInHierarchy)
-        {
-            capsulecollider.enabled = true;
-        }
-        else
-            capsulecollider.enabled = false;
+        capsulecollider.enabled = target.transform.parent.gameObject.activeInHierarchy;
     }
 
     /// <summary>

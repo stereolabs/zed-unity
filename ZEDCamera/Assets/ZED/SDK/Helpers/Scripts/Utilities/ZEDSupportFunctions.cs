@@ -42,14 +42,7 @@ public class ZEDSupportFunctions
                 }
                 else if (xRLoader.name == "OpenXRLoader")
                 {
-                    if (xRLoader.Start())
-                    {
-                        isPresent = true;
-                    }
-                    else
-                    {
-                        isPresent = false;
-                    }
+                    isPresent = xRLoader.Start();
                 }
                 else { isPresent = false; }
             }
@@ -66,11 +59,8 @@ public class ZEDSupportFunctions
 	 ***********************************************************************************************/
     public static bool IsVector3NaN(Vector3 input)
 	{
-		if (float.IsNaN (input.x) || float.IsNaN (input.y) || float.IsNaN (input.z))
-			return true;
-		else
-			return false;
-	}
+        return float.IsNaN (input.x) || float.IsNaN (input.y) || float.IsNaN (input.z);
+    }
 
     /// <summary>
     /// Gets the normal vector (the direction a surface is pointing) at a given screen-space pixel (i,j,0).  
@@ -164,8 +154,7 @@ public class ZEDSupportFunctions
 		float d = zedCam.GetDepthValue(pixel);
         depth = d;
 
-        if (d == -1) return false;
-        return true;
+        return d != -1;
     }
 
     /// <summary>
@@ -188,9 +177,8 @@ public class ZEDSupportFunctions
 		
 		Vector3 pixelPosition = cam.WorldToScreenPoint(position);
         depth = zedCam.GetDepthValue(pixelPosition);
-		if (depth == -1) return false;
-		return true;
-	}
+        return depth != -1;
+    }
 
 
 
@@ -211,9 +199,8 @@ public class ZEDSupportFunctions
 			return false;
 
         distance = zedCam.GetDistanceValue(pixel);
-		if (distance == -1) return false;
-		return true;
-	}
+        return distance != -1;
+    }
 
 
     /// <summary>
@@ -236,9 +223,8 @@ public class ZEDSupportFunctions
 		Vector3 pixelPosition = cam.WorldToScreenPoint (position);
 
         distance = zedCam.GetDistanceValue(new Vector3(pixelPosition.x, pixelPosition.y, 0));
-		if (distance == -1) return false;
-		return true;
-	}
+        return distance != -1;
+    }
     /// <summary>
     /// Gets the world position of the given image pixel.
     /// </summary>
@@ -497,13 +483,9 @@ public class ZEDSupportFunctions
 
 		//See if our total collisions exceeds the threshold to call it a collision.
 		float blockedpercentage = (float)intersections / totalchecks;
-		if(blockedpercentage > blockedpercentagethreshold)
-		{
-			return true;
-		}
 
-		return false;
-	}
+        return blockedpercentage > blockedpercentagethreshold;
+    }
 
     /// <summary>
     /// Checks for collisions at each vertex of a given mesh with a given transform.

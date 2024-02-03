@@ -165,9 +165,8 @@ public class MarkerObject_CreateObjectsAtMarkers : MarkerObject
         for (int i = 0; i < worldposes.Count; i++) //Won't do anything unless we don't have enough active objects. 
         {
             GameObject newgo = GetInstantiatedObject();
-            newgo.transform.position = worldposes[i].translation;
             //newgo.transform.position = worldposlist[i];
-            newgo.transform.rotation = worldposes[i].rotation;
+            newgo.transform.SetPositionAndRotation(worldposes[i].translation, worldposes[i].rotation);
             ActiveAnchored newaa = new ActiveAnchored(this, newgo);
             activeObjects.Add(newaa);
         }
@@ -286,11 +285,7 @@ public class MarkerObject_CreateObjectsAtMarkers : MarkerObject
             hiddenFramesCount++;
             //positionStack.Clear();
             //rotationStack.Clear();
-            if (hiddenFramesCount >= parentManager.missedFramesUntilDisabled)
-            {
-                return true;
-            }
-            else return false;
+            return hiddenFramesCount >= parentManager.missedFramesUntilDisabled;
         }
 
         /// <summary>

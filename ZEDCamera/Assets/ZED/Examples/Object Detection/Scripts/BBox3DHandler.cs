@@ -263,7 +263,7 @@ public class BBox3DHandler : MonoBehaviour
     private void UpdateText(string id, float dist)
     {
         string newtext = "";
-        if (showID) newtext += "ID: " + id.ToString();
+        if (showID) newtext += "ID: " + id;
         if (showID && showDistance) newtext += "\r\n";
         if (showDistance) newtext += dist.ToString("F2") + "m";
 

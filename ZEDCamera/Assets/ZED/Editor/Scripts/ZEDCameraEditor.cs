@@ -1431,10 +1431,7 @@ public class ZEDCameraEditor : Editor
             videoSettingsInitModeProperty.enumValueIndex = (int)(ZEDManager.VideoSettingsInitMode)EditorGUILayout.EnumPopup(videoInitModeLabel,
                 (ZEDManager.VideoSettingsInitMode)videoSettingsInitModeProperty.enumValueIndex);
 
-            if (manager.zedCamera == null && videoSettingsInitModeProperty.enumValueIndex != (int)ZEDManager.VideoSettingsInitMode.Custom)
-                GUI.enabled = false;
-            else
-                GUI.enabled = true;
+            GUI.enabled = manager.zedCamera != null || videoSettingsInitModeProperty.enumValueIndex == (int)ZEDManager.VideoSettingsInitMode.Custom;
 
 
             EditorGUI.BeginChangeCheck();
@@ -1549,10 +1546,7 @@ public class ZEDCameraEditor : Editor
                 }
 
             }
-            if (manager.zedCamera == null && videoSettingsInitModeProperty.enumValueIndex != (int)ZEDManager.VideoSettingsInitMode.Custom)
-                GUI.enabled = false;
-            else
-                GUI.enabled = true;
+            GUI.enabled = manager.zedCamera != null || videoSettingsInitModeProperty.enumValueIndex == (int)ZEDManager.VideoSettingsInitMode.Custom;
 
             EditorGUI.indentLevel--;
 
@@ -1596,10 +1590,7 @@ public class ZEDCameraEditor : Editor
 
 
             GUILayout.Space(7);
-            if (manager.zedCamera == null && videoSettingsInitModeProperty.enumValueIndex != (int)ZEDManager.VideoSettingsInitMode.Custom)
-                GUI.enabled = false;
-            else
-                GUI.enabled = true;
+            GUI.enabled = manager.zedCamera != null || videoSettingsInitModeProperty.enumValueIndex == (int)ZEDManager.VideoSettingsInitMode.Custom;
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(EditorGUIUtility.labelWidth);
@@ -1699,12 +1690,8 @@ public class ZEDCameraEditor : Editor
     /// <returns>True if a setting was changed that won't go into effect until a restart. </returns>
     private bool CheckChange()
     {
-        if (resolution != manager.resolution ||
-            depthmode != manager.depthMode)
-        {
-            return true;
-        }
-        else return false;
+        return resolution != manager.resolution ||
+            depthmode != manager.depthMode;
     }
 
     /// <summary>

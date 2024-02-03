@@ -121,10 +121,8 @@ public class ZEDTransformController : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         var trackers = FindObjectsOfType<ZEDControllerTracker_DemoInputs>();
-        foreach (ZEDControllerTracker_DemoInputs tracker in trackers)
-        {
-            objectTrackers.Add(tracker);
-        }
+
+        objectTrackers.AddRange(trackers);
 
         if (repositionAtStart) //If the user wants, move the object in front of the ZED once it's initialized. 
         {
@@ -149,27 +147,27 @@ public class ZEDTransformController : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
         {
-            moveAxis = Vector3.forward * movementSpeed * Time.deltaTime;
+            moveAxis = movementSpeed * Time.deltaTime * Vector3.forward;
         }
         if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
         {
-            moveAxis = Vector3.back * movementSpeed * Time.deltaTime;
+            moveAxis = movementSpeed * Time.deltaTime * Vector3.back;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            moveAxis = Vector3.left * movementSpeed * Time.deltaTime;
+            moveAxis = movementSpeed * Time.deltaTime * Vector3.left;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            moveAxis = Vector3.right * movementSpeed * Time.deltaTime;
+            moveAxis = movementSpeed * Time.deltaTime * Vector3.right;
         }
         if (Input.GetKey(KeyCode.R))
         {
-            moveAxis = Vector3.up * movementSpeed * Time.deltaTime;
+            moveAxis = movementSpeed * Time.deltaTime * Vector3.up;
         }
         if (Input.GetKey(KeyCode.F))
         {
-            moveAxis = Vector3.down * movementSpeed * Time.deltaTime;
+            moveAxis = movementSpeed * Time.deltaTime * Vector3.down;
         }
 
         Quaternion gravity = Quaternion.identity;
@@ -231,7 +229,7 @@ public class ZEDTransformController : MonoBehaviour
                 {
                     isMoving = true;
                     gravity = Quaternion.FromToRotation(zedManager.GetZedRootTransform().up, Vector3.up);
-                    transform.localPosition += zedManager.GetMainCameraTransform().right * moveaxis.x * movementSpeed * Time.deltaTime;
+                    transform.localPosition += moveaxis.x * movementSpeed * Time.deltaTime * zedManager.GetMainCameraTransform().right;
                     transform.localPosition += gravity * zedManager.GetMainCameraTransform().forward * moveaxis.y * movementSpeed * Time.deltaTime;
                 }
                 else
