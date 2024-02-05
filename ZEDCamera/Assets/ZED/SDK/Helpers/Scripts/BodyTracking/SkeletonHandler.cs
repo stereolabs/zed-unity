@@ -977,12 +977,10 @@ public class SkeletonHandler : ScriptableObject
         // Put in Ref Pose
         foreach (HumanBodyBones bone in currentHumanBodyBones)
         {
-            if (bone != HumanBodyBones.LastBone)
+            if (bone != HumanBodyBones.LastBone && 
+                rigBone[bone].transform)
             {
-                if (rigBone[bone].transform)
-                {
-                    rigBone[bone].transform.localRotation = default_rotations[bone];
-                }
+                rigBone[bone].transform.localRotation = default_rotations[bone];
             }
         }
 
@@ -990,13 +988,11 @@ public class SkeletonHandler : ScriptableObject
 
         for (int i = 0; i < currentHumanBodyBones.Length; i++)
         {
-            if (currentHumanBodyBones[i] != HumanBodyBones.LastBone && rigBone[currentHumanBodyBones[i]].transform)
+            if (currentHumanBodyBones[i] != HumanBodyBones.LastBone && rigBone[currentHumanBodyBones[i]].transform && 
+                currentParentIds[i] != -1)
             {
-                if (currentParentIds[i] != -1)
-                {
-                    Quaternion newRotation = rigBoneTarget[currentHumanBodyBones[i]] * rigBone[currentHumanBodyBones[i]].transform.localRotation;
-                    rigBone[currentHumanBodyBones[i]].transform.localRotation = newRotation;
-                }
+                Quaternion newRotation = rigBoneTarget[currentHumanBodyBones[i]] * rigBone[currentHumanBodyBones[i]].transform.localRotation;
+                rigBone[currentHumanBodyBones[i]].transform.localRotation = newRotation;
             }
         }
         PropagateRestPoseRotations(0, rigBone, Quaternion.Inverse(default_rotations[0]), true);
@@ -1028,17 +1024,15 @@ public class SkeletonHandler : ScriptableObject
 
             foreach (HumanBodyBones bone in currentHumanBodyBones)
             {
-                if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
+                if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips && 
+                    rigBone[bone].transform)
                 {
-                    if (rigBone[bone].transform)
-                    {
-                        Quaternion squat = Quaternion.Slerp(
-                                RigBoneRotationLastFrame[bone],
-                                rigBone[bone].transform.localRotation,
-                                smoothValue);
-                        animator.SetBoneLocalRotation(bone, squat);
-                        RigBoneRotationLastFrame[bone] = squat;
-                    }
+                    Quaternion squat = Quaternion.Slerp(
+                            RigBoneRotationLastFrame[bone],
+                            rigBone[bone].transform.localRotation,
+                            smoothValue);
+                    animator.SetBoneLocalRotation(bone, squat);
+                    RigBoneRotationLastFrame[bone] = squat;
                 }
             }
         }
@@ -1048,13 +1042,11 @@ public class SkeletonHandler : ScriptableObject
             targetBodyPositionLastFrame = targetBodyPositionWithHipOffset;
             foreach (HumanBodyBones bone in currentHumanBodyBones)
             {
-                if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips)
+                if (bone != HumanBodyBones.LastBone && bone != HumanBodyBones.Hips && 
+                    rigBone[bone].transform)
                 {
-                    if (rigBone[bone].transform)
-                    {
-                        animator.SetBoneLocalRotation(bone, rigBone[bone].transform.localRotation);
-                        RigBoneRotationLastFrame[bone] = rigBone[bone].transform.localRotation;
-                    }
+                    animator.SetBoneLocalRotation(bone, rigBone[bone].transform.localRotation);
+                    RigBoneRotationLastFrame[bone] = rigBone[bone].transform.localRotation;
                 }
             }
             firstFrame = false;

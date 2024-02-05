@@ -2783,7 +2783,7 @@ public class ZEDManager : MonoBehaviour
 
             isCameraTracked = true;
 
-            if (ZEDSupportFunctions.hasXRDevice() && isStereoRig) //AR pass-through mode.
+            if (isStereoRig && ZEDSupportFunctions.hasXRDevice()) //AR pass-through mode.
             {
                 if (calibrationHasChanged) //If the HMD offset calibration file changed during runtime.
                 {
@@ -2810,9 +2810,19 @@ public class ZEDManager : MonoBehaviour
             }
             else //Not AR pass-through mode.
             {
-                zedRigRoot.localRotation = zedOrientation;
                 if (!ZEDSupportFunctions.IsVector3NaN(zedPosition))
+                {
+#if NEW_TRANSFORM_API
+                    zedRigRoot.SetLocalPositionAndRotation(zedPosition, zedOrientation);
+#else
                     zedRigRoot.localPosition = zedPosition;
+                    zedRigRoot.localRotation = zedOrientation;
+#endif
+                }
+                else
+                {
+                    zedRigRoot.localRotation = zedOrientation;
+                }
             }
         }
         else if (ZEDSupportFunctions.hasXRDevice() && isStereoRig) //ZED tracking is off but HMD tracking is on. Fall back to that.
@@ -2894,7 +2904,7 @@ public class ZEDManager : MonoBehaviour
             arRig.LateUpdateHmdRendering(); //Update textures on final AR rig for output to the headset.
         }
     }
-    #endregion
+#endregion
 
     /// <summary>
     /// Event called when camera is disconnected
