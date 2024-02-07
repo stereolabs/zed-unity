@@ -1,0 +1,24 @@
+{
+  "name": "com.Stereolabs.ZED",
+  "version": "4.1.0",
+  "displayName": "ZED SDL",
+  "description": "This package brings the features of the ZED cameras into Unity",
+  "unity": "2021.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "https://www.stereolabs.com/docs/unity#step-1-installation",
+  "changelogUrl": "https://github.com/stereolabs/zed-unity/releases/",
+  "licensesUrl": "https://github.com/stereolabs/zed-unity?tab=MIT-1-ov-file#readme",
+  "dependencies": {
+    "com.unity.xr.management": "4.4.0",
+  },
+  "keywords": [
+    "ZED SDK",
+    "Computer vision",
+    "ZED Camera"
+  ],
+  "author": {
+    "name": "Stereolabs",
+    "email": "support@stereolabs.com",
+    "url": "https://www.stereolabs.com/"
+  }
+}
