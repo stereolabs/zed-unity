@@ -9,7 +9,7 @@
   "changelogUrl": "https://github.com/stereolabs/zed-unity/releases/",
   "licensesUrl": "https://github.com/stereolabs/zed-unity?tab=MIT-1-ov-file#readme",
   "dependencies": {
-    "com.unity.xr.management": "4.4.0",
+    "com.unity.xr.management": "4.4.0"
   },
   "keywords": [
     "ZED SDK",
@@ -20,5 +20,6 @@
     "name": "Stereolabs",
     "email": "support@stereolabs.com",
     "url": "https://www.stereolabs.com/"
-  }
+  },
+  "samples": []
 }
