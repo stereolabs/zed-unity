@@ -35,12 +35,6 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
-
-# Ignore: name DOT meta
-*.meta
-# Include: name DOT extension DOT meta
-!*.*.meta
-
 ZEDCamera/Assets/SteamVR/
 ZEDCamera/Assets/Oculus/
 ZEDCamera/Assets/Benjamin
