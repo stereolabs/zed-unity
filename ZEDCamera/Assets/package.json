@@ -25,57 +25,57 @@
     {
       "displayName": "Body Tracking",
       "description": "Animate a 3D avatar based on real-people movements using the ZED SDK Body Tracking module.",
-      "path": "Samples~/Body%20Tracking"
+      "path": "Samples~/Body Tracking"
     },
     {
       "displayName": "Dark Room",
       "description": "Your office is now a night club! Explore the lighting features coupled to the depth sensing to cast a laser show on your walls.",
-      "path": "Samples~/Dark%20Room"
+      "path": "Samples~/Dark Room"
     },
     {
       "displayName": "Drone Shooter",
       "description": "Defend yourself from drones that spawn around your room and shoot at you. Block lasers with your hand, and shoot back with the spacebar, or VR controllers if using the Oculus Integration or SteamVR plugin.",
-      "path": "Samples~/Drone%20Shooter"
+      "path": "Samples~/Drone Shooter"
     },
     {
       "displayName": "Green Screen",
       "description": "Aim your ZED at a greenscreen and hit Play to see your subject standing in a small town in the desert. You’ll see that the nearby crates still have all the proper occlusion, but the greenscreen background is replaced with the virtual background.",
-      "path": "Samples~/Green%20Screen"
+      "path": "Samples~/Green Screen"
     },
     {
       "displayName": "Movie Screen",
       "description": "Simple AR sample, playing a movie on a movable, scalable 3D screen integrated to the real-world. Demonstrates how 2D content can easily be displayed in a 3D, mixed reality scene.",
-      "path": "Samples~/Movie%20Screen"
+      "path": "Samples~/Movie Screen"
     },
     {
       "displayName": "Multicam",
       "description": "Integrate data from multiple ZED cameras in the same scene, at the same time.",
-      "path": "Samples~/Multi%20Cam"
+      "path": "Samples~/Multi Cam"
     },
     {
       "displayName": "Object Detection",
       "description": "Detect objects and people bounding boxes using the ZED SDK Object Detection module.",
-      "path": "Samples~/Object%20Detection"
+      "path": "Samples~/Object Detection"
     },
     {
       "displayName": "Object Placement",
       "description": "Place virtual objects on real-world surfaces using the Plane Detection capabilities of the ZED SDK.",
-      "path": "Samples~/Object%20Placement"
+      "path": "Samples~/Object Placement"
     },
     {
       "displayName": "OpenCV ArUco Detection",
       "description": "Print out ArUco markers, put them in view of your ZED, and let the battle of the drones begin. Shows how to easily interface the ZED with OpenCV for marker detection using a variety of included scripts.",
-      "path": "Samples~/OpenCV%20ArUco%20Detection"
+      "path": "Samples~/OpenCV ArUco Detection"
     },
     {
       "displayName": "Plane Detection",
       "description": "Run the scene and hold down spacebar to see if you’re looking at a valid surface where a bunny could stand. Release the spacebar and a bunny will fall from the sky and land on that surface with proper physics.",
-      "path": "Samples~/Plane%20Detection"
+      "path": "Samples~/Plane Detection"
     },
     {
       "displayName": "VR Plane Detection",
       "description": "Throw a plushie as far as possible, the distance is measured where it lands using the Plane Detection. Shows how plane detection can fit into a proper VR game.",
-      "path": "Samples~/Plane%20Detection"
+      "path": "Samples~/Plane Detection"
     },
     {
       "displayName": "Planetarium",
@@ -85,17 +85,17 @@
     {
       "displayName": "Point Cloud",
       "description": "Visualize the depth retrieved by the ZED Camera directly into Unity, in the form of a Point Cloud.",
-      "path": "Samples~/Point%20Cloud"
+      "path": "Samples~/Point Cloud"
     },
     {
       "displayName": "Simple MR",
       "description": "Learn to create a basic AR app, with depth occlusion and camera tracking.",
-      "path": "Samples~/Simple%20MR"
+      "path": "Samples~/Simple MR"
     },
     {
       "displayName": "Spatial Mapping",
       "description": "Capture a mesh of your environment, allowing physical interactions between the real and virtual world.",
-      "path": "Samples~/Spatial%20Mapping"
+      "path": "Samples~/Spatial Mapping"
     }
   ]
 }
