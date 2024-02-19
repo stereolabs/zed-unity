@@ -23,6 +23,11 @@
   },
   "samples": [
     {
+      "displayName": "Assembly Definition",
+      "description": "Add assembly definition support to the sample scenes, potentially improving editor responsiveness and compile time",
+      "path": "Samples~/Assembly Definition"
+    },
+    {
       "displayName": "Body Tracking",
       "description": "Animate a 3D avatar based on real-people movements using the ZED SDK Body Tracking module.",
       "path": "Samples~/Body Tracking"
