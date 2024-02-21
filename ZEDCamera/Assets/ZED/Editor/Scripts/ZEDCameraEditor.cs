@@ -605,7 +605,9 @@ public class ZEDCameraEditor : Editor
             "Can be useful for stationary cameras where you still need tracking enabled, such as in Object Detection.");
         trackingIsStaticProperty.boolValue = EditorGUILayout.Toggle(trackingIsStaticPropertyLabel, trackingIsStaticProperty.boolValue);
 
-        GUIContent positionalTrackingModePropertyLabel = new GUIContent("Positional Tracking Mode", "Lists the mode of positional tracking that can be used.");
+        GUIContent positionalTrackingModePropertyLabel = new GUIContent("Positional Tracking Mode", "Lists the mode of positional tracking that can be used.\r\n " +
+                        "- GEN_1 : Default mode, best compromise in performance and accuracy.\r\n" +
+                        "- GEN_2 : Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power.");
         positionalTrackingModeProperty.enumValueIndex = (int)(sl.POSTIONAL_TRACKING_MODE)EditorGUILayout.EnumPopup(positionalTrackingModePropertyLabel, (sl.POSTIONAL_TRACKING_MODE)positionalTrackingModeProperty.enumValueIndex);
 
         EditorGUI.indentLevel--;

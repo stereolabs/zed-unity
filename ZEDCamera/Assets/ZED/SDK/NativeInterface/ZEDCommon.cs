@@ -1359,17 +1359,19 @@ namespace sl
 
     /// <summary>
     /// Lists the mode of positional tracking that can be used.
+    /// GEN_1 : Default mode, best compromise in performance and accuracy.
+    /// GEN_2 : Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power.
     /// </summary>
     public enum POSTIONAL_TRACKING_MODE
     {
         /// <summary>
         ///  Default mode, best compromise in performance and accuracy
         /// </summary>
-        STANDARD,
+        GEN_1,
         /// <summary>
-        /// Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power 
+        /// Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power.
         /// </summary>
-        QUALITY
+        GEN_2
     }
 
     /// <summary>
