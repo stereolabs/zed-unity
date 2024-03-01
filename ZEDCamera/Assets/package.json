@@ -5,8 +5,8 @@
   "description": "This package brings the features of the ZED cameras into Unity",
   "unity": "2021.3",
   "unityRelease": "0f1",
-  "documentationUrl": "https://www.stereolabs.com/docs/unity#step-1-installation",
-  "changelogUrl": "https://github.com/stereolabs/zed-unity/releases/",
+  "documentationUrl": "https://www.stereolabs.com/docs/unity",
+  "changelogUrl": "https://github.com/stereolabs/zed-unity/releases",
   "licensesUrl": "https://github.com/stereolabs/zed-unity?tab=MIT-1-ov-file#readme",
   "dependencies": {
     "com.unity.xr.management": "4.4.0"
@@ -48,6 +48,11 @@
       "path": "Samples~/Green Screen"
     },
     {
+      "displayName": "Mixed Reality Calibration",
+      "description": "Use our interactive, in-VR app to calibrate your ZED with a tracked object, like a controller or Vive Tracker, to make capturing mixed reality videos easier than ever.",
+      "path": "Samples~/Mixed Reality Calibration"
+    },
+    {
       "displayName": "Movie Screen",
       "description": "Simple AR sample, playing a movie on a movable, scalable 3D screen integrated to the real-world. Demonstrates how 2D content can easily be displayed in a 3D, mixed reality scene.",
       "path": "Samples~/Movie Screen"
@@ -76,7 +81,7 @@
       "displayName": "Plane Detection",
       "description": "Run the scene and hold down spacebar to see if you’re looking at a valid surface where a bunny could stand. Release the spacebar and a bunny will fall from the sky and land on that surface with proper physics. In VR, throw a plushie as far as possible, the distance is measured where it lands using the Plane Detection. Shows how plane detection can fit into a proper VR game.",
       "path": "Samples~/Plane Detection"
-    }
+    },
     {
       "displayName": "Planetarium",
       "description": "A beautiful display of the ZED plugin’s basic mixed reality features, viewable with or without a headset. Watch as the planets are properly occluded by the real world.",
