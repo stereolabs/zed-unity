@@ -18,7 +18,8 @@ Shader "Custom/Green Screen/Compute GreenScreen" {
 #pragma fragment frag
 #pragma target 4.0
 #include "UnityCG.cginc"
-#include "../../../SDK/Helpers/Shaders/ZED_Utils.cginc"
+#include "../../Helpers/Shaders/ZED_Utils.cginc"
+
 		struct appdata
 	{
 		float4 vertex : POSITION;

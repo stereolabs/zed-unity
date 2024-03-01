@@ -35,10 +35,10 @@ Shader "Custom/Green Screen/Green Screen" {
 
 #pragma target 4.0
 #include "UnityCG.cginc"
-#include "../../../SDK/Helpers/Shaders/ZED_Utils.cginc"
+#include "../../Helpers/Shaders/ZED_Utils.cginc"
 #define ZED_SPOT_LIGHT_DECLARATION
 #define ZED_POINT_LIGHT_DECLARATION
-#include "../../../SDK/Helpers/Shaders/Lighting/ZED_Lighting.cginc"
+#include "../../Helpers/Shaders/Lighting/ZED_Lighting.cginc"
 		struct appdata
 	{
 		float4 vertex : POSITION;

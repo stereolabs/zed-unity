@@ -52,10 +52,10 @@ Shader "Custom/Green Screen/Green Screen URP" {
 
 
 
-		#include "../../../SDK/Helpers/Shaders/ZED_Utils.cginc"
+		#include "../../Helpers/Shaders/ZED_Utils.cginc"
 		#define ZED_SPOT_LIGHT_DECLARATION
 		#define ZED_POINT_LIGHT_DECLARATION
-		#include "../../../SDK/Helpers/Shaders/Lighting/ZED_Lighting_URP.cginc"
+		#include "../../Helpers/Shaders/Lighting/ZED_Lighting_URP.cginc"
 
 
 				struct appdata

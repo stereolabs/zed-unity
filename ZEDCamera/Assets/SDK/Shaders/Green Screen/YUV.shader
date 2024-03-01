@@ -18,7 +18,7 @@ Shader "Custom/Green Screen/ YUV"
 			#pragma fragment frag
 			
 			#include "UnityCG.cginc"
-#include "../../../SDK/Helpers/Shaders/ZED_Utils.cginc"
+#include "../../Helpers/Shaders/ZED_Utils.cginc"
 			struct appdata
 			{
 				float4 vertex : POSITION;
