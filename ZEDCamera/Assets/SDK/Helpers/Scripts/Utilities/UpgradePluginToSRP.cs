@@ -18,7 +18,7 @@ public static class UpgradePluginToSRP
 
                 foreach (var cam in cameras)
                 {
-                    cam.transform.Find("Frame").GetComponent<MeshRenderer>().material = Mat_Zed_Forward_Lighting;
+                    cam.transform.Find("Frame").GetComponent<MeshRenderer>().sharedMaterial = Mat_Zed_Forward_Lighting;
                 }
 
                 if (cameras.Length > 0)
@@ -38,7 +38,7 @@ public static class UpgradePluginToSRP
 
                 foreach (var cam in cameras)
                 {
-                    cam.transform.Find("Frame").GetComponent<MeshRenderer>().material = Mat_Zed_Forward_Lighting;
+                    cam.transform.Find("Frame").GetComponent<MeshRenderer>().sharedMaterial = Mat_Zed_Forward_Lighting;
                 }
 
                 if (cameras.Length > 0)
@@ -77,7 +77,7 @@ public static class UpgradePluginToSRP
 
                 if (frame && frame.TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer))
                 {
-                    meshRenderer.material = Mat_Zed_GreenScreen;
+                    meshRenderer.sharedMaterial = Mat_Zed_GreenScreen;
                     return true;
                 }
                 else
@@ -93,7 +93,7 @@ public static class UpgradePluginToSRP
 
                 if (frame && frame.TryGetComponent<MeshRenderer>(out MeshRenderer meshRenderer))
                 {
-                    meshRenderer.material = Mat_Zed_GreenScreen;
+                    meshRenderer.sharedMaterial = Mat_Zed_GreenScreen;
                     return true;
                 }
                 else
@@ -127,7 +127,7 @@ public static class UpgradePluginToSRP
                 var sun = planetarium.transform.Find("Sun").Find("sun");
                 if (sun && sun.TryGetComponent(out MeshRenderer meshRenderer))
                 {
-                    meshRenderer.material = Mat_Zed_Sun;
+                    meshRenderer.sharedMaterial = Mat_Zed_Sun;
                     return true;
                 }
                 else
@@ -142,7 +142,7 @@ public static class UpgradePluginToSRP
                 var sun = planetarium.transform.Find("Sun").Find("sun");
                 if (sun && sun.TryGetComponent(out MeshRenderer meshRenderer))
                 {
-                    meshRenderer.material = Mat_Zed_Sun;
+                    meshRenderer.sharedMaterial = Mat_Zed_Sun;
                     return true;
                 }
                 else
