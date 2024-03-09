@@ -334,6 +334,11 @@ public class GreenScreenManager : MonoBehaviour
 
     private void Awake()
     {
+        if (UpgradePluginToSRP.UpgradeGreenScreenToSRP(FindObjectOfType<ZEDManager>().gameObject))
+        {
+            Debug.Log("Upgraded GreenScreen to SRP.");
+        }
+
         //cameraManager = gameObject.GetComponent<ZEDManager> ();
         Shader.SetGlobalInt("_ZEDStencilComp", 0);
 

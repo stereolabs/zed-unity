@@ -8,8 +8,10 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Mat_ZED_Forward_Lighting_URP
-  m_Shader: {fileID: 4800000, guid: 2809325ac48130642a19c357ce7d5200, type: 3}
-  m_ShaderKeywords: DIRECTIONALLIGHTEFFECT_ON _EMISSION
+  m_Shader: {fileID: 4800000, guid: d3db1f2813775ad40965726112d0c9d6, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - DIRECTIONALLIGHTEFFECT_ON
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -79,6 +81,7 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5

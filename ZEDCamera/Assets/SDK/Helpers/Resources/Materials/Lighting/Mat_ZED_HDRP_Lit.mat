@@ -15,22 +15,26 @@ MonoBehaviour:
   version: 11
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Mat_ZED_HDRP_Lit
-  m_Shader: {fileID: -6465566751694194690, guid: 82f08abc9c8ae3842b12da59567af90e,
-    type: 3}
-  m_ShaderKeywords: _ALPHATEST_ON _DEPTHOFFSET_ON _DISABLE_DECALS _DISABLE_SSR _DISABLE_SSR_TRANSPARENT
+  m_Shader: {fileID: -6465566751694194690, guid: cc27b055046ab2f4aa2c72b20cc8e176, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _ALPHATEST_ON
+  - _DEPTHOFFSET_ON
+  - _DISABLE_DECALS
+  - _DISABLE_SSR
+  - _DISABLE_SSR_TRANSPARENT
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2450
+  m_CustomRenderQueue: -1
   stringTagMap:
     MotionVector: User
-    RenderType: TransparentCutout
   disabledShaderPasses:
   - TransparentDepthPrepass
   - TransparentDepthPostpass
@@ -112,6 +116,7 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _AddPrecomputedVelocity: 0
     - _AlphaCutoffEnable: 1
