@@ -2044,7 +2044,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     void Awake()
     {
-        if (UpgradePluginToSRP.UpgradeGreenScreenToSRP(gameObject))
+        if (UpgradePluginToSRP.UpgradeCameraToSRP(gameObject))
         {
             Debug.Log("Upgraded camera to SRP.");
         }
