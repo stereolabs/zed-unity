@@ -730,9 +730,6 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_disable_object_detection")]
         private static extern void dllz_disable_object_detection(int cameraID, uint instanceID, bool force_disable_all_instances);
 
-        [DllImport(nameDll, EntryPoint = "sl_pause_object_detection")]
-        private static extern void dllz_pause_object_detection(int cameraID, bool status, uint instanceID);
-
         [DllImport(nameDll, EntryPoint = "sl_ingest_custom_box_objects")]
         private static extern int dllz_ingest_custom_box_objects(int cameraID, int nb_objects, CustomBoxObjectData[] objects_in, uint instanceID);
 
@@ -747,9 +744,6 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_disable_body_tracking")]
         private static extern void dllz_disable_body_tracking(int cameraID, uint instanceID, bool force_disable_all_instances);
-
-        [DllImport(nameDll, EntryPoint = "sl_pause_body_tracking")]
-        private static extern void dllz_pause_body_tracking(int cameraID, bool status, uint instanceID);
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_bodies")]
         private static extern int dllz_retrieve_bodies_data(int cameraID, ref BodyTrackingRuntimeParameters bt_params, ref Bodies bodies, uint instanceID);
@@ -3104,18 +3098,6 @@ namespace sl
             }
         }
 
-        /// <summary>
-        /// Pause or Unpause the object detection
-        /// </summary>
-        /// <param name="status"></param>
-        public void PauseObjectDetection(bool status)
-        {
-            lock (grabLock)
-            {
-                dllz_pause_object_detection(CameraID, status, 0);
-            }
-        }
-
         public sl.ERROR_CODE IngestCustomBoxObjects(List<CustomBoxObjectData> objects_in, uint instanceID)
         {
             return (sl.ERROR_CODE)dllz_ingest_custom_box_objects(CameraID, objects_in.Count, objects_in.ToArray(), instanceID);
@@ -3223,18 +3205,6 @@ namespace sl
             lock (grabLock)
             {
                 dllz_disable_body_tracking(CameraID, bodyTrackingInstanceID, false);
-            }
-        }
-
-        /// <summary>
-        /// Pause or Unpause the body tracking
-        /// </summary>
-        /// <param name="status"></param>
-        public void PauseBodyTracking(bool status)
-        {
-            lock (grabLock)
-            {
-                dllz_pause_body_tracking(CameraID, status, 0);
             }
         }
 

@@ -1017,7 +1017,11 @@ namespace sl
         /// <summary>
         /// 2208*1242. Supported frame rate: 15 FPS.
         /// </summary>
-        HD2K,
+        HD4K = 0,
+        /// <summary>
+        /// 2208*1242. Supported frame rate: 15 FPS.
+        /// </summary>
+        HD2K = 1,
         /// <summary>
         /// 1920*1080. Supported frame rates: 15, 30 FPS.
         /// </summary>
@@ -1052,23 +1056,23 @@ namespace sl
         /// <summary>
         /// 2208*1242. Supported frame rate: 15 FPS.
         /// </summary>
-        HD2K = 0,
+        HD2K = 1,
         /// <summary>
         /// 1920*1080. Supported frame rates: 15, 30 FPS.
         /// </summary>
-        HD1080 = 1,
+        HD1080 = 2,
         /// <summary>
         /// 1280*720. Supported frame rates: 15, 30, 60 FPS.
         /// </summary>
-        HD720 = 3,
+        HD720 = 4,
         /// <summary>
         /// 672*376. Supported frame rates: 15, 30, 60, 100 FPS.
         /// </summary>
-        VGA = 5,
+        VGA = 6,
         /// <summary>
         /// Select the resolution compatible with camera, on ZEDX HD1200, HD720 otherwise
         /// </summary>
-        AUTO = 6
+        AUTO = 7
     };
 
 
