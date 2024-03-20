@@ -1358,7 +1358,11 @@ namespace sl
         /// <summary>
         /// The camera is searching for the floor plane to locate itself related to it, the REFERENCE_FRAME::WORLD will be set afterward.
         /// </summary>
-        TRACKING_SEARCHING_FLOOR_PLANE
+        TRACKING_SEARCHING_FLOOR_PLANE,
+        /// <summary>
+        /// The tracking module was unable to perform tracking from the previous frame to the current frame.
+        /// </summary>
+        NOT_OK, 
     }
 
     /// <summary>
@@ -1366,7 +1370,7 @@ namespace sl
     /// GEN_1 : Default mode, best compromise in performance and accuracy.
     /// GEN_2 : Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power.
     /// </summary>
-    public enum POSTIONAL_TRACKING_MODE
+    public enum POSITIONAL_TRACKING_MODE
     {
         /// <summary>
         ///  Default mode, best compromise in performance and accuracy
@@ -1376,6 +1380,83 @@ namespace sl
         /// Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power.
         /// </summary>
         GEN_2
+    }
+
+    ///\ingroup PositionalTracking_group
+    /// <summary>
+    /// Report the status of current odom tracking.
+    /// </summary>
+    public enum ODOMETRY_STATUS
+    {
+        /// <summary>
+        /// The positional tracking module successfully tracked from the previous frame to the current frame.
+        /// </summary>
+        OK,
+        /// <summary>
+        /// The positional tracking module failed to track from the previous frame to the current frame.
+        /// </summary>
+        UNAVAILABLE
+    }
+
+    ///\ingroup PositionalTracking_group
+    /// <summary>
+    /// Report the status of current map tracking.
+    /// </summary>
+    public enum SPATIAL_MEMORY_STATUS
+    {
+        /// <summary>
+        /// The positional tracking module is operating normally.
+        /// </summary>
+        OK,
+        /// <summary>
+        /// The positional tracking module detected a loop and corrected its position.
+        /// </summary>
+        LOOP_CLOSED,
+        /// <summary>
+        /// The positional tracking module is searching for recognizable areas in the global map to relocate.
+        /// </summary>
+        SEARCHING,
+        /// <summary>
+        /// Spatial memory is disabled.
+        /// </summary>
+        OFF
+    }
+
+    ///\ingroup PositionalTracking_group
+    /// <summary>
+    /// Report the status of the positional tracking fusion.
+    /// </summary>
+    public enum POSITIONAL_TRACKING_FUSION_STATUS
+    {
+        VISUAL_INERTIAL = 0,
+        VISUAL = 1,
+        INERTIAL = 2,
+        GNSS = 3,
+        VISUAL_INERTIAL_GNSS = 4,
+        VISUAL_GNSS = 5,
+        INTERTIAL_GNSS = 6,
+        UNAVAILABLE = 7
+    }
+
+    ///\ingroup PositionalTracking_group
+    /// <summary>
+    /// Lists the different status of positional tracking.
+    /// </summary>
+    public struct PositionalTrackingStatus
+    {
+        /// <summary>
+        /// Represents the current state of Visual-Inertial Odometry (VIO) tracking between the previous frame and the current frame.
+        /// </summary>
+        public ODOMETRY_STATUS odometryStatus;
+        /// <summary>
+        /// Represents the current state of camera tracking in the global map.
+        /// </summary>
+        public SPATIAL_MEMORY_STATUS spatialMemoryStatus;
+        /// <summary>
+        /// Represents the current state of positional tracking fusion.
+        /// </summary>
+        public POSITIONAL_TRACKING_FUSION_STATUS trackingFusionStatus;
+
     }
 
     /// <summary>

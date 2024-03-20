@@ -545,7 +545,7 @@ namespace sl
          */
         [DllImport(nameDll, EntryPoint = "sl_enable_positional_tracking_unity")]
         private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, 
-            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSTIONAL_TRACKING_MODE mode = sl.POSTIONAL_TRACKING_MODE.GEN_1, System.Text.StringBuilder aeraFilePath = null);
+            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = sl.POSITIONAL_TRACKING_MODE.GEN_1, System.Text.StringBuilder aeraFilePath = null);
 
         [DllImport(nameDll, EntryPoint = "sl_disable_positional_tracking")]
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
@@ -558,6 +558,9 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_get_position_data")]
         private static extern int dllz_get_position_data(int cameraID, ref Pose pose, int reference_frame);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_positional_tracking_status")]
+        private static extern IntPtr dllz_get_positional_tracking_status(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_position")]
         private static extern int dllz_get_position(int cameraID, ref Quaternion quat, ref Vector3 vec, int reference_frame);
@@ -1405,7 +1408,7 @@ namespace sl
         /// <param name="areaFilePath"> (optional) file of spatial memory file that has to be loaded to relocate in the scene.</param>
         /// <returns></returns>
         public sl.ERROR_CODE EnableTracking(ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = true, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, bool trackingIsStatic = false,
-            bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSTIONAL_TRACKING_MODE mode = POSTIONAL_TRACKING_MODE.GEN_1, string areaFilePath = "")
+            bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = POSITIONAL_TRACKING_MODE.GEN_1, string areaFilePath = "")
         {
             sl.ERROR_CODE trackingStatus = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
             trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(CameraID, ref quat, ref vec, enableSpatialMemory, enablePoseSmoothing, enableFloorAlignment, 
@@ -1884,6 +1887,22 @@ namespace sl
         public float GetFrameDroppedPercent()
         {
             return dllz_get_frame_dropped_percent(CameraID);
+        }
+
+        /// <summary>
+        /// Returns the current status of positional tracking module.
+        /// </summary>
+        /// <returns> The current status of positional tracking module. </returns>
+        public PositionalTrackingStatus GetPositionalTrackingStatus()
+        {
+            IntPtr p = dllz_get_positional_tracking_status(CameraID);
+            if (p == IntPtr.Zero)
+            {
+                return new PositionalTrackingStatus();
+            }
+
+            PositionalTrackingStatus positionalTrackingStatus = (PositionalTrackingStatus)Marshal.PtrToStructure(p, typeof(PositionalTrackingStatus));
+            return positionalTrackingStatus;
         }
 
         /// <summary>
