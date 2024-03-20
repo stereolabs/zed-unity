@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace sl
 {
@@ -376,6 +377,23 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_pause_recording")]
         private static extern void dllz_pause_recording(int cameraID, bool status);
 
+        // Recording Gen 2 functions
+
+        [DllImport(nameDll, EntryPoint = "sl_ingest_data_into_svo")]
+        private static extern ERROR_CODE dllz_ingest_data_into_svo(int cameraID, ref SVOData data);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_svo_data_size")]
+        private static extern int dllz_get_svo_data_size(int cameraID, string key, ulong ts_begin, ulong ts_end);
+
+        [DllImport(nameDll, EntryPoint = "sl_retrieve_svo_data")]
+        private static extern ERROR_CODE dllz_retrieve_svo_data(int cameraID, string key, int nb_data, [Out] SVOData[] data, ulong ts_begin, ulong ts_end);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_svo_data_size")]
+        private static extern int dllz_get_svo_data_keys_size(int cameraID);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_svo_data_keys")]
+        private static extern void dllz_get_svo_data_keys(int cameraID, int nb_keys, [Out] string[] keys);
+
         /*
         * Texturing functions.
         */
@@ -593,7 +611,16 @@ namespace sl
         private static extern int dllz_get_area_export_state(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_set_region_of_interest")]
-        private static extern int dllz_sl_set_region_of_interest(int cameraID, IntPtr roiMask);
+        private static extern int dllz_set_region_of_interest(int cameraID, IntPtr roiMask, bool[] module);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_region_of_interest")]
+        private static extern int dllz_get_region_of_interest(int cameraID, IntPtr roiMask, int width, int height, MODULE module);
+
+        [DllImport(nameDll, EntryPoint = "sl_start_region_of_interest_auto_detection")]
+        private static extern int dllz_start_region_of_interest_auto_detection(int cameraID, ref RegionOfInterestParameters roiParams);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_region_of_interest_auto_detection_status")]
+        private static extern int dllz_get_region_of_interest_auto_detection_status(int cameraID);
 
         /*
         * Spatial Mapping functions.
@@ -1297,6 +1324,65 @@ namespace sl
         public bool DisableRecording()
         {
             return dllz_disable_recording(CameraID);
+        }
+
+        /// <summary>
+        /// Ingest SVOData in a SVO file.
+        /// </summary>
+        /// <param name="data">Data to ingest in the SVO file..</param>
+        /// Note: The method works only if the camera is recording.
+        /// <returns></returns>
+        public ERROR_CODE IngestDataIntoSVO(ref SVOData data)
+        {
+            ERROR_CODE err = dllz_ingest_data_into_svo(CameraID, ref data);
+            return err;
+        }
+
+        /// <summary>
+        /// Retrieves SVO data from the SVO file at the given channel key and in the given timestamp range.
+        /// </summary>
+        /// <param name="key"> The key of the SVOData that is going to be retrieved.</param>
+        /// <param name="data"> The map to be filled with SVOData objects, with timestamps as keys.</param>
+        /// <param name="tsBegin"> The beginning of the range.</param>
+        /// <param name="tsEnd">The end of the range.</param>
+        /// <returns>sl.ERROR_CODE.SUCCESS in case of success, sl.ERROR_CODE.FAILURE otherwise.</returns>
+        public ERROR_CODE RetrieveSVOData(string key, ref List<SVOData> data, ulong tsBegin, ulong tsEnd)
+        {
+            ERROR_CODE err = ERROR_CODE.FAILURE;
+
+            int nb_data = dllz_get_svo_data_size(CameraID, key, tsBegin, tsEnd);
+
+            if (nb_data > 0)
+            {
+                SVOData[] data_array = new SVOData[nb_data];
+
+                err = dllz_retrieve_svo_data(CameraID, key, nb_data, data_array, tsBegin, tsEnd);
+                data = new List<SVOData>(data_array);
+            }
+
+            return err;
+        }
+
+        /// <summary>
+        ///  Gets the external channels that can be retrieved from the SVO file.
+        /// </summary>
+        /// <returns>List of available keys.</returns>
+        public List<string> GetSVODataKeys()
+        {
+            int nb_keys = dllz_get_svo_data_keys_size(CameraID);
+
+            if (nb_keys > 0)
+            {
+                string[] keys_array = new string[nb_keys];
+
+                dllz_get_svo_data_keys(CameraID, nb_keys, keys_array);
+
+                List<string> keys = new List<string>(keys_array);
+
+                return keys;
+            }
+
+            return new List<string>();
         }
 
         /// <summary>
@@ -2019,14 +2105,57 @@ namespace sl
         /// <summary>
         /// Defines a region of interest to focus on for all the SDK, discarding other parts.
         /// </summary>
-        /// <param name="roiMask">the Mat defining the requested region of interest, all pixel set to 0 will be discard. If empty, set all pixels as valid, otherwise should fit the resolution of the current instance and its type should be U8_C1.</param>
-        /// <returns></returns>
-        public ERROR_CODE SetRegionOfInterest(sl.ZEDMat roiMask)
+        /// <param name="roiMask"> The Mat defining the requested region of interest, pixels lower than 127 will be discarded from all modules: depth, positional tracking, etc.
+        /// If empty, set all pixels as valid. The mask can be either at lower or higher resolution than the current images.</param>
+        /// <param name="module"> Apply the ROI to a list of SDK module, all by default. Must of size sl.MODULE.LAST. 
+        /// The Mat defining the requested region of interest, pixels lower than 127 will be discarded from all modules: depth, positional tracking, etc.
+        /// If empty, set all pixels as valid. The mask can be either at lower or higher resolution than the current images.
+        /// </param>
+        /// <returns>An sl.ERROR_CODE if something went wrong.</returns>
+        public ERROR_CODE SetRegionOfInterest(sl.ZEDMat roiMask, bool[] module)
         {
-            sl.ERROR_CODE err = sl.ERROR_CODE.FAILURE;
+            if (module.Length != (int)MODULE.LAST) return sl.ERROR_CODE.FAILURE;
 
-            err = (sl.ERROR_CODE)dllz_sl_set_region_of_interest(CameraID, roiMask.MatPtr);
-            return err;
+            return (sl.ERROR_CODE)dllz_set_region_of_interest(CameraID, roiMask.GetPtr(), module);
+        }
+
+        /// <summary>
+        /// Get the previously set or computed region of interest.
+        /// </summary>
+        /// <param name="roiMask">The \ref Mat returned</param>
+        /// <param name="resolution">The optional size of the returned mask</param>
+        /// <param name="module"> Specifies the module from which the ROI is to be obtained. </param>
+        /// <returns>An sl.ERROR_CODE if something went wrong.</returns>
+        public ERROR_CODE GetRegionOfInterest(sl.ZEDMat roiMask, sl.Resolution resolution = new sl.Resolution(), MODULE module = MODULE.ALL)
+        {
+            return (sl.ERROR_CODE)dllz_get_region_of_interest(CameraID, roiMask.MatPtr, (int)resolution.width, (int)resolution.height, module);
+        }
+
+        /// <summary>
+        /// Start the auto detection of a region of interest to focus on for all the SDK, discarding other parts.
+        /// This detection is based on the general motion of the camera combined with the motion in the scene.
+        /// The camera must move for this process, an internal motion detector is used, based on the Positional Tracking module.
+        /// It requires a few hundreds frames of motion to compute the mask.
+        ///  \note This module is expecting a static portion, typically a fairly close vehicle hood at the bottom of the image.
+        /// This module may not work correctly or detect incorrect background area, especially with slow motion, if there's no static element.
+        /// This module work asynchronously, the status can be obtained using \ref GetRegionOfInterestAutoDetectionStatus(), the result is either auto applied,
+        /// or can be retrieve using \ref GetRegionOfInterest function.
+        /// </summary>
+        /// <param name="roiParams"></param>
+        /// <returns>An sl.ERROR_CODE if something went wrong.</returns>
+        public ERROR_CODE StartRegionOfInterestAutoDetection(RegionOfInterestParameters roiParams)
+        {
+            return (sl.ERROR_CODE)dllz_start_region_of_interest_auto_detection(CameraID, ref roiParams);
+        }
+
+        /// <summary>
+        ///  Return the status of the automatic Region of Interest Detection.
+        ///  The automatic Region of Interest Detection is enabled by using \ref StartRegionOfInterestAutoDetection
+        /// </summary>
+        /// <returns>An sl.ERROR_CODE if something went wrong.</returns>
+        public REGION_OF_INTEREST_AUTO_DETECTION_STATE GetRegionOfInterestAutoDetectionStatus()
+        {
+            return (REGION_OF_INTEREST_AUTO_DETECTION_STATE)dllz_get_region_of_interest_auto_detection_status(CameraID);
         }
 
         /// <summary>

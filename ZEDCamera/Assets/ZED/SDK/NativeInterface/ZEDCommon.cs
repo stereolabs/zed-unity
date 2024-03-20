@@ -729,6 +729,45 @@ namespace sl
         public double averageCompressionRatio;
     }
 
+    ///\ingroup Depth_group
+    /// <summary>
+    /// Structure containing data that can be stored in and retrieved from SVOs.
+    ///  That information will be ingested with sl.Camera.ingestDataIntoSVO and retrieved with sl.Camera.retrieveSVOData.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SVOData
+    {
+        /// <summary>
+        /// Key used to retrieve the data stored into SVOData's content.
+        /// The key size must not exceed 128 characters.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        public string key;
+        /// <summary>
+        /// Timestamp of the data (in nanoseconds).
+        /// </summary>
+        public ulong timestamp;
+        /// <summary>
+        /// Content stored as SVOData
+        /// Allow any type of content, including raw data like compressed images of json.
+        /// </summary>
+        IntPtr content;
+        /// <summary>
+        /// Size of the content data.
+        /// </summary>
+        public int contentSize;
+
+        public string GetContent()
+        {
+            return Marshal.PtrToStringAnsi(content);
+        }
+
+        public void SetContent(string c)
+        {
+            content = Marshal.StringToHGlobalAnsi(c);
+        }
+    }
+
     /// <summary>
     /// Status of the ZED's self-calibration. Since v0.9.3, self-calibration is done in the background and
     /// starts in the sl.ZEDCamera.Init or Reset functions.
@@ -1850,6 +1889,39 @@ namespace sl
     }
 
     /// <summary>
+    /// Lists available modules.
+    /// </summary>
+    public enum MODULE
+    {
+        /// <summary>
+        /// All modules
+        /// </summary>
+        ALL = 0,
+        /// <summary>
+        /// Depth module
+        /// </summary>
+        DEPTH = 1,
+        /// <summary>
+        /// Positional tracking module
+        /// </summary>
+        POSITIONAL_TRACKING = 2,
+        /// <summary>
+        /// Object Detection module
+        /// </summary>
+        OBJECT_DETECTION = 3,
+        /// <summary>
+        /// Body Tracking module
+        /// </summary>
+        BODY_TRACKING = 4,
+        /// <summary>
+        /// Spatial mapping module
+        /// </summary>
+        SPATIAL_MAPPING = 5,
+
+        LAST = 6
+    }
+
+    /// <summary>
     ///  Possible states of the ZED's spatial memory area export, for saving 3D features used
     ///  by the tracking system to relocalize the camera. This is used when saving a mesh generated
     ///  by spatial mapping when Save Mesh is enabled - a .area file is saved as well.
@@ -1916,6 +1988,37 @@ namespace sl
         /// </summary>
         public bool removeSaturatedAreas;
 
+    }
+
+    /// \ingroup PositionalTracking_group
+    /// <summary>
+    /// Structure containing a set of parameters for the region of interest.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RegionOfInterestParameters
+    {
+        /// <summary>
+        /// Filtering how far object in the ROI should be considered, this is useful for a vehicle for instance
+        /// Default is 2.5meters
+        /// </summary>
+        public float depthFarThresholdMeters;
+        /// <summary>
+        /// By default consider only the lower half of the image, can be useful to filter out the sky
+        /// Default is 0.5, corresponding to the lower half of the image.
+        /// </summary>
+        public float imageHeightRatioCutoff;
+        /// <summary>
+        /// Once computed the ROI computed will be automatically applied.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)MODULE.LAST)]
+        public bool[] autoApplyModule;
+
+        public RegionOfInterestParameters(bool[] autoApplyModule_, float depthFarThresholdMeters_ = 2.5f, float imageHeightRatioCutoff_ = 0.5f)
+        {
+            depthFarThresholdMeters = depthFarThresholdMeters_;
+            imageHeightRatioCutoff = imageHeightRatioCutoff_;
+            autoApplyModule = autoApplyModule_;
+        }
     }
 
     /// <summary>
