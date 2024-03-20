@@ -3220,18 +3220,6 @@ public class ZEDManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Switchs the state of the object detection pause.
-    /// </summary>
-    /// <param name="state">If set to <c>true</c> state, the object detection will pause. It will resume otherwise</param>
-    public void SwitchObjectDetectionPauseState(bool state)
-    {
-        if (zedCamera != null)
-        {
-            if (objectDetectionRunning)
-                zedCamera.PauseObjectDetection(state);
-        }
-    }
     #endregion
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3442,18 +3430,6 @@ public class ZEDManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Switchs the state of the body tracking pause.
-    /// </summary>
-    /// <param name="state">If set to <c>true</c> state, the body tracking will pause. It will resume otherwise</param>
-    public void SwitchBodyTrackingPauseState(bool state)
-    {
-        if (zedCamera != null)
-        {
-            if (bodyTrackingRunning)
-                zedCamera.PauseBodyTracking(state);
-        }
-    }
     #endregion
 
 
