@@ -784,7 +784,11 @@ namespace sl
         /// <summary>
         ///  End to End Neural disparity estimation, requires AI module
         /// </summary>
-        NEURAL
+        NEURAL,
+        /// <summary>
+        ///  More accurate Neural disparity estimation.\n Requires AI module.
+        /// </summary>
+        NEURAL_PLUS
     };
 
     /// <summary>
@@ -2711,8 +2715,12 @@ namespace sl
         /// related to sl.DETECTION_MODEL.NEURAL
         /// </summary>
         NEURAL_DEPTH=12,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.NEURAL_PLUS
+        /// </summary>
+        NEURAL_PLUS_DEPTH = 12,
 
-        LAST=13
+        LAST =13
     };
 
     /// <summary>

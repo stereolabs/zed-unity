@@ -1381,6 +1381,21 @@ namespace sl
             return dllz_get_depth_max_range_value(CameraID);
         }
 
+        public static AI_MODELS ToAIModel(sl.DEPTH_MODE depth_mode)
+        {
+            switch (depth_mode)
+            {
+                case DEPTH_MODE.NEURAL_PLUS:
+                    return AI_MODELS.NEURAL_PLUS_DEPTH;
+                    break;
+                case DEPTH_MODE.NEURAL:
+                    return AI_MODELS.NEURAL_DEPTH;
+                    break;
+                default:
+                    return AI_MODELS.LAST;
+            }
+        }
+
         /// <summary>
         /// Initialize and Start the tracking functions
         /// </summary>
