@@ -2380,10 +2380,13 @@ namespace sl
 
         /// <summary>
         /// Performs an hardware reset of the ZED 2/ZED 2i.
+        /// This method only works for ZED 2, ZED 2i, and newer camera models.
+        /// This method will invalidate any sl.Camera object, since the device is rebooting.
+        /// Under Windows it is not possible to get exclusive access to HID devices, hence calling this method while the camera is opened by another process will cause it to freeze for a few seconds while the device is rebooting.
         /// </summary>
-        /// <param name="serialNumber">Serial number of the camera</param>
-        /// <param name="fullReboot"> Perform a full reboot (Sensors and Video modules)</param>
-        /// <returns>ZED SDK version as a string in the format MAJOR.MINOR.PATCH.</returns>
+        /// <param name="serialNumber">Serial number of the camera to reset, or 0 to reset the first camera detected.</param>
+        /// <param name="fullReboot">Perform a full reboot (sensors and video modules) if true, otherwise only the video module will be rebooted.</param>
+        /// <returns>sl.ERROR_CODE.SUCCESS if everything went fine. sl.ERROR_CODE.CAMERA_NOT_DETECTED if no camera was detected. sl.ERROR_CODE.FAILURE otherwise.</returns>
         public static sl.ERROR_CODE Reboot(int serialNumber, bool fullReboot = true)
         {
             return (sl.ERROR_CODE)dllz_reboot(serialNumber, fullReboot);
