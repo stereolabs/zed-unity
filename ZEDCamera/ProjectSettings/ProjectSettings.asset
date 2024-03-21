@@ -635,7 +635,7 @@ PlayerSettings:
   webGLPowerPreference: 2
   scriptingDefineSymbols:
     Android: USE_INPUT_SYSTEM_POSE_CONTROL;ZED_OCULUS
-    Standalone: USE_INPUT_SYSTEM_POSE_CONTROL;ZED_OCULUS;ZED_OPENCV_FOR_UNITY
+    Standalone: USE_INPUT_SYSTEM_POSE_CONTROL
     Windows Store Apps: USE_INPUT_SYSTEM_POSE_CONTROL
   additionalCompilerArguments: {}
   platformArchitecture: {}

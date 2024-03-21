@@ -125,7 +125,7 @@ Properties
 					#elif SHADER_API_GLCORE 
 									outDepth = 1000;//fake infinite depth
 					#elif SHADER_API_VULCAN
-									outDepth = 1000;
+									outDepth = 0;
 					#endif				
 				#else
 						outDepth = saturate(d);
