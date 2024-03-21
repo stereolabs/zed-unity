@@ -749,7 +749,7 @@ namespace sl
         public ulong timestamp;
         /// <summary>
         /// Content stored as SVOData
-        /// Allow any type of content, including raw data like compressed images of json.
+        /// Allow any type of content, including raw data like compressed images or JSON.
         /// </summary>
         IntPtr content;
         /// <summary>
@@ -1420,7 +1420,7 @@ namespace sl
         /// </summary>
         GEN_1,
         /// <summary>
-        /// Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power.
+        /// Next generation of positional tracking, allows for better accuracy.
         /// </summary>
         GEN_2
     }
@@ -1477,7 +1477,7 @@ namespace sl
         GNSS = 3,
         VISUAL_INERTIAL_GNSS = 4,
         VISUAL_GNSS = 5,
-        INTERTIAL_GNSS = 6,
+        INERTIAL_GNSS = 6,
         UNAVAILABLE = 7
     }
 
@@ -2906,9 +2906,9 @@ namespace sl
         /// <summary>
         /// related to sl.DETECTION_MODEL.NEURAL_PLUS
         /// </summary>
-        NEURAL_PLUS_DEPTH = 12,
+        NEURAL_PLUS_DEPTH = 13,
 
-        LAST =13
+        LAST =14
     };
 
     /// <summary>

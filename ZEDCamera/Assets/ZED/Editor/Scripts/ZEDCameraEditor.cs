@@ -607,7 +607,7 @@ public class ZEDCameraEditor : Editor
 
         GUIContent positionalTrackingModePropertyLabel = new GUIContent("Positional Tracking Mode", "Lists the mode of positional tracking that can be used.\r\n " +
                         "- GEN_1 : Default mode, best compromise in performance and accuracy.\r\n" +
-                        "- GEN_2 : Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power.");
+                        "- GEN_2 : Next generation of positional tracking, allows better accuracy.");
         positionalTrackingModeProperty.enumValueIndex = (int)(sl.POSITIONAL_TRACKING_MODE)EditorGUILayout.EnumPopup(positionalTrackingModePropertyLabel, (sl.POSITIONAL_TRACKING_MODE)positionalTrackingModeProperty.enumValueIndex);
 
         EditorGUI.indentLevel--;
