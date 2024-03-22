@@ -285,7 +285,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(4, 0, 8);
+        public static readonly System.Version PluginVersion = new System.Version(4, 1, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -375,6 +375,23 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_pause_recording")]
         private static extern void dllz_pause_recording(int cameraID, bool status);
+
+        // Recording Gen 2 functions
+
+        [DllImport(nameDll, EntryPoint = "sl_ingest_data_into_svo")]
+        private static extern ERROR_CODE dllz_ingest_data_into_svo(int cameraID, ref SVOData data);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_svo_data_size")]
+        private static extern int dllz_get_svo_data_size(int cameraID, string key, ulong ts_begin, ulong ts_end);
+
+        [DllImport(nameDll, EntryPoint = "sl_retrieve_svo_data")]
+        private static extern ERROR_CODE dllz_retrieve_svo_data(int cameraID, string key, int nb_data, [Out] SVOData[] data, ulong ts_begin, ulong ts_end);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_svo_data_size")]
+        private static extern int dllz_get_svo_data_keys_size(int cameraID);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_svo_data_keys")]
+        private static extern void dllz_get_svo_data_keys(int cameraID, int nb_keys, [Out] string[] keys);
 
         /*
         * Texturing functions.
@@ -545,7 +562,7 @@ namespace sl
          */
         [DllImport(nameDll, EntryPoint = "sl_enable_positional_tracking_unity")]
         private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, 
-            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSTIONAL_TRACKING_MODE mode = sl.POSTIONAL_TRACKING_MODE.STANDARD, System.Text.StringBuilder aeraFilePath = null);
+            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = sl.POSITIONAL_TRACKING_MODE.GEN_1, System.Text.StringBuilder aeraFilePath = null);
 
         [DllImport(nameDll, EntryPoint = "sl_disable_positional_tracking")]
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
@@ -558,6 +575,9 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_get_position_data")]
         private static extern int dllz_get_position_data(int cameraID, ref Pose pose, int reference_frame);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_positional_tracking_status")]
+        private static extern IntPtr dllz_get_positional_tracking_status(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_position")]
         private static extern int dllz_get_position(int cameraID, ref Quaternion quat, ref Vector3 vec, int reference_frame);
@@ -590,7 +610,16 @@ namespace sl
         private static extern int dllz_get_area_export_state(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_set_region_of_interest")]
-        private static extern int dllz_sl_set_region_of_interest(int cameraID, IntPtr roiMask);
+        private static extern int dllz_set_region_of_interest(int cameraID, IntPtr roiMask, bool[] module);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_region_of_interest")]
+        private static extern int dllz_get_region_of_interest(int cameraID, IntPtr roiMask, int width, int height, MODULE module);
+
+        [DllImport(nameDll, EntryPoint = "sl_start_region_of_interest_auto_detection")]
+        private static extern int dllz_start_region_of_interest_auto_detection(int cameraID, ref RegionOfInterestParameters roiParams);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_region_of_interest_auto_detection_status")]
+        private static extern int dllz_get_region_of_interest_auto_detection_status(int cameraID);
 
         /*
         * Spatial Mapping functions.
@@ -700,9 +729,6 @@ namespace sl
         [DllImport(nameDll, EntryPoint = "sl_disable_object_detection")]
         private static extern void dllz_disable_object_detection(int cameraID, uint instanceID, bool force_disable_all_instances);
 
-        [DllImport(nameDll, EntryPoint = "sl_pause_object_detection")]
-        private static extern void dllz_pause_object_detection(int cameraID, bool status, uint instanceID);
-
         [DllImport(nameDll, EntryPoint = "sl_ingest_custom_box_objects")]
         private static extern int dllz_ingest_custom_box_objects(int cameraID, int nb_objects, CustomBoxObjectData[] objects_in, uint instanceID);
 
@@ -717,9 +743,6 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_disable_body_tracking")]
         private static extern void dllz_disable_body_tracking(int cameraID, uint instanceID, bool force_disable_all_instances);
-
-        [DllImport(nameDll, EntryPoint = "sl_pause_body_tracking")]
-        private static extern void dllz_pause_body_tracking(int cameraID, bool status, uint instanceID);
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_bodies")]
         private static extern int dllz_retrieve_bodies_data(int cameraID, ref BodyTrackingRuntimeParameters bt_params, ref Bodies bodies, uint instanceID);
@@ -959,7 +982,7 @@ namespace sl
         public bool CreateCamera(int cameraID, bool verbose)
         {
             string infoSystem = SystemInfo.graphicsDeviceType.ToString().ToUpper();
-            if (!infoSystem.Equals("DIRECT3D11") && !infoSystem.Equals("OPENGLCORE"))
+            if (!infoSystem.Equals("DIRECT3D11") && !infoSystem.Equals("OPENGLCORE") && !infoSystem.Equals("VULKAN"))
             {
                 throw new Exception("The graphic library [" + infoSystem + "] is not supported");
             }
@@ -977,6 +1000,11 @@ namespace sl
             cameraReady = false;
             dllz_close(CameraID);
             DestroyAllTexture();
+        }
+        public void Close()
+        {
+            dllz_close(CameraID);
+            dllz_unload_instance(CameraID);
         }
 
         /// <summary>
@@ -1292,6 +1320,65 @@ namespace sl
         }
 
         /// <summary>
+        /// Ingest SVOData in a SVO file.
+        /// </summary>
+        /// <param name="data">Data to ingest in the SVO file..</param>
+        /// Note: The method works only if the camera is recording.
+        /// <returns></returns>
+        public ERROR_CODE IngestDataIntoSVO(ref SVOData data)
+        {
+            ERROR_CODE err = dllz_ingest_data_into_svo(CameraID, ref data);
+            return err;
+        }
+
+        /// <summary>
+        /// Retrieves SVO data from the SVO file at the given channel key and in the given timestamp range.
+        /// </summary>
+        /// <param name="key"> The key of the SVOData that is going to be retrieved.</param>
+        /// <param name="data"> The map to be filled with SVOData objects, with timestamps as keys.</param>
+        /// <param name="tsBegin"> The beginning of the range.</param>
+        /// <param name="tsEnd">The end of the range.</param>
+        /// <returns>sl.ERROR_CODE.SUCCESS in case of success, sl.ERROR_CODE.FAILURE otherwise.</returns>
+        public ERROR_CODE RetrieveSVOData(string key, ref List<SVOData> data, ulong tsBegin, ulong tsEnd)
+        {
+            ERROR_CODE err = ERROR_CODE.FAILURE;
+
+            int nb_data = dllz_get_svo_data_size(CameraID, key, tsBegin, tsEnd);
+
+            if (nb_data > 0)
+            {
+                SVOData[] data_array = new SVOData[nb_data];
+
+                err = dllz_retrieve_svo_data(CameraID, key, nb_data, data_array, tsBegin, tsEnd);
+                data = new List<SVOData>(data_array);
+            }
+
+            return err;
+        }
+
+        /// <summary>
+        ///  Gets the external channels that can be retrieved from the SVO file.
+        /// </summary>
+        /// <returns>List of available keys.</returns>
+        public List<string> GetSVODataKeys()
+        {
+            int nb_keys = dllz_get_svo_data_keys_size(CameraID);
+
+            if (nb_keys > 0)
+            {
+                string[] keys_array = new string[nb_keys];
+
+                dllz_get_svo_data_keys(CameraID, nb_keys, keys_array);
+
+                List<string> keys = new List<string>(keys_array);
+
+                return keys;
+            }
+
+            return new List<string>();
+        }
+
+        /// <summary>
         /// Sets the position of the SVO file currently being read to a desired frame.
         /// </summary>
         /// <param name="frame">Index of the desired frame to be decoded.</param>
@@ -1376,6 +1463,21 @@ namespace sl
             return dllz_get_depth_max_range_value(CameraID);
         }
 
+        public static AI_MODELS ToAIModel(sl.DEPTH_MODE depth_mode)
+        {
+            switch (depth_mode)
+            {
+                case DEPTH_MODE.NEURAL_PLUS:
+                    return AI_MODELS.NEURAL_PLUS_DEPTH;
+                    break;
+                case DEPTH_MODE.NEURAL:
+                    return AI_MODELS.NEURAL_DEPTH;
+                    break;
+                default:
+                    return AI_MODELS.LAST;
+            }
+        }
+
         /// <summary>
         /// Initialize and Start the tracking functions
         /// </summary>
@@ -1385,7 +1487,7 @@ namespace sl
         /// <param name="areaFilePath"> (optional) file of spatial memory file that has to be loaded to relocate in the scene.</param>
         /// <returns></returns>
         public sl.ERROR_CODE EnableTracking(ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = true, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, bool trackingIsStatic = false,
-            bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSTIONAL_TRACKING_MODE mode = POSTIONAL_TRACKING_MODE.STANDARD, string areaFilePath = "")
+            bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = POSITIONAL_TRACKING_MODE.GEN_1, string areaFilePath = "")
         {
             sl.ERROR_CODE trackingStatus = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
             trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(CameraID, ref quat, ref vec, enableSpatialMemory, enablePoseSmoothing, enableFloorAlignment, 
@@ -1867,6 +1969,22 @@ namespace sl
         }
 
         /// <summary>
+        /// Returns the current status of positional tracking module.
+        /// </summary>
+        /// <returns> The current status of positional tracking module. </returns>
+        public PositionalTrackingStatus GetPositionalTrackingStatus()
+        {
+            IntPtr p = dllz_get_positional_tracking_status(CameraID);
+            if (p == IntPtr.Zero)
+            {
+                return new PositionalTrackingStatus();
+            }
+
+            PositionalTrackingStatus positionalTrackingStatus = (PositionalTrackingStatus)Marshal.PtrToStructure(p, typeof(PositionalTrackingStatus));
+            return positionalTrackingStatus;
+        }
+
+        /// <summary>
         /// Gets the position of the camera and the current state of the ZED Tracking.
         /// </summary>
         /// <param name="rotation">Quaternion filled with the current rotation of the camera depending on its reference frame.</param>
@@ -1980,14 +2098,57 @@ namespace sl
         /// <summary>
         /// Defines a region of interest to focus on for all the SDK, discarding other parts.
         /// </summary>
-        /// <param name="roiMask">the Mat defining the requested region of interest, all pixel set to 0 will be discard. If empty, set all pixels as valid, otherwise should fit the resolution of the current instance and its type should be U8_C1.</param>
-        /// <returns></returns>
-        public ERROR_CODE SetRegionOfInterest(sl.ZEDMat roiMask)
+        /// <param name="roiMask"> The Mat defining the requested region of interest, pixels lower than 127 will be discarded from all modules: depth, positional tracking, etc.
+        /// If empty, set all pixels as valid. The mask can be either at lower or higher resolution than the current images.</param>
+        /// <param name="module"> Apply the ROI to a list of SDK module, all by default. Must of size sl.MODULE.LAST. 
+        /// The Mat defining the requested region of interest, pixels lower than 127 will be discarded from all modules: depth, positional tracking, etc.
+        /// If empty, set all pixels as valid. The mask can be either at lower or higher resolution than the current images.
+        /// </param>
+        /// <returns>An sl.ERROR_CODE if something went wrong.</returns>
+        public ERROR_CODE SetRegionOfInterest(sl.ZEDMat roiMask, bool[] module)
         {
-            sl.ERROR_CODE err = sl.ERROR_CODE.FAILURE;
+            if (module.Length != (int)MODULE.LAST) return sl.ERROR_CODE.FAILURE;
 
-            err = (sl.ERROR_CODE)dllz_sl_set_region_of_interest(CameraID, roiMask.MatPtr);
-            return err;
+            return (sl.ERROR_CODE)dllz_set_region_of_interest(CameraID, roiMask.GetPtr(), module);
+        }
+
+        /// <summary>
+        /// Get the previously set or computed region of interest.
+        /// </summary>
+        /// <param name="roiMask">The \ref Mat returned</param>
+        /// <param name="resolution">The optional size of the returned mask</param>
+        /// <param name="module"> Specifies the module from which the ROI is to be obtained. </param>
+        /// <returns>An sl.ERROR_CODE if something went wrong.</returns>
+        public ERROR_CODE GetRegionOfInterest(sl.ZEDMat roiMask, sl.Resolution resolution = new sl.Resolution(), MODULE module = MODULE.ALL)
+        {
+            return (sl.ERROR_CODE)dllz_get_region_of_interest(CameraID, roiMask.MatPtr, (int)resolution.width, (int)resolution.height, module);
+        }
+
+        /// <summary>
+        /// Start the auto detection of a region of interest to focus on for all the SDK, discarding other parts.
+        /// This detection is based on the general motion of the camera combined with the motion in the scene.
+        /// The camera must move for this process, an internal motion detector is used, based on the Positional Tracking module.
+        /// It requires a few hundreds frames of motion to compute the mask.
+        ///  \note This module is expecting a static portion, typically a fairly close vehicle hood at the bottom of the image.
+        /// This module may not work correctly or detect incorrect background area, especially with slow motion, if there's no static element.
+        /// This module work asynchronously, the status can be obtained using \ref GetRegionOfInterestAutoDetectionStatus(), the result is either auto applied,
+        /// or can be retrieve using \ref GetRegionOfInterest function.
+        /// </summary>
+        /// <param name="roiParams"></param>
+        /// <returns>An sl.ERROR_CODE if something went wrong.</returns>
+        public ERROR_CODE StartRegionOfInterestAutoDetection(RegionOfInterestParameters roiParams)
+        {
+            return (sl.ERROR_CODE)dllz_start_region_of_interest_auto_detection(CameraID, ref roiParams);
+        }
+
+        /// <summary>
+        ///  Return the status of the automatic Region of Interest Detection.
+        ///  The automatic Region of Interest Detection is enabled by using \ref StartRegionOfInterestAutoDetection
+        /// </summary>
+        /// <returns>An sl.ERROR_CODE if something went wrong.</returns>
+        public REGION_OF_INTEREST_AUTO_DETECTION_STATE GetRegionOfInterestAutoDetectionStatus()
+        {
+            return (REGION_OF_INTEREST_AUTO_DETECTION_STATE)dllz_get_region_of_interest_auto_detection_status(CameraID);
         }
 
         /// <summary>
@@ -2218,10 +2379,13 @@ namespace sl
 
         /// <summary>
         /// Performs an hardware reset of the ZED 2/ZED 2i.
+        /// This method only works for ZED 2, ZED 2i, and newer camera models.
+        /// This method will invalidate any sl.Camera object, since the device is rebooting.
+        /// Under Windows it is not possible to get exclusive access to HID devices, hence calling this method while the camera is opened by another process will cause it to freeze for a few seconds while the device is rebooting.
         /// </summary>
-        /// <param name="serialNumber">Serial number of the camera</param>
-        /// <param name="fullReboot"> Perform a full reboot (Sensors and Video modules)</param>
-        /// <returns>ZED SDK version as a string in the format MAJOR.MINOR.PATCH.</returns>
+        /// <param name="serialNumber">Serial number of the camera to reset, or 0 to reset the first camera detected.</param>
+        /// <param name="fullReboot">Perform a full reboot (sensors and video modules) if true, otherwise only the video module will be rebooted.</param>
+        /// <returns>sl.ERROR_CODE.SUCCESS if everything went fine. sl.ERROR_CODE.CAMERA_NOT_DETECTED if no camera was detected. sl.ERROR_CODE.FAILURE otherwise.</returns>
         public static sl.ERROR_CODE Reboot(int serialNumber, bool fullReboot = true)
         {
             return (sl.ERROR_CODE)dllz_reboot(serialNumber, fullReboot);
@@ -2936,18 +3100,6 @@ namespace sl
             }
         }
 
-        /// <summary>
-        /// Pause or Unpause the object detection
-        /// </summary>
-        /// <param name="status"></param>
-        public void PauseObjectDetection(bool status)
-        {
-            lock (grabLock)
-            {
-                dllz_pause_object_detection(CameraID, status, 0);
-            }
-        }
-
         public sl.ERROR_CODE IngestCustomBoxObjects(List<CustomBoxObjectData> objects_in, uint instanceID)
         {
             return (sl.ERROR_CODE)dllz_ingest_custom_box_objects(CameraID, objects_in.Count, objects_in.ToArray(), instanceID);
@@ -3055,18 +3207,6 @@ namespace sl
             lock (grabLock)
             {
                 dllz_disable_body_tracking(CameraID, bodyTrackingInstanceID, false);
-            }
-        }
-
-        /// <summary>
-        /// Pause or Unpause the body tracking
-        /// </summary>
-        /// <param name="status"></param>
-        public void PauseBodyTracking(bool status)
-        {
-            lock (grabLock)
-            {
-                dllz_pause_body_tracking(CameraID, status, 0);
             }
         }
 

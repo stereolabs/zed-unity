@@ -110,7 +110,7 @@ public class ZEDControllerTracker : MonoBehaviour
                     "value wasn't set, but there are multiple ZEDManagers in the scene. Assign a reference directly to ensure no unexpected behavior.");
             }
         }
-        if (zedManager) zedRigRoot = zedManager.GetZedRootTansform();
+        if (zedManager) zedRigRoot = zedManager.GetZedRootTransform();
     }
 
     /// <summary>
