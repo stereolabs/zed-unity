@@ -42,10 +42,8 @@ float computeDepthXYZ(float3 colorXYZ) {
 	colorXYZ.b = -colorXYZ.b;
 #if SHADER_API_D3D11
 	colorXYZ.g = -colorXYZ.g;
-#elif SHADER_API_GLCORE 
-	colorXYZ.g = -colorXYZ.g * 2;
-#elif SHADER_API_VULKAN
-	colorXYZ.g = -colorXYZ.g ;
+#elif SHADER_API_GLCORE
+	colorXYZ.g = -colorXYZ.g * 2 + 1;
 #endif
 
 	float4 v = float4(colorXYZ, 1);
@@ -78,11 +76,9 @@ float computeDepthXYZ(float colorXYZ) {
 
 #if SHADER_API_D3D11
 	colorXYZ = -colorXYZ;
-#elif SHADER_API_GLCORE 
+#elif SHADER_API_GLCORE
 	//colorXYZ = -colorXYZ * 2 + 1;
 	colorXYZ = -colorXYZ * 2;
-#elif SHADER_API_VULKAN
-	colorXYZ = -colorXYZ;
 #endif
 
 	float4 v = float4(0,0, colorXYZ, 1);
