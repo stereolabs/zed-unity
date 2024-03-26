@@ -64,10 +64,9 @@ Properties
 				v2f o;
 #if SHADER_API_D3D11
 				o.pos = float4(v.pos.x*2.0, v.pos.y*2.0, 0, 1);
-#elif SHADER_API_GLCORE 
+#elif SHADER_API_GLCORE || SHADER_API_VULKAN
 				o.pos = float4(v.pos.x*2.0, -v.pos.y*2.0, 0, 1);
-#elif SHADER_API_VULKAN
-				o.pos = float4(v.pos.x * 2.0, -v.pos.y * 2.0, 0, 1);
+
 #endif
 				o.screenUV = float4(v.pos.x - 0.5, v.pos.y - 0.5, 0, 1);
 				o.depthUV = float4(v.pos.x + 0.5f, v.pos.y + 0.5f, 0, 1);
@@ -122,10 +121,8 @@ Properties
 				#ifdef NO_DEPTH
 					#if SHADER_API_D3D11
 									outDepth = 0;
-					#elif SHADER_API_GLCORE 
+					#elif SHADER_API_GLCORE
 									outDepth = 1000;//fake infinite depth
-					#elif SHADER_API_VULCAN
-									outDepth = 0;
 					#endif				
 				#else
 						outDepth = saturate(d);

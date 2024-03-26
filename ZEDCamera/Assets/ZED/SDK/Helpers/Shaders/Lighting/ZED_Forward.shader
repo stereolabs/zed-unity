@@ -51,12 +51,10 @@ Shader "ZED/ZED Forward"
 			v2f vert (float3 v : POSITION)
 			{
 				v2f o;
-#if SHADER_API_D3D11
+				#if SHADER_API_D3D11
 				o.pos = float4(v.x*2.0,v.y*2.0,0,1);
-#elif SHADER_API_GLCORE 
+#elif SHADER_API_GLCORE
 				o.pos = float4(v.x*2.0, -v.y*2.0, 0, 1);
-#elif SHADER_API_VULKAN
-				o.pos = float4(v.x * 2.0, -v.y * 2.0, 0, 1);
 #else
 				o.pos = float4(v.x*2.0, v.y*2.0, 0, 1);
 #endif

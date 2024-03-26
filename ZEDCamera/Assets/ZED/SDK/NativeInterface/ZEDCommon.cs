@@ -729,45 +729,6 @@ namespace sl
         public double averageCompressionRatio;
     }
 
-    ///\ingroup Depth_group
-    /// <summary>
-    /// Structure containing data that can be stored in and retrieved from SVOs.
-    ///  That information will be ingested with sl.Camera.ingestDataIntoSVO and retrieved with sl.Camera.retrieveSVOData.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SVOData
-    {
-        /// <summary>
-        /// Key used to retrieve the data stored into SVOData's content.
-        /// The key size must not exceed 128 characters.
-        /// </summary>
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string key;
-        /// <summary>
-        /// Timestamp of the data (in nanoseconds).
-        /// </summary>
-        public ulong timestamp;
-        /// <summary>
-        /// Content stored as SVOData
-        /// Allow any type of content, including raw data like compressed images or JSON.
-        /// </summary>
-        IntPtr content;
-        /// <summary>
-        /// Size of the content data.
-        /// </summary>
-        public int contentSize;
-
-        public string GetContent()
-        {
-            return Marshal.PtrToStringAnsi(content);
-        }
-
-        public void SetContent(string c)
-        {
-            content = Marshal.StringToHGlobalAnsi(c);
-        }
-    }
-
     /// <summary>
     /// Status of the ZED's self-calibration. Since v0.9.3, self-calibration is done in the background and
     /// starts in the sl.ZEDCamera.Init or Reset functions.
@@ -823,11 +784,7 @@ namespace sl
         /// <summary>
         ///  End to End Neural disparity estimation, requires AI module
         /// </summary>
-        NEURAL,
-        /// <summary>
-        ///  More accurate Neural disparity estimation.\n Requires AI module.
-        /// </summary>
-        NEURAL_PLUS
+        NEURAL
     };
 
     /// <summary>
@@ -1017,11 +974,7 @@ namespace sl
         /// <summary>
         /// 2208*1242. Supported frame rate: 15 FPS.
         /// </summary>
-        HD4K = 0,
-        /// <summary>
-        /// 2208*1242. Supported frame rate: 15 FPS.
-        /// </summary>
-        HD2K = 1,
+        HD2K,
         /// <summary>
         /// 1920*1080. Supported frame rates: 15, 30 FPS.
         /// </summary>
@@ -1056,23 +1009,23 @@ namespace sl
         /// <summary>
         /// 2208*1242. Supported frame rate: 15 FPS.
         /// </summary>
-        HD2K = 1,
+        HD2K = 0,
         /// <summary>
         /// 1920*1080. Supported frame rates: 15, 30 FPS.
         /// </summary>
-        HD1080 = 2,
+        HD1080 = 1,
         /// <summary>
         /// 1280*720. Supported frame rates: 15, 30, 60 FPS.
         /// </summary>
-        HD720 = 4,
+        HD720 = 3,
         /// <summary>
         /// 672*376. Supported frame rates: 15, 30, 60, 100 FPS.
         /// </summary>
-        VGA = 6,
+        VGA = 5,
         /// <summary>
         /// Select the resolution compatible with camera, on ZEDX HD1200, HD720 otherwise
         /// </summary>
-        AUTO = 7
+        AUTO = 6
     };
 
 
@@ -1401,105 +1354,22 @@ namespace sl
         /// <summary>
         /// The camera is searching for the floor plane to locate itself related to it, the REFERENCE_FRAME::WORLD will be set afterward.
         /// </summary>
-        TRACKING_SEARCHING_FLOOR_PLANE,
-        /// <summary>
-        /// The tracking module was unable to perform tracking from the previous frame to the current frame.
-        /// </summary>
-        NOT_OK, 
+        TRACKING_SEARCHING_FLOOR_PLANE
     }
 
     /// <summary>
     /// Lists the mode of positional tracking that can be used.
-    /// GEN_1 : Default mode, best compromise in performance and accuracy.
-    /// GEN_2 : Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power.
     /// </summary>
-    public enum POSITIONAL_TRACKING_MODE
+    public enum POSTIONAL_TRACKING_MODE
     {
         /// <summary>
         ///  Default mode, best compromise in performance and accuracy
         /// </summary>
-        GEN_1,
+        STANDARD,
         /// <summary>
-        /// Next generation of positional tracking, allows for better accuracy.
+        /// Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power 
         /// </summary>
-        GEN_2
-    }
-
-    ///\ingroup PositionalTracking_group
-    /// <summary>
-    /// Report the status of current odom tracking.
-    /// </summary>
-    public enum ODOMETRY_STATUS
-    {
-        /// <summary>
-        /// The positional tracking module successfully tracked from the previous frame to the current frame.
-        /// </summary>
-        OK,
-        /// <summary>
-        /// The positional tracking module failed to track from the previous frame to the current frame.
-        /// </summary>
-        UNAVAILABLE
-    }
-
-    ///\ingroup PositionalTracking_group
-    /// <summary>
-    /// Report the status of current map tracking.
-    /// </summary>
-    public enum SPATIAL_MEMORY_STATUS
-    {
-        /// <summary>
-        /// The positional tracking module is operating normally.
-        /// </summary>
-        OK,
-        /// <summary>
-        /// The positional tracking module detected a loop and corrected its position.
-        /// </summary>
-        LOOP_CLOSED,
-        /// <summary>
-        /// The positional tracking module is searching for recognizable areas in the global map to relocate.
-        /// </summary>
-        SEARCHING,
-        /// <summary>
-        /// Spatial memory is disabled.
-        /// </summary>
-        OFF
-    }
-
-    ///\ingroup PositionalTracking_group
-    /// <summary>
-    /// Report the status of the positional tracking fusion.
-    /// </summary>
-    public enum POSITIONAL_TRACKING_FUSION_STATUS
-    {
-        VISUAL_INERTIAL = 0,
-        VISUAL = 1,
-        INERTIAL = 2,
-        GNSS = 3,
-        VISUAL_INERTIAL_GNSS = 4,
-        VISUAL_GNSS = 5,
-        INERTIAL_GNSS = 6,
-        UNAVAILABLE = 7
-    }
-
-    ///\ingroup PositionalTracking_group
-    /// <summary>
-    /// Lists the different status of positional tracking.
-    /// </summary>
-    public struct PositionalTrackingStatus
-    {
-        /// <summary>
-        /// Represents the current state of Visual-Inertial Odometry (VIO) tracking between the previous frame and the current frame.
-        /// </summary>
-        public ODOMETRY_STATUS odometryStatus;
-        /// <summary>
-        /// Represents the current state of camera tracking in the global map.
-        /// </summary>
-        public SPATIAL_MEMORY_STATUS spatialMemoryStatus;
-        /// <summary>
-        /// Represents the current state of positional tracking fusion.
-        /// </summary>
-        public POSITIONAL_TRACKING_FUSION_STATUS trackingFusionStatus;
-
+        QUALITY
     }
 
     /// <summary>
@@ -1893,39 +1763,6 @@ namespace sl
     }
 
     /// <summary>
-    /// Lists available modules.
-    /// </summary>
-    public enum MODULE
-    {
-        /// <summary>
-        /// All modules
-        /// </summary>
-        ALL = 0,
-        /// <summary>
-        /// Depth module
-        /// </summary>
-        DEPTH = 1,
-        /// <summary>
-        /// Positional tracking module
-        /// </summary>
-        POSITIONAL_TRACKING = 2,
-        /// <summary>
-        /// Object Detection module
-        /// </summary>
-        OBJECT_DETECTION = 3,
-        /// <summary>
-        /// Body Tracking module
-        /// </summary>
-        BODY_TRACKING = 4,
-        /// <summary>
-        /// Spatial mapping module
-        /// </summary>
-        SPATIAL_MAPPING = 5,
-
-        LAST = 6
-    }
-
-    /// <summary>
     ///  Possible states of the ZED's spatial memory area export, for saving 3D features used
     ///  by the tracking system to relocalize the camera. This is used when saving a mesh generated
     ///  by spatial mapping when Save Mesh is enabled - a .area file is saved as well.
@@ -1992,37 +1829,6 @@ namespace sl
         /// </summary>
         public bool removeSaturatedAreas;
 
-    }
-
-    /// \ingroup PositionalTracking_group
-    /// <summary>
-    /// Structure containing a set of parameters for the region of interest.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RegionOfInterestParameters
-    {
-        /// <summary>
-        /// Filtering how far object in the ROI should be considered, this is useful for a vehicle for instance
-        /// Default is 2.5meters
-        /// </summary>
-        public float depthFarThresholdMeters;
-        /// <summary>
-        /// By default consider only the lower half of the image, can be useful to filter out the sky
-        /// Default is 0.5, corresponding to the lower half of the image.
-        /// </summary>
-        public float imageHeightRatioCutoff;
-        /// <summary>
-        /// Once computed the ROI computed will be automatically applied.
-        /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)MODULE.LAST)]
-        public bool[] autoApplyModule;
-
-        public RegionOfInterestParameters(bool[] autoApplyModule_, float depthFarThresholdMeters_ = 2.5f, float imageHeightRatioCutoff_ = 0.5f)
-        {
-            depthFarThresholdMeters = depthFarThresholdMeters_;
-            imageHeightRatioCutoff = imageHeightRatioCutoff_;
-            autoApplyModule = autoApplyModule_;
-        }
     }
 
     /// <summary>
@@ -2903,12 +2709,8 @@ namespace sl
         /// related to sl.DETECTION_MODEL.NEURAL
         /// </summary>
         NEURAL_DEPTH=12,
-        /// <summary>
-        /// related to sl.DETECTION_MODEL.NEURAL_PLUS
-        /// </summary>
-        NEURAL_PLUS_DEPTH = 13,
 
-        LAST =14
+        LAST=13
     };
 
     /// <summary>

@@ -112,15 +112,9 @@ Shader "ZED/ZED Forward Lighting URP"
 			}
 			//ZED Depth
 			#ifdef NO_DEPTH
-			#if SHADER_API_D3D11
-						outDepth = 0;
-			#elif SHADER_API_GLCORE 
-						outDepth = 1000;//fake infinite depth
-			#elif SHADER_API_VULKAN
-						outDepth = 0;
-			#endif
+					outDepth = 0;
 			#else
-						outDepth = computeDepthXYZ(zed_z);
+					outDepth = computeDepthXYZ(zed_z);
 			#endif
 
 
