@@ -208,14 +208,14 @@ public class ZEDCameraEditor : Editor
     /// </summary>
     //private bool setManualValue = true;
     /// <summary>
-    /// Whether we've set a manual value to white balance or if it's in auto mode.
+    /// Whether  we've set a manual value to white balance or if it's in auto mode.
     /// </summary>
     //private bool setManualWhiteBalance = true;
 
     private string[] toolbarStrings = new string[] { "USB", "SVO", "Stream" };
     private string pauseText = "Pause";
     private string pauseTooltip = " SVO playback or recording."; //Appended to the pause Text to make tooltip text.
-    private string[] filters = { "Svo files", "svo" }; //Filters used for browsing for an SVO.
+    private string[] filters = { "Svo files", "svo,svo2" }; //Filters used for browsing for an SVO.
 
     private void OnEnable()
     {
