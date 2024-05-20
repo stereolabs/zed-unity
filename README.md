@@ -27,7 +27,7 @@ This package brings the features of the <a href="https://www.stereolabs.com/stor
 | :------: | :-----------------------: | :---------------: |
 | <div align="center">Any <a href="https://store.stereolabs.com/">ZED camera</a></div>  | <div align="center">CUDA&nbsp;10.2 capability or higher<br> GTX&nbsp;1060 or higher is recommended</div> | <div align="center"><div><span><a href="https://github.com/ValveSoftware/openvr"><img src="https://user-images.githubusercontent.com/113181784/231974244-37054070-9a80-4f1e-ad8f-30715c2faab8.jpg" width="20%" alt="" /></a></span><span><a href="https://developer.oculus.com/downloads/unity/"><img src="https://user-images.githubusercontent.com/113181784/232449062-ac1ee35c-d4d3-4a1b-9141-cc80caf54d14.jpg" width="20%" alt="" /></a></span></div><div>HMDs compatible with OpenVR or Oculus</div></div>
 | <div align="center">**OS**</div>  | <div align="center">**Unity Version**</div> | <div align="center">**ZED SDK Version**</div>
-| <div align="center">Windows 10/11 <br> Ubuntu 18-22</div>  | <div align="center"><a href="https://unity.com/download">Unity 2021.3</a> and newer</div> | <div align="center"><a href="https://www.stereolabs.com/developers/release/">ZED SDK 4.0</a><br><em>Previous versions are supported by <a href="https://github.com/stereolabs/zed-unity/releases">previous plugins</a></em></div>
+| <div align="center">Windows 10/11 <br> Ubuntu 20/22</div>  | <div align="center"><a href="https://unity.com/download">Unity 2021.3</a> and newer</div> | <div align="center"><a href="https://www.stereolabs.com/developers/release/">ZED SDK **4.1**</a><br><em>Previous versions are supported by <a href="https://github.com/stereolabs/zed-unity/releases">previous plugins</a></em></div>
 
 </div>
   
@@ -38,10 +38,12 @@ To develop applications in Unity with your ZED, you'll need the following things
 - Download and install the [ZED SDK](https://www.stereolabs.com/developers/release/).
 - Download the [ZED Plugin for Unity](https://github.com/stereolabs/zed-unity/releases).
 - Import the *Zed_Unity_Plugin_V4.0.X.unitypackage* into Unity.
-  - *If you get an error saying `The type or namespace name ‘Management’ does not exist in the namespace ‘UnityEngine.XR’`, please go to Project Settings -> XR Plugin Management and Install the XR Plugin Management system by clicking the button.*  
+  - *If you get an error saying `The type or namespace name ‘Management’ does not exist in the namespace ‘UnityEngine.XR’`, please go to Project Settings -> XR Plugin Management and Install the XR Plugin Management system by clicking the button.* 
 - Read the [Basic Concepts](https://www.stereolabs.com/docs/unity/basic-concepts/) and [Build Your First AR/MR App](https://www.stereolabs.com/docs/unity/creating-mixed-reality-app/) guides to get started.
 - Explore the [Samples](https://www.stereolabs.com/docs/unity/samples/) included in the plugin.
 - The [Main Scripts](https://www.stereolabs.com/docs/unity/main-scripts/) page of the documentation introduces the important scripts of the plugin and their parameters.
+
+> **Note**: See how to use **URP and HDRP** with ZED [on the documentation](https://www.stereolabs.com/docs/unity#step-1-installation).
 
 ## Example Scenes
 

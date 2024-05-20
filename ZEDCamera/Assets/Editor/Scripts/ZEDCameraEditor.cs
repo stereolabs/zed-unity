@@ -208,14 +208,14 @@ public class ZEDCameraEditor : Editor
     /// </summary>
     //private bool setManualValue = true;
     /// <summary>
-    /// Whether we've set a manual value to white balance or if it's in auto mode.
+    /// Whether  we've set a manual value to white balance or if it's in auto mode.
     /// </summary>
     //private bool setManualWhiteBalance = true;
 
     private string[] toolbarStrings = new string[] { "USB", "SVO", "Stream" };
     private string pauseText = "Pause";
     private string pauseTooltip = " SVO playback or recording."; //Appended to the pause Text to make tooltip text.
-    private string[] filters = { "Svo files", "svo" }; //Filters used for browsing for an SVO.
+    private string[] filters = { "Svo files", "svo,svo2" }; //Filters used for browsing for an SVO.
 
     private void OnEnable()
     {
@@ -607,8 +607,8 @@ public class ZEDCameraEditor : Editor
 
         GUIContent positionalTrackingModePropertyLabel = new GUIContent("Positional Tracking Mode", "Lists the mode of positional tracking that can be used.\r\n " +
                         "- GEN_1 : Default mode, best compromise in performance and accuracy.\r\n" +
-                        "- GEN_2 : Improve accuracy in more challening scenes such as outdoor repetitive patterns like extensive field. Curently works best with ULTRA depth mode, requires more compute power.");
-        positionalTrackingModeProperty.enumValueIndex = (int)(sl.POSTIONAL_TRACKING_MODE)EditorGUILayout.EnumPopup(positionalTrackingModePropertyLabel, (sl.POSTIONAL_TRACKING_MODE)positionalTrackingModeProperty.enumValueIndex);
+                        "- GEN_2 : Next generation of positional tracking, allows better accuracy.");
+        positionalTrackingModeProperty.enumValueIndex = (int)(sl.POSITIONAL_TRACKING_MODE)EditorGUILayout.EnumPopup(positionalTrackingModePropertyLabel, (sl.POSITIONAL_TRACKING_MODE)positionalTrackingModeProperty.enumValueIndex);
 
         EditorGUI.indentLevel--;
 

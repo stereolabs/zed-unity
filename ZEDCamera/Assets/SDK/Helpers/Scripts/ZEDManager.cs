@@ -56,7 +56,7 @@ public class ZEDManager : MonoBehaviour
     /// at C:/ProgramData/stereolabs/SL_Unity_wrapper.txt. This helps find issues that may occur within
     /// the protected .dll, but can decrease performance.
     /// </summary>
-    private bool wrapperVerbose = true;
+    private bool wrapperVerbose = false;
 
     /// <summary>
     /// Current instance of the ZED Camera, which handles calls to the Unity wrapper .dll.
@@ -295,7 +295,7 @@ public class ZEDManager : MonoBehaviour
     /// Positional tracking mode used. Can be used to improve accuracy in some type of scene at the cost of longer runtime.
     /// </summary>
     [HideInInspector]
-    public sl.POSTIONAL_TRACKING_MODE positionalTrackingMode;
+    public sl.POSITIONAL_TRACKING_MODE positionalTrackingMode;
 
     /// <summary>
     /// Estimate initial position by detecting the floor.
@@ -1012,7 +1012,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [SerializeField]
     [HideInInspector]
-    private int m_confidenceThreshold = 100;
+    private int m_confidenceThreshold = 95;
     /// <summary>
     /// How tolerant the ZED SDK is to low confidence values. Lower values filter more pixels.
     /// </summary>
@@ -2085,6 +2085,7 @@ public class ZEDManager : MonoBehaviour
         initParameters.asyncGrabCameraRecovery = asyncGrabCameraRecovery;
         initParameters.grabComputeCappingFPS = grabComputeCappingFPS;
         initParameters.enableImageValidityCheck = enableImageValidityCheck;
+	initParameters.sdkVerbose = wrapperVerbose ? 1 : 0;
 
         //Check if this rig is a stereo rig. Will set isStereoRig accordingly.
         CheckStereoMode();
@@ -2215,30 +2216,35 @@ public class ZEDManager : MonoBehaviour
 
     private System.Collections.IEnumerator InitZED()
     {
-        if (initParameters.depthMode == sl.DEPTH_MODE.NEURAL)
+        DEPTH_MODE[] NeuralModes = { DEPTH_MODE.NEURAL, DEPTH_MODE.NEURAL_PLUS };
+        
+        foreach (var mode in NeuralModes) 
         {
-            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
-            watch.Start();
-
-            sl.AI_Model_status status = sl.ZEDCamera.CheckAIModelStatus(sl.AI_MODELS.NEURAL_DEPTH, 0);
-            if (!status.optimized)
+            if (initParameters.depthMode == mode)
             {
-                var threadOptim = new Thread(() => OptimizeModel(sl.AI_MODELS.NEURAL_DEPTH)); //Assign thread.
-                threadOptim.Start();
+                System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch(); //Time how long the loading takes so we can tell the user.
+                watch.Start();
 
-                while (optimStatus != sl.ERROR_CODE.SUCCESS)
+                sl.AI_Model_status status = sl.ZEDCamera.CheckAIModelStatus(ZEDCamera.ToAIModel(mode), 0);
+                if (!status.optimized)
                 {
-                    if (watch.Elapsed.TotalSeconds > optimTimeout_S)
-                    {
-                        Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
-                        yield break;
-                    }
+                    var threadOptim = new Thread(() => OptimizeModel(ZEDCamera.ToAIModel(mode))); //Assign thread.
+                    threadOptim.Start();
 
-                    Debug.LogWarning($"Optimizing neural model ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds.ToString("N2")} seconds.");
-                    yield return new WaitForSeconds(5.0f);
+                    while (optimStatus != sl.ERROR_CODE.SUCCESS)
+                    {
+                        if (watch.Elapsed.TotalSeconds > optimTimeout_S)
+                        {
+                            Debug.LogError("Optimization process Timeout. Please try to optimze the AI models outside of Unity, using the ZED Diagnostic tool ");
+                            yield break;
+                        }
+
+                        Debug.LogWarning($"Optimizing neural model ... The process can take few minutes. Running for {watch.Elapsed.TotalSeconds.ToString("N2")} seconds.");
+                        yield return new WaitForSeconds(5.0f);
+                    }
+                    threadOptim.Join();
+                    watch.Stop();
                 }
-                threadOptim.Join();
-                watch.Stop();
             }
         }
 
@@ -3271,18 +3277,6 @@ public class ZEDManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Switchs the state of the object detection pause.
-    /// </summary>
-    /// <param name="state">If set to <c>true</c> state, the object detection will pause. It will resume otherwise</param>
-    public void SwitchObjectDetectionPauseState(bool state)
-    {
-        if (zedCamera != null)
-        {
-            if (objectDetectionRunning)
-                zedCamera.PauseObjectDetection(state);
-        }
-    }
     #endregion
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3493,18 +3487,6 @@ public class ZEDManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Switchs the state of the body tracking pause.
-    /// </summary>
-    /// <param name="state">If set to <c>true</c> state, the body tracking will pause. It will resume otherwise</param>
-    public void SwitchBodyTrackingPauseState(bool state)
-    {
-        if (zedCamera != null)
-        {
-            if (bodyTrackingRunning)
-                zedCamera.PauseBodyTracking(state);
-        }
-    }
     #endregion
 
 
