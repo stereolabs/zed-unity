@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// This file holds classes built to be exchanged between the ZED wrapper DLL (sl_unitywrapper.dll)
+/// This file holds classes built to be exchanged between the ZED wrapper DLLs (sl_unitywrapper.dll and sl_zed_c.dll)
 /// and C# scripts within Unity. Most have parity with a structure within the ZED C++ SDK.
 /// Find more info at https://www.stereolabs.com/developers/documentation/API/latest/.
 /// </summary>
@@ -16,7 +16,8 @@ namespace sl
 
 	public class ZEDCommon
 	{
-		public const string NameDLL = "sl_unitywrapper";
+		public const string NameMRDLL = "sl_unitywrapper";
+		public const string NameCDLL = "sl_zed_c";
         public static bool IsVector3NaN(Vector3 input)
         {
             return float.IsNaN(input.x) || float.IsNaN(input.y) || float.IsNaN(input.z);
@@ -563,7 +564,7 @@ namespace sl
     public struct SensorParameters
     {
         /// <summary>
-        /// The type of the sensor as \ref DEVICE_SENSORS.
+        /// The type of the sensor as  DEVICE_SENSORS.
         /// </summary>
         public SENSOR_TYPE type;
         /// <summary>
@@ -1499,6 +1500,113 @@ namespace sl
 
     }
 
+    ///\ingroup PositionalTracking_group
+    /// <summary>
+    /// Sets the positional tracking parameters.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PositionalTrackingParameters
+    {
+        /// <summary>
+        /// Rotation of the camera in the world frame when the camera is started.
+        /// Default: Identity quaternion
+        /// </summary>
+        public Quaternion initialWorldRotation;
+
+        /// <summary>
+        /// Position of the camera in the world frame when the camera is started.
+        /// Default: Null vector
+        /// </summary>
+        public Vector3 initialWorldPosition;
+
+        /// <summary>
+        /// Whether the camera can remember its surroundings.
+        /// 
+        /// This helps correct positional tracking drift and can be helpful for positioning different cameras relative to one other in space.
+        /// Default: true
+        /// 
+        /// Warning: This mode requires more resources to run, but greatly improves tracking accuracy.
+        /// Warning: We recommend leaving it on by default.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableAreaMemory;
+
+        /// <summary>
+        /// Whether to enable smooth pose correction for small drift correction.
+        /// Default: false
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enablePoseSmoothing;
+
+        /// <summary>
+        /// Initializes the tracking to be aligned with the floor plane to better position the camera in space.
+        /// Default: false
+        /// Note: This launches floor plane detection in the background until a suitable floor plane is found.
+        /// Note: The tracking will start in  SL_POSITIONAL_TRACKING_STATE_SEARCHING state.
+        /// Warning: This features does not work with  SL_MODEL_ZED since it needs an IMU to classify the floor.
+        /// Warning: The camera needs to look at the floor during initialization for optimum results.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool setFloorAsOrigin;
+
+        /// <summary>
+        /// Whether to define the camera as static.
+        /// If true, it will not move in the environment. This allows you to set its position using initial_world_position and initial_world_rotation.
+        /// All ZED SDK functionalities requiring positional tracking will be enabled without additional computation.
+        /// sl_get_position() will return the values set as initial_world_position and initial_world_rotation.
+        /// Default: false
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool setAsStatic;
+
+        /// <summary>
+        /// Whether to enable the IMU fusion
+        /// When set to false, only the optical odometry will be used.
+        /// Default: true
+        /// Note: This setting has no impact on the tracking of a camera.
+        /// Note: SL_MODEL_ZED does not have an IMU.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableImuFusion;
+
+        /// <summary>
+        /// Minimum depth used by the ZED SDK for positional tracking.
+        /// It may be useful for example if any steady objects are in front of the camera and may perturb the positional tracking algorithm.
+        /// Default: -1 (no minimum depth)
+        /// </summary>
+        public float depthMinRange;
+
+        /// <summary>
+        /// Whether to override 2 of the 3 components from  initial_world_rotation using the IMU gravity.
+        /// Default: true
+        /// Note This parameter does nothing on sl.ZED.MODEL since it does not have an IMU.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool setGravityAsOrigin;
+
+        /// <summary>
+        /// Positional tracking mode used.
+        /// Can be used to improve accuracy in some types of scene at the cost of longer runtime.
+        /// Default:  SL_POSITIONAL_TRACKING_MODE_GEN_1
+        /// </summary>
+        public sl.POSITIONAL_TRACKING_MODE mode;
+
+        public PositionalTrackingParameters(Quaternion initialWorldRotation, Vector3 initialWorldPosition, bool enableAreaMemory, bool enablePoseSmoothing, bool setFloorAsOrigin, bool setAsStatic, bool enableImuFusion, float depthMinRange, bool setGravityAsOrigin, sl.POSITIONAL_TRACKING_MODE mode)
+        {
+            this.initialWorldRotation = initialWorldRotation;
+            this.initialWorldPosition = initialWorldPosition;
+            this.enableAreaMemory = enableAreaMemory;
+            this.enablePoseSmoothing = enablePoseSmoothing;
+            this.setFloorAsOrigin = setFloorAsOrigin;
+            this.setAsStatic = setAsStatic;
+            this.enableImuFusion = enableImuFusion;
+            this.depthMinRange = depthMinRange;
+            this.setGravityAsOrigin = setGravityAsOrigin;
+            this.mode = mode;
+        }
+
+    };
+
     /// <summary>
     /// Lists the mode of positional tracking that can be used.
     /// </summary>
@@ -1724,8 +1832,8 @@ namespace sl
         /// </summary>
         public float depthMinimumDistance;
         /// <summary>
-        ///   When estimating the depth, the SDK uses this upper limit to turn higher values into \ref TOO_FAR ones.
-        ///   The current maximum distance that can be computed in the defined \ref UNIT.
+        ///   When estimating the depth, the SDK uses this upper limit to turn higher values into  TOO_FAR ones.
+        ///   The current maximum distance that can be computed in the defined  UNIT.
         ///   Changing this value has no impact on performance and doesn't affect the positional tracking nor the spatial mapping. (Only the depth, point cloud, normals)
         /// </summary>
         public float depthMaximumDistance;
@@ -1788,7 +1896,7 @@ namespace sl
         /// </summary>
         public string optionalOpencvCalibrationFile = "";
         /// <summary>
-        /// Define a timeout in seconds after which an error is reported if the \ref open() command fails.
+        /// Define a timeout in seconds after which an error is reported if the  open() command fails.
         /// Set to '-1' to try to open the camera endlessly without returning error in case of failure.
         /// Set to '0' to return error in case of failure at the first attempt.
         /// This parameter only impacts the LIVE mode.
@@ -2286,12 +2394,12 @@ namespace sl
         /// </summary>
         public int id; 
         /// <summary>
-        ///Unique ID to help identify and track AI detections. Can be either generated externally, or using \ref ZEDCamera.generateUniqueId() or left empty
+        ///Unique ID to help identify and track AI detections. Can be either generated externally, or using  ZEDCamera.generateUniqueId() or left empty
         /// </summary>
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 37)]
         public string uniqueObjectId;
         /// <summary>
-        ///  Object label, forwarded from \ref CustomBoxObjects when using DETECTION_MODEL.CUSTOM_BOX_OBJECTS
+        ///  Object label, forwarded from  CustomBoxObjects when using DETECTION_MODEL.CUSTOM_BOX_OBJECTS
         /// </summary>
         public int rawLabel;
         /// <summary>
@@ -2328,7 +2436,7 @@ namespace sl
         public Vector2[] boundingBox2D;
         
         /// <summary>
-        /// 3D head centroid. Defined in \ref sl:InitParameters.UNIT, expressed in \ref RuntimeParameters.measure3D_reference_frame.
+        /// 3D head centroid. Defined in  sl:InitParameters.UNIT, expressed in  RuntimeParameters.measure3D_reference_frame.
         /// </summary>
         public Vector3 headPosition;
         /// <summary>
@@ -2384,7 +2492,7 @@ namespace sl
     public struct CustomBoxObjectData
     {
         /// <summary>
-        ///Unique ID to help identify and track AI detections. Can be either generated externally, or using \ref ZEDCamera.generateUniqueId() or left empty
+        ///Unique ID to help identify and track AI detections. Can be either generated externally, or using  ZEDCamera.generateUniqueId() or left empty
         /// </summary>
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 37)]
         public string uniqueObjectID;
@@ -2484,11 +2592,11 @@ namespace sl
         /// </summary>
         public bool enableBodyFitting;
         /// <summary>
-        /// Defines the body format outputed by the sdk when \ref retrieveBodies is called.
+        /// Defines the body format outputed by the sdk when  retrieveBodies is called.
         /// </summary>
         public sl.BODY_FORMAT bodyFormat;
         /// <summary>
-        /// Defines the body selection is output by the sdk when \ref retrieveBodies is called.
+        /// Defines the body selection is output by the sdk when  retrieveBodies is called.
         /// </summary>
         public sl.BODY_KEYPOINTS_SELECTION bodySelection;
         /// <summary>
@@ -2553,7 +2661,7 @@ namespace sl
         /// </summary>
         public int id;
         /// <summary>
-        ///Unique ID to help identify and track AI detections. Can be either generated externally, or using \ref ZEDCamera.generateUniqueId() or left empty
+        ///Unique ID to help identify and track AI detections. Can be either generated externally, or using  ZEDCamera.generateUniqueId() or left empty
         /// </summary>
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 37)]
         public string uniqueObjectId;
@@ -2596,7 +2704,7 @@ namespace sl
         public Vector2[] boundingBox2D;
 
         /// <summary>
-        /// 3D head centroid. Defined in \ref sl:InitParameters.UNIT, expressed in \ref RuntimeParameters.measure3D_reference_frame.
+        /// 3D head centroid. Defined in  sl:InitParameters.UNIT, expressed in  RuntimeParameters.measure3D_reference_frame.
         /// </summary>
         public Vector3 headPosition;
 
@@ -2644,16 +2752,22 @@ namespace sl
         /// <summary>
         /// \brief A set of useful points representing the human body, expressed in 3D.
 	    /// We use a classic 18 points representation, the points semantic and order is given by BODY_PARTS.
-        /// Defined in \ref sl:InitParameters::UNIT, expressed in \ref RuntimeParameters::measure3D_reference_frame.
+        /// Defined in  sl:InitParameters::UNIT, expressed in  RuntimeParameters::measure3D_reference_frame.
 	    /// \warning in some cases, eg. body partially out of the image or missing depth data, some keypoint can not be detected, they will have non finite values.
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
         public Vector3[] keypoint;
         /// <summary>
-        /// Per keypoint detection confidence, can not be lower than the \ref ObjectDetectionRuntimeParameters::detection_confidence_threshold.
+        /// Per keypoint detection confidence, can not be lower than the  ObjectDetectionRuntimeParameters::detection_confidence_threshold.
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
         public float[] keypointConfidence;
+        /// <summary>
+        /// Vector of detection covariances for each keypoint.
+        /// In some cases, eg. body partially out of the image or missing depth data, some keypoints can not be detected. Their covariances will be 0.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
+        public Covariance[] keypointCovariances;
         /// <summary>
         /// Per keypoint local position (the position of the child keypoint with respect to its parent expressed in its parent coordinate frame)
         /// </summary>
@@ -2665,10 +2779,24 @@ namespace sl
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
         public Quaternion[] localOrientationPerJoint;
         /// <summary>
-        ///  global root orientation of the skeleton. The orientation is also represented by a quaternion with the same format as \ref local_orientation_per_joint
+        ///  global root orientation of the skeleton. The orientation is also represented by a quaternion with the same format as  local_orientation_per_joint
         /// </summary>
         public Quaternion globalRootOrientation;
     };
+
+    /// <summary>
+    /// Utility for marshalling.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Covariance
+    {
+        /// <summary>
+        /// Detection covariance for a given keypoint.
+        /// In some cases, eg. body partially out of the image or missing depth data, some keypoints can not be detected. Their covariances will be 0.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
+        public int[] covariance;
+    }
 
     /// <summary>
     /// Body Scene data directly from the ZED SDK. Represents all detections given during a single image frame. 
@@ -2699,7 +2827,11 @@ namespace sl
         /// <summary>
         /// Current detection model used.
         /// </summary>
-        public sl.OBJECT_DETECTION_MODEL detectionModel;
+        public sl.BODY_TRACKING_MODEL detectionModel;
+        /// <summary>
+        /// Current detection model used.
+        /// </summary>
+        public sl.INFERENCE_PRECISON inferencePrecisionMode;
         /// <summary>
         /// Array of objects 
         /// </summary>
@@ -2825,6 +2957,16 @@ namespace sl
         ///  Keypoints based, specific to human skeleton, state of the art accuracy, requires powerful GPU.
         /// </summary>
 		HUMAN_BODY_ACCURATE
+    };
+
+    /// <summary>
+    /// Report the actual inference precision used.
+    /// </summary>
+    public enum INFERENCE_PRECISON
+    {
+        FLOAT32,
+        FLOAT16,
+		INT8
     };
 
     /// <summary>

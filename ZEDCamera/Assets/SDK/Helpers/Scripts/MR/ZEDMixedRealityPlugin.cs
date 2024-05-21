@@ -22,40 +22,40 @@ using UnityEngine.XR;
 public class ZEDMixedRealityPlugin : MonoBehaviour
 {
     #region DLL Calls
-	const string nameDll = sl.ZEDCommon.NameDLL;
-	[DllImport(nameDll, EntryPoint = "sl_compute_size_plane_with_gamma")]
+    const string nameDllMR = sl.ZEDCommon.NameMRDLL;
+    [DllImport(nameDllMR, EntryPoint = "sl_compute_size_plane_with_gamma")]
 	private static extern System.IntPtr dllz_compute_size_plane_with_gamma(int width, int height, float perceptionDistance, float eyeToZedDistance, float planeDistance, float HMDFocal, float zedFocal);
 
-	[DllImport(nameDll, EntryPoint = "sl_compute_hmd_focal")]
+	[DllImport(nameDllMR, EntryPoint = "sl_compute_hmd_focal")]
 	private static extern float dllz_compute_hmd_focal(int width, int height, float w, float h);
 
 	/*****LATENCY CORRECTOR***/
-	[DllImport(nameDll, EntryPoint = "sl_latency_corrector_add_key_pose")]
+	[DllImport(nameDllMR, EntryPoint = "sl_latency_corrector_add_key_pose")]
 	private static extern void dllz_latency_corrector_add_key_pose(ref Vector3 translation, ref Quaternion rotation, ulong timeStamp);
 
-	[DllImport(nameDll, EntryPoint = "sl_latency_corrector_get_transform")]
+	[DllImport(nameDllMR, EntryPoint = "sl_latency_corrector_get_transform")]
 	private static extern int dllz_latency_corrector_get_transform(ulong timeStamp, bool useLatency,out Vector3 translation, out Quaternion rotation);
 
-	[DllImport(nameDll, EntryPoint = "sl_latency_corrector_initialize")]
+	[DllImport(nameDllMR, EntryPoint = "sl_latency_corrector_initialize")]
 	private static extern void dllz_latency_corrector_initialize(int device);
 
-	[DllImport(nameDll, EntryPoint = "sl_latency_corrector_shutdown")]
+	[DllImport(nameDllMR, EntryPoint = "sl_latency_corrector_shutdown")]
 	private static extern void dllz_latency_corrector_shutdown();
 
 	/****ANTI DRIFT ***/
-	[DllImport(nameDll, EntryPoint = "sl_drift_corrector_initialize")]
+	[DllImport(nameDllMR, EntryPoint = "sl_drift_corrector_initialize")]
 	public static extern void dllz_drift_corrector_initialize();
 
-	[DllImport(nameDll, EntryPoint = "sl_drift_corrector_shutdown")]
+	[DllImport(nameDllMR, EntryPoint = "sl_drift_corrector_shutdown")]
 	public static extern void dllz_drift_corrector_shutdown();
 
-	[DllImport(nameDll, EntryPoint = "sl_drift_corrector_get_tracking_data")]
+	[DllImport(nameDllMR, EntryPoint = "sl_drift_corrector_get_tracking_data")]
 	public static extern void dllz_drift_corrector_get_tracking_data(ref TrackingData trackingData, ref Pose HMDTransform, ref Pose latencyCorrectorTransform, int hasValidTrackingPosition,bool checkDrift);
 
-	[DllImport(nameDll, EntryPoint = "sl_drift_corrector_set_calibration_transform")]
+	[DllImport(nameDllMR, EntryPoint = "sl_drift_corrector_set_calibration_transform")]
 	public static extern void dllz_drift_corrector_set_calibration_transform(ref Pose pose);
 
-	[DllImport(nameDll, EntryPoint = "sl_drift_corrector_set_calibration_const_offset_transform")]
+	[DllImport(nameDllMR, EntryPoint = "sl_drift_corrector_set_calibration_const_offset_transform")]
 	public static extern void dllz_drift_corrector_set_calibration_const_offset_transform(ref Pose pose);
     #endregion
 

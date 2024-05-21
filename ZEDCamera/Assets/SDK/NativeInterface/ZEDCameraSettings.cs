@@ -12,16 +12,6 @@ using System.Runtime.InteropServices;
 /// </remarks>
 public class ZEDCameraSettings
 {
-    #region DLL Calls
-    const string nameDll = sl.ZEDCommon.NameDLL;
-    [DllImport(nameDll, EntryPoint = "sl_set_video_settings")]
-    private static extern void dllz_set_video_settings(int id, int mode, int value, int usedefault);
-
-    [DllImport(nameDll, EntryPoint = "sl_get_video_settings")]
-    private static extern int dllz_get_video_settings(int id, int mode);
-
-    #endregion
-
     /// <summary>
     /// Container for ZED camera settings, with constructors for easily creating default or specific values
     /// or making duplicate instances. 
@@ -442,30 +432,6 @@ public class ZEDCameraSettings
             err = zedCamera.GetCameraSettings(sl.CAMERA_SETTINGS.LED_STATUS, ref value);
             if (err == sl.ERROR_CODE.SUCCESS) { settings_.LEDStatus = value; }
         }
-    }
-
-    /// <summary>
-    /// Applies an individual setting to the ZED camera. 
-    /// </summary>
-    /// <param name="settings">Setting to be changed (brightness, contrast, gain, exposure, etc.)</param>
-    /// <param name="value">New value for the setting.</param>
-    /// <param name="usedefault">If true, ignores the value and applies the default setting.</param>
-    public void SetCameraSettings(int cid, sl.CAMERA_SETTINGS settings, int value, bool usedefault = false)
-    {
-        settings_.settings[(int)settings] = !usedefault && value != -1 ? value : -1;
-        dllz_set_video_settings(cid, (int)settings, value, System.Convert.ToInt32(usedefault));
-    }
-
-    /// <summary>
-    /// Gets the value from an individual ZED camera setting (brightness, contrast, gain, exposure, etc.)
-    /// </summary>
-    /// <param name="settings">Setting to be retrieved.</param>
-    /// <returns>Current value.</returns>
-    public int GetCameraSettings(int cid, sl.CAMERA_SETTINGS settings)
-    {
-        return dllz_get_video_settings(cid, (int)settings);
-        //settings_.settings[(int)settings] = dllz_get_camera_settings(cid, (int)settings);
-        //return settings_.settings[(int)settings];
     }
 
     /// <summary>

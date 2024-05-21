@@ -59,7 +59,12 @@ namespace sl
         /// <summary>
         /// DLL name, used for extern calls to the wrapper.
         /// </summary>
-        public const string nameDll = sl.ZEDCommon.NameDLL;
+        public const string nameDllC = sl.ZEDCommon.NameCDLL;
+
+        /// <summary>
+        /// DLL name, used for extern calls to the wrapper.
+        /// </summary>
+        public const string nameDllMR = sl.ZEDCommon.NameMRDLL;
 
         /// <summary>
         /// List of all created textures, representing SDK output. Indexed by ints corresponding to its ZEDCamera.TYPE_VIEW
@@ -288,10 +293,10 @@ namespace sl
         public static readonly System.Version PluginVersion = new System.Version(4, 1, 0);
 
         /******** DLL members ***********/
-        [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
+        [DllImport(nameDllMR, EntryPoint = "GetRenderEventFunc")]
         private static extern IntPtr GetRenderEventFunc();
 
-        [DllImport(nameDll, EntryPoint = "sl_register_callback_debuger")]
+        [DllImport(nameDllMR, EntryPoint = "sl_register_callback_debuger")]
         private static extern void dllz_register_callback_debuger(DebugCallback callback);
 
 
@@ -299,22 +304,22 @@ namespace sl
           * Utils function.
           */
 
-        [DllImport(nameDll, EntryPoint = "sl_unload_all_instances")]
+        [DllImport(nameDllC, EntryPoint = "sl_unload_all_instances")]
         private static extern void dllz_unload_all_instances();
 
-        [DllImport(nameDll, EntryPoint = "sl_unload_instance")]
+        [DllImport(nameDllC, EntryPoint = "sl_unload_instance")]
         private static extern void dllz_unload_instance(int id);
 
-        [DllImport(nameDll, EntryPoint = "sl_find_usb_device")]
+        [DllImport(nameDllC, EntryPoint = "sl_find_usb_device")]
         private static extern bool dllz_find_usb_device(USB_DEVICE dev);
 
-        [DllImport(nameDll, EntryPoint = "sl_generate_unique_id")]
+        [DllImport(nameDllC, EntryPoint = "sl_generate_unique_id")]
         private static extern int dllz_generate_unique_id([In, Out] byte[] id);
 
         /*
           * Create functions
           */
-        [DllImport(nameDll, EntryPoint = "sl_create_camera")]
+        [DllImport(nameDllC, EntryPoint = "sl_create_camera")]
         private static extern bool dllz_create_camera(int cameraID);
 
 
@@ -322,107 +327,107 @@ namespace sl
         * Opening function (Opens camera and creates textures).
         * Some initparameters are passed as arguments to facilitate Marshalling.
         */
-        [DllImport(nameDll, EntryPoint = "sl_open_camera")]
+        [DllImport(nameDllC, EntryPoint = "sl_open_camera")]
         private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, uint serialNumber, System.Text.StringBuilder svoPath, System.Text.StringBuilder ipStream, int portStream, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
 
 
         /*
          * Close function.
          */
-        [DllImport(nameDll, EntryPoint = "sl_close_camera")]
+        [DllImport(nameDllC, EntryPoint = "sl_close_camera")]
         private static extern void dllz_close(int cameraID);
 
 
         /*
          * Grab function.
          */
-        [DllImport(nameDll, EntryPoint = "sl_grab")]
+        [DllImport(nameDllC, EntryPoint = "sl_grab")]
         private static extern int dllz_grab(int cameraID, ref sl.RuntimeParameters runtimeParameters);
 
 
         /*
          * GetDeviceList function
          */
-        [DllImport(nameDll, EntryPoint = "sl_get_device_list")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_device_list")]
         private static extern void dllz_get_device_list(sl.DeviceProperties[] deviceList, out int nbDevices);
 
         /*
          * GetStreamingDeviceList function
          */
-        [DllImport(nameDll, EntryPoint = "sl_get_streaming_device_list")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_streaming_device_list")]
         private static extern void dllz_get_streaming_device_list(sl.StreamingProperties[] streamingDeviceList, out int nbDevices);
 
         /*
         * Reboot function.
         */
-        [DllImport(nameDll, EntryPoint = "sl_reboot")]
+        [DllImport(nameDllC, EntryPoint = "sl_reboot")]
         private static extern int dllz_reboot(int serialNumber, bool fullReboot);
 
         /*
         * Recording functions.
         */
-        [DllImport(nameDll, EntryPoint = "sl_enable_recording")]
+        [DllImport(nameDllC, EntryPoint = "sl_enable_recording")]
         private static extern int dllz_enable_recording(int cameraID, System.Text.StringBuilder video_filename, int compresssionMode,int bitrate,int target_fps,bool transcode);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_recording_status")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_recording_status")]
         private static extern IntPtr dllz_get_recording_status(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_recording_parameters")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_recording_parameters")]
         private static extern IntPtr dllz_get_recording_parameters(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_disable_recording")]
+        [DllImport(nameDllC, EntryPoint = "sl_disable_recording")]
         private static extern bool dllz_disable_recording(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_pause_recording")]
+        [DllImport(nameDllC, EntryPoint = "sl_pause_recording")]
         private static extern void dllz_pause_recording(int cameraID, bool status);
 
         // Recording Gen 2 functions
 
-        [DllImport(nameDll, EntryPoint = "sl_ingest_data_into_svo")]
+        [DllImport(nameDllC, EntryPoint = "sl_ingest_data_into_svo")]
         private static extern ERROR_CODE dllz_ingest_data_into_svo(int cameraID, ref SVOData data);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_svo_data_size")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_svo_data_size")]
         private static extern int dllz_get_svo_data_size(int cameraID, string key, ulong ts_begin, ulong ts_end);
 
-        [DllImport(nameDll, EntryPoint = "sl_retrieve_svo_data")]
+        [DllImport(nameDllC, EntryPoint = "sl_retrieve_svo_data")]
         private static extern ERROR_CODE dllz_retrieve_svo_data(int cameraID, string key, int nb_data, [Out] SVOData[] data, ulong ts_begin, ulong ts_end);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_svo_data_size")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_svo_data_size")]
         private static extern int dllz_get_svo_data_keys_size(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_svo_data_keys")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_svo_data_keys")]
         private static extern void dllz_get_svo_data_keys(int cameraID, int nb_keys, [Out] string[] keys);
 
         /*
         * Texturing functions.
         */
-        [DllImport(nameDll, EntryPoint = "sl_retrieve_textures")]
+        [DllImport(nameDllMR, EntryPoint = "sl_retrieve_textures")]
         private static extern void dllz_retrieve_textures(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_updated_textures_timestamp")]
+        [DllImport(nameDllMR, EntryPoint = "sl_get_updated_textures_timestamp")]
         private static extern ulong dllz_get_updated_textures_timestamp(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_swap_textures")]
+        [DllImport(nameDllMR, EntryPoint = "sl_swap_textures")]
         private static extern void dllz_swap_textures(int cameraID);
 
 
 
-        [DllImport(nameDll, EntryPoint = "sl_register_texture_image_type")]
+        [DllImport(nameDllMR, EntryPoint = "sl_register_texture_image_type")]
         private static extern int dllz_register_texture_image_type(int cameraID, int option, IntPtr id, int width, int height);
 
-        [DllImport(nameDll, EntryPoint = "sl_register_texture_measure_type")]
+        [DllImport(nameDllMR, EntryPoint = "sl_register_texture_measure_type")]
         private static extern int dllz_register_texture_measure_type(int cameraID, int option, IntPtr id, int width, int height);
 
-        [DllImport(nameDll, EntryPoint = "sl_unregister_texture_measure_type")]
+        [DllImport(nameDllMR, EntryPoint = "sl_unregister_texture_measure_type")]
         private static extern int dllz_unregister_texture_measure_type(int cameraID, int option);
 
-        [DllImport(nameDll, EntryPoint = "sl_unregister_texture_image_type")]
+        [DllImport(nameDllMR, EntryPoint = "sl_unregister_texture_image_type")]
         private static extern int dllz_unregister_texture_image_type(int cameraID, int option);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_copy_mat_texture_image_type")]
+        [DllImport(nameDllMR, EntryPoint = "sl_get_copy_mat_texture_image_type")]
         private static extern IntPtr dllz_get_copy_mat_texture_image_type(int cameraID, int option);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_copy_mat_texture_measure_type")]
+        [DllImport(nameDllMR, EntryPoint = "sl_get_copy_mat_texture_measure_type")]
         private static extern IntPtr dllz_get_copy_mat_texture_measure_type(int cameraID, int option);
 
 
@@ -430,71 +435,71 @@ namespace sl
          * Camera control functions.
          */
 
-        [DllImport(nameDll, EntryPoint = "sl_is_camera_setting_supported")]
-        private static extern bool dllz_is_video_setting_supported(int id, int setting);
+        [DllImport(nameDllC, EntryPoint = "sl_is_camera_setting_supported")]
+        private static extern bool dllz_is_camera_setting_supported(int id, int setting);
 
-        [DllImport(nameDll, EntryPoint = "sl_set_video_settings")]
-        private static extern void dllz_set_video_settings(int id, int mode, int value);
+        [DllImport(nameDllC, EntryPoint = "sl_set_camera_settings")]
+        private static extern void dllz_set_camera_settings(int id, int mode, int value);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_video_settings")]
-        private static extern int dllz_get_video_settings(int id, int mode, ref int value);
+        [DllImport(nameDllC, EntryPoint = "sl_get_camera_settings")]
+        private static extern int dllz_get_camera_settings(int id, int mode, ref int value);
 
-        [DllImport(nameDll, EntryPoint = "sl_set_roi_for_aec_agc")]
+        [DllImport(nameDllC, EntryPoint = "sl_set_roi_for_aec_agc")]
         private static extern int dllz_set_roi_for_aec_agc(int id, int side, sl.Rect roi,bool reset);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_roi_for_aec_agc")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_roi_for_aec_agc")]
         private static extern int dllz_get_roi_for_aec_agc(int id, int side, ref sl.Rect roi);
 
 
-        [DllImport(nameDll, EntryPoint = "sl_get_input_type")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_input_type")]
         private static extern int dllz_get_input_type(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_camera_fps")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_camera_fps")]
         private static extern float dllz_get_camera_fps(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_is_opened")]
+        [DllImport(nameDllC, EntryPoint = "sl_is_opened")]
         private static extern bool dllz_is_opened(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_width")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_width")]
         private static extern int dllz_get_width(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_height")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_height")]
         private static extern int dllz_get_height(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_update_self_calibration")]
+        [DllImport(nameDllC, EntryPoint = "sl_update_self_calibration")]
         private static extern void dllz_update_self_calibration(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_calibration_parameters")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_calibration_parameters")]
         private static extern IntPtr dllz_get_calibration_parameters(int cameraID, bool raw);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_sensors_configuration")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_sensors_configuration")]
         private static extern IntPtr dllz_get_sensors_configuration(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_camera_model")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_camera_model")]
         private static extern int dllz_get_camera_model(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_camera_firmware")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_camera_firmware")]
         private static extern int dllz_get_camera_firmware(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_sensors_firmware")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_sensors_firmware")]
         private static extern int dllz_get_sensors_firmware(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_zed_serial")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_zed_serial")]
         private static extern int dllz_get_zed_serial(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_camera_imu_transform")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_camera_imu_transform")]
         private static extern void dllz_get_camera_imu_transform(int cameraID, out Vector3 translation, out Quaternion rotation);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_camera_timestamp")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_camera_timestamp")]
         private static extern ulong dllz_get_image_timestamp(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_current_Timestamp")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_current_Timestamp")]
         private static extern ulong dllz_get_current_timestamp(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_frame_dropped_count")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_frame_dropped_count")]
         private static extern uint dllz_get_frame_dropped_count(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_frame_dropped_percent")]
+        [DllImport(nameDllMR, EntryPoint = "sl_get_frame_dropped_percent")]
         private static extern float dllz_get_frame_dropped_percent(int cameraID);
 /*
         [DllImport(nameDll, EntryPoint = "sl_get_init_parameters")]
@@ -510,16 +515,16 @@ namespace sl
          * SVO control functions.
          */
 
-        [DllImport(nameDll, EntryPoint = "sl_set_svo_position")]
+        [DllImport(nameDllC, EntryPoint = "sl_set_svo_position")]
         private static extern void dllz_set_svo_position(int cameraID, int frame);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_svo_number_of_frames")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_svo_number_of_frames")]
         private static extern int dllz_get_svo_number_of_frames(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_svo_position")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_svo_position")]
         private static extern int dllz_get_svo_position(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_svo_position_at_timestamp")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_svo_position_at_timestamp")]
         private static extern int dllz_get_svo_position_at_timestamp(int cameraID, ulong timestamp);
 
         /*
@@ -532,225 +537,227 @@ namespace sl
        private static extern void dllz_set_depth_max_range_value(int cameraID, float distanceMax);
        */
 
-        [DllImport(nameDll, EntryPoint = "sl_get_confidence_threshold")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_confidence_threshold")]
         private static extern int dllz_get_confidence_threshold(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_depth_max_range_value")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_depth_max_range_value")]
         private static extern float dllz_get_depth_max_range_value(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_depth_value")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_depth_value")]
         private static extern float dllz_get_depth_value(int cameraID, uint x, uint y);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_distance_value")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_distance_value")]
         private static extern float dllz_get_distance_value(int cameraID, uint x, uint y);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_normal_value")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_normal_value")]
         private static extern bool dllz_get_normal_value(int cameraID, uint x, uint y, out Vector4 value);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_xyz_value")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_xyz_value")]
         private static extern bool dllz_get_xyz_value(int cameraID, uint x, uint y, out Vector4 value);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_depth_min_range_value")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_depth_min_range_value")]
         private static extern float dllz_get_depth_min_range_value(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_current_min_max_depth")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_current_min_max_depth")]
         private static extern float dllz_get_current_min_max_depth(int cameraID, ref float min, ref float max);
 
 
         /*
          * Motion Tracking functions.
          */
-        [DllImport(nameDll, EntryPoint = "sl_enable_positional_tracking_unity")]
-        private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, 
-            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = sl.POSITIONAL_TRACKING_MODE.GEN_1, System.Text.StringBuilder aeraFilePath = null);
+        [DllImport(nameDllC, EntryPoint = "sl_enable_positional_tracking")]
+        private static extern int dllz_enable_tracking(
+            int cameraID,
+            ref PositionalTrackingParameters positionalTrackingParameters,
+            System.Text.StringBuilder aeraFilePath = null);
 
-        [DllImport(nameDll, EntryPoint = "sl_disable_positional_tracking")]
+        [DllImport(nameDllC, EntryPoint = "sl_disable_positional_tracking")]
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
 
-        [DllImport(nameDll, EntryPoint = "sl_is_positional_tracking_enabled")]
+        [DllImport(nameDllC, EntryPoint = "sl_is_positional_tracking_enabled")]
         private static extern bool dllz_is_positional_tracking_enabled(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_save_area_map")]
+        [DllImport(nameDllC, EntryPoint = "sl_save_area_map")]
         private static extern int dllz_save_area_map(int cameraID, System.Text.StringBuilder path);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_position_data")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_position_data")]
         private static extern int dllz_get_position_data(int cameraID, ref Pose pose, int reference_frame);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_positional_tracking_status")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_positional_tracking_status")]
         private static extern IntPtr dllz_get_positional_tracking_status(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_position")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_position")]
         private static extern int dllz_get_position(int cameraID, ref Quaternion quat, ref Vector3 vec, int reference_frame);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_position_at_target_frame")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_position_at_target_frame")]
         private static extern int dllz_get_position_at_target_frame(int cameraID, ref Quaternion quaternion, ref Vector3 translation, ref Quaternion targetQuaternion, ref Vector3 targetTranslation, int reference_frame);
 
-        [DllImport(nameDll, EntryPoint = "sl_transform_pose")]
+        [DllImport(nameDllC, EntryPoint = "sl_transform_pose")]
         private static extern void dllz_transform_pose(ref Quaternion quaternion, ref Vector3 translation, ref Quaternion targetQuaternion, ref Vector3 targetTranslation);
 
-        [DllImport(nameDll, EntryPoint = "sl_reset_positional_tracking")]
+        [DllImport(nameDllC, EntryPoint = "sl_reset_positional_tracking")]
         private static extern int dllz_reset_tracking(int cameraID, Quaternion rotation, Vector3 translation);
 
-        [DllImport(nameDll, EntryPoint = "sl_reset_tracking_with_offset")]
+        [DllImport(nameDllC, EntryPoint = "sl_reset_tracking_with_offset")]
         private static extern int dllz_reset_tracking_with_offset(int cameraID, Quaternion rotation, Vector3 translation, Quaternion offsetQuaternion, Vector3 offsetTranslation);
 
-        [DllImport(nameDll, EntryPoint = "sl_estimate_initial_position")]
+        [DllImport(nameDllC, EntryPoint = "sl_estimate_initial_position")]
         private static extern int dllz_estimate_initial_position(int cameraID, ref Quaternion quaternion, ref Vector3 translation, int countSuccess, int countTimeout);
 
-        [DllImport(nameDll, EntryPoint = "sl_set_imu_prior_orientation")]
+        [DllImport(nameDllC, EntryPoint = "sl_set_imu_prior_orientation")]
         private static extern int dllz_set_imu_prior_orientation(int cameraID, Quaternion rotation);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_internal_imu_orientation")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_internal_imu_orientation")]
         private static extern int dllz_get_internal_imu_orientation(int cameraID, ref Quaternion rotation, int reference_time);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_internal_sensors_data")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_internal_sensors_data")]
         private static extern int dllz_get_internal_sensors_data(int cameraID, ref SensorsData imuData, int reference_time);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_area_export_state")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_area_export_state")]
         private static extern int dllz_get_area_export_state(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_set_region_of_interest")]
+        [DllImport(nameDllC, EntryPoint = "sl_set_region_of_interest")]
         private static extern int dllz_set_region_of_interest(int cameraID, IntPtr roiMask, bool[] module);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_region_of_interest")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_region_of_interest")]
         private static extern int dllz_get_region_of_interest(int cameraID, IntPtr roiMask, int width, int height, MODULE module);
 
-        [DllImport(nameDll, EntryPoint = "sl_start_region_of_interest_auto_detection")]
+        [DllImport(nameDllC, EntryPoint = "sl_start_region_of_interest_auto_detection")]
         private static extern int dllz_start_region_of_interest_auto_detection(int cameraID, ref RegionOfInterestParameters roiParams);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_region_of_interest_auto_detection_status")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_region_of_interest_auto_detection_status")]
         private static extern int dllz_get_region_of_interest_auto_detection_status(int cameraID);
 
         /*
         * Spatial Mapping functions.
         */
-        [DllImport(nameDll, EntryPoint = "sl_enable_spatial_mapping_unity")]
+        [DllImport(nameDllC, EntryPoint = "sl_enable_spatial_mapping_unity")]
         private static extern int dllz_enable_spatial_mapping(int cameraID, int type, float resolution_meter, float max_range_meter, int saveTexture,int max_memory_usage);
 
-        [DllImport(nameDll, EntryPoint = "sl_disable_spatial_mapping")]
+        [DllImport(nameDllC, EntryPoint = "sl_disable_spatial_mapping")]
         private static extern void dllz_disable_spatial_mapping(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_spatial_mapping_parameters")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_spatial_mapping_parameters")]
         private static extern IntPtr dllz_get_spatial_mapping_parameters(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_pause_spatial_mapping")]
+        [DllImport(nameDllC, EntryPoint = "sl_pause_spatial_mapping")]
         private static extern void dllz_pause_spatial_mapping(int cameraID, bool status);
 
-        [DllImport(nameDll, EntryPoint = "sl_request_mesh_async")]
+        [DllImport(nameDllC, EntryPoint = "sl_request_mesh_async")]
         private static extern void dllz_request_mesh_async(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_mesh_request_status_async")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_mesh_request_status_async")]
         private static extern int dllz_get_mesh_request_status_async(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_update_mesh")]
+        [DllImport(nameDllC, EntryPoint = "sl_update_mesh")]
         private static extern int dllz_update_mesh(int cameraID, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int  nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int nbSubmesh);
 
-        [DllImport(nameDll, EntryPoint = "sl_retrieve_mesh")]
+        [DllImport(nameDllC, EntryPoint = "sl_retrieve_mesh")]
         private static extern int dllz_retrieve_mesh(int cameraID, Vector3[] vertices, int[] triangles, int nbSubmesh, Vector2[] uvs, IntPtr textures);
 
-        [DllImport(nameDll, EntryPoint = "sl_update_fused_point_cloud")]
+        [DllImport(nameDllC, EntryPoint = "sl_update_fused_point_cloud")]
         private static extern int dllz_update_fused_point_cloud(int cameraID,  ref int pbPoints);
 
-        [DllImport(nameDll, EntryPoint = "sl_retrieve_fused_point_cloud")]
+        [DllImport(nameDllC, EntryPoint = "sl_retrieve_fused_point_cloud")]
         private static extern int dllz_retrieve_fused_point_cloud(int cameraID, Vector4[] points);
 
-        [DllImport(nameDll, EntryPoint = "sl_save_mesh")]
+        [DllImport(nameDllC, EntryPoint = "sl_save_mesh")]
         private static extern bool dllz_save_mesh(int cameraID, string filename, MESH_FILE_FORMAT format);
 
-        [DllImport(nameDll, EntryPoint = "sl_save_point_cloud")]
+        [DllImport(nameDllC, EntryPoint = "sl_save_point_cloud")]
         private static extern bool dllz_save_point_cloud(int cameraID, string filename, MESH_FILE_FORMAT format);
 
-        [DllImport(nameDll, EntryPoint = "sl_load_mesh")]
+        [DllImport(nameDllC, EntryPoint = "sl_load_mesh")]
         private static extern bool dllz_load_mesh(int cameraID, string filename, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int nbMaxSubmesh, int[] textureSize = null);
 
-        [DllImport(nameDll, EntryPoint = "sl_apply_texture")]
+        [DllImport(nameDllC, EntryPoint = "sl_apply_texture")]
         private static extern bool dllz_apply_texture(int cameraID, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int[] textureSize, int nbSubmesh);
 
-        [DllImport(nameDll, EntryPoint = "sl_filter_mesh")]
+        [DllImport(nameDllC, EntryPoint = "sl_filter_mesh")]
         private static extern bool dllz_filter_mesh(int cameraID, FILTER meshFilter, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int nbSubmesh);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_spatial_mapping_state")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_spatial_mapping_state")]
         private static extern int dllz_get_spatial_mapping_state(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_spatial_mapping_merge_chunks")]
+        [DllImport(nameDllC, EntryPoint = "sl_spatial_mapping_merge_chunks")]
         private static extern void dllz_spatial_mapping_merge_chunks(int cameraID, int numberFaces, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int nbSubmesh);
 
-        [DllImport(nameDll, EntryPoint = "sl_spatial_mapping_get_gravity_estimation")]
+        [DllImport(nameDllC, EntryPoint = "sl_spatial_mapping_get_gravity_estimation")]
         private static extern void dllz_spatial_mapping_get_gravity_estimation(int cameraID, ref Vector3 v);
 
         /*
          * Plane Detection functions (starting v2.4)
          */
-        [DllImport(nameDll, EntryPoint = "sl_find_floor_plane")]
+        [DllImport(nameDllC, EntryPoint = "sl_find_floor_plane")]
         private static extern IntPtr dllz_find_floor_plane(int cameraID, out Quaternion rotation, out Vector3 translation, Quaternion priorQuaternion, Vector3 priorTranslation);
 
-        [DllImport(nameDll, EntryPoint = "sl_find_plane_at_hit")]
+        [DllImport(nameDllC, EntryPoint = "sl_find_plane_at_hit")]
         private static extern IntPtr dllz_find_plane_at_hit(int cameraID, Vector2 HitPixel, ref sl_PlaneDetectionParameters plane_params, bool refine);
 
-        [DllImport(nameDll, EntryPoint = "sl_convert_floorplane_to_mesh")]
+        [DllImport(nameDllC, EntryPoint = "sl_convert_floorplane_to_mesh")]
         private static extern int dllz_convert_floorplane_to_mesh(int cameraID, Vector3[] vertices, int[] triangles, out int numVertices, out int numTriangles);
 
-        [DllImport(nameDll, EntryPoint = "sl_convert_hitplane_to_mesh")]
+        [DllImport(nameDllC, EntryPoint = "sl_convert_hitplane_to_mesh")]
         private static extern int dllz_convert_hitplane_to_mesh(int cameraID, Vector3[] vertices, int[] triangles, out int numVertices, out int numTriangles);
 
 
         /*
          * Streaming Module functions (starting v2.8)
          */
-        [DllImport(nameDll, EntryPoint = "sl_enable_streaming")]
+        [DllImport(nameDllC, EntryPoint = "sl_enable_streaming")]
         private static extern int dllz_enable_streaming(int cameraID, sl.STREAMING_CODEC codec, uint bitrate, ushort port, int gopSize, int adaptativeBitrate,int chunk_size,int target_fps);
 
-        [DllImport(nameDll, EntryPoint = "sl_is_streaming_enabled")]
+        [DllImport(nameDllC, EntryPoint = "sl_is_streaming_enabled")]
         private static extern int dllz_is_streaming_enabled(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_disable_streaming")]
+        [DllImport(nameDllC, EntryPoint = "sl_disable_streaming")]
         private static extern void dllz_disable_streaming(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_streaming_parameters")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_streaming_parameters")]
         private static extern IntPtr dllz_get_streaming_parameters(int cameraID);
 
         /*
         * Objects Detection functions (starting v3.0)
         */
 
-        [DllImport(nameDll, EntryPoint = "sl_check_AI_model_status")]
+        [DllImport(nameDllC, EntryPoint = "sl_check_AI_model_status")]
         private static extern IntPtr dllz_check_AI_model_status(AI_MODELS model, int gpu_id);
 
-        [DllImport(nameDll, EntryPoint = "sl_optimize_AI_model")]
+        [DllImport(nameDllC, EntryPoint = "sl_optimize_AI_model")]
         private static extern int dllz_optimize_AI_model(AI_MODELS model, int gpu_id);
 
 
-        [DllImport(nameDll, EntryPoint = "sl_enable_object_detection")]
+        [DllImport(nameDllC, EntryPoint = "sl_enable_object_detection")]
         private static extern int dllz_enable_object_detection(int cameraID, ref ObjectDetectionParameters od_params);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_object_detection_parameters")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_object_detection_parameters")]
         private static extern IntPtr dllz_get_object_detection_parameters(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_disable_object_detection")]
+        [DllImport(nameDllC, EntryPoint = "sl_disable_object_detection")]
         private static extern void dllz_disable_object_detection(int cameraID, uint instanceID, bool force_disable_all_instances);
 
-        [DllImport(nameDll, EntryPoint = "sl_ingest_custom_box_objects")]
+        [DllImport(nameDllC, EntryPoint = "sl_ingest_custom_box_objects")]
         private static extern int dllz_ingest_custom_box_objects(int cameraID, int nb_objects, CustomBoxObjectData[] objects_in, uint instanceID);
 
-        [DllImport(nameDll, EntryPoint = "sl_retrieve_objects")]
+        [DllImport(nameDllC, EntryPoint = "sl_retrieve_objects")]
         private static extern int dllz_retrieve_objects_data(int cameraID, ref ObjectDetectionRuntimeParameters od_params, ref Objects objs, uint instanceID);
 
-        [DllImport(nameDll, EntryPoint = "sl_enable_body_tracking")]
+        [DllImport(nameDllC, EntryPoint = "sl_enable_body_tracking")]
         private static extern int dllz_enable_body_tracking(int cameraID, ref BodyTrackingParameters bt_params);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_object_detection_parameters")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_object_detection_parameters")]
         private static extern IntPtr dllz_get_body_tracking_parameters(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_disable_body_tracking")]
+        [DllImport(nameDllC, EntryPoint = "sl_disable_body_tracking")]
         private static extern void dllz_disable_body_tracking(int cameraID, uint instanceID, bool force_disable_all_instances);
 
-        [DllImport(nameDll, EntryPoint = "sl_retrieve_bodies")]
+        [DllImport(nameDllC, EntryPoint = "sl_retrieve_bodies")]
         private static extern int dllz_retrieve_bodies_data(int cameraID, ref BodyTrackingRuntimeParameters bt_params, ref Bodies bodies, uint instanceID);
 
-        [DllImport(nameDll, EntryPoint = "sl_update_objects_batch")]
+        [DllImport(nameDllC, EntryPoint = "sl_update_objects_batch")]
         private static extern int dllz_update_objects_batch(int cameraID, out int nbBatches);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_objects_batch")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_objects_batch")]
         private static extern int dllz_get_objects_batch_data(int cameraID, int batch_index, ref int numData, ref int id, ref OBJECT_CLASS label, ref OBJECT_SUBCLASS sublabel, ref TRACKING_STATE trackingState,
             [In, Out] Vector3[] position, [In, Out] float[,] positionCovariances, [In, Out] Vector3[] velocities, [In, Out] ulong[] timestamps, [In, Out] Vector2[,] boundingBoxes2D, [In, Out] Vector3[,] boundingBoxes,
             [In, Out] float[] confidences, [In, Out] OBJECT_ACTION_STATE[] actionStates, [In, Out] Vector2[,] headBoundingBoxes2D, [In, Out] Vector3[,] headBoundingBoxes, [In, Out] Vector3[] headPositions);
@@ -758,44 +765,44 @@ namespace sl
         /*
         * Save utils function
         */
-        [DllImport(nameDll, EntryPoint = "sl_save_current_image")]
+        [DllImport(nameDllC, EntryPoint = "sl_save_current_image")]
         private static extern int dllz_save_current_image(int cameraID, VIEW view,string filename);
 
-        [DllImport(nameDll, EntryPoint = "sl_save_current_depth")]
+        [DllImport(nameDllC, EntryPoint = "sl_save_current_depth")]
         private static extern int dllz_save_current_depth(int cameraID, int side, string filename);
 
-        [DllImport(nameDll, EntryPoint = "sl_save_current_point_cloud")]
+        [DllImport(nameDllC, EntryPoint = "sl_save_current_point_cloud")]
         private static extern int dllz_save_current_point_cloud(int cameraID, int side,  string filename);
 
         /*
          * Specific plugin functions
          */
-        [DllImport(nameDll, EntryPoint = "sl_check_plugin")]
+        [DllImport(nameDllMR, EntryPoint = "sl_check_plugin")]
         private static extern int dllz_check_plugin(int major, int minor);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_sdk_version")]
+        [DllImport(nameDllC, EntryPoint = "sl_get_sdk_version")]
         private static extern IntPtr dllz_get_sdk_version();
 
         /*
          * Change the coordinate system of a transform matrix.
         */
-        [DllImport(nameDll, EntryPoint = "sl_convert_coordinate_system")]
+        [DllImport(nameDllC, EntryPoint = "sl_convert_coordinate_system")]
         private static extern int dllz_convert_coordinate_system(ref Quaternion rotation, ref Vector3 translation, sl.COORDINATE_SYSTEM coordSystemSrc, sl.COORDINATE_SYSTEM coordSystemDest);
 
-        [DllImport(nameDll, EntryPoint = "sl_compute_offset")]
+        [DllImport(nameDllMR, EntryPoint = "sl_compute_offset")]
         private static extern void dllz_compute_offset(float[] A, float[] B, int nbVectors, float[] C);
 
-        [DllImport(nameDll, EntryPoint = "sl_compute_optical_center_offsets")]
+        [DllImport(nameDllMR, EntryPoint = "sl_compute_optical_center_offsets")]
         private static extern System.IntPtr dllz_compute_optical_center_offsets(ref Vector4 calibLeft, ref Vector4 calibRight, int width, int height, float planeDistance);
 
 
         /*
          * Retreieves used by mat
          */
-        [DllImport(nameDll, EntryPoint = "sl_retrieve_measure")]
+        [DllImport(nameDllC, EntryPoint = "sl_retrieve_measure")]
         private static extern int dllz_retrieve_measure(int cameraID, System.IntPtr ptr, int type, int mem, int width, int height);
 
-        [DllImport(nameDll, EntryPoint = "sl_retrieve_image")]
+        [DllImport(nameDllC, EntryPoint = "sl_retrieve_image")]
         private static extern int dllz_retrieve_image(int cameraID, System.IntPtr ptr, int type, int mem, int width, int height);
 
         #endregion
@@ -1466,29 +1473,50 @@ namespace sl
             {
                 case DEPTH_MODE.NEURAL_PLUS:
                     return AI_MODELS.NEURAL_PLUS_DEPTH;
-                    break;
                 case DEPTH_MODE.NEURAL:
                     return AI_MODELS.NEURAL_DEPTH;
-                    break;
                 default:
                     return AI_MODELS.LAST;
             }
         }
 
         /// <summary>
-        /// Initialize and Start the tracking functions
+        /// Initialize and starts the positional tracking module.
         /// </summary>
-        /// <param name="quat"> rotation used as initial world transform. By default it should be identity.</param>
-        /// <param name="vec"> translation used as initial world transform. By default it should be identity.</param>
-        /// <param name="enableSpatialMemory">  (optional) define if spatial memory is enable or not.</param>
-        /// <param name="areaFilePath"> (optional) file of spatial memory file that has to be loaded to relocate in the scene.</param>
+        /// <param name="positionalTrackingParameters">Positional Tracking parameters to use.</param>
+        /// <param name="areaFilePath">Path of an area localization file that describes the surroundings (saved from a previous tracking session).</param>
         /// <returns></returns>
-        public sl.ERROR_CODE EnableTracking(ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = true, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, bool trackingIsStatic = false,
-            bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = POSITIONAL_TRACKING_MODE.GEN_1, string areaFilePath = "")
+        public sl.ERROR_CODE EnableTracking(ref PositionalTrackingParameters positionalTrackingParameters, string areaFilePath = "")
         {
             sl.ERROR_CODE trackingStatus = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
-            trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(CameraID, ref quat, ref vec, enableSpatialMemory, enablePoseSmoothing, enableFloorAlignment, 
-                trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, mode, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
+            trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(
+                CameraID, ref positionalTrackingParameters,
+                new System.Text.StringBuilder(areaFilePath, areaFilePath.Length)
+                );
+
+            return trackingStatus;
+        }
+        public sl.ERROR_CODE EnableTracking(
+            ref Quaternion quat,
+            ref Vector3 vec,
+            bool enableSpatialMemory = true,
+            bool enablePoseSmoothing = false,
+            bool enableFloorAlignment = false,
+            bool trackingIsStatic = false,
+            bool enableIMUFusion = true,
+            float depthMinRange = -1.0f,
+            bool setGravityAsOrigin = true,
+            sl.POSITIONAL_TRACKING_MODE mode = POSITIONAL_TRACKING_MODE.GEN_1,
+            string areaFilePath = "")
+        {
+            sl.ERROR_CODE trackingStatus = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
+
+            PositionalTrackingParameters positionalTrackingParameters = new PositionalTrackingParameters(quat, vec, enableSpatialMemory, enablePoseSmoothing, enableFloorAlignment, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, mode);
+
+            trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(
+                CameraID, ref positionalTrackingParameters,
+                new System.Text.StringBuilder(areaFilePath,
+                areaFilePath.Length));
             return trackingStatus;
         }
 
@@ -2173,7 +2201,7 @@ namespace sl
         /// </summary>
         public bool IsCameraSettingSupported(CAMERA_SETTINGS setting)
         {
-            return dllz_is_video_setting_supported(CameraID, (int)setting);
+            return dllz_is_camera_setting_supported(CameraID, (int)setting);
         }
 
         /// <summary>
@@ -2186,7 +2214,7 @@ namespace sl
         {
             AssertCameraIsReady();
             //cameraSettingsManager.SetCameraSettings(CameraID, settings, value);
-            dllz_set_video_settings(CameraID, (int)settings, value);
+            dllz_set_camera_settings(CameraID, (int)settings, value);
         }
 
         /// <summary>
@@ -2196,7 +2224,7 @@ namespace sl
         public sl.ERROR_CODE GetCameraSettings(CAMERA_SETTINGS settings, ref int value)
         {
             AssertCameraIsReady();
-            return (sl.ERROR_CODE)dllz_get_video_settings(CameraID, (int)settings, ref value);
+            return (sl.ERROR_CODE)dllz_get_camera_settings(CameraID, (int)settings, ref value);
             //return cameraSettingsManager.GetCameraSettings(CameraID, settings);
         }
 

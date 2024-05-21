@@ -177,133 +177,133 @@ namespace sl
         };
 
         #region DLL Calls
-        const string nameDll = sl.ZEDCommon.NameDLL;
+        const string nameDllC = sl.ZEDCommon.NameCDLL;
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_create_new")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_create_new")]
         private static extern IntPtr dllz_mat_create_new(int width, int height, int type, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_create_new_empty")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_create_new_empty")]
         private static extern IntPtr dllz_mat_create_new_empty();
 
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_is_init")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_is_init")]
         private static extern bool dllz_mat_is_init(System.IntPtr ptr);
-        [DllImport(nameDll, EntryPoint = "sl_mat_free")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_free")]
         private static extern bool dllz_mat_free(System.IntPtr ptr, int type);
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_infos")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_infos")]
         private static extern bool dllz_mat_get_infos(System.IntPtr ptr, byte[] buffer);
 
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_value_float")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_value_float")]
         private static extern int dllz_mat_get_value_float(System.IntPtr ptr, int x, int y, out float value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_value_float2")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_value_float2")]
         private static extern int dllz_mat_get_value_float2(System.IntPtr ptr, int x, int y, out float2 value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_value_float3")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_value_float3")]
         private static extern int dllz_mat_get_value_float3(System.IntPtr ptr, int x, int y, out float3 value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_value_float4")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_value_float4")]
         private static extern int dllz_mat_get_value_float4(System.IntPtr ptr, int x, int y, out float4 value, int mem);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_value_uchar")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_value_uchar")]
         private static extern int dllz_mat_get_value_uchar(System.IntPtr ptr, int x, int y, out byte value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_value_uchar2")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_value_uchar2")]
         private static extern int dllz_mat_get_value_uchar2(System.IntPtr ptr, int x, int y, out char2 value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_value_uchar3")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_value_uchar3")]
         private static extern int dllz_mat_get_value_uchar3(System.IntPtr ptr, int x, int y, out char3 value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_value_uchar4")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_value_uchar4")]
         private static extern int dllz_mat_get_value_uchar4(System.IntPtr ptr, int x, int y, out char4 value, int mem);
 
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_value_float")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_value_float")]
         private static extern int dllz_mat_set_value_float(System.IntPtr ptr, int x, int y, float value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_value_float2")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_value_float2")]
         private static extern int dllz_mat_set_value_float2(System.IntPtr ptr, int x, int y, float2 value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_value_float3")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_value_float3")]
         private static extern int dllz_mat_set_value_float3(System.IntPtr ptr, int x, int y, float3 value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_value_float4")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_value_float4")]
         private static extern int dllz_mat_set_value_float4(System.IntPtr ptr, int x, int y, float4 value, int mem);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_value_uchar")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_value_uchar")]
         private static extern int dllz_mat_set_value_uchar(System.IntPtr ptr, int x, int y, byte value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_value_uchar2")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_value_uchar2")]
         private static extern int dllz_mat_set_value_uchar2(System.IntPtr ptr, int x, int y, char2 value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_value_uchar3")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_value_uchar3")]
         private static extern int dllz_mat_set_value_uchar3(System.IntPtr ptr, int x, int y, char3 value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_value_uchar4")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_value_uchar4")]
         private static extern int dllz_mat_set_value_uchar4(System.IntPtr ptr, int x, int y, char4 value, int mem);
 
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_to_float")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_to_float")]
         private static extern int dllz_mat_set_to_float(System.IntPtr ptr, float value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_to_float2")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_to_float2")]
         private static extern int dllz_mat_set_to_float2(System.IntPtr ptr, float2 value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_to_float3")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_to_float3")]
         private static extern int dllz_mat_set_to_float3(System.IntPtr ptr, float3 value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_to_float4")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_to_float4")]
         private static extern int dllz_mat_set_to_float4(System.IntPtr ptr, float4 value, int mem);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_to_uchar")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_to_uchar")]
         private static extern int dllz_mat_set_to_uchar(System.IntPtr ptr, byte value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_to_uchar2")]          
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_to_uchar2")]          
         private static extern int dllz_mat_set_to_uchar2(System.IntPtr ptr, char2 value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_to_uchar3")]          
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_to_uchar3")]          
         private static extern int dllz_mat_set_to_uchar3(System.IntPtr ptr, char3 value, int mem);
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_to_uchar4")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_to_uchar4")]
         private static extern int dllz_mat_set_to_uchar4(System.IntPtr ptr, char4 value, int mem);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_update_cpu_from_gpu")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_update_cpu_from_gpu")]
         private static extern int dllz_mat_update_cpu_from_gpu(System.IntPtr ptr);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_update_gpu_from_cpu")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_update_gpu_from_cpu")]
         private static extern int dllz_mat_update_gpu_from_cpu(System.IntPtr ptr);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_read")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_read")]
         private static extern int dllz_mat_read(System.IntPtr ptr, string filePath);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_write")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_write")]
         private static extern int dllz_mat_write(System.IntPtr ptr, string filePath,int compression_level);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_copy_to")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_copy_to")]
         private static extern int dllz_mat_copy_to(System.IntPtr ptr, System.IntPtr dest, int cpyType);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_width")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_width")]
         private static extern int dllz_mat_get_width(System.IntPtr ptr);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_height")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_height")]
         private static extern int dllz_mat_get_height(System.IntPtr ptr);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_channels")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_channels")]
         private static extern int dllz_mat_get_channels(System.IntPtr ptr);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_memory_type")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_memory_type")]
         private static extern int dllz_mat_get_memory_type(System.IntPtr ptr);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_pixel_bytes")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_pixel_bytes")]
         private static extern int dllz_mat_get_pixel_bytes(System.IntPtr ptr);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_step")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_step")]
         private static extern int dllz_mat_get_step(System.IntPtr ptr);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_step_bytes")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_step_bytes")]
         private static extern int dllz_mat_get_step_bytes(System.IntPtr ptr);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_width_bytes")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_width_bytes")]
         private static extern int dllz_mat_get_width_bytes(System.IntPtr ptr);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_is_memory_owner")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_is_memory_owner")]
         private static extern bool dllz_mat_is_memory_owner(System.IntPtr ptr);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_resolution")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_resolution")]
         private static extern sl.Resolution dllz_mat_get_resolution(System.IntPtr ptr);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_alloc")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_alloc")]
         private static extern void dllz_mat_alloc(System.IntPtr ptr, int width, int height, int type, int mem);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_set_from")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_set_from")]
         private static extern int dllz_mat_set_from(System.IntPtr ptr, System.IntPtr source, int copyType);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_get_ptr")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_get_ptr")]
         private static extern System.IntPtr dllz_mat_get_ptr(System.IntPtr ptr, int mem);
 
-        [DllImport(nameDll, EntryPoint = "sl_mat_clone")]
+        [DllImport(nameDllC, EntryPoint = "sl_mat_clone")]
         private static extern void dllz_mat_clone(System.IntPtr ptr, System.IntPtr ptrSource);
 
         #endregion

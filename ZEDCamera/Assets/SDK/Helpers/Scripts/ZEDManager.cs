@@ -2663,11 +2663,16 @@ public class ZEDManager : MonoBehaviour
                 pathSpatialMemory = "";
             }
 
-            sl.ERROR_CODE err = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
-                enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode, pathSpatialMemory));
+            PositionalTrackingParameters positionalTrackingParameters = new PositionalTrackingParameters(
+                zedOrientation, zedPosition, enableSpatialMemory, 
+                enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic, 
+                enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode);
+
+            sl.ERROR_CODE err = (zedCamera.EnableTracking(ref positionalTrackingParameters, pathSpatialMemory));
 
             //Now enable the tracking with the proper parameters.
-            if (!(enableTracking = (err == sl.ERROR_CODE.SUCCESS)))
+            enableTracking = (err == sl.ERROR_CODE.SUCCESS);
+            if (!enableTracking)
             {
                 throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
             }
@@ -3878,9 +3883,13 @@ public class ZEDManager : MonoBehaviour
             // If tracking has been switched on
             if (zedCamera.IsCameraReady && !isTrackingEnable && enableTracking)
             {
+                PositionalTrackingParameters positionalTrackingParameters = new PositionalTrackingParameters(
+                    initialRotation, initialPosition, enableSpatialMemory, 
+                    enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic, 
+                    enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode);
+
                 //Enables tracking and initializes the first position of the camera.
-                if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic,
-                    enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
+                if (!(enableTracking = (zedCamera.EnableTracking(ref positionalTrackingParameters, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
                 {
                     isZEDTracked = false;
                     throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
