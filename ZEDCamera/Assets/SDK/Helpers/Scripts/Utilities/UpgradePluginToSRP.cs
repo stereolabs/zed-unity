@@ -103,7 +103,7 @@ public static class UpgradePluginToSRP
             }
             else
             {
-                Debug.LogWarning("Trying to convert to custom SRP, please update materials manually");
+                Debug.LogWarning("Green Screen: Failed to convert to custom SRP, please update materials manually.");
             }
         }
         else
@@ -152,7 +152,7 @@ public static class UpgradePluginToSRP
             }
             else
             {
-                Debug.LogWarning("Trying to convert to custom SRP, please update materials manually");
+                Debug.LogWarning("Planetarium: Failed to convert to custom SRP, please update materials manually.\nSet the material of the \"sun\" object to Sun_URP.");
             }
         }
         else

@@ -35,10 +35,19 @@ This package brings the features of the <a href="https://www.stereolabs.com/stor
 
 To develop applications in Unity with your ZED, you'll need the following things:
 
-- Download and install the [ZED SDK](https://www.stereolabs.com/developers/release/).
-- Download the [ZED Plugin for Unity](https://github.com/stereolabs/zed-unity/releases).
-- Import the *Zed_Unity_Plugin_V4.0.X.unitypackage* into Unity.
-  - *If you get an error saying `The type or namespace name ‘Management’ does not exist in the namespace ‘UnityEngine.XR’`, please go to Project Settings -> XR Plugin Management and Install the XR Plugin Management system by clicking the button.* 
+- Download and install the [latest ZED SDK](https://www.stereolabs.com/developers/release/).
+- Install the ZED SDK plugin through Unity's package manager:
+  - Navigate to Window -> Package Manager in the Editor
+  - Click the "+" button at the top left and select "Add package from git URL..."
+  - Copy this URL into the field and hit Add:
+```
+https://github.com/stereolabs/zed-unity.git?path=/ZEDCamera/Assets
+```
+  - Wait for the package to install (it can take some time, depending on your connection)
+- Install the samples you want to try out/use through the Package Manager
+  - Select the "ZED SDK" package
+  - Go to the "Samples" tab and import the samples you want.
+  - Consider importing the Assembly Definition, it potentially improves the compile time and editor responsiveness at no cost.
 - Read the [Basic Concepts](https://www.stereolabs.com/docs/unity/basic-concepts/) and [Build Your First AR/MR App](https://www.stereolabs.com/docs/unity/creating-mixed-reality-app/) guides to get started.
 - Explore the [Samples](https://www.stereolabs.com/docs/unity/samples/) included in the plugin.
 - The [Main Scripts](https://www.stereolabs.com/docs/unity/main-scripts/) page of the documentation introduces the important scripts of the plugin and their parameters.
@@ -52,10 +61,10 @@ After importing the plugin, pick and try some of the example scenes. Each is des
 The overview is available in the [documentation for the ZED Unity plugin](https://www.stereolabs.com/docs/unity/samples/).
 
 - [Body Tracking](https://www.stereolabs.com/docs/unity/body-tracking/): Animate a 3D avatar based on real-people movements using the ZED SDK [Body Tracking](https://www.stereolabs.com/docs/body-tracking/) module.
-- [Dark Room](https://www.stereolabs.com/docs/unity/lighting/): Your office is now a night club! Explore the lighting features coupled to the depth sensing to cast a laser show on your walls.
+- [Dark Room](https://www.stereolabs.com/docs/unity/lighting/): Your office is now a nightclub! Explore the lighting features coupled to the depth sensing to cast a laser show on your walls.
 - [Drone Shooter](https://www.stereolabs.com/docs/unity/samples/#drone-battle): Defend yourself from drones that spawn around your room and shoot at you. Block lasers with your hand, and shoot back with the spacebar, or VR controllers if using the Oculus Integration or SteamVR plugin.
 - [Green Screen](https://www.stereolabs.com/docs/unity/green-screen-vr/): Aim your ZED at a greenscreen and hit Play to see your subject standing in a small town in the desert. You’ll see that the nearby crates still have all the proper occlusion, but the greenscreen background is replaced with the virtual background.
-- [Movie Screen](https://www.stereolabs.com/docs/unity/samples/#movie-screen): Simple AR sample, playing a movie on a movable, scalable 3D screen integrated to the real-world. Demonstrates how 2D content can easily be displayed in a 3D, mixed reality scene.
+- [Movie Screen](https://www.stereolabs.com/docs/unity/samples/#movie-screen): Simple AR sample, playing a movie on a movable, scalable 3D screen integrated to the real-world. Demonstrates how 2D content can easily be displayed in a 3D, mixed-reality scene.
 - [Multicam](./ZEDCamera/Assets/ZED/Examples/MultiCam/): Integrate data from multiple ZED cameras in the same scene, at the same time.
 - [Object Detection](https://www.stereolabs.com/docs/unity/object-detection/): Detect objects and people bounding boxes using the ZED SDK Object Detection module.
 - [Object Placement](https://www.stereolabs.com/docs/unity/object-placement/): Place virtual objects on real-world surfaces using the [Plane Detection](https://www.stereolabs.com/docs/spatial-mapping/plane-detection/) capabilities of the ZED SDK.

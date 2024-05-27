@@ -40,6 +40,10 @@ public class ZEDTransformController : MonoBehaviour
         "and also for positioning it at start. If left blank, the first ZED camera indexed will be set.")]
     public ZEDManager zedManager = null;
 
+    /// <summary>
+    /// If in the planetarium scene, reference the planetarium object so it its material can bu updated to another SRP if necessary.
+    /// </summary>
+    public GameObject planetarium = null;
 
     /// <summary>
     /// How fast the object moves/translates, in meters per second. 
@@ -100,6 +104,14 @@ public class ZEDTransformController : MonoBehaviour
     /// Whether the object is moving/translating. 
     /// </summary>
     private bool isMoving;
+
+    private void Awake()
+    {
+        if (planetarium)
+        {
+            UpgradePluginToSRP.UpgradeCameraToSRP(planetarium);
+        }
+    }
 
     private IEnumerator Start()
     {
