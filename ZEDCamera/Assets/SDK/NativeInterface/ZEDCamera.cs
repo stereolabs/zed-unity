@@ -2803,7 +2803,7 @@ namespace sl
         /// <param name="mem">Whether the image should be on CPU or GPU memory.</param>
         /// <param name="resolution">Resolution of the texture.</param>
         /// <returns>Error code indicating if the retrieval was successful, and why it wasn't otherwise.</returns>
-        public sl.ERROR_CODE RetrieveMeasure(sl.ZEDMat mat, sl.MEASURE measure, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.MEM_CPU, sl.Resolution resolution = new sl.Resolution())
+        public sl.ERROR_CODE RetrieveMeasure(ref sl.ZEDMat mat, sl.MEASURE measure, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.MEM_CPU, sl.Resolution resolution = new sl.Resolution())
         {
             return (sl.ERROR_CODE)(dllz_retrieve_measure(CameraID, mat.MatPtr, (int)measure, (int)mem, (int)resolution.width, (int)resolution.height));
         }
@@ -2825,7 +2825,7 @@ namespace sl
         /// <param name="mem">Whether the image should be on CPU or GPU memory.</param>
         /// <param name="resolution">Resolution of the texture.</param>
         /// <returns>Error code indicating if the retrieval was successful, and why it wasn't otherwise.</returns>
-        public sl.ERROR_CODE RetrieveImage(sl.ZEDMat mat, sl.VIEW view, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.MEM_CPU, sl.Resolution resolution = new sl.Resolution())
+        public sl.ERROR_CODE RetrieveImage(ref sl.ZEDMat mat, sl.VIEW view, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.MEM_CPU, sl.Resolution resolution = new sl.Resolution())
         {
             return (sl.ERROR_CODE)(dllz_retrieve_image(CameraID, mat.MatPtr, (int)view, (int)mem, (int)resolution.width, (int)resolution.height));
         }
