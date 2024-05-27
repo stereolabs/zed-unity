@@ -543,16 +543,16 @@ namespace sl
         [DllImport(nameDllC, EntryPoint = "sl_get_depth_max_range_value")]
         private static extern float dllz_get_depth_max_range_value(int cameraID);
 
-        [DllImport(nameDllC, EntryPoint = "sl_get_depth_value")]
+        [DllImport(nameDllMR, EntryPoint = "sl_get_depth_value")]
         private static extern float dllz_get_depth_value(int cameraID, uint x, uint y);
 
-        [DllImport(nameDllC, EntryPoint = "sl_get_distance_value")]
+        [DllImport(nameDllMR, EntryPoint = "sl_get_distance_value")]
         private static extern float dllz_get_distance_value(int cameraID, uint x, uint y);
 
-        [DllImport(nameDllC, EntryPoint = "sl_get_normal_value")]
+        [DllImport(nameDllMR, EntryPoint = "sl_get_normal_value")]
         private static extern bool dllz_get_normal_value(int cameraID, uint x, uint y, out Vector4 value);
 
-        [DllImport(nameDllC, EntryPoint = "sl_get_xyz_value")]
+        [DllImport(nameDllMR, EntryPoint = "sl_get_xyz_value")]
         private static extern bool dllz_get_xyz_value(int cameraID, uint x, uint y, out Vector4 value);
 
         [DllImport(nameDllC, EntryPoint = "sl_get_depth_min_range_value")]
@@ -592,16 +592,16 @@ namespace sl
         [DllImport(nameDllC, EntryPoint = "sl_get_position_at_target_frame")]
         private static extern int dllz_get_position_at_target_frame(int cameraID, ref Quaternion quaternion, ref Vector3 translation, ref Quaternion targetQuaternion, ref Vector3 targetTranslation, int reference_frame);
 
-        [DllImport(nameDllC, EntryPoint = "sl_transform_pose")]
+        [DllImport(nameDllMR, EntryPoint = "sl_transform_pose")]
         private static extern void dllz_transform_pose(ref Quaternion quaternion, ref Vector3 translation, ref Quaternion targetQuaternion, ref Vector3 targetTranslation);
 
         [DllImport(nameDllC, EntryPoint = "sl_reset_positional_tracking")]
         private static extern int dllz_reset_tracking(int cameraID, Quaternion rotation, Vector3 translation);
 
-        [DllImport(nameDllC, EntryPoint = "sl_reset_tracking_with_offset")]
+        [DllImport(nameDllC, EntryPoint = "sl_reset_positional_tracking_with_offset")]
         private static extern int dllz_reset_tracking_with_offset(int cameraID, Quaternion rotation, Vector3 translation, Quaternion offsetQuaternion, Vector3 offsetTranslation);
 
-        [DllImport(nameDllC, EntryPoint = "sl_estimate_initial_position")]
+        [DllImport(nameDllMR, EntryPoint = "sl_estimate_initial_position")]
         private static extern int dllz_estimate_initial_position(int cameraID, ref Quaternion quaternion, ref Vector3 translation, int countSuccess, int countTimeout);
 
         [DllImport(nameDllC, EntryPoint = "sl_set_imu_prior_orientation")]
@@ -802,6 +802,8 @@ namespace sl
         [DllImport(nameDllC, EntryPoint = "sl_retrieve_measure")]
         private static extern int dllz_retrieve_measure(int cameraID, System.IntPtr ptr, int type, int mem, int width, int height);
 
+        // Test : si ça ne renvoie rien avec la dll MR ou une texture vide, c'est que des variables ne sont pas partagées, comme les dlls sont séparées maintenant.
+        //[DllImport(nameDllC, EntryPoint = "sl_retrieve_image")]
         [DllImport(nameDllC, EntryPoint = "sl_retrieve_image")]
         private static extern int dllz_retrieve_image(int cameraID, System.IntPtr ptr, int type, int mem, int width, int height);
 

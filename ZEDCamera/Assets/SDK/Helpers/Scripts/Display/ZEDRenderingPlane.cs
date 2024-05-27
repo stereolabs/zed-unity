@@ -471,7 +471,7 @@ public class ZEDRenderingPlane : MonoBehaviour
 
 
         //Force Unity into 16:9 mode to match the ZED's output.
-#if UNITY_EDITOR
+#if !UNITY_2022_2_OR_NEWER
         UnityEditor.PlayerSettings.SetAspectRatio(UnityEditor.AspectRatio.Aspect16by9, true);
         UnityEditor.PlayerSettings.SetAspectRatio(UnityEditor.AspectRatio.Aspect16by10, false);
         UnityEditor.PlayerSettings.SetAspectRatio(UnityEditor.AspectRatio.Aspect4by3, false);
