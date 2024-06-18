@@ -25,6 +25,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1180261165772202}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,7 +33,6 @@ Transform:
   m_Children:
   - {fileID: 4476058232863476}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114491592745282986
 MonoBehaviour:
@@ -49,7 +49,7 @@ MonoBehaviour:
   cameraID: 0
   depthMode: 3
   inputType: 0
-  resolution: 1
+  resolution: 7
   FPS: 30
   serialNumber: 0
   svoInputFileName: Assets/Recording.svo
@@ -57,6 +57,7 @@ MonoBehaviour:
   openTimeoutSec: 5
   asyncGrabCameraRecovery: 0
   grabComputeCappingFPS: 0
+  enableImageValidityCheck: 0
   svoLoopBack: 1
   svoRealTimeMode: 0
   currentFrame: 0
@@ -72,6 +73,8 @@ MonoBehaviour:
   positionalTrackingMode: 0
   setFloorAsOrigin: 1
   trackingIsStatic: 0
+  planeDetectionMaxDistanceThreshold: 0.15
+  planeDetectioNormalSimilarityThreshold: 15
   mappingResolutionPreset: 1
   mappingRangePreset: 1
   isMappingFilteringEnable: 1
@@ -180,8 +183,8 @@ MonoBehaviour:
   HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
   advancedPanelOpen: 0
   spatialMappingFoldoutOpen: 0
-  objectDetectionFoldoutOpen: 0
-  bodyTrackingFoldoutOpen: 0
+  objectDetectionFoldoutOpen: 1
+  bodyTrackingFoldoutOpen: 1
   recordingFoldoutOpen: 0
   streamingOutFoldoutOpen: 0
   camControlFoldoutOpen: 1
@@ -224,13 +227,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1215292335019620}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4476058232863476}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33108888876671232
 MeshFilter:
@@ -320,6 +323,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1795562263255876}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -327,7 +331,6 @@ Transform:
   m_Children:
   - {fileID: 4213858372801928}
   m_Father: {fileID: 4329734432191940}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &20287226139793380
 Camera:
@@ -343,9 +346,17 @@ Camera:
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
+  m_Iso: 200
+  m_ShutterSpeed: 0.005
+  m_Aperture: 16
+  m_FocusDistance: 10
+  m_FocalLength: 50
+  m_BladeCount: 5
+  m_Curvature: {x: 2, y: 11}
+  m_BarrelClipping: 0.25
+  m_Anamorphism: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
