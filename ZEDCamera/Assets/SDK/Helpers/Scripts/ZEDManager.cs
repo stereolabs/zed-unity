@@ -247,7 +247,7 @@ public class ZEDManager : MonoBehaviour
     ///
     /// </summary>
     [HideInInspector]
-    public shaderType srpShaderType = shaderType.Lit;
+    public shaderType srpShaderType = shaderType.Unlit;
 
 
     /// <summary>
