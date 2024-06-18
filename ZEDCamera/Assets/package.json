@@ -1,0 +1,106 @@
+{
+  "name": "com.stereolabs.zed",
+  "version": "4.1.1",
+  "displayName": "ZED SDK",
+  "description": "This package brings the features of the ZED cameras into Unity",
+  "unity": "2021.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "https://www.stereolabs.com/docs/unity",
+  "changelogUrl": "https://github.com/stereolabs/zed-unity/releases",
+  "licensesUrl": "https://github.com/stereolabs/zed-unity?tab=MIT-1-ov-file#readme",
+  "dependencies": {
+    "com.unity.xr.management": "4.4.0"
+  },
+  "keywords": [
+    "ZED SDK",
+    "Computer vision",
+    "ZED Camera"
+  ],
+  "author": {
+    "name": "Stereolabs",
+    "email": "support@stereolabs.com",
+    "url": "https://www.stereolabs.com/"
+  },
+  "samples": [
+    {
+      "displayName": "Assembly Definition",
+      "description": "Add assembly definition support to the sample scenes, potentially improving editor responsiveness and compile time",
+      "path": "Samples~/Assembly Definition"
+    },
+    {
+      "displayName": "Body Tracking",
+      "description": "Animate a 3D avatar based on real-people movements using the ZED SDK Body Tracking module.",
+      "path": "Samples~/Body Tracking"
+    },
+    {
+      "displayName": "Dark Room",
+      "description": "Your office is now a night club! Explore the lighting features coupled to the depth sensing to cast a laser show on your walls.",
+      "path": "Samples~/Dark Room"
+    },
+    {
+      "displayName": "Drone Shooter",
+      "description": "Defend yourself from drones that spawn around your room and shoot at you. Block lasers with your hand, and shoot back with the spacebar, or VR controllers if using the Oculus Integration or SteamVR plugin.",
+      "path": "Samples~/Drone Shooter"
+    },
+    {
+      "displayName": "Green Screen",
+      "description": "Aim your ZED at a greenscreen and hit Play to see your subject standing in a small town in the desert. You’ll see that the nearby crates still have all the proper occlusion, but the greenscreen background is replaced with the virtual background.",
+      "path": "Samples~/Green Screen"
+    },
+    {
+      "displayName": "Mixed Reality Calibration",
+      "description": "Use our interactive, in-VR app to calibrate your ZED with a tracked object, like a controller or Vive Tracker, to make capturing mixed reality videos easier than ever.",
+      "path": "Samples~/Mixed Reality Calibration"
+    },
+    {
+      "displayName": "Movie Screen",
+      "description": "Simple AR sample, playing a movie on a movable, scalable 3D screen integrated to the real-world. Demonstrates how 2D content can easily be displayed in a 3D, mixed reality scene.",
+      "path": "Samples~/Movie Screen"
+    },
+    {
+      "displayName": "Multicam",
+      "description": "Integrate data from multiple ZED cameras in the same scene, at the same time.",
+      "path": "Samples~/Multi Cam"
+    },
+    {
+      "displayName": "Object Detection",
+      "description": "Detect objects and people bounding boxes using the ZED SDK Object Detection module.",
+      "path": "Samples~/Object Detection"
+    },
+    {
+      "displayName": "Object Placement",
+      "description": "Place virtual objects on real-world surfaces using the Plane Detection capabilities of the ZED SDK.",
+      "path": "Samples~/Object Placement"
+    },
+    {
+      "displayName": "OpenCV ArUco Detection",
+      "description": "Print out ArUco markers, put them in view of your ZED, and let the battle of the drones begin. Shows how to easily interface the ZED with OpenCV for marker detection using a variety of included scripts.",
+      "path": "Samples~/OpenCV ArUco Detection"
+    },
+    {
+      "displayName": "Plane Detection",
+      "description": "Run the scene and hold down spacebar to see if you’re looking at a valid surface where a bunny could stand. Release the spacebar and a bunny will fall from the sky and land on that surface with proper physics. In VR, throw a plushie as far as possible, the distance is measured where it lands using the Plane Detection. Shows how plane detection can fit into a proper VR game.",
+      "path": "Samples~/Plane Detection"
+    },
+    {
+      "displayName": "Planetarium",
+      "description": "A beautiful display of the ZED plugin’s basic mixed reality features, viewable with or without a headset. Watch as the planets are properly occluded by the real world.",
+      "path": "Samples~/Planetarium"
+    },
+    {
+      "displayName": "Point Cloud",
+      "description": "Visualize the depth retrieved by the ZED Camera directly into Unity, in the form of a Point Cloud.",
+      "path": "Samples~/Point Cloud"
+    },
+    {
+      "displayName": "Simple MR",
+      "description": "Learn to create a basic AR app, with depth occlusion and camera tracking.",
+      "path": "Samples~/Simple MR"
+    },
+    {
+      "displayName": "Spatial Mapping",
+      "description": "Capture a mesh of your environment, allowing physical interactions between the real and virtual world.",
+      "path": "Samples~/Spatial Mapping"
+    }
+  ]
+}

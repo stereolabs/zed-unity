@@ -1,0 +1,19 @@
+{
+    "name": "Stereolabs.Zed.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:2b8b9fa7df37c564899cda0a96289857",
+        "GUID:63cc3fb14c07ffe4693afc7caea90629"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

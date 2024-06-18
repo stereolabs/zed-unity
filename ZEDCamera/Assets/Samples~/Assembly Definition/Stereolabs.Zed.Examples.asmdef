@@ -1,0 +1,27 @@
+{
+    "name": "Stereolabs.Zed.Examples",
+    "rootNamespace": "",
+    "references": [
+        "GUID:2b8b9fa7df37c564899cda0a96289857"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "2022.3",
+            "define": "NEW_TRANSFORM_API"
+        },
+        {
+            "name": "Unity",
+            "expression": "[2021.3.17,2022.1)",
+            "define": "NEW_TRANSFORM_API"
+        }
+    ],
+    "noEngineReferences": false
+}
