@@ -11,7 +11,7 @@ public class ZEDImporters : Editor
     static readonly string PackageVersion = ZEDCamera.PluginVersion.ToString();
 
     [MenuItem("ZED/Import All Samples", false, 0)]
-    static void ImportAllSamplesFromPackage()
+    public static void ImportAllSamplesFromPackage()
     {
         var samples = Sample.FindByPackage(PackageName, PackageVersion);
 
