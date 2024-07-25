@@ -2165,11 +2165,6 @@ namespace sl
         /// </summary>
         public uint instanceModuleID;
         /// <summary>
-        /// Defines if the object detection is synchronized to the image or runs in a separate thread.
-        /// </summary>
-        [MarshalAs(UnmanagedType.U1)]
-        public bool imageSync;
-        /// <summary>
         /// Defines if the object detection will track objects across multiple images, instead of an image-by-image basis.
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
@@ -2460,11 +2455,6 @@ namespace sl
         /// Defines a module instance id. This is used to identify which object detection model instance is used.
         /// </summary>
         public uint instanceModuleID;
-        /// <summary>
-        /// Defines if the object detection is synchronized to the image or runs in a separate thread.
-        /// </summary>
-        [MarshalAs(UnmanagedType.U1)]
-        public bool imageSync;
         /// <summary>
         /// Defines if the object detection will track objects across multiple images, instead of an image-by-image basis.
         /// </summary>

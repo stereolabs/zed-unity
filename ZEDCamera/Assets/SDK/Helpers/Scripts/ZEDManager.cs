@@ -423,12 +423,6 @@ public class ZEDManager : MonoBehaviour
     public uint objectDetectionInstanceID = 0;
 
     /// <summary>
-    /// Sync the Object on the image.
-    /// </summary>
-    [HideInInspector]
-    public bool objectDetectionImageSyncMode = true;
-
-    /// <summary>
     /// Whether to track objects across multiple frames using the ZED's position relative to the floor.
     /// Requires tracking to be on. It's also recommended to enable Estimate Initial Position to find the floor.
     /// </summary>
@@ -653,12 +647,6 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public uint bodyTrackingInstanceID = 1;
-
-    /// <summary>
-    /// Sync the Object on the image.
-    /// </summary>
-    [HideInInspector]
-    public bool bodyTrackingImageSyncMode = true;
 
     /// <summary>
     /// Whether to track objects across multiple frames using the ZED's position relative to the floor.
@@ -2546,8 +2534,7 @@ public class ZEDManager : MonoBehaviour
                     float camera_fps = zedCamera.GetCameraFPS();
                     cameraFPS = camera_fps.ToString() + " FPS";
 #endif
-                    //Update object detection here if using object sync.
-                    if (objectDetectionRunning && objectDetectionImageSyncMode && requestobjectsframe)
+                    if (objectDetectionRunning && requestobjectsframe)
                     {
                         if (objectDetectionModel == sl.OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
                         {
@@ -2557,8 +2544,7 @@ public class ZEDManager : MonoBehaviour
                         RetrieveObjectDetectionFrame();
                     }
 
-                    //Update body tracking here if using object sync.
-                    if (bodyTrackingRunning && bodyTrackingImageSyncMode && requestBodiesframe)
+                    if (bodyTrackingRunning && requestBodiesframe)
                     {
                         RetrieveBodyTrackingFrame();
                     }
@@ -3124,10 +3110,8 @@ public class ZEDManager : MonoBehaviour
             odIsStarting = true;
             Debug.LogWarning("Starting Object Detection. This may take a moment.");
 
-            objectDetectionImageSyncMode = true;
             sl.ObjectDetectionParameters od_param = new sl.ObjectDetectionParameters();
             od_param.instanceModuleID = objectDetectionInstanceID;
-            od_param.imageSync = objectDetectionImageSyncMode;
             od_param.enableTracking = objectDetectionTracking;
             od_param.enableSegmentation = objectDetection2DMask;
             od_param.detectionModel = objectDetectionModel;
@@ -3212,10 +3196,6 @@ public class ZEDManager : MonoBehaviour
         objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
         objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
         objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.SPORT] = Convert.ToInt32(objectClassSportFilter);
-
-
-
-        if (objectDetectionImageSyncMode == false) RetrieveObjectDetectionFrame(); //If true, this is called in the AcquireImages function in the image acquisition thread.
 
         if (newobjectsframeready)
         {
@@ -3368,7 +3348,6 @@ public class ZEDManager : MonoBehaviour
 
             sl.BodyTrackingParameters bt_param = new sl.BodyTrackingParameters();
             bt_param.instanceModuleID = bodyTrackingInstanceID;
-            bt_param.imageSync = bodyTrackingImageSyncMode;
             bt_param.enableTracking = bodyTrackingTracking;
             bt_param.enableSegmentation = bodyTracking2DMask;
             bt_param.detectionModel = bodyTrackingModel;
@@ -3425,8 +3404,6 @@ public class ZEDManager : MonoBehaviour
         bodyTrackingRuntimeParams.detectionConfidenceThreshold = bodyTrackingConfidenceThreshold;
         bodyTrackingRuntimeParams.minimumKeypointsThreshold = bodyTrackingMinimumKPThreshold;
         bodyTrackingRuntimeParams.skeletonSmoothing = bodyTrackingSkeletonSmoothing;
-
-        if (bodyTrackingImageSyncMode == false) RetrieveBodyTrackingFrame(); //If true, this is called in the AcquireImages function in the image acquisition thread.
 
         if (newbodiesframeready)
         {

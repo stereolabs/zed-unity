@@ -248,9 +248,9 @@ public class ZED2DObjectVisualizer : MonoBehaviour
             bbox.sizeDelta = new Vector2(objrect.width, objrect.height);
             bbox.anchoredPosition = new Vector2(objrect.x, objrect.y);
 
-
+            bool ShowMaskIsEnabled = detectionMode == DetectionMode.BodyTracking ? zedManager.bodyTracking2DMask : zedManager.objectDetection2DMask;
             //Apply the mask.
-            if (showObjectMask)
+            if (showObjectMask && ShowMaskIsEnabled)
             {
                 //Make a new image for this new mask.
                 Texture2D maskimage;
@@ -310,9 +310,11 @@ public class ZED2DObjectVisualizer : MonoBehaviour
             //Adjust the size of the RectTransform to encompass the object.
             bbox.sizeDelta = new Vector2(objrect.width, objrect.height);
             bbox.anchoredPosition = new Vector2(objrect.x, objrect.y);
-           
+
+            bool ShowMaskIsEnabled = detectionMode == DetectionMode.BodyTracking ? zedManager.bodyTracking2DMask : zedManager.objectDetection2DMask;
+
             //Apply the mask.
-            if (showObjectMask)
+            if (showObjectMask && ShowMaskIsEnabled)
             {
                 //Make a new image for this new mask.
                 Texture2D maskimage;

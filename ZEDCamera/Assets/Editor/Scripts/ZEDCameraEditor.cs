@@ -110,7 +110,6 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty meshPath;
 
     //Object Detection Prop
-    //private SerializedProperty OD_ImageSyncMode;
     private SerializedProperty OD_ObjectTracking;
     private SerializedProperty OD_2DMask;
     private SerializedProperty OD_DetectionModel;
@@ -134,7 +133,6 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty OD_FruitVegetableFilter;
     private SerializedProperty OD_SportFilter;
     //Body Tracking
-    private SerializedProperty BT_ImageSyncMode;
     private SerializedProperty BT_ObjectTracking;
     private SerializedProperty BT_2DMask;
     private SerializedProperty BT_DetectionModel;
@@ -283,7 +281,6 @@ public class ZEDCameraEditor : Editor
         meshPath = serializedObject.FindProperty("meshPath");
 
         ///Object Detection Serialized Properties
-        //OD_ImageSyncMode = serializedObject.FindProperty("objectDetectionImageSyncMode");
         OD_ObjectTracking = serializedObject.FindProperty("objectDetectionTracking");
 
         OD_2DMask = serializedObject.FindProperty("objectDetection2DMask");
@@ -311,7 +308,6 @@ public class ZEDCameraEditor : Editor
 
         // Body tracking serialied properties
 
-        BT_ImageSyncMode = serializedObject.FindProperty("bodyTrackingImageSyncMode");
         BT_ObjectTracking = serializedObject.FindProperty("bodyTrackingTracking");
         BT_2DMask = serializedObject.FindProperty("bodyTracking2DMask");
         BT_DetectionModel = serializedObject.FindProperty("bodyTrackingModel");
