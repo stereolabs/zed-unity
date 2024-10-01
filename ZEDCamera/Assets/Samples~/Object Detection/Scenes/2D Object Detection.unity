@@ -487,7 +487,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   zedManager: {fileID: 1078485266}
   canvas: {fileID: 65360501}
-  detectionMode: 0
+  detectionMode: 1
   startAIModuleAutomatically: 1
   boundingBoxPrefab: {fileID: 1187247398682752, guid: a71fe20b5d673e34fb3fef09b4bb6ee3, type: 3}
   boxColors:
@@ -647,7 +647,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: bodyFormat
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: greySkybox
@@ -655,7 +655,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: resolution
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: bodyFitting
@@ -711,7 +711,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: bodyTracking2DMask
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: enableSpatialMemory

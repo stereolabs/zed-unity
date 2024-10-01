@@ -1,5 +1,6 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
+using System.Threading;
 using UnityEngine;
 
 /// <summary>
@@ -82,22 +83,23 @@ namespace sl
             }
 
             if (zedManager != null)
+            {
                 zed = zedManager.zedCamera;
 
-            if (_pointMaterial == null)
-            {
-                _pointMaterial = new Material(Resources.Load("Materials/PointCloud/Mat_ZED_FusedPC_Point") as Material);
-            }
+                if (_pointMaterial == null)
+                {
+                    _pointMaterial = new Material(Resources.Load("Materials/PointCloud/Mat_ZED_FusedPC_Point") as Material);
+                }
 
-            if (_diskMaterial == null)
-            {
-                _diskMaterial = new Material(Resources.Load("Materials/PointCloud/Mat_ZED_FusedPC_Disk") as Material);
-            }
- 
-            _diskMaterial.hideFlags = HideFlags.DontSave;
-            _pointMaterial.hideFlags = HideFlags.DontSave;
-            zedManager.OnGrab += startMap;
+                if (_diskMaterial == null)
+                {
+                    _diskMaterial = new Material(Resources.Load("Materials/PointCloud/Mat_ZED_FusedPC_Disk") as Material);
+                }
 
+                _diskMaterial.hideFlags = HideFlags.DontSave;
+                _pointMaterial.hideFlags = HideFlags.DontSave;
+                zedManager.OnGrab += startMap;
+            }
         }
 
         /// <summary>
@@ -107,9 +109,13 @@ namespace sl
         {
             if (zed != null && notStarted)
             {
-                zed.EnableSpatialMapping(sl.SPATIAL_MAP_TYPE.FUSED_POINT_CLOUD, resolution, range);
-                notStarted = false;
-                canUpdate = true;
+                sl.ERROR_CODE err = zed.EnableSpatialMapping(sl.SPATIAL_MAP_TYPE.FUSED_POINT_CLOUD, resolution, range);
+
+                if (err == sl.ERROR_CODE.SUCCESS)
+                {
+                    notStarted = false;
+                    canUpdate = true;
+                }
             }
                
         }
@@ -139,7 +145,7 @@ namespace sl
         /// </summary>
         void Update()
         {
-            if (zed.IsCameraReady && canUpdate) //Don't do anything unless the ZED has been initialized. 
+            if (zed != null && zed.IsCameraReady && canUpdate) //Don't do anything unless the ZED has been initialized. 
             {
                 updateTime += Time.deltaTime;
                 if (updateTime >= 1)
@@ -147,6 +153,10 @@ namespace sl
                     zed.RequestMesh();
                     updateTime = 0;
                 }               
+            }
+            else
+            {
+                Thread.Sleep(1);
             }
         }
 
