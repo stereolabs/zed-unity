@@ -635,6 +635,8 @@ public class ZEDManager : MonoBehaviour
 
     private sl.ObjectDetectionRuntimeParameters objectDetectionRuntimeParameters = new sl.ObjectDetectionRuntimeParameters();
 
+    public sl.CustomObjectDetectionRuntimeParameters customObjectDetectionRuntimeParameters = new sl.CustomObjectDetectionRuntimeParameters();
+
     [HideInInspector]
     public List<CustomBoxObjectData> customObjects = new List<CustomBoxObjectData>();
 
@@ -3236,7 +3238,18 @@ public class ZEDManager : MonoBehaviour
     {
         sl.Objects objsbuffer = new sl.Objects();
 
-        sl.ERROR_CODE res = zedCamera.RetrieveObjects(ref objectDetectionRuntimeParameters, ref objsbuffer, objectDetectionInstanceID);
+        sl.ERROR_CODE res = sl.ERROR_CODE.FAILURE;
+        
+        if (objectDetectionModel == sl.OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
+        {
+            customObjectDetectionRuntimeParameters.objectClassDetectionProperties = new List<CustomObjectDetectionProperties>();
+            customObjectDetectionRuntimeParameters.objectDetectionProperties = new CustomObjectDetectionProperties();
+            res = zedCamera.RetrieveObjects(ref customObjectDetectionRuntimeParameters, ref objsbuffer, objectDetectionInstanceID);
+        }
+        else
+        {
+            res = zedCamera.RetrieveObjects(ref objectDetectionRuntimeParameters, ref objsbuffer, objectDetectionInstanceID);
+        }
 
         if (res == sl.ERROR_CODE.SUCCESS && objsbuffer.isNew != 0)
         {
