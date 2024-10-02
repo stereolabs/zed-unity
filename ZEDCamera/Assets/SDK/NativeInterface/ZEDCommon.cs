@@ -2241,6 +2241,128 @@ namespace sl
     };
 
     /// <summary>
+    /// Structure containing a set of runtime properties of a certain class ID for the object detection module using a custom model.
+    /// The default constructor sets all parameters to their default settings.
+    /// Parameters can be adjusted by the user.
+    /// </summary>
+    public class CustomObjectDetectionProperties
+    {
+        /// <summary>
+        /// Index of the class represented by this set of properties.
+        /// </summary>
+        public int classID = -1;
+
+        /// <summary>
+        /// Whether the object object is kept or not.
+        /// </summary>
+        public bool enabled = true;
+        /// <summary>
+        ///  Confidence threshold.
+        ///  From 1 to 100, with 1 meaning a low threshold, more uncertain objects and 99 very few but very precise objects.
+        ///  If the scene contains a lot of objects, increasing the confidence can slightly speed up the process, since every object instance is tracked.
+        ///  Default: 20.f
+        /// </summary>
+        public float detectionConfidenceThreshold = 20.0f;
+
+        /// <summary>
+        ///	Provide hypothesis about the object movements(degrees of freedom or DoF) to improve the object tracking.
+	    /// - true: 2 DoF projected alongside the floor plane. Case for object standing on the ground such as person, vehicle, etc.
+	    /// The projection implies that the objects cannot be superposed on multiple horizontal levels.
+	    /// - false: 6 DoF (full 3D movements are allowed).
+	    /// This parameter cannot be changed for a given object tracking id.
+	    /// It is advised to set it by labels to avoid issues.
+        /// </summary>
+        public bool isGrounded = true;
+
+        /// <summary>
+        /// Provide hypothesis about the object staticity to improve the object tracking.
+		/// - true: the object will be assumed to never move nor being moved.
+		/// - false: the object will be assumed to be able to move or being moved.
+        /// </summary>
+        public bool isStatic = false;
+
+        /// <summary>
+        /// Maximum tracking time threshold (in seconds) before dropping the tracked object when unseen for this amount of time.
+        /// By default, let the tracker decide internally based on the internal sub class of the tracked object.
+        /// Only valid for static object.
+        /// </summary>
+        public float trackingTimeout = -1.0f;
+
+        /// <summary>
+        /// Maximum tracking distance threshold (in meters) before dropping the tracked object when unseen for this amount of meters.
+        /// By default, do not discard tracked object based on distance.
+        /// Only valid for static object.
+        /// </summary>
+        public float trackingMaxDist = -1.0f;
+
+        /// <summary>
+        /// Maximum allowed width normalized to the image size.
+        /// Any prediction bigger than that will be filtered out.
+        /// Default: -1 (no filtering)
+        /// </summary>
+        public float maxBoxWidthNormalized = -1.0f;
+
+        /// <summary>
+        /// Minimum allowed width normalized to the image size.
+        /// Any prediction smaller than that will be filtered out.
+        /// Default: -1 (no filtering)
+        /// </summary>
+        public float minBoxWidthNormalized = -1.0f;
+
+        /// <summary>
+        /// Maximum allowed height normalized to the image size.
+        /// Any prediction bigger than that will be filtered out.
+        /// Default: -1 (no filtering)
+        /// </summary>
+        public float maxBoxHeightNormalized = -1.0f;
+
+        /// <summary>
+        /// Minimum allowed Height normalized to the image size.
+        /// Any prediction smaller than that will be filtered out.
+        /// Default: -1 (no filtering)
+        /// </summary>
+        public float minBoxHeightNormalized = -1.0f;
+
+        public CustomObjectDetectionProperties()
+        {
+            this.classID = -1;
+            this.enabled = true;
+            this.detectionConfidenceThreshold = 20.0f;
+            this.isGrounded = true;
+            this.isStatic = true;
+            this.trackingTimeout = -1.0f;
+            this.trackingMaxDist = -1.0f;
+            this.maxBoxHeightNormalized = -1.0f;
+            this.minBoxHeightNormalized = -1.0f;
+            this.maxBoxWidthNormalized = -1.0f;
+            this.minBoxWidthNormalized = -1.0f;
+        }
+    };
+
+    /// <summary>
+    /// Structure containing a set of runtime parameters for the object detection module using your own model ran by the SDK.
+    /// </summary>
+    public struct CustomObjectDetectionRuntimeParameters
+    {
+        /// <summary>
+        /// Global object detection properties.
+        /// objectDetectionProperties is used as a fallback when CustomObjectDetectionRuntimeParameters.objectClassDetectionProperties is partially set.
+        /// </summary>
+        public CustomObjectDetectionProperties objectDetectionProperties;
+
+        /// <summary>
+        /// Per class object detection properties.
+        /// </summary>
+        public List<CustomObjectDetectionProperties> objectClassDetectionProperties;
+
+        public CustomObjectDetectionRuntimeParameters(CustomObjectDetectionProperties customObjectDetectionProperties, List<CustomObjectDetectionProperties> customObjectClassDetectionProperties)
+        {
+            objectDetectionProperties = customObjectDetectionProperties;
+            objectClassDetectionProperties = customObjectClassDetectionProperties;
+        }
+    };
+
+    /// <summary>
     /// Lists of supported skeleton body model
     /// </summary>
     public enum BODY_FORMAT
