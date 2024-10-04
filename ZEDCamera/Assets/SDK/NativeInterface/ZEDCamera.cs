@@ -285,7 +285,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(4, 1, 0);
+        public static readonly System.Version PluginVersion = new System.Version(4, 2, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -734,6 +734,9 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_objects")]
         private static extern int dllz_retrieve_objects_data(int cameraID, ref ObjectDetectionRuntimeParameters od_params, ref Objects objs, uint instanceID);
+
+        [DllImport(nameDll, EntryPoint = "sl_retrieve_custom_objects")]
+        private static extern int dllz_retrieve_custom_objects(int cameraID, ref dll_customObjectDetectionRuntimeParameters od_params, ref Objects objs, uint instanceID);
 
         [DllImport(nameDll, EntryPoint = "sl_enable_body_tracking")]
         private static extern int dllz_enable_body_tracking(int cameraID, ref BodyTrackingParameters bt_params);
@@ -2437,6 +2440,22 @@ namespace sl
         }
 
         /// <summary>
+        /// Gets the current depth value of a pixel in the UNITS specified when the camera was started with Init().
+        /// <param name="position">The pixel's coordinates of the ZED Image as a Vector2.
+        /// <returns>Depth value as a float.</returns>
+        /// </summary>
+        public float GetDepthValue(Vector2 pixel)
+        {
+            if (!cameraReady)
+            {
+                return -1;
+            }
+
+            float d = dllz_get_depth_value(CameraID, (uint)pixel.x, (uint)pixel.y);
+            return d;
+        }
+
+        /// <summary>
         /// Gets the current Euclidean distance (sqrt(x²+y²+z²)) of the targeted pixel of the screen to the camera.
         /// May result in errors if the ZED image does not fill the whole screen.
         /// <param name="pixel">The pixel's screen space coordinates as a Vector3.
@@ -3104,11 +3123,155 @@ namespace sl
         /// Retrieve object detection data
         /// </summary>
         /// <param name="od_params"> Object detection runtime parameters</param>
-        /// <param name="objFrame"> ObjectsFrameSDK that contains all the detection data</param>
+        /// <param name="objFrame"> Objects that contains all the detection data</param>
+        /// <param name="instanceID"> Id of the object detection instance. Used when multiple instances of the object detection module are enabled at the same time. </param>
         /// <returns></returns>
         public sl.ERROR_CODE RetrieveObjects(ref ObjectDetectionRuntimeParameters od_params, ref Objects objFrame, uint instanceID = 0)
         {
             return (sl.ERROR_CODE)dllz_retrieve_objects_data(CameraID, ref od_params, ref objFrame, instanceID);
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct dll_customObjectDetectionProperties
+        {
+            /// <summary>
+            /// Index of the class represented by this set of properties.
+            /// </summary>
+            public int classID;
+
+            /// <summary>
+            /// Whether the object object is kept or not.
+            /// </summary>
+            [MarshalAs(UnmanagedType.U1)]
+            public bool enabled;
+            /// <summary>
+            ///  Confidence threshold.
+            ///  From 1 to 100, with 1 meaning a low threshold, more uncertain objects and 99 very few but very precise objects.
+            ///  If the scene contains a lot of objects, increasing the confidence can slightly speed up the process, since every object instance is tracked.
+            ///  Default: 20.f
+            /// </summary>
+            public float detectionConfidenceThreshold;
+
+            /// <summary>
+            ///	Provide hypothesis about the object movements(degrees of freedom or DoF) to improve the object tracking.
+            /// - true: 2 DoF projected alongside the floor plane. Case for object standing on the ground such as person, vehicle, etc.
+            /// The projection implies that the objects cannot be superposed on multiple horizontal levels.
+            /// - false: 6 DoF (full 3D movements are allowed).
+            /// This parameter cannot be changed for a given object tracking id.
+            /// It is advised to set it by labels to avoid issues.
+            /// </summary>
+            [MarshalAs(UnmanagedType.U1)]
+            public bool isGrounded;
+
+            /// <summary>
+            /// Provide hypothesis about the object staticity to improve the object tracking.
+            /// - true: the object will be assumed to never move nor being moved.
+            /// - false: the object will be assumed to be able to move or being moved.
+            /// </summary>
+            [MarshalAs(UnmanagedType.U1)]
+            public bool isStatic;
+
+            /// <summary>
+            /// Maximum tracking time threshold (in seconds) before dropping the tracked object when unseen for this amount of time.
+            /// By default, let the tracker decide internally based on the internal sub class of the tracked object.
+            /// Only valid for static object.
+            /// </summary>
+            public float trackingTimeout;
+
+            /// <summary>
+            /// Maximum tracking distance threshold (in meters) before dropping the tracked object when unseen for this amount of meters.
+            /// By default, do not discard tracked object based on distance.
+            /// Only valid for static object.
+            /// </summary>
+            public float trackingMaxDist;
+
+            /// <summary>
+            /// Maximum allowed width normalized to the image size.
+            /// Any prediction bigger than that will be filtered out.
+            /// Default: -1 (no filtering)
+            /// </summary>
+            public float maxBoxWidthNormalized;
+
+            /// <summary>
+            /// Minimum allowed width normalized to the image size.
+            /// Any prediction smaller than that will be filtered out.
+            /// Default: -1 (no filtering)
+            /// </summary>
+            public float minBoxWidthNormalized;
+
+            /// <summary>
+            /// Maximum allowed height normalized to the image size.
+            /// Any prediction bigger than that will be filtered out.
+            /// Default: -1 (no filtering)
+            /// </summary>
+            public float maxBoxHeightNormalized;
+
+            /// <summary>
+            /// Minimum allowed Height normalized to the image size.
+            /// Any prediction smaller than that will be filtered out.
+            /// Default: -1 (no filtering)
+            /// </summary>
+            public float minBoxHeightNormalized;
+
+            public dll_customObjectDetectionProperties(CustomObjectDetectionProperties customObjectDetectionProperties)
+            {
+                classID = customObjectDetectionProperties.classID;
+                enabled = customObjectDetectionProperties.enabled;
+                detectionConfidenceThreshold = customObjectDetectionProperties.detectionConfidenceThreshold;
+                isGrounded = customObjectDetectionProperties.isGrounded;
+                isStatic = customObjectDetectionProperties.isStatic;
+                trackingTimeout = customObjectDetectionProperties.trackingTimeout;
+                trackingMaxDist = customObjectDetectionProperties.trackingMaxDist;
+                maxBoxWidthNormalized = customObjectDetectionProperties.maxBoxWidthNormalized;
+                minBoxWidthNormalized = customObjectDetectionProperties.minBoxWidthNormalized;
+                maxBoxHeightNormalized = customObjectDetectionProperties.maxBoxHeightNormalized;
+                minBoxHeightNormalized = customObjectDetectionProperties.minBoxHeightNormalized;
+            }
+        };
+
+        /// <summary>
+        ///  DLL-friendly version of CustomObjectDetectionRuntimeParameters (found in ZEDCommon.cs).
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        struct dll_customObjectDetectionRuntimeParameters
+        {
+            /// <summary>
+            /// Global object detection properties.
+            /// objectDetectionProperties is used as a fallback when CustomObjectDetectionRuntimeParameters.objectClassDetectionProperties is partially set.
+            /// </summary>
+            public dll_customObjectDetectionProperties objectDetectionProperties;
+
+            /// <summary>
+            /// Per class object detection properties.
+            /// </summary>
+            public IntPtr objectClassDetectionProperties;
+
+            /// <summary>
+            /// Size of the \ref objectClassDetectionProperties array.
+            /// </summary>
+            public uint numberCustomDetectionProperties;
+
+            public dll_customObjectDetectionRuntimeParameters(CustomObjectDetectionRuntimeParameters customObjectDetectionRuntimeParameters)
+            {
+                objectDetectionProperties = new dll_customObjectDetectionProperties(customObjectDetectionRuntimeParameters.objectDetectionProperties);
+                numberCustomDetectionProperties = (uint)customObjectDetectionRuntimeParameters.objectClassDetectionProperties.Count;
+                objectClassDetectionProperties = Marshal.AllocHGlobal(customObjectDetectionRuntimeParameters.objectClassDetectionProperties.Count * Marshal.SizeOf(typeof(dll_customObjectDetectionProperties)));
+            }
+        };
+
+        /// <summary>
+        /// Retrieve object detection data from custom object detection
+        /// </summary>
+        /// <param name="objectDetectionRuntimeParameters"> Custim object detection runtime parameters</param>
+        /// <param name="objFrame">Objects that contains all the detection data</param>
+        /// <param name="instanceID"> Id of the object detection instance. Used when multiple instances of the object detection module are enabled at the same time. </param>
+        /// <returns></returns>
+        public sl.ERROR_CODE RetrieveObjects(ref CustomObjectDetectionRuntimeParameters objectDetectionRuntimeParameters, ref Objects objFrame, uint instanceID = 0)
+        {
+            dll_customObjectDetectionRuntimeParameters dll_CustomObjectDetectionRuntime = new dll_customObjectDetectionRuntimeParameters(objectDetectionRuntimeParameters);
+            var e = (sl.ERROR_CODE)dllz_retrieve_custom_objects(CameraID, ref dll_CustomObjectDetectionRuntime, ref objFrame, instanceID);
+            Marshal.FreeHGlobal(dll_CustomObjectDetectionRuntime.objectClassDetectionProperties);
+            return e;
         }
 
         /// <summary>
@@ -3209,6 +3372,7 @@ namespace sl
         /// </summary>
         /// <param name="body_params"> Body Tracking runtime parameters</param>
         /// <param name="bodies"> Bodies that contains all the detection data</param>
+        /// <param name="instanceID"> Id of the object detection instance. Used when multiple instances of the object detection module are enabled at the same time. </param>
         /// <returns></returns>
         public sl.ERROR_CODE RetrieveBodies(ref BodyTrackingRuntimeParameters bt_params, ref Bodies bodies, uint instanceID = 0)
         {

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using OpenCVForUnity.UnityUtils;
 using OpenCVForUnity.CoreModule;
 using OpenCVForUnity.DnnModule;
 using OpenCVForUnity.ImgprocModule;
@@ -17,6 +18,11 @@ using System.Linq;
 /// </summary>
 public class ZEDCustomObjDetection : MonoBehaviour
 {
+    [TooltipAttribute("Custom object runtime parameters.")]
+    public CustomObjectDetectionProperties objectDetectionProperties;
+
+    [TooltipAttribute("Custom object runtime parameters.")]
+    public List<CustomObjectDetectionProperties> objectClassDetectionProperties;
 
     [TooltipAttribute("Path to a binary file of model contains trained weights. It could be a file with extensions .caffemodel (Caffe), .pb (TensorFlow), .t7 or .net (Torch), .weights (Darknet).")]
     public string model;
@@ -35,6 +41,8 @@ public class ZEDCustomObjDetection : MonoBehaviour
 
     [TooltipAttribute("Non-maximum suppression threshold.")]
     public float nmsThreshold = 0.4f;
+
+    private sl.CustomObjectDetectionRuntimeParameters customObjectDetectionRuntime = new CustomObjectDetectionRuntimeParameters();
 
     private List<string> classNames;
     private List<string> outBlobNames;
@@ -99,14 +107,16 @@ public class ZEDCustomObjDetection : MonoBehaviour
             classNames = classesFilter;
         }
         else
-            classNames = readClassNames(classes);
+            classNames = ReadClassNames(classes);
     }
 
     public void Init()
     {
+        Utils.setDebugMode(true);
+
         if (!string.IsNullOrEmpty(classes))
         {
-            classNames = readClassNames(classes);
+            classNames = ReadClassNames(classes);
             if (classNames == null)
             {
                 Debug.LogError("Classes file is not loaded. Please see \"StreamingAssets/dnn/setup_dnn_module.pdf\". ");
@@ -121,7 +131,7 @@ public class ZEDCustomObjDetection : MonoBehaviour
         {
             Debug.LogError("Model file is not loaded. Please see \"StreamingAssets/dnn/setup_dnn_module.pdf\". ");
         }
-        else if (string.IsNullOrEmpty(config))
+        else if (false && string.IsNullOrEmpty(config))
         {
             Debug.LogError("Config file is not loaded. Please see \"StreamingAssets/dnn/setup_dnn_module.pdf\". ");
         }
@@ -130,16 +140,19 @@ public class ZEDCustomObjDetection : MonoBehaviour
             net = Dnn.readNet(model, config);
             if (net == null) Debug.LogWarning("network is null");
 
-            outBlobNames = getOutputsNames(net);
+            outBlobNames = GetOutputsNames(net);
 
-            outBlobTypes = getOutputsTypes(net);
+            outBlobTypes = GetOutputsTypes(net);
         }
     }
 
     public void Run(Camera cam, Mat camera_matrix, Mat rgbaMat)
     {
         if (!zedManager.IsObjectDetectionRunning) return;
-        
+
+        customObjectDetectionRuntime.objectDetectionProperties = objectDetectionProperties;
+        customObjectDetectionRuntime.objectClassDetectionProperties = objectClassDetectionProperties;
+
         Mat bgrMat = new Mat(rgbaMat.rows(), rgbaMat.cols(), CvType.CV_8UC3);
 
         Imgproc.cvtColor(rgbaMat, bgrMat, Imgproc.COLOR_RGBA2BGR);
@@ -160,7 +173,7 @@ public class ZEDCustomObjDetection : MonoBehaviour
 
         //tm.stop();
         //Debug.Log("Inference time, ms: " + tm.getTimeMilli());
-        postprocess(rgbaMat, outs, net, Dnn.DNN_BACKEND_OPENCV);
+        Postprocess(rgbaMat, outs, net, Dnn.DNN_BACKEND_OPENCV);
 
         for (int i = 0; i < outs.Count; i++)
         {
@@ -176,7 +189,7 @@ public class ZEDCustomObjDetection : MonoBehaviour
     /// <param name="outs">Outs.</param>
     /// <param name="net">Net.</param>
     /// <param name="backend">Backend.</param>
-    protected virtual void postprocess(Mat frame, List<Mat> outs, Net net, int backend = Dnn.DNN_BACKEND_OPENCV)
+    protected virtual void Postprocess(Mat frame, List<Mat> outs, Net net, int backend = Dnn.DNN_BACKEND_OPENCV)
     {
         MatOfInt outLayers = net.getUnconnectedOutLayers();
         string outLayerType = outBlobTypes[0];
@@ -272,11 +285,12 @@ public class ZEDCustomObjDetection : MonoBehaviour
 
         }
 
-        ingestCustomData(boxesList, confidencesList, classIdsList);
+        IngestCustomData(boxesList, confidencesList, classIdsList);
     }
 
-    private void ingestCustomData(List<Rect2d> boxesList, List<float> confidencesList, List<int> classIdsList)
+    private void IngestCustomData(List<Rect2d> boxesList, List<float> confidencesList, List<int> classIdsList)
     {
+        Debug.Log("Box list count: " + boxesList.Count);
         List<CustomBoxObjectData> objects_in = new List<CustomBoxObjectData>();
         for (int idx = 0; idx < boxesList.Count; ++idx)
         {
@@ -303,7 +317,7 @@ public class ZEDCustomObjDetection : MonoBehaviour
         }
         zedManager.customObjects.Clear();
         zedManager.customObjects.AddRange(objects_in);
-
+        zedManager.customObjectDetectionRuntimeParameters = customObjectDetectionRuntime;
 /*        if (OnIngestCustomOD != null)
             OnIngestCustomOD();*/
     }
@@ -313,7 +327,7 @@ public class ZEDCustomObjDetection : MonoBehaviour
     /// </summary>
     /// <returns>The class names.</returns>
     /// <param name="filename">Filename.</param>
-    private List<string> readClassNames(string filename)
+    private List<string> ReadClassNames(string filename)
     {
         List<string> classNames = new List<string>();
 
@@ -347,7 +361,7 @@ public class ZEDCustomObjDetection : MonoBehaviour
     /// </summary>
     /// <returns>The outputs names.</returns>
     /// <param name="net">Net.</param>
-    protected List<string> getOutputsNames(Net net)
+    protected List<string> GetOutputsNames(Net net)
     {
         List<string> names = new List<string>();
 
@@ -366,7 +380,7 @@ public class ZEDCustomObjDetection : MonoBehaviour
     /// </summary>
     /// <returns>The outputs types.</returns>
     /// <param name="net">Net.</param>
-    protected virtual List<string> getOutputsTypes(Net net)
+    protected virtual List<string> GetOutputsTypes(Net net)
     {
         List<string> types = new List<string>();
 
