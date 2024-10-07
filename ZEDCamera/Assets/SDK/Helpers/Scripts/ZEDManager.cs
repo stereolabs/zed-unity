@@ -1852,7 +1852,7 @@ public class ZEDManager : MonoBehaviour
                 isStereoRig = true;
 
                 List<XRInputSubsystem> subsystems = new List<XRInputSubsystem>();
-                SubsystemManager.GetInstances<XRInputSubsystem>(subsystems);
+                SubsystemManager.GetSubsystems<XRInputSubsystem>(subsystems);
                 for (int i = 0; i < subsystems.Count; i++)
                 {
                      subsystems[i].TrySetTrackingOriginMode(TrackingOriginModeFlags.Device);
