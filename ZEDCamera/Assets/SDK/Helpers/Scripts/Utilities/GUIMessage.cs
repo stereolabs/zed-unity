@@ -105,7 +105,7 @@ public class GUIMessage : MonoBehaviour
             //Instantiate the mono warning prefab and set basic settings for it. 
             warningmono = Instantiate(Resources.Load("PrefabsUI/Warning") as GameObject, transform);
             warningmono.SetActive(true);
-            warningmono.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceCamera;
+            warningmono.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
 
             //Set the target camera to whichever mono camera in the rig has the highest depth. 
             Camera highestdepthzedcam = zedManager.GetLeftCamera();
@@ -258,12 +258,12 @@ public class GUIMessage : MonoBehaviour
 
                     if (imagemono)
                     { //Disable mono rig canvas. 
-                        imagemono.gameObject.SetActive(false);
+                        imagemono.SetActive(false);
                     }
                     else if (imageleft)
                     { //Disable stereo rig canvases. 
-                        imageleft.gameObject.SetActive(false);
-                        imageright.gameObject.SetActive(false);
+                        imageleft.SetActive(false);
+                        imageright.SetActive(false);
                     }
                 }
             }
@@ -389,12 +389,12 @@ public class GUIMessage : MonoBehaviour
 
             if (imagemono)
             {
-                imagemono.gameObject.transform.parent.gameObject.SetActive(false);
+                imagemono.transform.parent.gameObject.SetActive(false);
             }
             else if (imageleft)
             {
-                imageleft.gameObject.transform.parent.gameObject.SetActive(false);
-                imageright.gameObject.transform.parent.gameObject.SetActive(false);
+                imageleft.transform.parent.gameObject.SetActive(false);
+                imageright.transform.parent.gameObject.SetActive(false);
             }
         }
 
