@@ -599,7 +599,7 @@ MonoBehaviour:
   cameraID: 0
   depthMode: 3
   inputType: 0
-  resolution: 7
+  resolution: 8
   FPS: 30
   serialNumber: 0
   svoInputFileName: 
@@ -633,7 +633,6 @@ MonoBehaviour:
   meshPath: Assets/ZEDMesh.obj
   meshFilterParameters: 0
   objectDetectionInstanceID: 0
-  objectDetectionImageSyncMode: 0
   objectDetectionTracking: 1
   objectDetection2DMask: 0
   objectDetectionModel: 2
@@ -656,7 +655,6 @@ MonoBehaviour:
   objectClassFruitVegetableFilter: 1
   objectClassSportFilter: 1
   bodyTrackingInstanceID: 1
-  bodyTrackingImageSyncMode: 1
   bodyTrackingTracking: 1
   bodyTracking2DMask: 0
   bodyTrackingModel: 2
