@@ -1018,7 +1018,7 @@ namespace sl
         /// <summary>
         /// 2208*1242. Supported frame rate: 15 FPS.
         /// </summary>
-        HD2K = 1,
+        HD2K = 2,
         /// <summary>
         /// 1920*1080. Supported frame rates: 15, 30 FPS.
         /// </summary>
