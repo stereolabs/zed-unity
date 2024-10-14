@@ -87,6 +87,7 @@ public class RenderingPipelineDefines
         var definesList = GetDefines();
         if (!definesList.Contains(define))
         {
+            Debug.Log("ZED added define: " + define);
             definesList.Add(define);
             SetDefines(definesList);
         }
@@ -102,6 +103,7 @@ public class RenderingPipelineDefines
         var definesList = GetDefines();
         if (definesList.Contains(define))
         {
+            Debug.Log("ZED removed define: " + define);
             definesList.Remove(define);
             SetDefines(definesList);
         }
