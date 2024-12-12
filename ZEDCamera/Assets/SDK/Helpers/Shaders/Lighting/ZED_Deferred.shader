@@ -68,6 +68,8 @@ Properties
 				o.pos = float4(v.pos.x*2.0, -v.pos.y*2.0, 0, 1);
 #elif SHADER_API_VULKAN
 				o.pos = float4(v.pos.x * 2.0, -v.pos.y * 2.0, 0, 1);
+#else
+				o.pos = float4(v.pos.x*2.0, v.pos.y*2.0, 0, 1);
 #endif
 				o.screenUV = float4(v.pos.x - 0.5, v.pos.y - 0.5, 0, 1);
 				o.depthUV = float4(v.pos.x + 0.5f, v.pos.y + 0.5f, 0, 1);
