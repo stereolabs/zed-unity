@@ -105,8 +105,17 @@ public class HideFromWrongCameras : MonoBehaviour
 
     private void DrawCanvas(Camera drawcam)
     {
-        Matrix4x4 canvastrs = Matrix4x4.TRS(transform.position, transform.rotation, transform.localScale);
+        float referenceAspect = 16.0f / 9.0f;
+        float currentAspect = (float)Screen.width / Screen.height;
+
+        // Compute scale factors for each axis to zoom in
+        float scaleFactorX = currentAspect < referenceAspect ? referenceAspect / currentAspect : 1.0f;
+        float scaleFactorY = currentAspect > referenceAspect ? currentAspect / referenceAspect : 1.0f;
+        Vector3 newScale = new Vector3(transform.localScale.x * scaleFactorX, transform.localScale.y * scaleFactorY, transform.localScale.z);
+
+        Matrix4x4 canvastrs = Matrix4x4.TRS(transform.position, transform.rotation, newScale);
         Graphics.DrawMesh(mfilter.mesh, canvastrs, rend.material, gameObject.layer, drawcam);
+
     }
 #else
 
