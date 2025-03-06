@@ -5,10 +5,15 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
-    path: Assets/ZED/Examples/Body Tracking/Scene/BodyTrackingSingle.unity
+  - enabled: 0
+    path: Assets/Samples/Body Tracking/Scene/BodyTrackingSingle.unity
     guid: fde415f3a792698449059817de3b89cf
+  - enabled: 1
+    path: Assets/Samples/Body Tracking/Scene/BodyTrackingMulti.unity
+    guid: 08444d5dd1c0fe44ea72c43a28cf578d
   m_configObjects:
-    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 86769cf46ad9a184e920a5e6b66c9d57, type: 2}
-    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 664e825db1d49ae41be6cef83adddb78, type: 2}
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 0d8f6ade096f8f8478decfc0464331f9, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 96ea8887ac3ce8d4f8f9e66853267f85, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 3f87000c5c696bb45b60e79b106d4147, type: 2}
+    xr.sdk.mock-hmd.settings: {fileID: 11400000, guid: b555278a51b702d48a4b63179a46d6b1, type: 2}
+  m_UseUCBPForAssetBundles: 0

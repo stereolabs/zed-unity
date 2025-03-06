@@ -99,7 +99,7 @@ public class GUIMessage : MonoBehaviour
     private void Awake()
     {
         zedManager = GetComponent<ZEDManager>();
-        oldInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
+        oldInitStatus = sl.ERROR_CODE.LAST;
         if (!zedManager.IsStereoRig) //Without VR, we use a Screen Space - Overlay canvas. 
         {
             //Instantiate the mono warning prefab and set basic settings for it. 
@@ -267,7 +267,7 @@ public class GUIMessage : MonoBehaviour
                     }
                 }
             }
-            else if (e == sl.ERROR_CODE.ERROR_CODE_LAST) //"Loading..."
+            else if (e == sl.ERROR_CODE.LAST) //"Loading..."
             {
                 //Initial error code set before an initialization attempt has returned successful or failed. 
                 //In short, it means it's still loading. 

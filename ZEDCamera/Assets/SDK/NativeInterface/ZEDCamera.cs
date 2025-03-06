@@ -285,7 +285,7 @@ namespace sl
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(4, 2, 0);
+        public static readonly System.Version PluginVersion = new System.Version(5, 0, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
@@ -324,7 +324,6 @@ namespace sl
         */
         [DllImport(nameDll, EntryPoint = "sl_open_camera")]
         private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, uint serialNumber, System.Text.StringBuilder svoPath, System.Text.StringBuilder ipStream, int portStream, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
-
 
         /*
          * Close function.
@@ -562,7 +561,8 @@ namespace sl
          */
         [DllImport(nameDll, EntryPoint = "sl_enable_positional_tracking_unity")]
         private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, 
-            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = sl.POSITIONAL_TRACKING_MODE.GEN_1, System.Text.StringBuilder aeraFilePath = null);
+            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = sl.POSITIONAL_TRACKING_MODE.GEN_1, 
+            bool enableLightComputationMode = false, System.Text.StringBuilder aeraFilePath = null);
 
         [DllImport(nameDll, EntryPoint = "sl_disable_positional_tracking")]
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
@@ -624,8 +624,8 @@ namespace sl
         /*
         * Spatial Mapping functions.
         */
-        [DllImport(nameDll, EntryPoint = "sl_enable_spatial_mapping_unity")]
-        private static extern int dllz_enable_spatial_mapping(int cameraID, int type, float resolution_meter, float max_range_meter, int saveTexture,int max_memory_usage);
+        [DllImport(nameDll, EntryPoint = "sl_enable_spatial_mapping")]
+        private static extern int dllz_enable_spatial_mapping(int cameraID, ref SpatialMappingParameters mappingParams);
 
         [DllImport(nameDll, EntryPoint = "sl_disable_spatial_mapping")]
         private static extern void dllz_disable_spatial_mapping(int cameraID);
@@ -754,7 +754,7 @@ namespace sl
         private static extern int dllz_update_objects_batch(int cameraID, out int nbBatches);
 
         [DllImport(nameDll, EntryPoint = "sl_get_objects_batch")]
-        private static extern int dllz_get_objects_batch_data(int cameraID, int batch_index, ref int numData, ref int id, ref OBJECT_CLASS label, ref OBJECT_SUBCLASS sublabel, ref TRACKING_STATE trackingState,
+        private static extern int dllz_get_objects_batch_data(int cameraID, int batch_index, ref int numData, ref int id, ref OBJECT_CLASS label, ref OBJECT_SUBCLASS sublabel, ref POSITIONAL_TRACKING_STATE trackingState,
             [In, Out] Vector3[] position, [In, Out] float[,] positionCovariances, [In, Out] Vector3[] velocities, [In, Out] ulong[] timestamps, [In, Out] Vector2[,] boundingBoxes2D, [In, Out] Vector3[,] boundingBoxes,
             [In, Out] float[] confidences, [In, Out] OBJECT_ACTION_STATE[] actionStates, [In, Out] Vector2[,] headBoundingBoxes2D, [In, Out] Vector3[,] headBoundingBoxes, [In, Out] Vector3[] headPositions);
 
@@ -1126,6 +1126,8 @@ namespace sl
             [MarshalAs(UnmanagedType.U1)]
             public bool enableImageValidityCheck;
 
+            public Resolution maximumWorkingResolution;
+
             /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
             /// </summary>
@@ -1154,6 +1156,7 @@ namespace sl
                 asyncGrabRecovery = init.asyncGrabCameraRecovery;
                 grabComputeCappingFPS = init.grabComputeCappingFPS;
                 enableImageValidityCheck = init.enableImageValidityCheck;
+                maximumWorkingResolution = init.maximumWorkingResolution;
             }
         }
 
@@ -1469,10 +1472,8 @@ namespace sl
             {
                 case DEPTH_MODE.NEURAL_PLUS:
                     return AI_MODELS.NEURAL_PLUS_DEPTH;
-                    break;
                 case DEPTH_MODE.NEURAL:
                     return AI_MODELS.NEURAL_DEPTH;
-                    break;
                 default:
                     return AI_MODELS.LAST;
             }
@@ -1487,11 +1488,11 @@ namespace sl
         /// <param name="areaFilePath"> (optional) file of spatial memory file that has to be loaded to relocate in the scene.</param>
         /// <returns></returns>
         public sl.ERROR_CODE EnableTracking(ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = true, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, bool trackingIsStatic = false,
-            bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = POSITIONAL_TRACKING_MODE.GEN_1, string areaFilePath = "")
+            bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = POSITIONAL_TRACKING_MODE.GEN_1, bool enableLightComputationMode = false, string areaFilePath = "")
         {
             sl.ERROR_CODE trackingStatus = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
             trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(CameraID, ref quat, ref vec, enableSpatialMemory, enablePoseSmoothing, enableFloorAlignment, 
-                trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, mode, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
+                trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, mode, enableLightComputationMode, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
             return trackingStatus;
         }
 
@@ -1992,9 +1993,9 @@ namespace sl
         /// <param name="referenceType">Reference frame for setting the rotation/position. CAMERA gives movement relative to the last pose.
         /// WORLD gives cumulative movements since tracking started.</param>
         /// <returns>State of ZED's Tracking system (off, searching, ok).</returns>
-        public TRACKING_STATE GetPosition(ref Quaternion rotation, ref Vector3 position, REFERENCE_FRAME referenceType = REFERENCE_FRAME.WORLD)
+        public POSITIONAL_TRACKING_STATE GetPosition(ref Quaternion rotation, ref Vector3 position, REFERENCE_FRAME referenceType = REFERENCE_FRAME.WORLD)
         {
-            return (TRACKING_STATE)dllz_get_position(CameraID, ref rotation, ref position, (int)referenceType);
+            return (POSITIONAL_TRACKING_STATE)dllz_get_position(CameraID, ref rotation, ref position, (int)referenceType);
         }
 
         /// <summary>
@@ -2007,9 +2008,9 @@ namespace sl
         /// <param name="referenceFrame">Reference frame for setting the rotation/position. CAMERA gives movement relative to the last pose.
         /// WORLD gives cumulative movements since tracking started.</param>
         /// <returns>State of ZED's Tracking system (off, searching, ok).</returns>
-        public TRACKING_STATE GetPosition(ref Quaternion rotation, ref Vector3 translation, ref Quaternion targetQuaternion, ref Vector3 targetTranslation, REFERENCE_FRAME referenceFrame = REFERENCE_FRAME.WORLD)
+        public POSITIONAL_TRACKING_STATE GetPosition(ref Quaternion rotation, ref Vector3 translation, ref Quaternion targetQuaternion, ref Vector3 targetTranslation, REFERENCE_FRAME referenceFrame = REFERENCE_FRAME.WORLD)
         {
-            return (TRACKING_STATE)dllz_get_position_at_target_frame(CameraID, ref rotation, ref translation, ref targetQuaternion, ref targetTranslation, (int)referenceFrame);
+            return (POSITIONAL_TRACKING_STATE)dllz_get_position_at_target_frame(CameraID, ref rotation, ref translation, ref targetQuaternion, ref targetTranslation, (int)referenceFrame);
         }
 
 
@@ -2023,7 +2024,7 @@ namespace sl
         /// <param name="referenceFrame">Reference frame for setting the rotation/position. CAMERA gives movement relative to the last pose.
         /// WORLD gives cumulative movements since tracking started.</param>
         /// <returns>State of ZED's Tracking system (off, searching, ok).</returns>
-        public TRACKING_STATE GetPosition(ref Quaternion rotation, ref Vector3 translation, TRACKING_FRAME trackingFrame, REFERENCE_FRAME referenceFrame = REFERENCE_FRAME.WORLD)
+        public POSITIONAL_TRACKING_STATE GetPosition(ref Quaternion rotation, ref Vector3 translation, TRACKING_FRAME trackingFrame, REFERENCE_FRAME referenceFrame = REFERENCE_FRAME.WORLD)
         {
             Quaternion rotationOffset = Quaternion.identity;
             Vector3 positionOffset = Vector3.zero;
@@ -2040,7 +2041,7 @@ namespace sl
                     break;
             }
 
-            return (TRACKING_STATE)dllz_get_position_at_target_frame(CameraID, ref rotation, ref translation, ref rotationOffset, ref positionOffset, (int)referenceFrame);
+            return (POSITIONAL_TRACKING_STATE)dllz_get_position_at_target_frame(CameraID, ref rotation, ref translation, ref rotationOffset, ref positionOffset, (int)referenceFrame);
         }
 
         /// <summary>
@@ -2050,9 +2051,9 @@ namespace sl
         /// <param name="referenceType">Reference frame for setting the rotation/position. CAMERA gives movement relative to the last pose.
         /// WORLD gives cumulative movements since tracking started.</param>
         /// <returns>State of ZED's Tracking system (off, searching, ok).</returns>
-        public TRACKING_STATE GetPosition(ref Pose pose, REFERENCE_FRAME referenceType = REFERENCE_FRAME.WORLD)
+        public POSITIONAL_TRACKING_STATE GetPosition(ref Pose pose, REFERENCE_FRAME referenceType = REFERENCE_FRAME.WORLD)
         {
-            return (TRACKING_STATE)dllz_get_position_data(CameraID, ref pose, (int)referenceType);
+            return (POSITIONAL_TRACKING_STATE)dllz_get_position_data(CameraID, ref pose, (int)referenceType);
         }
 
 
@@ -2546,12 +2547,12 @@ namespace sl
         /// <param name="max_range_meter">Maximum scanning range in meters.</param>
         /// <param name="saveTexture">True to scan surface textures in addition to geometry.</param>
         /// <returns></returns>
-        public sl.ERROR_CODE EnableSpatialMapping(SPATIAL_MAP_TYPE type, float resolution_meter, float max_range_meter, bool saveTexture = false)
+        public sl.ERROR_CODE EnableSpatialMapping(ref SpatialMappingParameters spatialMappingParameters)
         {
             sl.ERROR_CODE spatialMappingStatus = ERROR_CODE.FAILURE;
             //lock (grabLock)
             {
-                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, (int)type,resolution_meter, max_range_meter, System.Convert.ToInt32(saveTexture), 4096);
+                spatialMappingStatus = (sl.ERROR_CODE)dllz_enable_spatial_mapping(CameraID, ref spatialMappingParameters);
             }
             return spatialMappingStatus;
         }

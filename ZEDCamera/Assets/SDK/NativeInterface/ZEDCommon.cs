@@ -169,21 +169,68 @@ namespace sl
     public struct DeviceProperties
     {
         /// <summary>
-        /// The camera state
+        /// State of the camera.
+        ///
+        /// Default: Default: sl.CAMERA_STATE.NOT_AVAILABLE
         /// </summary>
         public sl.CAMERA_STATE cameraState;
+
         /// <summary>
-        /// The camera id (Notice that only the camera with id '0' can be used on Windows)
+        /// Id of the camera.
+        /// 
+        /// Default: -1
         /// </summary>
         public int id;
+
         /// <summary>
-        /// The camera model
+        /// System path of the camera.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)]
+        public string path;
+        /// <summary>
+        /// i2c port of the camera.
+        /// </summary>
+        public int i2cPort;
+        /// <summary>
+        /// Model of the camera.
         /// </summary>
         public sl.MODEL cameraModel;
         /// <summary>
-        /// The camera serial number
+        /// Serial number of the camera.
+        ///
+        /// Default: 0
+        /// \warning Not provided for Windows.
         /// </summary>
-        public int sn;
+        public uint sn;
+        /// <summary>
+        /// [Cam model, eeprom version, white balance param]
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 3)]
+        public byte[] identifiers;
+        /// <summary>
+        ///  badge name (zedx_ar0234)
+        /// </summary>
+        public IntPtr camera_badge;
+        /// <summary>
+        /// Name of sensor (zedx)
+        /// </summary>
+        public IntPtr camera_sensor_model;
+        /// <summary>
+        /// Name of Camera in DT (ZED_CAM1)
+        /// </summary>
+        public IntPtr camera_name;
+        /// <summary>
+        /// Input type of the camera.
+        /// </summary>
+        public sl.INPUT_TYPE inputType;
+        /// <summary>
+        /// sensor_address when available (ZED-X HDR/XOne HDR only)
+        /// </summary>
+        public byte sensorAddressLeft;
+        /// <summary>
+        /// sensor_address when available (ZED-X HDR/XOne HDR only)
+        /// </summary>
+        public byte sensorAddressRight;
     };
 
     /// <summary>
@@ -820,6 +867,10 @@ namespace sl
         /// <summary>
         ///  End to End Neural disparity estimation, requires AI module
         /// </summary>
+        NEURAL_LIGHT,
+        /// <summary>
+        ///  End to End Neural disparity estimation, requires AI module
+        /// </summary>
         NEURAL,
         /// <summary>
         ///  More accurate Neural disparity estimation.\n Requires AI module.
@@ -857,7 +908,15 @@ namespace sl
     public enum ERROR_CODE
     {
         /// <summary>
-        /// The image could be corrupted, Enabled with the parameter InitParameters::enableImageValidityCheck.
+        /// The operation could not proceed with the target configuration but did success with a fallback.
+        /// </summary>
+        CONFIGURATION_FALLBACK = -4,
+        /// <summary>
+        /// The input data does not contains the high frequency sensors data, this is usually because it requires newer SVO/Streaming. In order to work this modules needs inertial data present in it input.
+        /// </summary>
+        SENSORS_DATA_REQUIRED = -3,
+        /// <summary>
+        ///  The image could be corrupted, Enabled with the parameter InitParameters.enable_image_validity_check
         /// </summary>
         CORRUPTED_FRAME = -2,
         /// <summary>
@@ -865,48 +924,47 @@ namespace sl
         /// </summary>
         CAMERA_REBOOTING = -1,
         /// <summary>
-        /// Operation was successful.
+        /// Standard code for successful behavior.
         /// </summary>
         SUCCESS,
         /// <summary>
-        /// Standard, generic code for unsuccessful behavior when no other code is more appropriate.
+        /// Standard code for unsuccessful behavior.
         /// </summary>
         FAILURE,
         /// <summary>
-        /// No GPU found, or CUDA capability of the device is not supported.
+        /// No GPU found or CUDA capability of the device is not supported.
         /// </summary>
         NO_GPU_COMPATIBLE,
         /// <summary>
-        /// Not enough GPU memory for this depth mode. Try a different mode (such as PERFORMANCE).
+        /// Not enough GPU memory for this depth mode. Try a different mode (such as \ref DEPTH_MODE "PERFORMANCE"), or increase the minimum depth value (see \ref InitParameters.depthMinimumDistance).
         /// </summary>
         NOT_ENOUGH_GPUMEM,
         /// <summary>
-        /// The ZED camera is not plugged in or detected.
+        /// No camera was detected.
         /// </summary>
         CAMERA_NOT_DETECTED,
         /// <summary>
-        /// The MCU that controls the sensors module has an invalid Serial Number. You can try to recover it launching the 'ZED Diagnostic' tool from the command line with the option '-r'.
+        /// The MCU that controls the sensors module has an invalid serial number. You can try to recover it by launching the <b>ZED Diagnostic</b> tool from the command line with the option <code>-r</code>.
         /// </summary>
         SENSORS_NOT_INITIALIZED,
         /// <summary>
-        /// a ZED Mini is detected but the inertial sensor cannot be opened. (Never called for original ZED)
+        /// A camera with sensor is detected but the sensors (IMU, barometer, ...) cannot be opened. Only the \ref MODEL "MODEL.ZED" does not has sensors. Unplug/replug is required.
         /// </summary>
         SENSOR_NOT_DETECTED,
         /// <summary>
-        /// For Nvidia Jetson X1 only - resolution not yet supported (USB3.0 bandwidth).
+        /// In case of invalid resolution parameter, such as an upsize beyond the original image size in Camera.RetrieveImage.
         /// </summary>
         INVALID_RESOLUTION,
         /// <summary>
-        /// USB communication issues. Occurs when the camera FPS cannot be reached, due to a lot of corrupted frames.
-        /// Try changing the USB port.
+        /// Insufficient bandwidth for the correct use of the camera. This issue can occur when you use multiple cameras or a USB 2.0 port.
         /// </summary>
         LOW_USB_BANDWIDTH,
         /// <summary>
-        /// ZED calibration file is not found on the host machine. Use ZED Explorer or ZED Calibration to get one.
+        /// The calibration file of the camera is not found on the host machine. Use <b>ZED Explorer</b> or <b>ZED Calibration</b> to download the factory calibration file.
         /// </summary>
         CALIBRATION_FILE_NOT_AVAILABLE,
         /// <summary>
-        /// ZED calibration file is not valid. Try downloading the factory one or recalibrating using the ZED Calibration tool.
+        /// The calibration file is not valid. Try to download the factory calibration file or recalibrate your camera using <b>ZED Calibration</b>.
         /// </summary>
         INVALID_CALIBRATION_FILE,
         /// <summary>
@@ -914,35 +972,36 @@ namespace sl
         /// </summary>
         INVALID_SVO_FILE,
         /// <summary>
-        /// An SVO recorder-related error occurred (such as not enough free storage or an invalid file path).
+        /// An error occurred while trying to record an SVO (not enough free storage, invalid file, ...).
         /// </summary>
         SVO_RECORDING_ERROR,
         /// <summary>
-        /// An SVO related error when NVIDIA based compression cannot be loaded
+        /// An SVO related error, occurs when NVIDIA based compression cannot be loaded.
         /// </summary>
         SVO_UNSUPPORTED_COMPRESSION,
         /// <summary>
-        /// SVO end of file has been reached, and no frame will be available until the SVO position is reset.
+        /// SVO end of file has been reached.
+        /// \n No frame will be available until the SVO position is reset.
         /// </summary>
-        END_OF_SVOFILE_REACHED,
+        END_OF_SVO_FILE_REACHED,
         /// <summary>
         /// The requested coordinate system is not available.
         /// </summary>
         INVALID_COORDINATE_SYSTEM,
         /// <summary>
-        /// The firmware of the ZED is out of date. Update to the latest version.
+        /// The firmware of the camera is out of date. Update to the latest version.
         /// </summary>
         INVALID_FIRMWARE,
         /// <summary>
-        ///  An invalid parameter has been set for the function.
+        ///  Invalid parameters have been given for the function.
         /// </summary>
         INVALID_FUNCTION_PARAMETERS,
         /// <summary>
-        /// In grab() only, a CUDA error has been detected in the process. Activate wrapperVerbose in ZEDManager.cs for more info.
+        /// A CUDA error has been detected in the process, in Camera.Grab() or Camera.RetrieveXXX() only. Activate wrapperVerbose in ZEDManager.cs for more info.
         /// </summary>
         CUDA_ERROR,
         /// <summary>
-        /// In grab() only, ZED SDK is not initialized. Probably a missing call to sl::Camera::open.
+        /// The ZED SDK is not initialized. Probably a missing call to Camera.Open().
         /// </summary>
         CAMERA_NOT_INITIALIZED,
         /// <summary>
@@ -950,36 +1009,39 @@ namespace sl
         /// </summary>
         NVIDIA_DRIVER_OUT_OF_DATE,
         /// <summary>
-        /// The function call is not valid in the current context. Could be a missing a call to sl::Camera::open.
+        /// The call of the function is not valid in the current context. Could be a missing call of Camera.Open().
         /// </summary>
         INVALID_FUNCTION_CALL,
         /// <summary>
-        ///  The SDK wasn't able to load its dependencies, the installer should be launched.
+        ///  The ZED SDK was not able to load its dependencies or some assets are missing. Reinstall the ZED SDK or check for missing dependencies (cuDNN, TensorRT).
         /// </summary>
         CORRUPTED_SDK_INSTALLATION,
         /// <summary>
-        /// The installed SDK is not the SDK used to compile the program.
+        /// The installed ZED SDK is incompatible with the one used to compile the program.
         /// </summary>
         INCOMPATIBLE_SDK_VERSION,
         /// <summary>
-        /// The given area file does not exist. Check the file path.
+        /// The given area file does not exist. Check the path.
         /// </summary>
         INVALID_AREA_FILE,
         /// <summary>
-        /// The area file does not contain enough data to be used ,or the sl::DEPTH_MODE used during the creation of the
-        /// area file is different from the one currently set.
+        /// The area file does not contain enough data to be used or the \ref DEPTH_MODE used during the creation of the area file is different from the one currently set.
         /// </summary>
         INCOMPATIBLE_AREA_FILE,
         /// <summary>
-        /// Camera failed to set up.
+        /// Failed to open the camera at the proper resolution. Try another resolution or make sure that the UVC driver is properly installed.
         /// </summary>
         CAMERA_FAILED_TO_SETUP,
         /// <summary>
-        /// Your ZED cannot be opened. Try replugging it to another USB port or flipping the USB-C connector (if using ZED Mini).
+        /// Your camera can not be opened. Try replugging it to another port or flipping the USB-C connector (if there is one).
         /// </summary>
         CAMERA_DETECTION_ISSUE,
         /// <summary>
-        /// No GPU found or CUDA is unable to list it. Can be a driver/reboot issue.
+        /// Cannot start the camera stream. Make sure your camera is not already used by another process or blocked by firewall or antivirus.
+        /// </summary>
+        CAMERA_ALREADY_IN_USE,
+        /// <summary>
+        ///  No GPU found. CUDA is unable to list it. Can be a driver/reboot issue.
         /// </summary>
         NO_GPU_DETECTED,
         /// <summary>
@@ -988,23 +1050,21 @@ namespace sl
         /// </summary>
         PLANE_NOT_FOUND,
         /// <summary>
-        /// The Object detection module is only compatible with the ZED 2
+        /// The module you try to use is not compatible with your camera \ref MODEL. \note \ref MODEL "MODEL.ZED" does not has an IMU and does not support the AI modules.
         /// </summary>
         MODULE_NOT_COMPATIBLE_WITH_CAMERA,
         /// <summary>
-        /// The module needs the sensors to be enabled (see InitParameters::sensors_required)
+        /// The module needs the sensors to be enabled (see InitParameters.sensorsRequired).
         /// </summary>
         MOTION_SENSORS_REQUIRED,
         /// <summary>
-        /// The module needs a newer version of CUDA
+        /// The module needs a newer version of CUDA.
         /// </summary>
         MODULE_NOT_COMPATIBLE_WITH_CUDA_VERSION,
-        /// <summary>
-        /// End of ERROR_CODE
-        /// </summary>
-        ERROR_CODE_LAST
+        /// @cond SHOWHIDDEN 
+        LAST
+        /// @endcond
     };
-
 
     /// <summary>
     /// Represents the available resolution options.
@@ -1012,13 +1072,21 @@ namespace sl
     public enum RESOLUTION
     {
         /// <summary>
-        /// 2208*1242. Supported frame rate: 15 FPS.
+        /// 3856x2180 for imx678 mono
         /// </summary>
         HD4K = 0,
+        /// <summary>
+        /// 3800x1800
+        /// </summary>
+        QHD_PLUS = 1,
         /// <summary>
         /// 2208*1242. Supported frame rate: 15 FPS.
         /// </summary>
         HD2K = 2,
+        /// <summary>
+        /// 1920*1536 (x2) \n Available FPS: 15, 30
+        /// </summary>
+        HD1536,
         /// <summary>
         /// 1920*1080. Supported frame rates: 15, 30 FPS.
         /// </summary>
@@ -1053,25 +1121,24 @@ namespace sl
         /// <summary>
         /// 2208*1242. Supported frame rate: 15 FPS.
         /// </summary>
-        HD2K = 1,
+        HD2K = 2,
         /// <summary>
         /// 1920*1080. Supported frame rates: 15, 30 FPS.
         /// </summary>
-        HD1080 = 2,
+        HD1080 = 4,
         /// <summary>
         /// 1280*720. Supported frame rates: 15, 30, 60 FPS.
         /// </summary>
-        HD720 = 4,
+        HD720 = 6,
         /// <summary>
         /// 672*376. Supported frame rates: 15, 30, 60, 100 FPS.
         /// </summary>
-        VGA = 6,
+        VGA = 8,
         /// <summary>
         /// Select the resolution compatible with camera, on ZEDX HD1200, HD720 otherwise
         /// </summary>
-        AUTO = 7
+        AUTO = 9
     };
-
 
     /// <summary>
     /// Types of compatible ZED cameras.
@@ -1377,32 +1444,32 @@ namespace sl
     /// <summary>
     /// Possible states of the ZED's Tracking system.
     /// </summary>
-    public enum TRACKING_STATE
+    public enum POSITIONAL_TRACKING_STATE
     {
         /// <summary>
         /// The camera is searching for a previously known position to locate itself.
         /// </summary>
-        TRACKING_SEARCH,
+        SEARCHING,
         /// <summary>
         /// Tracking is operating normally; tracking data should be correct.
         /// </summary>
-        TRACKING_OK,
+        OK,
         /// <summary>
         /// Tracking is not enabled.
         /// </summary>
-        TRACKING_OFF,
+        OFF,
         /// <summary>
         /// Effective FPS is too low to give proper results for motion tracking. Consider using PERFORMANCES parameters (DEPTH_MODE_PERFORMANCE, low camera resolution (VGA,HD720))
         /// </summary>
-        TRACKING_FPS_TOO_LOW,
+        FPS_TOO_LOW,
         /// <summary>
         /// The camera is searching for the floor plane to locate itself related to it, the REFERENCE_FRAME::WORLD will be set afterward.
         /// </summary>
-        TRACKING_SEARCHING_FLOOR_PLANE,
+        SEARCHING_FLOOR_PLANE,
         /// <summary>
         /// The tracking module was unable to perform tracking from the previous frame to the current frame.
         /// </summary>
-        NOT_OK, 
+        UNAVAILABLE, 
     }
 
     /// <summary>
@@ -1822,6 +1889,18 @@ namespace sl
         ///  \n default: disabled
         /// </summary>
         public bool enableImageValidityCheck = false;
+        /// <summary>
+        /// Set a maximum size for all SDK output, like retrieveImage and retrieveMeasure functions.
+        /// This will override the default (0,0) and instead of outputting native image size sl::Mat, the ZED SDK will take this size as default.
+        /// A custom lower size can also be used at runtime, but not bigger. This is used for internal optimization of compute and memory allocations
+        /// 
+        /// The default is similar to previous version with (0,0), meaning native image size
+        /// 
+        /// \note: if maximum_working_resolution field are lower than 64, it will be interpreted as dividing scale factor;
+        /// - maximum_working_resolution = sl.Resolution(1280, 2) -> 1280 x (image_height/2) = 1280 x (half height)
+        /// - maximum_working_resolution = sl.Resolution(4, 4) -> (image_width/4) x (image_height/4) = quarter size
+        /// </summary>
+        public Resolution maximumWorkingResolution;
 
         /// <summary>
         /// Constructor. Sets default initialization parameters recommended for Unity.
@@ -1829,15 +1908,15 @@ namespace sl
         public InitParameters()
         {
             this.inputType = sl.INPUT_TYPE.INPUT_TYPE_USB;
-            this.resolution = RESOLUTION.HD720;
-            this.cameraFPS = 60;
+            this.resolution = RESOLUTION.AUTO;
+            this.cameraFPS = -1;
             this.cameraDeviceID = 0;
             this.serialNumber = 0;
             this.pathSVO = "";
             this.svoRealTimeMode = false;
             this.coordinateUnit = UNIT.METER;
             this.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP;
-            this.depthMode = DEPTH_MODE.PERFORMANCE;
+            this.depthMode = DEPTH_MODE.NEURAL;
             this.depthMinimumDistance = -1;
             this.depthMaximumDistance = -1;
             this.cameraImageFlip = 2;
@@ -1857,6 +1936,7 @@ namespace sl
             this.asyncGrabCameraRecovery = false;
             this.grabComputeCappingFPS = 0f;
             this.enableImageValidityCheck = false;
+            this.maximumWorkingResolution = new Resolution(0, 0);
         }
     }
 
@@ -2021,6 +2101,47 @@ namespace sl
             autoApplyModule = autoApplyModule_;
         }
     }
+
+    /// <summary>
+    /// DLL-friendly version of SpatialMappingPara (found in ZEDCommon.cs).
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SpatialMappingParameters
+    {
+        public float resolutionMeter;
+        public float rangeMeter;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool saveTexture;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool useChunkOnly;
+        public int maxMemoryUsage;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool reverseVertexOrder;
+        public SPATIAL_MAP_TYPE mapType;
+        public int stabilityCounter;
+        public float disparityStd;
+        public float decay;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableForgetPast;
+
+        public SpatialMappingParameters(float _resolutionMeter = 0.05f, float _rangeMeter = 5.0f, bool _saveTextre = false,
+            bool _useChunkOnly = false, int _maxMemoryUsage = 4096, bool _reverseVertexOrder = false,
+            SPATIAL_MAP_TYPE _mapType = SPATIAL_MAP_TYPE.MESH, int _stabilityCounter = 0, float _disparityStd = 0.3f,
+            float _decay = 1.0f, bool _enableForgetPast = false)
+        {
+            resolutionMeter = _resolutionMeter;
+            rangeMeter = _rangeMeter;
+            saveTexture = _saveTextre;
+            useChunkOnly = _useChunkOnly;
+            maxMemoryUsage = _maxMemoryUsage;
+            reverseVertexOrder = _reverseVertexOrder;
+            mapType = _mapType;
+            stabilityCounter = _stabilityCounter;
+            disparityStd = _disparityStd;
+            decay = _decay;
+            enableForgetPast = _enableForgetPast;
+        }
+    };
 
     /// <summary>
     /// Sets the plane detection parameters.
@@ -3011,13 +3132,17 @@ namespace sl
         /// <summary>
         /// related to sl.DETECTION_MODEL.NEURAL
         /// </summary>
-        NEURAL_DEPTH=12,
+        NEURAL_LIGHT_DEPTH = 12,
+        /// <summary>
+        /// related to sl.DETECTION_MODEL.NEURAL
+        /// </summary>
+        NEURAL_DEPTH =13,
         /// <summary>
         /// related to sl.DETECTION_MODEL.NEURAL_PLUS
         /// </summary>
-        NEURAL_PLUS_DEPTH = 13,
+        NEURAL_PLUS_DEPTH = 14,
 
-        LAST =14
+        LAST =15
     };
 
     /// <summary>
@@ -3162,7 +3287,7 @@ namespace sl
         /// <summary>
         ///  Defines the object tracking state
         /// </summary>
-        public TRACKING_STATE trackingState = TRACKING_STATE.TRACKING_OFF;
+        public POSITIONAL_TRACKING_STATE trackingState = POSITIONAL_TRACKING_STATE.OFF;
         /// <summary>
         /// A sample of 3d position
         /// </summary>

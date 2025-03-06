@@ -4,7 +4,9 @@ using System.Threading;
 using UnityEngine.XR;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using sl;
 
 /// <summary>
@@ -56,7 +58,7 @@ public class ZEDManager : MonoBehaviour
     /// at C:/ProgramData/stereolabs/SL_Unity_wrapper.txt. This helps find issues that may occur within
     /// the protected .dll, but can decrease performance.
     /// </summary>
-    private bool wrapperVerbose = false;
+    private bool wrapperVerbose = true;
 
     /// <summary>
     /// Current instance of the ZED Camera, which handles calls to the Unity wrapper .dll.
@@ -83,7 +85,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     /*[Tooltip("The accuracy of depth calculations. Higher settings mean more accurate occlusion and lighting but costs performance.")]*/
     [HideInInspector]
-    public sl.DEPTH_MODE depthMode = sl.DEPTH_MODE.PERFORMANCE;
+    public sl.DEPTH_MODE depthMode = sl.DEPTH_MODE.NEURAL;
 
 
     /// <summary>
@@ -95,12 +97,12 @@ public class ZEDManager : MonoBehaviour
     /// Camera Resolution
     /// </summary>
     [HideInInspector]
-    public sl.RESOLUTION resolution = sl.RESOLUTION.HD720;
+    public sl.RESOLUTION resolution = sl.RESOLUTION.AUTO;
     /// <summary>
     /// Targeted FPS, based on the resolution. VGA = 100, HD720 = 60, HD1080 = 30, HD2K = 15.
     /// </summary>
 	[HideInInspector]
-    public int FPS = 60;
+    public int FPS = -1;
 
     /// <summary>
     /// Serial number of the camera to open. Leave the SN to 0 to open the camera by ID
@@ -296,6 +298,12 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public sl.POSITIONAL_TRACKING_MODE positionalTrackingMode;
+
+    /// <summary>
+    ///
+    /// </summary>
+    [HideInInspector]
+    public bool enableLightComputationMode = false;
 
     /// <summary>
     /// Estimate initial position by detecting the floor.
@@ -1334,7 +1342,7 @@ public class ZEDManager : MonoBehaviour
     /// the depth stabilize smooth range is [0, 100]
     /// 0 means a low temporal smmoothing behavior(for highly dynamic scene),
     /// 100 means a high temporal smoothing behavior(for static scene)
-    private int depthStabilization = -1;
+    private int depthStabilization = 30;
     /// <summary>
     /// Indicates if Sensors( IMU,...) is needed/required. For most applications, it is required.
     /// Sensors are transmitted through USB2.0 lines. If USB2 is not available (USB3.0 only extension for example), set it to false.
@@ -1463,11 +1471,11 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Current state of tracking: On, Off, or Searching (lost tracking, trying to recover). Used by anti-drift.
     /// </summary>
-    private sl.TRACKING_STATE zedtrackingState = sl.TRACKING_STATE.TRACKING_OFF;
+    private sl.POSITIONAL_TRACKING_STATE zedtrackingState = sl.POSITIONAL_TRACKING_STATE.OFF;
     /// <summary>
     /// Current state of tracking: On, Off, or Searching (lost tracking, trying to recover). Used by anti-drift.
     /// </summary>
-    public sl.TRACKING_STATE ZEDTrackingState
+    public sl.POSITIONAL_TRACKING_STATE ZEDTrackingState
     {
         get { return zedtrackingState; }
     }
@@ -1519,7 +1527,7 @@ public class ZEDManager : MonoBehaviour
     /// <summary>
     /// Result of the latest attempt to initialize the ZED.
     /// </summary>
-    private sl.ERROR_CODE lastInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
+    private sl.ERROR_CODE lastInitStatus = sl.ERROR_CODE.LAST;
     public sl.ERROR_CODE LastInitStatus { get { return lastInitStatus; } }
 
     private sl.ERROR_CODE optimStatus = sl.ERROR_CODE.FAILURE;
@@ -2075,7 +2083,7 @@ public class ZEDManager : MonoBehaviour
         initParameters.asyncGrabCameraRecovery = asyncGrabCameraRecovery;
         initParameters.grabComputeCappingFPS = grabComputeCappingFPS;
         initParameters.enableImageValidityCheck = enableImageValidityCheck;
-	initParameters.sdkVerbose = wrapperVerbose ? 1 : 0;
+	    initParameters.sdkVerbose = wrapperVerbose ? 1 : 0;
 
         //Check if this rig is a stereo rig. Will set isStereoRig accordingly.
         CheckStereoMode();
@@ -2085,7 +2093,7 @@ public class ZEDManager : MonoBehaviour
         zedPosition = initialPosition;
         zedOrientation = initialRotation;
 
-        lastInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
+        lastInitStatus = sl.ERROR_CODE.LAST;
 
         bool res = zedCamera.CreateCamera((int)cameraID, wrapperVerbose);
         if (!res)
@@ -2160,7 +2168,7 @@ public class ZEDManager : MonoBehaviour
         }
 
         //Starts a coroutine that initializes the ZED without freezing the game.
-        lastInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
+        lastInitStatus = sl.ERROR_CODE.LAST;
         openingLaunched = false;
 
         StartCoroutine(InitZED());
@@ -2206,7 +2214,7 @@ public class ZEDManager : MonoBehaviour
 
     private System.Collections.IEnumerator InitZED()
     {
-        DEPTH_MODE[] NeuralModes = { DEPTH_MODE.NEURAL, DEPTH_MODE.NEURAL_PLUS };
+        DEPTH_MODE[] NeuralModes = {DEPTH_MODE.NEURAL_LIGHT, DEPTH_MODE.NEURAL, DEPTH_MODE.NEURAL_PLUS };
         
         foreach (var mode in NeuralModes) 
         {
@@ -2565,7 +2573,7 @@ public class ZEDManager : MonoBehaviour
                     }
                     else
                     {
-                        zedtrackingState = sl.TRACKING_STATE.TRACKING_OFF;
+                        zedtrackingState = sl.POSITIONAL_TRACKING_STATE.OFF;
                     }
 
                     // Indicate that a new frame is available and pause the thread until a new request is called
@@ -2652,7 +2660,8 @@ public class ZEDManager : MonoBehaviour
             }
 
             sl.ERROR_CODE err = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
-                enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode, pathSpatialMemory));
+                enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode,
+                enableLightComputationMode, pathSpatialMemory));
 
             //Now enable the tracking with the proper parameters.
             if (!(enableTracking = (err == sl.ERROR_CODE.SUCCESS)))
@@ -2809,7 +2818,7 @@ public class ZEDManager : MonoBehaviour
             }
             else //Not AR pass-through mode.
             {
-                if (!ZEDSupportFunctions.IsVector3NaN(zedPosition))
+                if (!ZEDSupportFunctions.IsVector3NaN(zedPosition) && ZEDTrackingState == POSITIONAL_TRACKING_STATE.OK)
                 {
 #if NEW_TRANSFORM_API
                     zedRigRoot.SetLocalPositionAndRotation(zedPosition, zedOrientation);
@@ -3870,7 +3879,7 @@ public class ZEDManager : MonoBehaviour
             {
                 //Enables tracking and initializes the first position of the camera.
                 if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic,
-                    enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
+                    enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode, enableLightComputationMode, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
                 {
                     isZEDTracked = false;
                     throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));

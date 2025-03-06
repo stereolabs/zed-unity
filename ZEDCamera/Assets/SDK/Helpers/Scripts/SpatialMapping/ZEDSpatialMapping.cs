@@ -403,7 +403,15 @@ public class ZEDSpatialMapping
         this.isTextured = isTextured;
 
         //Tell the helper to start scanning. This call gets passed directly to the wrapper call in ZEDCamera.
-        error = spatialMappingHelper.EnableSpatialMapping(type,ZEDSpatialMappingHelper.ConvertResolutionPreset(resolutionPreset), ZEDSpatialMappingHelper.ConvertRangePreset(rangePreset), isTextured);
+        sl.SpatialMappingParameters spatialMappingParameters = new sl.SpatialMappingParameters()
+        {
+            mapType = type,
+            resolutionMeter = ZEDSpatialMappingHelper.ConvertResolutionPreset(resolutionPreset),
+            rangeMeter = ZEDSpatialMappingHelper.ConvertRangePreset(rangePreset),
+            saveTexture = isTextured
+        };
+
+        error = spatialMappingHelper.EnableSpatialMapping(ref spatialMappingParameters);
         if (meshRenderer[0]) meshRenderer[0].isTextured = isTextured;
         if (meshRenderer[1]) meshRenderer[1].isTextured = isTextured;
         stopWanted = false;
@@ -844,7 +852,7 @@ public class ZEDSpatialMapping
         zedCamera.DisableTracking();
         Quaternion quat = Quaternion.identity; Vector3 tr = Vector3.zero;
 
-        if (zedCamera.EnableTracking(ref quat, ref tr, true, false, false, false, true, -1.0f, true, sl.POSITIONAL_TRACKING_MODE.GEN_1, System.IO.File.Exists(basePath + ".area") ? basePath + ".area" : "") != sl.ERROR_CODE.SUCCESS)
+        if (zedCamera.EnableTracking(ref quat, ref tr, true, false, false, false, true, -1.0f, true, sl.POSITIONAL_TRACKING_MODE.GEN_1, false, System.IO.File.Exists(basePath + ".area") ? basePath + ".area" : "") != sl.ERROR_CODE.SUCCESS)
         {
             Debug.LogWarning(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
         }
@@ -1371,9 +1379,9 @@ public class ZEDSpatialMapping
         /// </summary>
         /// <returns></returns>
 
-        public sl.ERROR_CODE EnableSpatialMapping(sl.SPATIAL_MAP_TYPE type,float resolutionMeter, float maxRangeMeter, bool saveTexture)
+        public sl.ERROR_CODE EnableSpatialMapping(ref sl.SpatialMappingParameters spatialMappingParameters)
         {
-            return zedCamera.EnableSpatialMapping(type,resolutionMeter, maxRangeMeter, saveTexture);
+            return zedCamera.EnableSpatialMapping(ref spatialMappingParameters);
         }
 
         /// <summary>
