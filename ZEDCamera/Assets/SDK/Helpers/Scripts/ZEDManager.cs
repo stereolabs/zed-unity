@@ -300,12 +300,6 @@ public class ZEDManager : MonoBehaviour
     public sl.POSITIONAL_TRACKING_MODE positionalTrackingMode;
 
     /// <summary>
-    ///
-    /// </summary>
-    [HideInInspector]
-    public bool enableLightComputationMode = false;
-
-    /// <summary>
     /// Estimate initial position by detecting the floor.
     /// </summary>
     [HideInInspector]
@@ -2661,7 +2655,7 @@ public class ZEDManager : MonoBehaviour
 
             sl.ERROR_CODE err = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
                 enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode,
-                enableLightComputationMode, pathSpatialMemory));
+                pathSpatialMemory));
 
             //Now enable the tracking with the proper parameters.
             if (!(enableTracking = (err == sl.ERROR_CODE.SUCCESS)))
@@ -3879,7 +3873,7 @@ public class ZEDManager : MonoBehaviour
             {
                 //Enables tracking and initializes the first position of the camera.
                 if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic,
-                    enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode, enableLightComputationMode, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
+                    enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
                 {
                     isZEDTracked = false;
                     throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
