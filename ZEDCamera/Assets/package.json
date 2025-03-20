@@ -1,9 +1,9 @@
 {
   "name": "com.stereolabs.zed",
-  "version": "4.2.0",
+  "version": "5.0.0",
   "displayName": "ZED SDK",
   "description": "This package brings the features of the ZED cameras into Unity",
-  "unity": "2021.3",
+  "unity": "2022.3",
   "unityRelease": "0f1",
   "documentationUrl": "https://www.stereolabs.com/docs/unity",
   "changelogUrl": "https://github.com/stereolabs/zed-unity/releases",

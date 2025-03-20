@@ -109,7 +109,14 @@ namespace sl
         {
             if (zed != null && notStarted)
             {
-                sl.ERROR_CODE err = zed.EnableSpatialMapping(sl.SPATIAL_MAP_TYPE.FUSED_POINT_CLOUD, resolution, range);
+                SpatialMappingParameters spatialMappingParameters = new SpatialMappingParameters()
+                {
+                    mapType = SPATIAL_MAP_TYPE.FUSED_POINT_CLOUD,
+                    resolutionMeter = resolution,
+                    rangeMeter = range
+                };
+
+                sl.ERROR_CODE err = zed.EnableSpatialMapping(ref spatialMappingParameters);
 
                 if (err == sl.ERROR_CODE.SUCCESS)
                 {

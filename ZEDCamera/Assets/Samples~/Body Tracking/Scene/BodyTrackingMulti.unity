@@ -43,7 +43,7 @@ RenderSettings:
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 12
-  m_GIWorkflowMode: 0
+  m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -301,7 +301,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: FPS
-      value: 30
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: maxRange
@@ -309,7 +309,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: depthMode
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: inputType
@@ -325,7 +325,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: resolution
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: bodyFitting
@@ -349,7 +349,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: streamInputIP
-      value: "192.168.3.113\t "
+      value: '127.0.0.1 '
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: depthOcclusion
@@ -409,7 +409,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: bodyTrackingMaxRange
-      value: 20
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: objectDetectionModel
@@ -429,10 +429,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: m_confidenceThreshold
-      value: 100
+      value: 95
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: objectDetection2DMask
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
+      propertyPath: positionalTrackingMode
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
@@ -635,7 +639,7 @@ PrefabInstance:
       objectReference: {fileID: 1080472610}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: enableFootIK
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: smoothFactor
@@ -659,7 +663,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: manualOffset.z
-      value: 0.1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: smoothingValue
@@ -667,7 +671,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: automaticOffset
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: enableSmoothing
@@ -679,15 +683,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: enableFootLocking
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
-      propertyPath: displaySDKSkeleton
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
+      propertyPath: displaySDKSkeleton
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: offsetSDKSkeleton.x
-      value: -1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6327103935139800441, guid: ca18a88838151284380d84fc86d327e5, type: 3}
       propertyPath: displayDebugSkeleton

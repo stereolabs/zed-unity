@@ -43,7 +43,7 @@ RenderSettings:
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 12
-  m_GIWorkflowMode: 0
+  m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -96,7 +96,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 628fe41a49ac7f4498c5ac06de0ef911, type: 2}
   m_LightingSettings: {fileID: 1696181874}
 --- !u!196 &4
 NavMeshSettings:
@@ -318,6 +318,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &494771837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 494771834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &814450396
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,7 +376,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   zedManager: {fileID: 1078485266}
   canvas: {fileID: 65360501}
-  detectionMode: 1
+  detectionMode: 0
   startAIModuleAutomatically: 1
   boundingBoxPrefab: {fileID: 1187247398682752, guid: a71fe20b5d673e34fb3fef09b4bb6ee3, type: 3}
   boxColors:
@@ -508,11 +520,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: FPS
-      value: 30
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: depthMode
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: inputType
@@ -520,7 +532,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: bodyFormat
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: greySkybox
@@ -528,7 +540,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: resolution
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: bodyFitting
@@ -576,7 +588,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: advancedPanelOpen
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: bodyTrackingModel
@@ -605,6 +617,10 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: camControlFoldoutOpen
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
+      propertyPath: m_confidenceThreshold
+      value: 95
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: objectDetection2DMask
@@ -709,6 +725,10 @@ PrefabInstance:
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: electronicsDetectionConfidenceThreshold
       value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
+      propertyPath: bodyTrackingAllowReducedPrecisionInference
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}
       propertyPath: fruitVegetableDetectionConfidenceThreshold
@@ -817,7 +837,7 @@ LightingSettings:
   m_PrefabAsset: {fileID: 0}
   m_Name: Settings.lighting
   serializedVersion: 6
-  m_GIWorkflowMode: 0
+  m_GIWorkflowMode: 1
   m_EnableBakedLightmaps: 1
   m_EnableRealtimeLightmaps: 1
   m_RealtimeEnvironmentLighting: 1

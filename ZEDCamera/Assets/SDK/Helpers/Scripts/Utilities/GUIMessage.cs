@@ -99,13 +99,13 @@ public class GUIMessage : MonoBehaviour
     private void Awake()
     {
         zedManager = GetComponent<ZEDManager>();
-        oldInitStatus = sl.ERROR_CODE.ERROR_CODE_LAST;
+        oldInitStatus = sl.ERROR_CODE.LAST;
         if (!zedManager.IsStereoRig) //Without VR, we use a Screen Space - Overlay canvas. 
         {
             //Instantiate the mono warning prefab and set basic settings for it. 
             warningmono = Instantiate(Resources.Load("PrefabsUI/Warning") as GameObject, transform);
             warningmono.SetActive(true);
-            warningmono.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+            warningmono.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceCamera;
 
             //Set the target camera to whichever mono camera in the rig has the highest depth. 
             Camera highestdepthzedcam = zedManager.GetLeftCamera();
@@ -258,16 +258,16 @@ public class GUIMessage : MonoBehaviour
 
                     if (imagemono)
                     { //Disable mono rig canvas. 
-                        imagemono.SetActive(false);
+                        imagemono.gameObject.SetActive(false);
                     }
                     else if (imageleft)
                     { //Disable stereo rig canvases. 
-                        imageleft.SetActive(false);
-                        imageright.SetActive(false);
+                        imageleft.gameObject.SetActive(false);
+                        imageright.gameObject.SetActive(false);
                     }
                 }
             }
-            else if (e == sl.ERROR_CODE.ERROR_CODE_LAST) //"Loading..."
+            else if (e == sl.ERROR_CODE.LAST) //"Loading..."
             {
                 //Initial error code set before an initialization attempt has returned successful or failed. 
                 //In short, it means it's still loading. 
@@ -389,12 +389,12 @@ public class GUIMessage : MonoBehaviour
 
             if (imagemono)
             {
-                imagemono.transform.parent.gameObject.SetActive(false);
+                imagemono.gameObject.transform.parent.gameObject.SetActive(false);
             }
             else if (imageleft)
             {
-                imageleft.transform.parent.gameObject.SetActive(false);
-                imageright.transform.parent.gameObject.SetActive(false);
+                imageleft.gameObject.transform.parent.gameObject.SetActive(false);
+                imageright.gameObject.transform.parent.gameObject.SetActive(false);
             }
         }
 

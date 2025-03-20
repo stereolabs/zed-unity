@@ -597,10 +597,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraID: 0
-  depthMode: 3
+  depthMode: 5
   inputType: 0
-  resolution: 8
-  FPS: 30
+  resolution: 9
+  FPS: -1
   serialNumber: 0
   svoInputFileName: 
   opencvCalibFile: 
@@ -690,7 +690,7 @@ MonoBehaviour:
   fadeInOnStart: 1
   dontDestroyOnLoad: 0
   greySkybox: 1
-  m_confidenceThreshold: 100
+  m_confidenceThreshold: 95
   m_textureConfidenceThreshold: 100
   enableRightDepthMeasure: 0
   showarrig: 0
@@ -729,7 +729,7 @@ MonoBehaviour:
   HMDSyncPosition: {x: 0, y: 0, z: 0}
   ZEDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
   HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
-  advancedPanelOpen: 0
+  advancedPanelOpen: 1
   spatialMappingFoldoutOpen: 0
   objectDetectionFoldoutOpen: 0
   bodyTrackingFoldoutOpen: 0

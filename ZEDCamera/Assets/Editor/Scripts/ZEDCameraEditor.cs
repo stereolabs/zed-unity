@@ -50,6 +50,7 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty enableSMProperty;
     private SerializedProperty pathSMProperty;
     private SerializedProperty floorAsOriginProperty;
+    private SerializedProperty gravityAsOriginProperty;
     private SerializedProperty trackingIsStaticProperty;
     private SerializedProperty positionalTrackingModeProperty;
 
@@ -262,6 +263,7 @@ public class ZEDCameraEditor : Editor
         enableSMProperty = serializedObject.FindProperty("enableSpatialMemory");
         pathSMProperty = serializedObject.FindProperty("pathSpatialMemory");
         floorAsOriginProperty = serializedObject.FindProperty("setFloorAsOrigin");
+        gravityAsOriginProperty = serializedObject.FindProperty("setGravityAsOrigin");
         trackingIsStaticProperty = serializedObject.FindProperty("trackingIsStatic");
         positionalTrackingModeProperty = serializedObject.FindProperty("positionalTrackingMode");
 
@@ -596,6 +598,9 @@ public class ZEDCameraEditor : Editor
 
         GUIContent floorAsOriginPropertyLabel = new GUIContent("Set Floor As Origin", "Estimate initial position by detecting the floor. Leave it false if using VR Headset");
         floorAsOriginProperty.boolValue = EditorGUILayout.Toggle(floorAsOriginPropertyLabel, floorAsOriginProperty.boolValue);
+
+        GUIContent gravityAsOriginPropertyLabel = new GUIContent("Set Gravity As Origin", "Whether to override 2 of the 3 rotations from \ref initial_world_transform using the IMU gravity.");
+        gravityAsOriginProperty.boolValue = EditorGUILayout.Toggle(gravityAsOriginPropertyLabel, gravityAsOriginProperty.boolValue);
 
         GUIContent trackingIsStaticPropertyLabel = new GUIContent("Tracking Is Static", "If true, tracking is enabled but doesn't move after initializing. " +
             "Can be useful for stationary cameras where you still need tracking enabled, such as in Object Detection.");

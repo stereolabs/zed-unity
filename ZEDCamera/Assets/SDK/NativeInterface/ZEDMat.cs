@@ -172,8 +172,10 @@ namespace sl
             /// Store on memory accessible by the GPU. 
             /// </summary>
             MEM_GPU = 1 ,
-
-            LAST = 2
+            /// <summary>
+            /// Store on memory accessible by the GPU and the CPU. 
+            /// </summary>
+            BOTH = 2
         };
 
         #region DLL Calls
@@ -381,7 +383,7 @@ namespace sl
         /// Frees the memory of the Mat.
         /// </summary>
         /// <param name="mem">Whether the Mat is on CPU or GPU memory.</param>
-        public void Free(MEM mem = MEM.LAST)
+        public void Free(MEM mem = MEM.BOTH)
         {
             dllz_mat_free(_matInternalPtr, (int)mem);
             _matInternalPtr = IntPtr.Zero;
