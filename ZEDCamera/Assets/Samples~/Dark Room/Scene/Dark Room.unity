@@ -905,7 +905,7 @@ MonoBehaviour:
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 0
+    m_RotationOrder: 4
   secondsPerOscillation: 1.9
   distanceScale: 5
 --- !u!1 &423338573
@@ -1563,7 +1563,7 @@ MonoBehaviour:
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 0
+    m_RotationOrder: 4
   secondsPerOscillation: 1.9
   distanceScale: 5
 --- !u!1 &768756270
@@ -1738,7 +1738,7 @@ MonoBehaviour:
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 0
+    m_RotationOrder: 4
   secondsPerOscillation: 1.9
   distanceScale: 5
 --- !u!1 &805229592
@@ -1913,7 +1913,7 @@ MonoBehaviour:
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 0
+    m_RotationOrder: 4
   secondsPerOscillation: 1.9
   distanceScale: 5
 --- !u!1 &831507616
@@ -2051,7 +2051,6 @@ GameObject:
   m_Component:
   - component: {fileID: 914757541}
   - component: {fileID: 914757542}
-  - component: {fileID: 914757543}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -2244,7 +2243,7 @@ MonoBehaviour:
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 0
+    m_RotationOrder: 4
   secondsPerOscillation: 1.9
   distanceScale: 5
 --- !u!114 &1067827101
@@ -3385,7 +3384,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
       propertyPath: srpShaderType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114711245158774928, guid: e13ee7e0790c7d243b7aa67fe604acac, type: 3}
       propertyPath: streamInputIP
@@ -3473,7 +3472,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1828917559}
   - component: {fileID: 1828917560}
-  - component: {fileID: 1828917561}
   m_Layer: 0
   m_Name: Spotlight
   m_TagString: Untagged
@@ -3508,10 +3506,10 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 5983.5225
+  m_Intensity: 5983.522
   m_Range: 2
   m_SpotAngle: 20.5
-  m_InnerSpotAngle: 14.810575
+  m_InnerSpotAngle: 14.81057
   m_CookieSize: 10
   m_Shadows:
     m_Type: 0
@@ -3742,7 +3740,7 @@ MonoBehaviour:
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 0
+    m_RotationOrder: 4
   secondsPerOscillation: 1.9
   distanceScale: 5
 --- !u!1 &1976644740
@@ -3917,7 +3915,7 @@ MonoBehaviour:
       outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 0
+    m_RotationOrder: 4
   secondsPerOscillation: 1.9
   distanceScale: 5
 --- !u!1 &2030907903

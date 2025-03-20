@@ -599,7 +599,7 @@ MonoBehaviour:
   cameraID: 0
   depthMode: 5
   inputType: 0
-  resolution: 3
+  resolution: 9
   FPS: -1
   serialNumber: 0
   svoInputFileName: 

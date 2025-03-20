@@ -130,22 +130,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1863105970153930926, guid: 4899bf235f2a6974288bc0989e3dd88f, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 284
-      objectReference: {fileID: 0}
-    - target: {fileID: 1863105970153930926, guid: 4899bf235f2a6974288bc0989e3dd88f, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 160
-      objectReference: {fileID: 0}
-    - target: {fileID: 1863105970153930926, guid: 4899bf235f2a6974288bc0989e3dd88f, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 150.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1863105970153930926, guid: 4899bf235f2a6974288bc0989e3dd88f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 509.1
-      objectReference: {fileID: 0}
     - target: {fileID: 1863105970403500751, guid: 4899bf235f2a6974288bc0989e3dd88f, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -822,7 +806,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1673540944}
   - component: {fileID: 1673540943}
-  - component: {fileID: 1673540945}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -907,18 +890,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!114 &1673540945
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1673540942}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1786428179 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 114491592745282986, guid: 76db3eb81fd21ae45bab5204e324ae42, type: 3}

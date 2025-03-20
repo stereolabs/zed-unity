@@ -49,7 +49,7 @@ MonoBehaviour:
   cameraID: 0
   depthMode: 5
   inputType: 0
-  resolution: 3
+  resolution: 9
   FPS: -1
   serialNumber: 0
   svoInputFileName: Assets/Recording.svo
@@ -181,8 +181,8 @@ MonoBehaviour:
   HMDSyncRotation: {x: 0, y: 0, z: 0, w: 0}
   advancedPanelOpen: 1
   spatialMappingFoldoutOpen: 0
-  objectDetectionFoldoutOpen: 0
-  bodyTrackingFoldoutOpen: 0
+  objectDetectionFoldoutOpen: 1
+  bodyTrackingFoldoutOpen: 1
   recordingFoldoutOpen: 0
   streamingOutFoldoutOpen: 0
   camControlFoldoutOpen: 1

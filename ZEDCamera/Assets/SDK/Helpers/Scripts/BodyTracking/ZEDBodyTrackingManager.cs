@@ -28,14 +28,14 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 	/// <summary>
 	/// Activate skeleton tracking when play mode is on and ZED ready
 	/// </summary>
-	[Header("------ Game Control ------")]
+	[Header("Game Control")]
 
     public bool startBodyTrackingAutomatically = true;
 
     /// <summary>
     /// Vizualisation mode. Use a 3D model or only display the skeleton
     /// </summary>
-    [Header("------ Vizualisation Mode ------")]
+    [Header("Vizualisation Mode")]
     /// <summary>
     /// Display 3D avatar. If set to false, only display bones and joint
     /// </summary>
@@ -49,7 +49,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     public int maximumNumberOfDetections = (int)sl.Constant.MAX_OBJECTS;
 
     [Space(5)]
-    [Header("------ State Filters ------")]
+    [Header("State Filters")]
     [Tooltip("Display objects that are actively being tracked by object tracking, where valid positions are known. ")]
     public bool showON = true;
     /// <summary>
@@ -68,7 +68,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     public float delayBeforeSpawn= 1f;
 
 
-    [Header("------ Avatar Control ------")]
+    [Header("Avatar Control")]
     /// <summary>
     /// Avatar game object
     /// </summary>
@@ -99,7 +99,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
     private sl.BODY_FORMAT bodyFormat = sl.BODY_FORMAT.BODY_38;
     [Space(10)]
-    [Header("------ Heigh Offset ------")]
+    [Header("Heigh Offset")]
     [Tooltip("Height offset applied to transform each frame.")]
     public Vector3 manualOffset = Vector3.zero;
     [Tooltip("Automatic offset adjustment: Finds an automatic offset that sets both feet above ground, and at least one foot on the ground.")]
@@ -108,7 +108,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     public float offsetStep = 0.1f;
 
     [Space(5)]
-    [Header("------ Animation Smoothing ------")]
+    [Header("Animation Smoothing")]
     [Tooltip("Animation smoothing setting. 0 = No latency, no smoothing. 1 = Maximum latency.\n Tweak this value depending on your framerate, and the fps of the camera."), Range(0f,1f)]
     public float smoothingValue = .2f;
     [SerializeField]
@@ -116,7 +116,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     private bool enableSmoothing = true;
 
     [Space(5)]
-    [Header("------ Experimental - IK Settings ------")]
+    [Header("Experimental - IK Settings")]
     [Tooltip("Enable foot IK (feet on ground when near it)")]
     [SerializeField]
     private bool enableFootIK = false;
@@ -127,7 +127,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     public float footLockingSmoothingValue = .8f;
 
     [Space(5)]
-    [Header("------ Keyboard mapping ------")]
+    [Header("Keyboard mapping")]
     public KeyCode toggleFootIK = KeyCode.I;
     public KeyCode toggleFootLock = KeyCode.F;
     public KeyCode toggleMirrorMode = KeyCode.M;
