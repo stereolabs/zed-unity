@@ -1474,6 +1474,8 @@ namespace sl
                     return AI_MODELS.NEURAL_PLUS_DEPTH;
                 case DEPTH_MODE.NEURAL:
                     return AI_MODELS.NEURAL_DEPTH;
+                case DEPTH_MODE.NEURAL_LIGHT:
+                    return AI_MODELS.NEURAL_LIGHT_DEPTH;
                 default:
                     return AI_MODELS.LAST;
             }
