@@ -7,6 +7,50 @@ using System.Runtime.InteropServices;
 
 namespace sl
 {
+    public static class NativeWrapper
+    {
+        [DllImport("kernel32.dll")]
+        private static extern IntPtr LoadLibrary(string dllToLoad);
+
+        [DllImport("kernel32.dll")]
+        private static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);
+
+        [DllImport("kernel32.dll")]
+        private static extern bool FreeLibrary(IntPtr hModule);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate int CheckZEDPluginDelegate(int Major, int Minor);
+
+        private static CheckZEDPluginDelegate _checkZEDPlugin;
+
+        public static bool IsWrapperLoaded => _checkZEDPlugin != null;
+
+        public static bool Init()
+        {
+            string DllPath = "Assets/SDK/Plugins/win64/" + sl.ZEDCommon.NameDLL;
+            IntPtr pDll = LoadLibrary(DllPath);
+            if (pDll == IntPtr.Zero)
+            {
+                Console.WriteLine("Failed to load DLL.");
+                return false;
+            }
+            IntPtr pAddressOfFunctionToCall = GetProcAddress(pDll, "sl_check_plugin");
+            if (pAddressOfFunctionToCall != IntPtr.Zero)
+            {
+                _checkZEDPlugin = Marshal.GetDelegateForFunctionPointer<CheckZEDPluginDelegate>(pAddressOfFunctionToCall);
+                return true;
+            }
+            return false;
+        }
+
+        public static int CheckPlugin()
+        {
+            if (_checkZEDPlugin == null)
+                throw new InvalidOperationException("Function not loaded.");
+            return _checkZEDPlugin(ZEDCamera.PluginVersion.Major, ZEDCamera.PluginVersion.Minor);
+        }
+    }
+
     /// <summary>
     /// Main interface between Unity and the ZED SDK. Primarily consists of extern calls to the ZED SDK wrapper .dll and
     /// low-level logic to process data sent to/received from it.
@@ -773,8 +817,9 @@ namespace sl
         /*
          * Specific plugin functions
          */
-        [DllImport(nameDll, EntryPoint = "sl_check_plugin")]
-        private static extern int dllz_check_plugin(int major, int minor);
+
+        /*        [DllImport(nameDll, EntryPoint = "sl_check_plugin")]
+                private static extern int dllz_check_plugin(int major, int minor);*/
 
         [DllImport(nameDll, EntryPoint = "sl_get_sdk_version")]
         private static extern IntPtr dllz_get_sdk_version();
@@ -931,25 +976,19 @@ namespace sl
         /// </summary>
         public static bool CheckPlugin()
         {
-            try
+            if (NativeWrapper.Init())
             {
-                int res = dllz_check_plugin(PluginVersion.Major, PluginVersion.Minor);
-                if (res!= 0)
+                int res = NativeWrapper.CheckPlugin();
+                if (res == 0)
                 {
-                    //0 = installed SDK is compatible with plugin. 1 otherwise.
-                    Debug.LogError(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_DEPENDENCIES_ISSUE));
-                    return false;
+                    pluginIsReady = true;
+                    return true;
                 }
             }
-            catch (DllNotFoundException) //In case could not resolve the dll/.so
-            {
-                Debug.Log("DllNotFoundException");
-                Debug.LogError(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_DEPENDENCIES_ISSUE));
-                return false;
-            }
-            
-            pluginIsReady = true;
-            return true;
+
+            //0 = installed SDK is compatible with plugin. 1 otherwise.
+            Debug.LogError(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_DEPENDENCIES_ISSUE));
+            return false;
         }
 
         /// <summary>
