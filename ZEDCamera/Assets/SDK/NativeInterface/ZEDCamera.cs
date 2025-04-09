@@ -4,18 +4,19 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Runtime.InteropServices;
+using System.IO;
 
 namespace sl
 {
     public static class NativeWrapper
     {
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32")]
         private static extern IntPtr LoadLibrary(string dllToLoad);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32")]
         private static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32")]
         private static extern bool FreeLibrary(IntPtr hModule);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -25,10 +26,12 @@ namespace sl
 
         public static bool IsWrapperLoaded => _checkZEDPlugin != null;
 
-        public static bool Init()
+        private static string packageName = "com.stereolabs.zed";
+
+        private static bool TryLoadLibrary(string lib)
         {
-            string DllPath = "Assets/SDK/Plugins/win64/" + sl.ZEDCommon.NameDLL;
-            IntPtr pDll = LoadLibrary(DllPath);
+            // load dll from package library
+            IntPtr pDll = LoadLibrary(lib);
             if (pDll == IntPtr.Zero)
             {
                 Console.WriteLine("Failed to load DLL.");
@@ -41,6 +44,36 @@ namespace sl
                 return true;
             }
             return false;
+        }
+
+#if UNITY_EDITOR
+        private static string TryGetDllFromPackage(string packageName, string relativePath)
+        {
+            foreach (var package in UnityEditor.PackageManager.PackageInfo.GetAllRegisteredPackages())
+            {
+                if (package.name == packageName)
+                {
+                    string fullPath = Path.Combine(package.resolvedPath, relativePath);
+                    return fullPath;
+                }
+            }
+            return null;
+        }
+#endif
+
+        public static bool Init()
+        {
+#if UNITY_EDITOR
+            string DllPath = Path.Combine(UnityEngine.Application.dataPath, "SDK/Plugins/x86_64", sl.ZEDCamera.nameDll);
+            if (!TryLoadLibrary(DllPath))
+            {
+                DllPath = TryGetDllFromPackage(packageName, Path.Combine("SDK/Plugins/x86_64", sl.ZEDCamera.nameDll));
+            }
+            else return true;
+#else
+            string DllPath = sl.ZEDCamera.nameDll;
+#endif
+            return TryLoadLibrary(DllPath);
         }
 
         public static int CheckPlugin()
@@ -405,7 +438,7 @@ namespace sl
         * Recording functions.
         */
         [DllImport(nameDll, EntryPoint = "sl_enable_recording")]
-        private static extern int dllz_enable_recording(int cameraID, System.Text.StringBuilder video_filename, int compresssionMode,int bitrate,int target_fps,bool transcode);
+        private static extern int dllz_enable_recording(int cameraID, System.Text.StringBuilder video_filename, int compresssionMode, int bitrate, int target_fps, bool transcode);
 
         [DllImport(nameDll, EntryPoint = "sl_get_recording_status")]
         private static extern IntPtr dllz_get_recording_status(int cameraID);
@@ -483,7 +516,7 @@ namespace sl
         private static extern int dllz_get_video_settings(int id, int mode, ref int value);
 
         [DllImport(nameDll, EntryPoint = "sl_set_roi_for_aec_agc")]
-        private static extern int dllz_set_roi_for_aec_agc(int id, int side, sl.Rect roi,bool reset);
+        private static extern int dllz_set_roi_for_aec_agc(int id, int side, sl.Rect roi, bool reset);
 
         [DllImport(nameDll, EntryPoint = "sl_get_roi_for_aec_agc")]
         private static extern int dllz_get_roi_for_aec_agc(int id, int side, ref sl.Rect roi);
@@ -539,15 +572,15 @@ namespace sl
 
         [DllImport(nameDll, EntryPoint = "sl_get_frame_dropped_percent")]
         private static extern float dllz_get_frame_dropped_percent(int cameraID);
-/*
-        [DllImport(nameDll, EntryPoint = "sl_get_init_parameters")]
-        private static extern IntPtr dllz_get_init_parameters(int cameraID);
+        /*
+                [DllImport(nameDll, EntryPoint = "sl_get_init_parameters")]
+                private static extern IntPtr dllz_get_init_parameters(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_runtime_parameters")]
-        private static extern IntPtr dllz_get_runtime_parameters(int cameraID);
+                [DllImport(nameDll, EntryPoint = "sl_get_runtime_parameters")]
+                private static extern IntPtr dllz_get_runtime_parameters(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_positional_tracking_parameters")]
-        private static extern IntPtr dllz_get_positional_tracking_parameters(int cameraID);*/
+                [DllImport(nameDll, EntryPoint = "sl_get_positional_tracking_parameters")]
+                private static extern IntPtr dllz_get_positional_tracking_parameters(int cameraID);*/
 
         /*
          * SVO control functions.
@@ -604,8 +637,8 @@ namespace sl
          * Motion Tracking functions.
          */
         [DllImport(nameDll, EntryPoint = "sl_enable_positional_tracking_unity")]
-        private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, 
-            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = sl.POSITIONAL_TRACKING_MODE.GEN_1, 
+        private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false,
+            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = sl.POSITIONAL_TRACKING_MODE.GEN_1,
             System.Text.StringBuilder aeraFilePath = null);
 
         [DllImport(nameDll, EntryPoint = "sl_disable_positional_tracking")]
@@ -687,13 +720,13 @@ namespace sl
         private static extern int dllz_get_mesh_request_status_async(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_update_mesh")]
-        private static extern int dllz_update_mesh(int cameraID, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int  nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int nbSubmesh);
+        private static extern int dllz_update_mesh(int cameraID, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int nbSubmesh);
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_mesh")]
         private static extern int dllz_retrieve_mesh(int cameraID, Vector3[] vertices, int[] triangles, int nbSubmesh, Vector2[] uvs, IntPtr textures);
 
         [DllImport(nameDll, EntryPoint = "sl_update_fused_point_cloud")]
-        private static extern int dllz_update_fused_point_cloud(int cameraID,  ref int pbPoints);
+        private static extern int dllz_update_fused_point_cloud(int cameraID, ref int pbPoints);
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_fused_point_cloud")]
         private static extern int dllz_retrieve_fused_point_cloud(int cameraID, Vector4[] points);
@@ -742,7 +775,7 @@ namespace sl
          * Streaming Module functions (starting v2.8)
          */
         [DllImport(nameDll, EntryPoint = "sl_enable_streaming")]
-        private static extern int dllz_enable_streaming(int cameraID, sl.STREAMING_CODEC codec, uint bitrate, ushort port, int gopSize, int adaptativeBitrate,int chunk_size,int target_fps);
+        private static extern int dllz_enable_streaming(int cameraID, sl.STREAMING_CODEC codec, uint bitrate, ushort port, int gopSize, int adaptativeBitrate, int chunk_size, int target_fps);
 
         [DllImport(nameDll, EntryPoint = "sl_is_streaming_enabled")]
         private static extern int dllz_is_streaming_enabled(int cameraID);
@@ -806,13 +839,13 @@ namespace sl
         * Save utils function
         */
         [DllImport(nameDll, EntryPoint = "sl_save_current_image")]
-        private static extern int dllz_save_current_image(int cameraID, VIEW view,string filename);
+        private static extern int dllz_save_current_image(int cameraID, VIEW view, string filename);
 
         [DllImport(nameDll, EntryPoint = "sl_save_current_depth")]
         private static extern int dllz_save_current_depth(int cameraID, int side, string filename);
 
         [DllImport(nameDll, EntryPoint = "sl_save_current_point_cloud")]
-        private static extern int dllz_save_current_point_cloud(int cameraID, int side,  string filename);
+        private static extern int dllz_save_current_point_cloud(int cameraID, int side, string filename);
 
         /*
          * Specific plugin functions
@@ -1143,7 +1176,7 @@ namespace sl
             /// When async_grab_camera_recovery is false, the grab() function is blocking and will return only once the camera communication is restored or the timeout is reached.
             /// The default behavior is synchronous, like previous ZED SDK versions
             /// </summary>
-           [MarshalAs(UnmanagedType.U1)]
+            [MarshalAs(UnmanagedType.U1)]
             public bool asyncGrabRecovery;
             /// </summary>
             /// Define a computation upper limit to the grab frequency. 0 means that the setting is ignored.
@@ -1321,9 +1354,9 @@ namespace sl
         /// <param name="videoFileName">Filename. Whether it ends with .svo or .avi defines its file type.</param>
         /// <param name="compressionMode">How much compression to use</param>
         /// <returns>An ERROR_CODE that defines if the file was successfully created and can be filled with images.</returns>
-        public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.H264_BASED, int bitrate = 0, int target_fps = 0,bool transcode = false)
+        public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.H264_BASED, int bitrate = 0, int target_fps = 0, bool transcode = false)
         {
-            return (ERROR_CODE)dllz_enable_recording(CameraID, new System.Text.StringBuilder(videoFileName, videoFileName.Length), (int)compressionMode,bitrate,target_fps,transcode);
+            return (ERROR_CODE)dllz_enable_recording(CameraID, new System.Text.StringBuilder(videoFileName, videoFileName.Length), (int)compressionMode, bitrate, target_fps, transcode);
         }
 
         /// <summary>
@@ -1532,7 +1565,7 @@ namespace sl
             bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = POSITIONAL_TRACKING_MODE.GEN_1, string areaFilePath = "")
         {
             sl.ERROR_CODE trackingStatus = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
-            trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(CameraID, ref quat, ref vec, enableSpatialMemory, enablePoseSmoothing, enableFloorAlignment, 
+            trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(CameraID, ref quat, ref vec, enableSpatialMemory, enablePoseSmoothing, enableFloorAlignment,
                 trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, mode, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
             return trackingStatus;
         }
@@ -2253,7 +2286,7 @@ namespace sl
         /// <param name="roi">the roi defined as a sl.Rect</param>
         /// <param name="reset">Defines if the target must be reset to full sensor</param>
         /// <returns></returns>
-        public int SetCameraSettings(CAMERA_SETTINGS settings, int side, sl.Rect roi,bool reset)
+        public int SetCameraSettings(CAMERA_SETTINGS settings, int side, sl.Rect roi, bool reset)
         {
             AssertCameraIsReady();
             if (settings == CAMERA_SETTINGS.AEC_AGC_ROI)
@@ -3001,10 +3034,10 @@ namespace sl
         /// Streaming parameters: See sl::StreamingParameters of ZED SDK. See ZED SDK API doc for more informations
         /// </params>
         /// <returns>An ERROR_CODE that defines if the streaming pipe was successfully created</returns>
-        public ERROR_CODE EnableStreaming(STREAMING_CODEC codec = STREAMING_CODEC.AVCHD_BASED, uint bitrate = 8000, ushort port = 30000, int gopSize = -1, bool adaptativeBitrate = false,int chunk_size = 8096,int target_fps = 0)
+        public ERROR_CODE EnableStreaming(STREAMING_CODEC codec = STREAMING_CODEC.AVCHD_BASED, uint bitrate = 8000, ushort port = 30000, int gopSize = -1, bool adaptativeBitrate = false, int chunk_size = 8096, int target_fps = 0)
         {
             int doAdaptBitrate = adaptativeBitrate ? 1 : 0;
-            return (ERROR_CODE)dllz_enable_streaming(CameraID, codec, bitrate, port, gopSize, doAdaptBitrate, chunk_size,target_fps);
+            return (ERROR_CODE)dllz_enable_streaming(CameraID, codec, bitrate, port, gopSize, doAdaptBitrate, chunk_size, target_fps);
         }
 
         /// <summary>
@@ -3356,8 +3389,8 @@ namespace sl
             {
                 switch (m_in)
                 {
-                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST:     m_out = sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION; break;
-                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM:   m_out = sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST: m_out = sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM: m_out = sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION; break;
                     case sl.BODY_TRACKING_MODEL.HUMAN_BODY_ACCURATE: m_out = sl.AI_MODELS.HUMAN_BODY_ACCURATE_DETECTION; break;
                 }
             }
@@ -3365,18 +3398,18 @@ namespace sl
             {
                 switch (m_in)
                 {
-                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST:     m_out = sl.AI_MODELS.HUMAN_BODY_38_FAST_DETECTION; break;
-                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM:   m_out = sl.AI_MODELS.HUMAN_BODY_38_MEDIUM_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST: m_out = sl.AI_MODELS.HUMAN_BODY_38_FAST_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM: m_out = sl.AI_MODELS.HUMAN_BODY_38_MEDIUM_DETECTION; break;
                     case sl.BODY_TRACKING_MODEL.HUMAN_BODY_ACCURATE: m_out = sl.AI_MODELS.HUMAN_BODY_38_ACCURATE_DETECTION; break;
                 }
-            
+
             }
             else
             {
                 switch (m_in)
                 {
-                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST:     m_out = sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION; break;
-                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM:   m_out = sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_FAST: m_out = sl.AI_MODELS.HUMAN_BODY_FAST_DETECTION; break;
+                    case sl.BODY_TRACKING_MODEL.HUMAN_BODY_MEDIUM: m_out = sl.AI_MODELS.HUMAN_BODY_MEDIUM_DETECTION; break;
                     case sl.BODY_TRACKING_MODEL.HUMAN_BODY_ACCURATE: m_out = sl.AI_MODELS.HUMAN_BODY_ACCURATE_DETECTION; break;
                 }
             }
@@ -3389,7 +3422,7 @@ namespace sl
         /// </summary>
         public sl.ERROR_CODE EnableBodyTracking(ref BodyTrackingParameters bt_params)
         {
-            sl.ERROR_CODE  bodyTrackingStatus = ERROR_CODE.FAILURE;
+            sl.ERROR_CODE bodyTrackingStatus = ERROR_CODE.FAILURE;
             lock (grabLock)
             {
                 bodyTrackingStatus = (sl.ERROR_CODE)dllz_enable_body_tracking(CameraID, ref bt_params);
