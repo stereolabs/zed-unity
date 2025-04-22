@@ -402,9 +402,9 @@ public class ZEDMixedRealityPlugin : MonoBehaviour
 
 		if (hasVRDevice) {
 			sl.CalibrationParameters parameters = zedCamera.CalibrationParametersRectified;
-			scaleFromZED = ComputeSizePlaneWithGamma (new sl.Resolution ((uint)zedCamera.ImageWidth, (uint)zedCamera.ImageHeight),
+			scaleFromZED = ComputeSizePlaneWithGamma (new sl.Resolution (zedCamera.ImageWidth, zedCamera.ImageHeight),
 				perception_distance, zed2eye_distance, offset.z,
-				ComputeFocal (new sl.Resolution ((uint)XRSettings.eyeTextureWidth, (uint)XRSettings.eyeTextureHeight)),
+				ComputeFocal (new sl.Resolution (XRSettings.eyeTextureWidth, XRSettings.eyeTextureHeight)),
 				parameters.leftCam.fx);
 
 			scale(quadCenter.gameObject, scaleFromZED);

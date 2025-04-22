@@ -76,14 +76,14 @@ namespace sl
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        public Resolution(uint width, uint height)
+        public Resolution(int width, int height)
         {
-            this.width = (System.UIntPtr)width;
-            this.height = (System.UIntPtr)height;
+            this.width = width;
+            this.height = height;
         }
 
-        public System.UIntPtr width;
-        public System.UIntPtr height;
+        public int width;
+        public int height;
     };
 
 
@@ -517,7 +517,7 @@ namespace sl
         /// <summary>
         /// Distortion coefficients.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U8, SizeConst = 12)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12)]
         public double[] disto;
 
         /// <summary>
