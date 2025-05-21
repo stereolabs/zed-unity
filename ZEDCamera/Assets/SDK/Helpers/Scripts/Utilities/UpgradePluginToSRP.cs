@@ -5,9 +5,9 @@ public static class UpgradePluginToSRP
 {
     public static bool UpgradeCameraToSRP(GameObject zedCam)
     {
-        var SRP = GraphicsSettings.renderPipelineAsset;
+        var SRP = GraphicsSettings.defaultRenderPipeline;
 
-        if (GraphicsSettings.renderPipelineAsset != null)
+        if (GraphicsSettings.defaultRenderPipeline != null)
         {
             var SRPString = SRP.GetType().ToString();
             if (SRPString.Contains("UniversalRenderPipelineAsset"))
@@ -64,9 +64,9 @@ public static class UpgradePluginToSRP
 
     public static bool UpgradeGreenScreenToSRP(GameObject greenScreen)
     {
-        var SRP = GraphicsSettings.renderPipelineAsset;
+        var SRP = GraphicsSettings.defaultRenderPipeline;
 
-        if (GraphicsSettings.renderPipelineAsset != null)
+        if (GraphicsSettings.defaultRenderPipeline != null)
         {
             var SRPString = SRP.GetType().ToString();
             if (SRPString.Contains("UniversalRenderPipelineAsset"))
@@ -115,9 +115,9 @@ public static class UpgradePluginToSRP
 
     public static bool UpgradePlanetariumToSRP(GameObject planetarium)
     {
-        var SRP = GraphicsSettings.renderPipelineAsset;
+        var SRP = GraphicsSettings.defaultRenderPipeline;
 
-        if (GraphicsSettings.renderPipelineAsset != null)
+        if (GraphicsSettings.defaultRenderPipeline != null)
         {
             var SRPString = SRP.GetType().ToString();
             if (SRPString.Contains("UniversalRenderPipelineAsset"))

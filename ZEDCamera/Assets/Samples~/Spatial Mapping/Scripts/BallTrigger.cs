@@ -24,11 +24,11 @@ public class BallTrigger : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (hasDamaged || body.velocity.magnitude < minVelocityDammage) return;
+        if (hasDamaged || body.linearVelocity.magnitude < minVelocityDammage) return;
         if (other.gameObject.name.Contains("ZomBunny"))
         {
             hasDamaged = true;
-            other.gameObject.GetComponent<EnemyBehavior>().Dammage(dammage * body.velocity.magnitude);
+            other.gameObject.GetComponent<EnemyBehavior>().Dammage(dammage * body.linearVelocity.magnitude);
         }
     }
 }

@@ -31,7 +31,7 @@ public class ZEDSupportFunctions
                 if (xRLoader.name == "OculusLoader" || xRLoader.name == "OpenVRLoader")
                 {
                     var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
-                    SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
+                    SubsystemManager.GetSubsystems<XRDisplaySubsystem>(xrDisplaySubsystems);
                     foreach (var xrDisplay in xrDisplaySubsystems)
                     {
                         if (xrDisplay.running)

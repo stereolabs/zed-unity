@@ -66,7 +66,7 @@ public class CapsuleFollower : MonoBehaviour
 
         velocity = (destination - rb.transform.position) * sensitivity;
 
-        rb.velocity = velocity;
+        rb.linearVelocity = velocity;
     }
 
     /// <summary>
@@ -82,19 +82,19 @@ public class CapsuleFollower : MonoBehaviour
         {
             if (other.GetComponent<Rigidbody>() && !colBunny.IsMoving)
             {
-                if (rb.velocity.y <= -2)
+                if (rb.linearVelocity.y <= -2)
                 {
                     colBunny.anim.SetTrigger("Squeeze");
                     colBunny.GetHit(hit: false);
                 }
-                else if (rb.velocity.magnitude > 2f)
+                else if (rb.linearVelocity.magnitude > 2f)
                 {
                     //Send a call to GetHit() which delays for X seconds the Bunny's detection with the real world.
                     //Since the Bunny is already on the floor, it might return true for collision the moment the baseball bat touches it.
                     colBunny.GetHit(hit: true);
 
                     //Assign our velocity with some changes. Halving the velocity makes it feel more natural when hitting the bunny. 
-                    other.GetComponent<Rigidbody>().velocity = rb.velocity / 2;
+                    other.GetComponent<Rigidbody>().linearVelocity = rb.linearVelocity / 2;
                 }
             }
         }

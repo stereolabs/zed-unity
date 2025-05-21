@@ -83,8 +83,8 @@ public class Bunny : MonoBehaviour
     /// </summary>
     public void GetHit(bool hit)
     {
-        GetComponent<Rigidbody>().drag = 0f;
-        GetComponent<Rigidbody>().angularDrag = 0.5f;
+        GetComponent<Rigidbody>().linearDamping = 0f;
+        GetComponent<Rigidbody>().angularDamping = 0.5f;
         StartCoroutine(HitDelay(hit));
     }
 
@@ -126,8 +126,8 @@ public class Bunny : MonoBehaviour
         if (IsMoving)
         {
             //Look for our next position based on our current velocity.
-            Vector3 predictedPos = centerpoint.position + (rb.velocity * (Time.deltaTime * 2.5f));
-            transform.rotation = Quaternion.LookRotation(rb.velocity.normalized);
+            Vector3 predictedPos = centerpoint.position + (rb.linearVelocity * (Time.deltaTime * 2.5f));
+            transform.rotation = Quaternion.LookRotation(rb.linearVelocity.normalized);
 
             //Collision check with the real world at that next position.
             foreach (ZEDManager manager in ZEDManager.GetInstances()) //Check all active cameras. 
@@ -144,7 +144,7 @@ public class Bunny : MonoBehaviour
                     {
                         IsMoving = false; //Not moving anymore, so update our state.
                         bunnyspawner.SpawnUI(predictedPos); //Start spawning the UI on our current location.
-                        rb.velocity = Vector3.Reflect(rb.velocity / 2, transform.forward); //Bounce off the surface we hit 
+                        rb.linearVelocity = Vector3.Reflect(rb.linearVelocity / 2, transform.forward); //Bounce off the surface we hit 
                     }
 
                     break; //If it hit the real world in one camera's view, no need to check the other cameras. 
