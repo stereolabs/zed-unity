@@ -93,8 +93,11 @@ public class BodyTrackingFrame
 
         for (int i = 0; i < bodies.nbBodies; i++)
         {
-            DetectedBody dobj = new DetectedBody(bframe.bodyList[i], detectingmanager, campos, camrot);
-            detBodies.Add(dobj);
+            if (i < bframe.bodyList.Length)
+            {
+                DetectedBody dobj = new DetectedBody(bframe.bodyList[i], detectingmanager, campos, camrot);
+                detBodies.Add(dobj);
+            }
         }
     }
 
