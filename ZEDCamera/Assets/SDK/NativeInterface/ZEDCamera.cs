@@ -51,7 +51,7 @@ namespace sl
         {
             foreach (var package in UnityEditor.PackageManager.PackageInfo.GetAllRegisteredPackages())
             {
-                if (package.name == packageName)
+                if (package.name.StartsWith(packageName))
                 {
                     string fullPath = Path.Combine(package.resolvedPath, relativePath);
                     return fullPath;
