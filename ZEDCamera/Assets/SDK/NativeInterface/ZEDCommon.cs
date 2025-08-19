@@ -1486,7 +1486,11 @@ namespace sl
         /// <summary>
         /// Next generation of positional tracking, allows for better accuracy.
         /// </summary>
-        GEN_2
+        GEN_2,
+        /// <summary>
+        /// Hybrid mode
+        /// </summary>
+        GEN_3
     }
 
     ///\ingroup PositionalTracking_group
@@ -2300,6 +2304,24 @@ namespace sl
         /// </summary>
         public sl.OBJECT_DETECTION_MODEL detectionModel;
         /// <summary>
+        /// In a multi camera setup, specify which group this model belongs to.
+        /// In a multi camera setup, multiple cameras can be used to detect objects and multiple detector having similar output layout can see the same object.
+        /// Therefore, Fusion will fuse together the outputs received by multiple detectors only if they are part of the same group.
+        /// </summary>
+        [MarshalAs(UnmanagedType.LPStr)]
+        public string fusedObjectsGroupName;
+        /// <summary>
+        /// Path to the YOLO-like onnx file for custom object detection ran in the ZED SDK.
+        /// </summary>
+        [MarshalAs(UnmanagedType.LPStr)]
+        public string customOnnxFile;
+        /// <summary>
+        /// Resolution to the YOLO-like onnx file for custom object detection ran in the ZED SDK. 
+        /// This resolution defines the input tensor size for dynamic shape ONNX model only. 
+        /// The batch and channel dimensions are automatically handled, it assumes it's color images like default YOLO models.
+        /// </summary>
+        public Resolution customOnnxDynamicInputShape;
+        /// <summary>
         /// Defines a upper depth range for detections.
         /// Defined in  UNIT set at  sl.Camera.Open.
         /// Default value is set to sl.Initparameters.depthMaximumDistance (can not be higher).
@@ -3006,8 +3028,7 @@ namespace sl
     public enum OBJECT_ACTION_STATE
     {
         IDLE = 0, /**< The object is staying static. */
-        MOVING = 1, /**< The object is moving. */
-        LAST = 2
+        MOVING = 1 /**< The object is moving. */
     };
 
     /// <summary>
@@ -3037,8 +3058,7 @@ namespace sl
         /// <summary>
         /// For external inference, using your own custom model and/or frameworks. This mode disable the internal inference engine, the 2D bounding box detection must be provided
         /// </summary>
-        CUSTOM_BOX_OBJECTS,
-        LAST
+        CUSTOM_BOX_OBJECTS
     };
 
     /// <summary>

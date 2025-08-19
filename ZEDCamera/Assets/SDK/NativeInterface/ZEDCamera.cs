@@ -1,4 +1,4 @@
-﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -9,80 +9,157 @@ using System.IO;
 namespace sl
 {
     public static class NativeWrapper
+{
+#if UNITY_STANDALONE_WIN
+    [DllImport("kernel32", SetLastError = true)]
+    private static extern IntPtr LoadLibrary(string dllToLoad);
+
+    [DllImport("kernel32", SetLastError = true)]
+    private static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);
+
+    [DllImport("kernel32", SetLastError = true)]
+    private static extern bool FreeLibrary(IntPtr hModule);
+
+#elif UNITY_STANDALONE_LINUX
+    private const int RTLD_NOW = 2;
+
+    [DllImport("dl")]
+    private static extern IntPtr dlopen(string fileName, int flags);
+
+    [DllImport("dl")]
+    private static extern IntPtr dlsym(IntPtr handle, string symbol);
+
+    [DllImport("dl")]
+    private static extern int dlclose(IntPtr handle);
+
+    [DllImport("dl")]
+    private static extern IntPtr dlerror();
+
+    private static IntPtr LoadLibrary(string dllToLoad) => dlopen(dllToLoad, RTLD_NOW);
+    private static IntPtr GetProcAddress(IntPtr hModule, string procedureName) => dlsym(hModule, procedureName);
+    private static bool FreeLibrary(IntPtr hModule) => (dlclose(hModule) == 0);
+
+    private static string GetLastDlError()
     {
-        [DllImport("kernel32")]
-        private static extern IntPtr LoadLibrary(string dllToLoad);
+        IntPtr errPtr = dlerror();
+        return errPtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(errPtr) : "Unknown error";
+    }
+#elif UNITY_STANDALONE_OSX
+    private const int RTLD_NOW = 2;
 
-        [DllImport("kernel32")]
-        private static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);
+    [DllImport("libSystem")]
+    private static extern IntPtr dlopen(string fileName, int flags);
 
-        [DllImport("kernel32")]
-        private static extern bool FreeLibrary(IntPtr hModule);
+    [DllImport("libSystem")]
+    private static extern IntPtr dlsym(IntPtr handle, string symbol);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int CheckZEDPluginDelegate(int Major, int Minor);
+    [DllImport("libSystem")]
+    private static extern int dlclose(IntPtr handle);
 
-        private static CheckZEDPluginDelegate _checkZEDPlugin;
+    [DllImport("libSystem")]
+    private static extern IntPtr dlerror();
 
-        public static bool IsWrapperLoaded => _checkZEDPlugin != null;
+    private static IntPtr LoadLibrary(string dllToLoad) => dlopen(dllToLoad, RTLD_NOW);
+    private static IntPtr GetProcAddress(IntPtr hModule, string procedureName) => dlsym(hModule, procedureName);
+    private static bool FreeLibrary(IntPtr hModule) => (dlclose(hModule) == 0);
 
-        private static string packageName = "com.stereolabs.zed";
+    private static string GetLastDlError()
+    {
+        IntPtr errPtr = dlerror();
+        return errPtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(errPtr) : "Unknown error";
+    }
+#endif
 
-        private static bool TryLoadLibrary(string lib)
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate int CheckZEDPluginDelegate(int Major, int Minor);
+
+    private static CheckZEDPluginDelegate _checkZEDPlugin;
+
+    public static bool IsWrapperLoaded => _checkZEDPlugin != null;
+
+    private static string packageName = "com.stereolabs.zed";
+
+    /// <summary>
+    /// Ensures the correct suffix for the native library depending on OS.
+    /// </summary>
+    private static string GetPlatformLibraryName(string baseName)
+    {
+#if UNITY_STANDALONE_WIN
+        if (!baseName.EndsWith(".dll"))
+            return baseName + ".dll";
+#elif UNITY_STANDALONE_LINUX
+        if (!baseName.EndsWith(".so"))
+            return "lib" + baseName + ".so";   // Linux convention: libXXX.so
+#elif UNITY_STANDALONE_OSX
+        if (!baseName.EndsWith(".dylib"))
+            return "lib" + baseName + ".dylib";
+#endif
+        return baseName;
+    }
+
+    private static bool TryLoadLibrary(string lib)
+    {
+        IntPtr pDll = LoadLibrary(lib);
+        if (pDll == IntPtr.Zero)
         {
-            // load dll from package library
-            IntPtr pDll = LoadLibrary(lib);
-            if (pDll == IntPtr.Zero)
-            {
-                Console.WriteLine("Failed to load DLL.");
-                return false;
-            }
-            IntPtr pAddressOfFunctionToCall = GetProcAddress(pDll, "sl_check_plugin");
-            if (pAddressOfFunctionToCall != IntPtr.Zero)
-            {
-                _checkZEDPlugin = Marshal.GetDelegateForFunctionPointer<CheckZEDPluginDelegate>(pAddressOfFunctionToCall);
-                return true;
-            }
+#if UNITY_STANDALONE_WIN
+            Debug.LogError($"[NativeWrapper] Failed to load DLL: {lib}");
+#elif UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
+            Debug.LogError($"[NativeWrapper] Failed to load: {lib} — {GetLastDlError()}");
+#endif
             return false;
         }
 
-#if UNITY_EDITOR
-        private static string TryGetDllFromPackage(string packageName, string relativePath)
+        IntPtr pAddressOfFunctionToCall = GetProcAddress(pDll, "sl_check_plugin");
+        if (pAddressOfFunctionToCall != IntPtr.Zero)
         {
-            foreach (var package in UnityEditor.PackageManager.PackageInfo.GetAllRegisteredPackages())
-            {
-                if (package.name.StartsWith(packageName))
-                {
-                    string fullPath = Path.Combine(package.resolvedPath, relativePath);
-                    return fullPath;
-                }
-            }
-            return null;
-        }
-#endif
-
-        public static bool Init()
-        {
-#if UNITY_EDITOR
-            string DllPath = Path.Combine(UnityEngine.Application.dataPath, "SDK/Plugins/x86_64", sl.ZEDCamera.nameDll);
-            if (!TryLoadLibrary(DllPath))
-            {
-                DllPath = TryGetDllFromPackage(packageName, Path.Combine("SDK/Plugins/x86_64", sl.ZEDCamera.nameDll));
-            }
-            else return true;
-#else
-            string DllPath = sl.ZEDCamera.nameDll;
-#endif
-            return TryLoadLibrary(DllPath);
+            _checkZEDPlugin = Marshal.GetDelegateForFunctionPointer<CheckZEDPluginDelegate>(pAddressOfFunctionToCall);
+            return true;
         }
 
-        public static int CheckPlugin()
-        {
-            if (_checkZEDPlugin == null)
-                throw new InvalidOperationException("Function not loaded.");
-            return _checkZEDPlugin(ZEDCamera.PluginVersion.Major, ZEDCamera.PluginVersion.Minor);
-        }
+        Debug.LogError("[NativeWrapper] Function sl_check_plugin not found in loaded library.");
+        return false;
     }
+
+#if UNITY_EDITOR
+    private static string TryGetDllFromPackage(string packageName, string relativePath)
+    {
+        foreach (var package in UnityEditor.PackageManager.PackageInfo.GetAllRegisteredPackages())
+        {
+            if (package.name.StartsWith(packageName))
+            {
+                string fullPath = Path.Combine(package.resolvedPath, relativePath);
+                return fullPath;
+            }
+        }
+        return null;
+    }
+#endif
+
+    public static bool Init()
+    {
+        string dllName = GetPlatformLibraryName(sl.ZEDCamera.nameDll);
+
+#if UNITY_EDITOR
+        string DllPath = Path.Combine(Application.dataPath, "SDK/Plugins/x86_64", dllName);
+        if (!TryLoadLibrary(DllPath))
+        {
+            DllPath = TryGetDllFromPackage(packageName, Path.Combine("SDK/Plugins/x86_64", dllName));
+        }
+        else return true;
+#else
+        string DllPath = dllName;
+#endif
+        return TryLoadLibrary(DllPath);
+    }
+
+    public static int CheckPlugin()
+    {
+        if (_checkZEDPlugin == null)
+            throw new InvalidOperationException("Function not loaded.");
+        return _checkZEDPlugin(ZEDCamera.PluginVersion.Major, ZEDCamera.PluginVersion.Minor);
+    }
+}
 
     /// <summary>
     /// Main interface between Unity and the ZED SDK. Primarily consists of extern calls to the ZED SDK wrapper .dll and

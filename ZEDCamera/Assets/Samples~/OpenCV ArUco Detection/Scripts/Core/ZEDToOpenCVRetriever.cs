@@ -203,7 +203,7 @@ public class ZEDToOpenCVRetriever : MonoBehaviour
         if(zedmat == null)
         {
             zedmat = new ZEDMat();
-            zedmat.Create(new sl.Resolution((uint)zedCam.ImageWidth, (uint)zedCam.ImageHeight), mattype);
+            zedmat.Create(new sl.Resolution(zedCam.ImageWidth, zedCam.ImageHeight), mattype);
         }
 
 
