@@ -8,155 +8,54 @@ using System.IO;
 
 namespace sl
 {
-    public static class NativeWrapper
+public static class NativeWrapper
 {
-#if UNITY_STANDALONE_WIN
-    [DllImport("kernel32", SetLastError = true)]
-    private static extern IntPtr LoadLibrary(string dllToLoad);
-
-    [DllImport("kernel32", SetLastError = true)]
-    private static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);
-
-    [DllImport("kernel32", SetLastError = true)]
-    private static extern bool FreeLibrary(IntPtr hModule);
-
-#elif UNITY_STANDALONE_LINUX
-    private const int RTLD_NOW = 2;
-
-    [DllImport("dl")]
-    private static extern IntPtr dlopen(string fileName, int flags);
-
-    [DllImport("dl")]
-    private static extern IntPtr dlsym(IntPtr handle, string symbol);
-
-    [DllImport("dl")]
-    private static extern int dlclose(IntPtr handle);
-
-    [DllImport("dl")]
-    private static extern IntPtr dlerror();
-
-    private static IntPtr LoadLibrary(string dllToLoad) => dlopen(dllToLoad, RTLD_NOW);
-    private static IntPtr GetProcAddress(IntPtr hModule, string procedureName) => dlsym(hModule, procedureName);
-    private static bool FreeLibrary(IntPtr hModule) => (dlclose(hModule) == 0);
-
-    private static string GetLastDlError()
-    {
-        IntPtr errPtr = dlerror();
-        return errPtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(errPtr) : "Unknown error";
-    }
-#elif UNITY_STANDALONE_OSX
-    private const int RTLD_NOW = 2;
-
-    [DllImport("libSystem")]
-    private static extern IntPtr dlopen(string fileName, int flags);
-
-    [DllImport("libSystem")]
-    private static extern IntPtr dlsym(IntPtr handle, string symbol);
-
-    [DllImport("libSystem")]
-    private static extern int dlclose(IntPtr handle);
-
-    [DllImport("libSystem")]
-    private static extern IntPtr dlerror();
-
-    private static IntPtr LoadLibrary(string dllToLoad) => dlopen(dllToLoad, RTLD_NOW);
-    private static IntPtr GetProcAddress(IntPtr hModule, string procedureName) => dlsym(hModule, procedureName);
-    private static bool FreeLibrary(IntPtr hModule) => (dlclose(hModule) == 0);
-
-    private static string GetLastDlError()
-    {
-        IntPtr errPtr = dlerror();
-        return errPtr != IntPtr.Zero ? Marshal.PtrToStringAnsi(errPtr) : "Unknown error";
-    }
-#endif
+    private const string LibName = sl.ZEDCamera.nameDll;
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate int CheckZEDPluginDelegate(int Major, int Minor);
 
     private static CheckZEDPluginDelegate _checkZEDPlugin;
 
-    public static bool IsWrapperLoaded => _checkZEDPlugin != null;
+    private static bool _initialized = false;
 
-    private static string packageName = "com.stereolabs.zed";
+    public static bool IsWrapperLoaded => _initialized;
+
+    // Import the function directly using DllImport
+    [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+    private static extern int sl_check_plugin(int major, int minor);
 
     /// <summary>
-    /// Ensures the correct suffix for the native library depending on OS.
+    /// Call this once to initialize the wrapper
     /// </summary>
-    private static string GetPlatformLibraryName(string baseName)
-    {
-#if UNITY_STANDALONE_WIN
-        if (!baseName.EndsWith(".dll"))
-            return baseName + ".dll";
-#elif UNITY_STANDALONE_LINUX
-        if (!baseName.EndsWith(".so"))
-            return "lib" + baseName + ".so";   // Linux convention: libXXX.so
-#elif UNITY_STANDALONE_OSX
-        if (!baseName.EndsWith(".dylib"))
-            return "lib" + baseName + ".dylib";
-#endif
-        return baseName;
-    }
-
-    private static bool TryLoadLibrary(string lib)
-    {
-        IntPtr pDll = LoadLibrary(lib);
-        if (pDll == IntPtr.Zero)
-        {
-#if UNITY_STANDALONE_WIN
-            Debug.LogError($"[NativeWrapper] Failed to load DLL: {lib}");
-#elif UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
-            Debug.LogError($"[NativeWrapper] Failed to load: {lib} — {GetLastDlError()}");
-#endif
-            return false;
-        }
-
-        IntPtr pAddressOfFunctionToCall = GetProcAddress(pDll, "sl_check_plugin");
-        if (pAddressOfFunctionToCall != IntPtr.Zero)
-        {
-            _checkZEDPlugin = Marshal.GetDelegateForFunctionPointer<CheckZEDPluginDelegate>(pAddressOfFunctionToCall);
-            return true;
-        }
-
-        Debug.LogError("[NativeWrapper] Function sl_check_plugin not found in loaded library.");
-        return false;
-    }
-
-#if UNITY_EDITOR
-    private static string TryGetDllFromPackage(string packageName, string relativePath)
-    {
-        foreach (var package in UnityEditor.PackageManager.PackageInfo.GetAllRegisteredPackages())
-        {
-            if (package.name.StartsWith(packageName))
-            {
-                string fullPath = Path.Combine(package.resolvedPath, relativePath);
-                return fullPath;
-            }
-        }
-        return null;
-    }
-#endif
-
     public static bool Init()
     {
-        string dllName = GetPlatformLibraryName(sl.ZEDCamera.nameDll);
-
-#if UNITY_EDITOR
-        string DllPath = Path.Combine(Application.dataPath, "SDK/Plugins/x86_64", dllName);
-        if (!TryLoadLibrary(DllPath))
+        try
         {
-            DllPath = TryGetDllFromPackage(packageName, Path.Combine("SDK/Plugins/x86_64", dllName));
+            // Assign delegate for convenience
+            _checkZEDPlugin = sl_check_plugin;
+            _initialized = true;
         }
-        else return true;
-#else
-        string DllPath = dllName;
-#endif
-        return TryLoadLibrary(DllPath);
+        catch (DllNotFoundException e)
+        {
+            Debug.LogError($"[NativeWrapper] Native library {LibName} not found: {e.Message}");
+        }
+        catch (EntryPointNotFoundException e)
+        {
+            Debug.LogError($"[NativeWrapper] Function sl_check_plugin not found: {e.Message}");
+        }
+        
+        return _initialized;
     }
 
+    /// <summary>
+    /// Call the plugin check function
+    /// </summary>
     public static int CheckPlugin()
     {
-        if (_checkZEDPlugin == null)
-            throw new InvalidOperationException("Function not loaded.");
+        if (!_initialized || _checkZEDPlugin == null)
+            throw new InvalidOperationException("NativeWrapper is not initialized or function missing.");
+
         return _checkZEDPlugin(ZEDCamera.PluginVersion.Major, ZEDCamera.PluginVersion.Minor);
     }
 }
