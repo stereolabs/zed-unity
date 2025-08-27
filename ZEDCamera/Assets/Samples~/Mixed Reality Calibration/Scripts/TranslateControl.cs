@@ -21,7 +21,7 @@ public class TranslateControl : TransformControl
     {
         base.Awake();
 
-        if (!anchor) anchor = FindObjectOfType<CameraAnchor>(); //For now. 
+        if (!anchor) anchor = FindAnyObjectByType<CameraAnchor>(); //For now. 
         CameraAnchor.OnCameraAnchorCreated += SetNewAnchor;
 
         startPosLocal = visualsParent.localPosition;

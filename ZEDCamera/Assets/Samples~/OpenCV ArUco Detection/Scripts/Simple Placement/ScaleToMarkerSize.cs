@@ -39,7 +39,7 @@ public class ScaleToMarkerSize : MonoBehaviour
         if (!filter) filter = GetComponentInChildren<MeshFilter>();
         rendStartBounds = filter.mesh.bounds;
 
-        if (!arucoManager) arucoManager = FindObjectOfType<ZEDArUcoDetectionManager>();
+        if (!arucoManager) arucoManager = FindAnyObjectByType<ZEDArUcoDetectionManager>();
         if(!arucoManager)
         {
             Debug.LogError("No ZEDArUcoDetectionManager in the scene.");

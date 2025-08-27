@@ -62,7 +62,7 @@ public class ZEDProjectile : MonoBehaviour
     {
         if (zedManager == null)
         {
-            zedManager = FindObjectOfType<ZEDManager>();
+            zedManager = FindAnyObjectByType<ZEDManager>();
             //If this happenend when only using a primary ZED for collisions but there are multiple ZEDs, collisions will be
             //calculated using an arbitrary camera. Warn the user. 
             if (testCollisionsUsingAllZEDs == false && ZEDManager.GetInstances().Count > 1)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -113,7 +114,7 @@ public class RenderingPipelineDefines
     {
         var target = EditorUserBuildSettings.activeBuildTarget;
         var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(target);
-        var defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+        var defines = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
         return defines.Split(';').ToList();
     }
 
@@ -122,6 +123,6 @@ public class RenderingPipelineDefines
         var target = EditorUserBuildSettings.activeBuildTarget;
         var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(target);
         var defines = string.Join(";", definesList.ToArray());
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, defines);
+        PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), defines);
     }
 }

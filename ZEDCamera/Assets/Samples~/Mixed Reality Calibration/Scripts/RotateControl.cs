@@ -21,7 +21,7 @@ public class RotateControl : TransformControl
     protected override void Awake ()
     {
         base.Awake();
-        if (!anchor) anchor = FindObjectOfType<CameraAnchor>(); 
+        if (!anchor) anchor = FindAnyObjectByType<CameraAnchor>(); 
         CameraAnchor.OnCameraAnchorCreated += SetNewAnchor;
 
         startRot = visualsParent.localRotation;

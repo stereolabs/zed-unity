@@ -51,7 +51,7 @@ public class Bunny : MonoBehaviour
         IsMoving = false; //we're not moving at start.
 
         //Caching
-        planeManager = FindObjectOfType<ZEDPlaneDetectionManager>();
+        planeManager = FindAnyObjectByType<ZEDPlaneDetectionManager>();
         rb = GetComponent<Rigidbody>(); //Get our Rigidbody component.
         anim = GetComponent<Animator>();
 
@@ -83,8 +83,14 @@ public class Bunny : MonoBehaviour
     /// </summary>
     public void GetHit(bool hit)
     {
+#if UNITY_6_0_OR_NEWER
         GetComponent<Rigidbody>().linearDamping = 0f;
         GetComponent<Rigidbody>().angularDamping = 0.5f;
+#else
+        GetComponent<Rigidbody>().drag = 0f;
+        GetComponent<Rigidbody>().angularDrag = 0.5f;
+#endif
+
         StartCoroutine(HitDelay(hit));
     }
 
@@ -126,8 +132,13 @@ public class Bunny : MonoBehaviour
         if (IsMoving)
         {
             //Look for our next position based on our current velocity.
+#if UNITY_6_OR_NEWER
             Vector3 predictedPos = centerpoint.position + (rb.linearVelocity * (Time.deltaTime * 2.5f));
             transform.rotation = Quaternion.LookRotation(rb.linearVelocity.normalized);
+#else
+            Vector3 predictedPos = centerpoint.position + (rb.velocity * (Time.deltaTime * 2.5f));
+            transform.rotation = Quaternion.LookRotation(rb.velocity.normalized);
+#endif
 
             //Collision check with the real world at that next position.
             foreach (ZEDManager manager in ZEDManager.GetInstances()) //Check all active cameras. 
@@ -144,7 +155,11 @@ public class Bunny : MonoBehaviour
                     {
                         IsMoving = false; //Not moving anymore, so update our state.
                         bunnyspawner.SpawnUI(predictedPos); //Start spawning the UI on our current location.
+#if UNITY_6_OR_NEWER
                         rb.linearVelocity = Vector3.Reflect(rb.linearVelocity / 2, transform.forward); //Bounce off the surface we hit 
+#else
+                        rb.velocity = Vector3.Reflect(rb.velocity / 2, transform.forward); //Bounce off the surface we hit
+#endif
                     }
 
                     break; //If it hit the real world in one camera's view, no need to check the other cameras. 

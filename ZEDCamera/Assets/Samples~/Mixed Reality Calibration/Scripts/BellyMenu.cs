@@ -86,8 +86,13 @@ public class BellyMenu : MonoBehaviour
             }
             else if (posdiff.magnitude < moveDeadzoneMeters / 2f) //Too close. Slow down extra fast. 
             {
+#if UNITY_6_OR_NEWER
                 _rb.linearVelocity *= 0.9f;
                 if (_rb.linearVelocity.magnitude < 0.05f) _rb.linearVelocity = Vector3.zero;
+#else
+                _rb.velocity *= 0.9f;
+                if (_rb.velocity.magnitude < 0.05f) _rb.velocity = Vector3.zero;
+#endif
             }
         }
         else //Not gradual move. 

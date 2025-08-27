@@ -80,7 +80,7 @@ public class BunnyPlacement : MonoBehaviour
     {
         canspawnbunny = false;
         tracker = GetComponent<ZEDControllerTracker_DemoInputs>();
-        zedPlane = FindObjectOfType<ZEDPlaneDetectionManager>();
+        zedPlane = FindAnyObjectByType<ZEDPlaneDetectionManager>();
         bunnySpawner = GetComponent<BunnySpawner>();
     }
 

@@ -203,7 +203,7 @@ public class Drone : MonoBehaviour, ILaserable
     {
 		//Cache the ZED's left camera for occlusion testing purposes
 		if (zedManager==null)
-			zedManager = FindObjectOfType<ZEDManager>();
+			zedManager = FindAnyObjectByType<ZEDManager>();
 
 		// Set the default position of the Drone to the one he spawned at.
 		nextposition = transform.position;
@@ -240,7 +240,7 @@ public class Drone : MonoBehaviour, ILaserable
         //If the _target isn't set, set it to the PlayerDamageReceiver, assuming there is one in the scene. 
         if(!target)
         {
-			target = FindObjectOfType<PlayerDamageReceiver>().transform;
+			target = FindAnyObjectByType<PlayerDamageReceiver>().transform;
             guntarget = target.position;
         } 
 	}

@@ -20,7 +20,7 @@ public class DisableUntilZEDReady : MonoBehaviour
 	// Use this for initialization
 	void Awake()
     {
-		if(!zedManager) zedManager = FindObjectOfType<ZEDManager> (); //Selects the first available ZEDManager if none was set before. 
+		if(!zedManager) zedManager = FindAnyObjectByType<ZEDManager> (); //Selects the first available ZEDManager if none was set before. 
 
 		if (zedManager) zedManager.OnZEDReady += EnableThisObject;
 	}

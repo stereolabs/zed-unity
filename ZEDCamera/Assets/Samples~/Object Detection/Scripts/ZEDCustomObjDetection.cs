@@ -74,7 +74,7 @@ public class ZEDCustomObjDetection : MonoBehaviour
 
     public void Start()
     {
-        if (!zedManager) zedManager = FindObjectOfType<ZEDManager>();
+        if (!zedManager) zedManager = FindAnyObjectByType<ZEDManager>();
 
         if (zedManager.objectDetectionModel != OBJECT_DETECTION_MODEL.CUSTOM_BOX_OBJECTS)
         {

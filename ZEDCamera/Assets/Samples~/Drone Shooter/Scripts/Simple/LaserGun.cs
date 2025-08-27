@@ -56,7 +56,7 @@ public class LaserGun : MonoBehaviour
 
         if (zedManager == null)
         {
-            zedManager = FindObjectOfType<ZEDManager>();
+            zedManager = FindAnyObjectByType<ZEDManager>();
             if (ZEDManager.GetInstances().Count > 1)
             {
                 Debug.Log("Warning: " + gameObject + " ZEDManager reference not set, but there are multiple ZEDManagers in the scene. " +
@@ -94,7 +94,7 @@ public class LaserGun : MonoBehaviour
         else
         {
             //If its not attached to an object tracker
-            var otherObjectTracker = FindObjectsOfType<ZEDControllerTracker>();
+            var otherObjectTracker = FindAnyObjectByType<ZEDControllerTracker>();
 
             if (otherObjectTracker != null)
             {

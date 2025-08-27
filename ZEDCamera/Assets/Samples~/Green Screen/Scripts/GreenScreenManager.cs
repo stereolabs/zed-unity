@@ -315,7 +315,7 @@ public class GreenScreenManager : MonoBehaviour
         if (!cameraManager)
         {
             //cameraManager = ZEDManager.GetInstance(sl.ZED_CAMERA_ID.CAMERA_ID_01);
-            cameraManager = FindObjectOfType<ZEDManager>();
+            cameraManager = FindAnyObjectByType<ZEDManager>();
         }
 
         cameraManager.OnZEDReady += ZEDReady;
@@ -334,7 +334,7 @@ public class GreenScreenManager : MonoBehaviour
 
     private void Awake()
     {
-        if (UpgradePluginToSRP.UpgradeGreenScreenToSRP(FindObjectOfType<ZEDManager>().gameObject))
+        if (UpgradePluginToSRP.UpgradeGreenScreenToSRP(FindAnyObjectByType<ZEDManager>().gameObject))
         {
             Debug.Log("Upgraded GreenScreen to SRP.");
         }

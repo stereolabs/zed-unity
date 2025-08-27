@@ -143,7 +143,11 @@ public class BallLauncher : MonoBehaviour
                 launcher.transform.localRotation = Quaternion.Euler(-offsetAngleY * Mathf.Rad2Deg, -offsetAngleX * Mathf.Rad2Deg, 0);
                 projectiles[countsphere % SPHERE_NB].GetComponent<BallTrigger>().ResetValues();
                 Rigidbody rigidBody = projectiles[countsphere % SPHERE_NB].GetComponent<Rigidbody>();
+#if UNITY_6_OR_NEWER
                 rigidBody.linearVelocity = Vector3.zero;
+#else
+                rigidBody.velocity = Vector3.zero;
+#endif
                 rigidBody.isKinematic = false;
                 rigidBody.useGravity = true;
 
