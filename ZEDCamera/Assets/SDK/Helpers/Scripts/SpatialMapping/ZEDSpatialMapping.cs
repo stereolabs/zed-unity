@@ -852,7 +852,7 @@ public class ZEDSpatialMapping
         zedCamera.DisableTracking();
         Quaternion quat = Quaternion.identity; Vector3 tr = Vector3.zero;
 
-        if (zedCamera.EnableTracking(ref quat, ref tr, true, false, false, false, true, -1.0f, true, sl.POSITIONAL_TRACKING_MODE.GEN_1, System.IO.File.Exists(basePath + ".area") ? basePath + ".area" : "") != sl.ERROR_CODE.SUCCESS)
+        if (zedCamera.EnableTracking(ref quat, ref tr, true, false, false, false, true, -1.0f, true, sl.POSITIONAL_TRACKING_MODE.GEN_1, false, false, System.IO.File.Exists(basePath + ".area") ? basePath + ".area" : "") != sl.ERROR_CODE.SUCCESS)
         {
             Debug.LogWarning(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
         }
