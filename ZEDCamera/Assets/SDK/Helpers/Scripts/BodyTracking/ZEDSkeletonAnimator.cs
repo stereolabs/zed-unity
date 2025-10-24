@@ -340,14 +340,16 @@ public class ZEDSkeletonAnimator : MonoBehaviour
 
     private void Update()
     {
+#if ENABLE_LEGACY_INPUT_MANAGER
         // reset automatic height offset calibration
         if (Input.GetKeyDown(resetAutomaticOffset))
         {
             heightOffsetter.CurrentheightOffset = 0;
         }
+#endif
     }
 
-    #endregion
+#endregion
 
     #region Foot IK
 

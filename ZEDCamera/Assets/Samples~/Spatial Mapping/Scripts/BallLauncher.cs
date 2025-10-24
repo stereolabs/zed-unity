@@ -125,7 +125,7 @@ public class BallLauncher : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-  
+#if ENABLE_LEGACY_INPUT_MANAGER
 		if (Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1"))
         {
             if(timerball > timeballmax)
@@ -146,7 +146,7 @@ public class BallLauncher : MonoBehaviour
 #if UNITY_6_OR_NEWER
                 rigidBody.linearVelocity = Vector3.zero;
 #else
-                rigidBody.velocity = Vector3.zero;
+                rigidBody.linearVelocity = Vector3.zero;
 #endif
                 rigidBody.isKinematic = false;
                 rigidBody.useGravity = true;
@@ -174,5 +174,7 @@ public class BallLauncher : MonoBehaviour
             }
         }
     }
-
-}
+#else
+        Debug.LogWarning("The BallLauncher script requires the Legacy Input Manager to be enabled in Project Settings > Player > Other Settings > Active Input Handling.");
+#endif
+    }
