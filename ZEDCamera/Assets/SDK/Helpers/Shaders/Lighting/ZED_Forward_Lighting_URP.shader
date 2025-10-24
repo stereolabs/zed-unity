@@ -160,17 +160,6 @@ Shader "ZED/ZED Forward Lighting URP"
 		#endif
 						ENDHLSL
 					}
-		// Used for rendering shadowmaps
-		UsePass "Universal Render Pipeline/Lit/ShadowCaster"
-
-							// Used for depth prepass
-							// If shadows cascade are enabled we need to perform a depth prepass.
-							// We also need to use a depth prepass in some cases camera require depth texture
-							// (e.g, MSAA is enabled and we can't resolve with Texture2DMS
-							UsePass "Universal Render Pipeline/Lit/DepthOnly"
-
-							// Used for Baking GI. This pass is stripped from build.
-							UsePass "Universal Render Pipeline/Lit/Meta"
 	}
 
 		Fallback Off
