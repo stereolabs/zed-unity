@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using System;
 using System.Collections;
 
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
+
 #if ZED_URP
 using UnityEngine.Rendering.Universal;
 #endif
@@ -126,15 +130,17 @@ public class ZEDBodyTrackingManager : MonoBehaviour
     [Tooltip("Foot locking smoothing setting. 0 = No latency, no smoothing. 1 = \"Full latency\" so no movement.\n Tweak this value depending on your framerate, and the fps of the camera.\nValues closer to 1 induce more latency, but improve fluidity."), Range(0f, 1f)]
     public float footLockingSmoothingValue = .8f;
 
+#if ENABLE_LEGACY_INPUT_MANAGER
     [Space(5)]
     [Header("Keyboard mapping")]
+
     public KeyCode toggleFootIK = KeyCode.I;
     public KeyCode toggleFootLock = KeyCode.F;
     public KeyCode toggleMirrorMode = KeyCode.M;
     public KeyCode toggleAutomaticHeightOffset = KeyCode.O;
     public KeyCode increaseOffsetKey = KeyCode.UpArrow;
     public KeyCode decreaseOffsetKey = KeyCode.DownArrow;
-
+#endif
     //private float alpha = 0.1f;
 
     #endregion
@@ -265,6 +271,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
         OffsetSDKSkeleton = offsetSDKSkeleton;  
         ApplyHeighOffsetToSDKSkeleton = applyHeighOffsetToSDKSkeleton;
 
+#if ENABLE_LEGACY_INPUT_MANAGER
         if (Input.GetKeyDown(KeyCode.Space))
         {
             useAvatar = !useAvatar;
@@ -303,7 +310,7 @@ public class ZEDBodyTrackingManager : MonoBehaviour
         {
             automaticOffset = !automaticOffset;
         }
-
+#endif
         // Display avatars or not depending on useAvatar setting.
         foreach (var skelet in avatarControlList)
         {
