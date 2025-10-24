@@ -148,6 +148,7 @@ public class ZEDTransformController : MonoBehaviour
         float inputRotation = 0f; //Applied rotation, between -1 and 1. Cumulative between keyboard and controllers. 
         float inputScale = 0f; //Applied scale change, either -1, 0 or 1. Cumulative between keyboard and controllers. 
 
+#if ENABLE_LEGACY_INPUT_MANAGER
         //Keyboard inputs. 
         if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.Q))
         {
@@ -182,6 +183,13 @@ public class ZEDTransformController : MonoBehaviour
             moveAxis = movementSpeed * Time.deltaTime * Vector3.down;
         }
 
+        if (Input.GetKey(KeyCode.Mouse0))
+            inputScale = 1f;
+        else if (Input.GetKey(KeyCode.Mouse1))
+            inputScale = -1f;
+#else
+        Debug.LogWarning("Legacy Input Manager is not enabled. Keyboard controls will not work.");
+#endif
         Quaternion gravity = Quaternion.identity;
 
 
@@ -205,10 +213,7 @@ public class ZEDTransformController : MonoBehaviour
             isMoving = false;
         }
 
-        if (Input.GetKey(KeyCode.Mouse0))
-            inputScale = 1f;
-        else if (Input.GetKey(KeyCode.Mouse1))
-            inputScale = -1f;
+
 
         if (zedManager)
         {
