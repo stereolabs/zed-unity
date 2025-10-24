@@ -112,11 +112,11 @@ public class BallLauncher : MonoBehaviour
             projectiles[i].SetActive(false);
             projectiles[i].hideFlags = HideFlags.HideInHierarchy;
             times[i] = 0;
-        }       
+        }
 
     }
 
- 
+
     static float EaseIn(float t, float b, float c, float d)
     {
         return -c * (Mathf.Sqrt(1 - (t /= d) * t) - 1) + b;
@@ -178,3 +178,4 @@ public class BallLauncher : MonoBehaviour
         Debug.LogWarning("The BallLauncher script requires the Legacy Input Manager to be enabled in Project Settings > Player > Other Settings > Active Input Handling.");
 #endif
     }
+}
