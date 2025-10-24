@@ -5,10 +5,6 @@ using System.Collections.Generic;
 using System;
 using System.Collections;
 
-#if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem;
-#endif
-
 #if ZED_URP
 using UnityEngine.Rendering.Universal;
 #endif
