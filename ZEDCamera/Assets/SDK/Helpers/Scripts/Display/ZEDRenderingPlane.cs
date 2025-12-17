@@ -170,7 +170,6 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// Point light structure for virtual lights on the real world.
     /// Gets sent to the shader via a compute buffer.
     /// </summary>
-    [SerializeField]
     public struct PointLight
     {
         /// <summary>
@@ -194,7 +193,6 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// <summary>
     /// Holds a slot for all point lights that should be cast on the real world.
     /// </summary>
-    [SerializeField]
     public PointLight[] pointLights = new PointLight[NUMBER_POINT_LIGHT_MAX];
     /// <summary>
     /// The size, or 'stride', of each PointLight in bytes. Needed to construct computeBufferPointLight.
@@ -209,7 +207,6 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// <summary>
     /// Structure of the spotlight send to the shader
     /// </summary>
-    [SerializeField]
     public struct SpotLight
     {
         /// <summary>
@@ -237,7 +234,6 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// <summary>
     /// Holds a slot for all spotlights that should be cast on the real world.
     /// </summary>
-    [SerializeField]
     public SpotLight[] spotLights = new SpotLight[NUMBER_SPOT_LIGHT_MAX];
 
     /// <summary>
