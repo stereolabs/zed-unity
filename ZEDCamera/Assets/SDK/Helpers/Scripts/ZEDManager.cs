@@ -297,7 +297,7 @@ public class ZEDManager : MonoBehaviour
     /// Positional tracking mode used. Can be used to improve accuracy in some type of scene at the cost of longer runtime.
     /// </summary>
     [HideInInspector]
-    public sl.POSITIONAL_TRACKING_MODE positionalTrackingMode;
+    public sl.POSITIONAL_TRACKING_MODE positionalTrackingMode = POSITIONAL_TRACKING_MODE.GEN_3;
 
     /// <summary>
     /// Whether to enable the area mode in localize only mode.

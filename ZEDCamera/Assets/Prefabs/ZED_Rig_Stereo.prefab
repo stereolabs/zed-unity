@@ -635,7 +635,7 @@ MonoBehaviour:
   enableTracking: 1
   enableSpatialMemory: 1
   pathSpatialMemory: 
-  positionalTrackingMode: 0
+  positionalTrackingMode: 2
   enableLocalizationOnly: 0
   enable2DGroundMode: 0
   setFloorAsOrigin: 1
