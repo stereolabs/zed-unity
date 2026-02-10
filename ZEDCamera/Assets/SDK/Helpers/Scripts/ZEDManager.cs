@@ -92,7 +92,7 @@ public class ZEDManager : MonoBehaviour
     /// Input Type in SDK (USB, SVO or Stream)
     /// </summary>
     [HideInInspector]
-    public sl.INPUT_TYPE inputType = sl.INPUT_TYPE.INPUT_TYPE_USB;
+    public sl.INPUT_TYPE inputType = sl.INPUT_TYPE.USB;
     /// <summary>
     /// Camera Resolution
     /// </summary>
@@ -572,6 +572,12 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     [HideInInspector]
     public bool objectClassSportFilter = true;
+
+    /// <summary>
+    /// Array of tracking parameters for each class (can be empty for some classes).
+    /// </summary>
+    [HideInInspector]
+    public ObjectTrackingParameters[] objectClassTrackingParameters;
 
     /// <summary>
     /// Whether the object detection module has been activated successfully.
@@ -2111,15 +2117,15 @@ public class ZEDManager : MonoBehaviour
             return;
         }
         initParameters.inputType = inputType;
-        if (inputType == sl.INPUT_TYPE.INPUT_TYPE_USB)
+        if (inputType == sl.INPUT_TYPE.USB)
         {
         }
-        else if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO)
+        else if (inputType == sl.INPUT_TYPE.SVO)
         {
             initParameters.pathSVO = svoInputFileName;
             initParameters.svoRealTimeMode = svoRealTimeMode;
         }
-        else if (inputType == sl.INPUT_TYPE.INPUT_TYPE_STREAM)
+        else if (inputType == sl.INPUT_TYPE.STREAM)
         {
             initParameters.ipStream = streamInputIP;
             initParameters.portStream = (ushort)streamInputPort;
@@ -2300,7 +2306,7 @@ public class ZEDManager : MonoBehaviour
             cameraFirmware = zedCamera.GetCameraFirmwareVersion().ToString() + "-" + zedCamera.GetSensorsFirmwareVersion().ToString();
             cameraSerialNumber = zedCamera.GetZEDSerialNumber().ToString();
 
-            if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO)
+            if (inputType == sl.INPUT_TYPE.SVO)
             {
                 numberFrameMax = zedCamera.GetSVONumberOfFrames();
             }
@@ -2515,7 +2521,7 @@ public class ZEDManager : MonoBehaviour
         if (requestNewFrame && zedReady)
         {
 
-            if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO)
+            if (inputType == sl.INPUT_TYPE.SVO)
             {
                 //handle pause
                 if (NeedNewFrameGrab && pauseSVOReading)
@@ -2571,7 +2577,7 @@ public class ZEDManager : MonoBehaviour
                     {
                         zedtrackingState = zedCamera.GetPosition(ref zedOrientation, ref zedPosition, sl.TRACKING_FRAME.LEFT_EYE);
                         //zedtrackingState = sl.TRACKING_STATE.TRACKING_OK;
-                        if (inputType == sl.INPUT_TYPE.INPUT_TYPE_SVO && svoLoopBack == true && initialPoseCached == false)
+                        if (inputType == sl.INPUT_TYPE.SVO && svoLoopBack == true && initialPoseCached == false)
                         {
                             initialPosition = zedPosition;
                             initialRotation = zedOrientation;
@@ -2754,7 +2760,7 @@ public class ZEDManager : MonoBehaviour
                 OnGrab();
 
             //SVO and loop back ? --> reset position if needed
-            if (zedCamera.GetInputType() == sl.INPUT_TYPE.INPUT_TYPE_SVO && svoLoopBack)
+            if (zedCamera.GetInputType() == sl.INPUT_TYPE.SVO && svoLoopBack)
             {
                 if (zedCamera.GetSVOPosition() >= zedCamera.GetSVONumberOfFrames() - 2)
                 {
@@ -3140,6 +3146,9 @@ public class ZEDManager : MonoBehaviour
             objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
             objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.SPORT] = Convert.ToInt32(objectClassSportFilter);
 
+            objectDetectionRuntimeParameters.objectClassTrackingParameters = new sl.ObjectTrackingParameters[(int)sl.OBJECT_CLASS.LAST];
+            objectDetectionRuntimeParameters.objectClassTrackingParameters = objectClassTrackingParameters;
+
             sl.ERROR_CODE err = zedCamera.EnableObjectDetection(ref od_param);
             if (err == sl.ERROR_CODE.SUCCESS)
             {
@@ -3200,6 +3209,9 @@ public class ZEDManager : MonoBehaviour
         objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.ELECTRONICS] = Convert.ToInt32(objectClassElectronicsFilter);
         objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.FRUIT_VEGETABLE] = Convert.ToInt32(objectClassFruitVegetableFilter);
         objectDetectionRuntimeParameters.objectClassFilter[(int)sl.OBJECT_CLASS.SPORT] = Convert.ToInt32(objectClassSportFilter);
+        objectDetectionRuntimeParameters.objectClassTrackingParameters = new sl.ObjectTrackingParameters[(int)sl.OBJECT_CLASS.LAST];
+
+        objectDetectionRuntimeParameters.objectClassTrackingParameters = objectClassTrackingParameters;
 
         if (newobjectsframeready)
         {

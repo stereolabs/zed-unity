@@ -38,10 +38,10 @@ namespace sl
 
     public enum INPUT_TYPE
     {
-        INPUT_TYPE_USB,
-        INPUT_TYPE_SVO,
-        INPUT_TYPE_STREAM,
-        INPUT_TYPE_GMSL
+        USB,
+        SVO,
+        STREAM,
+        GMSL
     };
 
     /// <summary>
@@ -187,6 +187,12 @@ namespace sl
         /// </summary>
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)]
         public string path;
+
+        /// <summary>
+        ///  System path of the camera
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)]
+        public string videoDevice;
         /// <summary>
         /// i2c port of the camera.
         /// </summary>
@@ -202,6 +208,10 @@ namespace sl
         /// \warning Not provided for Windows.
         /// </summary>
         public uint sn;
+        /// <summary>
+        ///  GMSL port of the camera.
+        /// </summary>
+        int gmslPort;
         /// <summary>
         /// [Cam model, eeprom version, white balance param]
         /// </summary>
@@ -259,6 +269,10 @@ namespace sl
         /// The current codec used for compression in streaming device
         /// </summary>
         public sl.STREAMING_CODEC codec;
+        /// <summary>
+        /// Model of the streaming device.
+        /// </summary>
+        public sl.MODEL cameraModel;
     };
 
     /// <summary>
@@ -1957,6 +1971,10 @@ namespace sl
         /// </summary>
         public string pathSVO = "";
         /// <summary>
+        /// gmsl port used to open a ZED camera connected through GMSL interface.
+        /// </summary>
+        public int gmslPort = 0;
+        /// <summary>
         /// In SVO playback, this mode simulates a live camera and consequently skipped frames if the computation framerate is too slow.
         /// </summary>
         public bool svoRealTimeMode;
@@ -2090,16 +2108,70 @@ namespace sl
         public Resolution maximumWorkingResolution;
 
         /// <summary>
+        ///  Set the input as the camera with specified id.
+        /// </summary>
+        /// <param name="cameraID"></param>
+        public void SetFromCameraID(int cameraID)
+        {
+            this.cameraDeviceID = cameraID;
+            this.pathSVO = "";
+            this.gmslPort = -1;
+            this.inputType = sl.INPUT_TYPE.USB;
+        }
+
+        /// <summary>
+        /// Set the input as the camera with specified serial number.
+        /// </summary>
+        /// <param name="serialNumber"></param>
+        public void SetFromSerialNumber(uint serialNumber)
+        {
+            this.serialNumber = serialNumber;
+            this.pathSVO = "";
+            this.gmslPort = -1;
+            this.inputType = sl.INPUT_TYPE.USB;
+        }
+
+        /// <summary>
+        ///  Set the input as the SVO specified with the filename.
+        /// </summary>
+        /// <param name="svoFilePath"></param>
+        public void SetFromSVOFile(string svoFilePath)
+        {
+            this.pathSVO = svoFilePath;
+            this.gmslPort = -1;
+            this.inputType = sl.INPUT_TYPE.SVO;
+        }
+
+        public void SetFromGMSLPort(int port)
+        {
+            this.gmslPort = port;
+            this.pathSVO = "";
+            this.inputType = sl.INPUT_TYPE.GMSL;
+            this.serialNumber = 0;
+        }
+
+        public void SetFromStream(string ipAddress, ushort port = 30000)
+        {
+            this.ipStream = ipAddress;
+            this.portStream = port;
+            this.pathSVO = "";
+            this.gmslPort = -1;
+            this.inputType = sl.INPUT_TYPE.STREAM;
+            this.serialNumber = 0;
+        }
+
+        /// <summary>
         /// Constructor. Sets default initialization parameters recommended for Unity.
         /// </summary>
         public InitParameters()
         {
-            this.inputType = sl.INPUT_TYPE.INPUT_TYPE_USB;
+            this.inputType = sl.INPUT_TYPE.USB;
             this.resolution = RESOLUTION.AUTO;
             this.cameraFPS = -1;
             this.cameraDeviceID = 0;
             this.serialNumber = 0;
             this.pathSVO = "";
+            this.gmslPort = -1;
             this.svoRealTimeMode = false;
             this.coordinateUnit = UNIT.METER;
             this.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP;
@@ -2542,6 +2614,69 @@ namespace sl
         public bool allowReducedPrecisionInference;
     };
 
+    ///\ingroup Object_group
+    /// <summary>
+    /// Structure containing a set of parameters for the object tracking module.
+    /// </summary>
+    /// The default constructor sets all parameters to their default settings.
+    /// \note Parameters can be adjusted by the user.
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ObjectTrackingParameters
+    {
+        /// <summary>
+        /// Preset defining the expected maximum acceleration of the tracked object.
+        /// </summary>
+        /// Determines how the ZED SDK interprets object acceleration, affecting tracking behavior and predictions.
+        public OBJECT_ACCELERATION_PRESET objectAccelerationPreset;
+
+        /// <summary>
+        /// Deprecated: Manually override the acceleration preset.
+        /// </summary>
+        /// \warning Preferred way is to use \ref velocitySmoothingFactor.
+        public float maxAllowedAcceleration;
+
+        /// <summary>
+        /// Control the smoothing of the velocity estimation. Manually override the acceleration preset.
+        /// </summary>
+        /// Values between 0.0 and 1.0.
+        /// - High value (closer to 1.0): Very smooth, but may lag behind rapid changes.
+        /// - Low value (closer to 0.0): Very responsive to velocity changes, but may be jittery.
+        /// - 0.5: ZED SDK base tuning. Balanced smoothing and responsiveness.
+        /// A negative value (e.g. -1) lets the ZED SDK interpret velocitySmoothingFactor.
+        /// Default: -1
+        public float velocitySmoothingFactor;
+
+        /// <summary>
+        /// Threshold to force an object's velocity to zero.
+        /// </summary>
+        /// If the calculated speed (m/s) is below this threshold, the object is considered static.
+        /// This helps eliminate drift on stationary objects.
+        /// A negative value (e.g. -1) lets the ZED SDK interpret minVelocityThreshold.
+        /// Default: -1
+        public float minVelocityThreshold;
+
+        /// <summary>
+        /// Duration to keep predicting a track's position after occlusion.
+        /// </summary>
+        /// When an object is no longer visible (occluded or out of frame),
+        /// the tracker will predict its position for this duration before deleting the track.
+        /// - Short (e.g., 0.2s): Prevents "ghost" objects but may break tracks during short occlusions.
+        /// - Long (e.g., 2.0s): Maintains ID during long occlusions but may report objects that are gone.
+        /// A negative value (e.g. -1) lets the ZED SDK interpret predictionTimeoutS.
+        /// Default: -1
+        public float predictionTimeoutS;
+
+        /// <summary>
+        /// Minimum confirmation time required to validate a track.
+        /// </summary>
+        /// The minimum duration (in seconds) an object must be continuously detected
+        /// before it is reported as a valid track. Helps filter out spurious false
+        /// positives that appear only briefly.
+        /// A negative value (e.g. -1) lets the ZED SDK interpret minConfirmationTimeS.
+        /// Default: -1
+        public float minConfirmationTimeS;
+    };
+
 
     [StructLayout(LayoutKind.Sequential)]
     public struct ObjectDetectionRuntimeParameters
@@ -2564,6 +2699,17 @@ namespace sl
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)sl.OBJECT_CLASS.LAST)]
         public int[] objectConfidenceThreshold;
+        /// <summary>
+        /// Global tracking parameters.
+        /// </summary>
+        public ObjectTrackingParameters objectTrackingParameters;
+
+        /// <summary>
+        /// Array of tracking parameters for each class (can be empty for some classes).
+        /// </summary>
+        /// \note sl::ObjectDetectionRuntimeParameters.objectTrackingParameters will be taken as fallback/default value.
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)sl.OBJECT_CLASS.LAST)]
+        public ObjectTrackingParameters[] objectClassTrackingParameters;
     };
 
     /// <summary>
@@ -2649,6 +2795,55 @@ namespace sl
         /// </summary>
         public float minBoxHeightNormalized = -1.0f;
 
+        /// <summary>
+        /// Maximum allowed 3D width.
+        /// Any prediction bigger than that will be either discarded (if object is tracked and in SEARCHING state) or clamped.
+        /// Default: -1 (no filtering)
+        /// </summary>
+        public float maxBoxWidthMeters = -1.0f;
+        /// <summary>
+        /// Minimum allowed 3D width.
+        /// Any prediction smaller than that will be either discarded (if object is tracked and in SEARCHING state) or clamped.
+        /// Default: -1 (no filtering)
+        /// </summary>
+        public float minBoxWidthMeters = -1.0f;
+        /// <summary>
+        /// Maximum allowed 3D height.
+        /// Any prediction bigger than that will be either discarded (if object is tracked and in SEARCHING state) or clamped.
+        /// Default: -1 (no filtering)
+        /// </summary>
+        public float maxBoxHeightMeters = -1.0f;
+        /// <summary>
+        /// Minimum allowed 3D height.
+        /// Any prediction smaller than that will be either discarded (if object is tracked and in SEARCHING state) or clamped.
+        /// Default: -1 (no filtering)
+        /// </summary>
+        public float minBoxHeightMeters = -1.0f;
+        /// <summary>
+        /// For increased accuracy, the native \ref sl::OBJECT_SUBCLASS mapping, if any.
+        ///  Native objects have refined internal parameters for better 3D projection and tracking accuracy.
+        /// If one of the custom objects can be mapped to one the native \ref sl::OBJECT_SUBCLASS, this can help to boost the tracking accuracy.
+        /// Default: no mapping
+        /// </summary>
+        public OBJECT_SUBCLASS nativeMappedClass = OBJECT_SUBCLASS.LAST;
+        /// <summary>
+        /// Preset defining the expected maximum acceleration of the tracked object.
+        /// Determines how the ZED SDK interprets object acceleration, affecting tracking behavior and predictions.
+        /// Default: OBJECT_ACCELERATION_PRESET.DEFAULT
+        /// </summary>
+        public OBJECT_ACCELERATION_PRESET objectAccelerationPreset = OBJECT_ACCELERATION_PRESET.DEFAULT;
+        /// <summary>
+        /// Manually override the acceleration preset.
+        /// If set, this value takes precedence over the selected preset, allowing for a custom maximum acceleration.
+        /// Unit is m/s^2.
+        /// Default: nan (no override)
+        /// </summary>
+        public float maxAllowedAcceleration = float.NaN;
+        /// <summary>
+        /// Object tracking parameters for this class.
+        /// </summary>
+        public ObjectTrackingParameters objectTrackingParameters;
+
         public CustomObjectDetectionProperties()
         {
             this.classID = -1;
@@ -2662,6 +2857,14 @@ namespace sl
             this.minBoxHeightNormalized = -1.0f;
             this.maxBoxWidthNormalized = -1.0f;
             this.minBoxWidthNormalized = -1.0f;
+            this.maxBoxHeightMeters = -1.0f;
+            this.minBoxHeightMeters = -1.0f;
+            this.maxBoxWidthMeters = -1.0f;
+            this.minBoxWidthMeters = -1.0f;
+            this.nativeMappedClass = OBJECT_SUBCLASS.LAST;
+            this.objectAccelerationPreset = OBJECT_ACCELERATION_PRESET.DEFAULT;
+            this.maxAllowedAcceleration = float.NaN;
+            this.objectTrackingParameters = new ObjectTrackingParameters();
         }
     };
 
@@ -2711,10 +2914,30 @@ namespace sl
         /// Only the upper body will be output (from hip)
         /// </summary>
         UPPER_BODY,
+    };
+
+    ///\ingroup Object_group
+    /// <summary>
+    /// Lists of supported presets for maximum acceleration allowed for a given tracked object.
+    /// </summary>
+    public enum OBJECT_ACCELERATION_PRESET
+    {
         /// <summary>
-        /// Hands only
+        /// The ZED SDK will automatically determine the appropriate maximum acceleration.
         /// </summary>
-       // HAND
+        DEFAULT,
+        /// <summary>
+        /// Suitable for objects with relatively low maximum acceleration (e.g., a person walking).
+        /// </summary>
+        LOW,
+        /// <summary>
+        /// Suitable for objects with moderate maximum acceleration (e.g., a person running).
+        /// </summary>
+        MEDIUM,
+        /// <summary>
+        /// Suitable for objects with high maximum acceleration (e.g., a car accelerating, a kicked sports ball).
+        /// </summary>
+        HIGH
     };
 
     /// <summary>

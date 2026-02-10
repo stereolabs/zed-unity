@@ -465,14 +465,6 @@ public class ZEDRenderingPlane : MonoBehaviour
         //blurMaterial.SetTexture("_Mask", mask);
         blurMaterial.SetTexture(maskPropID, mask);
 
-
-        //Force Unity into 16:9 mode to match the ZED's output.
-#if UNITY_EDITOR
-        UnityEditor.PlayerSettings.SetAspectRatio(UnityEditor.AspectRatio.Aspect16by9, true);
-        UnityEditor.PlayerSettings.SetAspectRatio(UnityEditor.AspectRatio.Aspect16by10, false);
-        UnityEditor.PlayerSettings.SetAspectRatio(UnityEditor.AspectRatio.Aspect4by3, false);
-        UnityEditor.PlayerSettings.SetAspectRatio(UnityEditor.AspectRatio.Aspect5by4, false);
-#endif
         CreateRenderTexture();
 
         //Load the blender for the zedmesher
