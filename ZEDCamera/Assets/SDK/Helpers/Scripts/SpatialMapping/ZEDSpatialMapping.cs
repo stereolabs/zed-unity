@@ -714,7 +714,7 @@ public class ZEDSpatialMapping
     public void ClearAllMeshes()
     {
 
-        GameObject[] gos = GameObject.FindObjectsOfType<GameObject>() as GameObject[];
+        GameObject[] gos = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None) as GameObject[];
 
         spatialMappingHelper.Clear();
         for (int i = 0; i < gos.Length; i++)

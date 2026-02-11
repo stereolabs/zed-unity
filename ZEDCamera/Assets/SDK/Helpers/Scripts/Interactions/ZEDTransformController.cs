@@ -119,7 +119,7 @@ public class ZEDTransformController : MonoBehaviour
 
         if (!zedManager)
         {
-            zedManager = FindObjectOfType<ZEDManager>();
+            zedManager = FindFirstObjectByType<ZEDManager>();
             if (ZEDManager.GetInstances().Count > 1) //They let the plugin auto-assign a ZED but there are multiple ZED's. Warn the user. 
             {
                 Debug.Log("Warning: ZEDTransformController's zedManager field was not specified, but there are multiple ZEDManagers in the scene " +
@@ -132,7 +132,7 @@ public class ZEDTransformController : MonoBehaviour
         //Find the available VR controllers and assigning them to our List.
         yield return new WaitForSeconds(1f);
 
-        var trackers = FindObjectsOfType<ZEDControllerTracker_DemoInputs>();
+        var trackers = FindObjectsByType<ZEDControllerTracker_DemoInputs>(FindObjectsSortMode.None);
 
         objectTrackers.AddRange(trackers);
 
