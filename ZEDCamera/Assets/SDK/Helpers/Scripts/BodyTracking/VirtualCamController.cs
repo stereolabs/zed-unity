@@ -14,8 +14,6 @@ public class VirtualCamController : MonoBehaviour
 
     private Quaternion currentRotation = Quaternion.identity;
     private Vector3 currentPosition = Vector3.zero;
-    private float stepTranslation = 0.1f;
-    private float stepRotation = 5f;
 
     private bool initialized = false;
 

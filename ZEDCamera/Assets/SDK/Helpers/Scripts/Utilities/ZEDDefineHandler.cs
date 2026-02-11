@@ -62,7 +62,7 @@ public class ZEDDefineHandler : AssetPostprocessor
     public static void ActivateDefine(string packageName, string defineName)
     {
         EditorPrefs.SetBool(packageName, true);
-        string defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
+        string defines = PlayerSettings.GetScriptingDefineSymbols(UnityEditor.Build.NamedBuildTarget.Standalone);
         if (defines.Length != 0)
         {
             if (!defines.Contains(defineName))
@@ -77,8 +77,7 @@ public class ZEDDefineHandler : AssetPostprocessor
                 defines += defineName;
             }
         }
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, defines);
-
+        PlayerSettings.SetScriptingDefineSymbols(UnityEditor.Build.NamedBuildTarget.Standalone, defines);
     }
 
     /// <summary>
@@ -89,7 +88,7 @@ public class ZEDDefineHandler : AssetPostprocessor
     public static void DeactivateDefine(string packagename, string defineName)
     {
         EditorPrefs.SetBool(packagename, false);
-        string defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
+        string defines = PlayerSettings.GetScriptingDefineSymbols(UnityEditor.Build.NamedBuildTarget.Standalone);
         if (defines.Length != 0)
         {
             if (defineName != null && defines.Contains(defineName))
@@ -102,7 +101,7 @@ public class ZEDDefineHandler : AssetPostprocessor
                 }
             }
         }
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, defines);
+        PlayerSettings.SetScriptingDefineSymbols(UnityEditor.Build.NamedBuildTarget.Standalone, defines);
     }
 }
 

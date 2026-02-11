@@ -73,7 +73,7 @@ namespace sl
         {
             if (zedManager == null)
             {
-                zedManager = FindObjectOfType<ZEDManager>();
+                zedManager = FindFirstObjectByType<ZEDManager>();
                 if (ZEDManager.GetInstances().Count > 1) //We chose a ZED arbitrarily, but there are multiple cams present. Warn the user. 
                 {
                     Debug.Log("Warning: " + gameObject.name + "'s zedManager was not specified, so the first available ZEDManager instance was " +
