@@ -1566,6 +1566,7 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     private Thread trackerThread = null;
 
+    private bool isClosing = false;
 
     ///////////////////////////////////////////
     //////  Camera and Player Transforms //////
@@ -1931,26 +1932,50 @@ public class ZEDManager : MonoBehaviour
     {
         running = false;
 
-        //In case the opening thread is still running.
+        // Unblock native Grab() call so the grab thread can exit
+        if (zedCamera != null)
+        {
+            zedCamera.Destroy();
+        }
+
         if (threadOpening != null)
         {
             initQuittingHandle.Reset();
             forceCloseInit = true;
             initQuittingHandle.Set();
-
-            threadOpening.Join();
+            if (!threadOpening.Join(5000))
+                Debug.LogWarning("[ZEDManager] Opening thread did not exit in time.");
             threadOpening = null;
         }
 
-        //Shut down the image grabbing thread.
         if (threadGrab != null)
         {
-            threadGrab.Join();
+            if (!threadGrab.Join(5000))
+                Debug.LogWarning("[ZEDManager] Grab thread did not exit in time.");
             threadGrab = null;
         }
 
+        if (isRecording)
+        {
+            zedCamera.DisableRecording();
+        }
+
         if (IsMappingRunning)
+        {
             StopSpatialMapping();
+        }
+
+        if (IsObjectDetectionRunning)
+        {
+            StopObjectDetection();
+        }
+
+        if (IsBodyTrackingRunning)
+        {
+            StopBodyTracking();
+        }
+
+        zedCamera = null;
 
         Thread.Sleep(10);
     }
@@ -1983,37 +2008,22 @@ public class ZEDManager : MonoBehaviour
 
     private void CloseManager()
     {
+        // Guard against double-close from both OnDestroy and OnApplicationQuit
+        if (isClosing) return;
+        isClosing = true;
+
         if (spatialMapping != null)
             spatialMapping.Dispose();
 
-        if (IsObjectDetectionRunning)
-        {
-            StopObjectDetection();
-        }
-
-        if (IsBodyTrackingRunning)
-        {
-            StopBodyTracking();
-        }
+        // Stop threads FIRST, then disable modules (avoids grabLock contention)
+        zedReady = false;
+        Destroy();
 
 #if !ZED_HDRP && !ZED_URP
         ClearRendering();
 #endif
-
-        zedReady = false;
         OnCamBrightnessChange -= SetCameraBrightness;
         OnMaxDepthChange -= SetMaxDepthRange;
-        Destroy(); //Close the grab and initialization threads.
-
-        if (zedCamera != null)
-        {
-            if (isRecording)
-            {
-                zedCamera.DisableRecording();
-            }
-            zedCamera.Destroy();
-            zedCamera = null;
-        }
 
 #if UNITY_EDITOR //Prevents building the app otherwise.
         //Restore the AR layers that were hidden, if necessary.
@@ -2025,7 +2035,7 @@ public class ZEDManager : MonoBehaviour
         }
 #endif
 
-        sl.ZEDCamera.UnloadInstance((int)cameraID);
+        isClosing = false;
     }
 
 #if !ZED_HDRP && !ZED_URP
@@ -3862,7 +3872,7 @@ public class ZEDManager : MonoBehaviour
     /// Sets the calibrationHasChanged flag to true, which causes the next Update() to
     /// re-apply the HMD-to-ZED offsets.
     /// </summary>
-	private void CalibrationHasChanged()
+    private void CalibrationHasChanged()
     {
         calibrationHasChanged = true;
     }
