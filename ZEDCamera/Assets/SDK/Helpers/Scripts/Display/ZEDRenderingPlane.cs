@@ -1369,6 +1369,12 @@ public class ZEDRenderingPlane : MonoBehaviour
     /// <param name="destination"></param>
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
+        if (zedManager == null)
+        {
+            Graphics.Blit(source, destination);
+            return;
+        }
+
         if (zedManager.GetSpatialMapping.display) //If displaying a mesh from spatial mapping, blend the wireframe into the image.
         {
             RenderTexture tmpSource = RenderTexture.GetTemporary(source.width, source.height, source.depth, source.format, RenderTextureReadWrite.sRGB);

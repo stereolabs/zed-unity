@@ -174,13 +174,6 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
 		if (zedManager)
         {
-
-#if ZED_URP
-            UniversalAdditionalCameraData urpCamData = zedManager.GetLeftCamera().GetComponent<UniversalAdditionalCameraData>();
-            urpCamData.renderPostProcessing = true;
-            urpCamData.renderShadows = false;
-#endif
-
             zedManager.OnZEDReady += OnZEDReady;
             zedManager.OnBodyTracking += UpdateSkeletonData;
 		}
@@ -189,6 +182,17 @@ public class ZEDBodyTrackingManager : MonoBehaviour
 
     private void OnZEDReady()
     {
+        if (!zedManager.GetLeftCamera())
+        {
+            return;
+        }
+
+#if ZED_URP
+            UniversalAdditionalCameraData urpCamData = zedManager.GetLeftCamera().GetComponent<UniversalAdditionalCameraData>();
+            urpCamData.renderPostProcessing = true;
+            urpCamData.renderShadows = false;
+#endif
+
         StartCoroutine(TimerToMirrorCanvas());
         if (startBodyTrackingAutomatically && !zedManager.IsBodyTrackingRunning)
         {

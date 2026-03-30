@@ -578,8 +578,7 @@ public static class NativeWrapper
 
         /*
          * Depth Sensing utils functions.
-         */
-        /* Removed as of ZED SDK v3.0.
+         * Removed as of ZED SDK v3.0.
        [DllImport(nameDll, EntryPoint = "set_confidence_threshold")]
        private static extern void dllz_set_confidence_threshold(int cameraID, int threshold);
        [DllImport(nameDll, EntryPoint = "set_depth_max_range_value")]
@@ -1034,11 +1033,22 @@ public static class NativeWrapper
             string infoSystem = SystemInfo.graphicsDeviceType.ToString().ToUpper();
             if (!infoSystem.Equals("DIRECT3D11") && !infoSystem.Equals("OPENGLCORE") && !infoSystem.Equals("VULKAN"))
             {
-                throw new Exception("The graphic library [" + infoSystem + "] is not supported");
+                Debug.LogError("The graphic library [" + infoSystem + "] is not supported");
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                Application.Quit(1);
+#endif
+                return false;
             }
             CameraID = cameraID;
             //tagOneObject += cameraID;
             return dllz_create_camera(cameraID);
+        }
+        public void Close()
+        {
+            dllz_close(CameraID);
+            dllz_unload_instance(CameraID);
         }
 
         /// <summary>
@@ -1050,11 +1060,6 @@ public static class NativeWrapper
             cameraReady = false;
             dllz_close(CameraID);
             DestroyAllTexture();
-        }
-        public void Close()
-        {
-            dllz_close(CameraID);
-            dllz_unload_instance(CameraID);
         }
 
         /// <summary>

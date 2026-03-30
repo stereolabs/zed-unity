@@ -146,7 +146,7 @@ public class BallLauncher : MonoBehaviour
 #if UNITY_6_OR_NEWER
                 rigidBody.linearVelocity = Vector3.zero;
 #else
-                rigidBody.linearVelocity = Vector3.zero;
+                rigidBody.velocity = Vector3.zero;
 #endif
                 rigidBody.isKinematic = false;
                 rigidBody.useGravity = true;
@@ -173,7 +173,6 @@ public class BallLauncher : MonoBehaviour
                 }
             }
         }
-    }
 #else
         Debug.LogWarning("The BallLauncher script requires the Legacy Input Manager to be enabled in Project Settings > Player > Other Settings > Active Input Handling.");
 #endif
