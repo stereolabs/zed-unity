@@ -1047,8 +1047,8 @@ public static class NativeWrapper
         }
         public void Close()
         {
+            cameraReady = false;
             dllz_close(CameraID);
-            dllz_unload_instance(CameraID);
         }
 
         /// <summary>
@@ -1057,8 +1057,8 @@ public static class NativeWrapper
         /// </summary>
         public void Destroy()
         {
-            cameraReady = false;
-            dllz_close(CameraID);
+            Close();
+            dllz_unload_instance(CameraID);
             DestroyAllTexture();
         }
 

@@ -1932,29 +1932,6 @@ public class ZEDManager : MonoBehaviour
     {
         running = false;
 
-        // Unblock native Grab() call so the grab thread can exit
-        if (zedCamera != null)
-        {
-            zedCamera.Destroy();
-        }
-
-        if (threadOpening != null)
-        {
-            initQuittingHandle.Reset();
-            forceCloseInit = true;
-            initQuittingHandle.Set();
-            if (!threadOpening.Join(5000))
-                Debug.LogWarning("[ZEDManager] Opening thread did not exit in time.");
-            threadOpening = null;
-        }
-
-        if (threadGrab != null)
-        {
-            if (!threadGrab.Join(5000))
-                Debug.LogWarning("[ZEDManager] Grab thread did not exit in time.");
-            threadGrab = null;
-        }
-
         if (isRecording)
         {
             zedCamera.DisableRecording();
@@ -1975,6 +1952,29 @@ public class ZEDManager : MonoBehaviour
             StopBodyTracking();
         }
 
+        // Unblock native Grab() call so the grab thread can exit
+        if (zedCamera != null)
+        {
+            zedCamera.Close();
+        }
+
+        if (threadOpening != null)
+        {
+            initQuittingHandle.Reset();
+            forceCloseInit = true;
+            initQuittingHandle.Set();
+            if (!threadOpening.Join(5000))
+                Debug.LogWarning("[ZEDManager] Opening thread did not exit in time.");
+            threadOpening = null;
+        }
+
+        if (threadGrab != null)
+        {
+            if (!threadGrab.Join(5000))
+                Debug.LogWarning("[ZEDManager] Grab thread did not exit in time.");
+            threadGrab = null;
+        }
+
         zedCamera = null;
 
         Thread.Sleep(10);
@@ -1986,7 +1986,8 @@ public class ZEDManager : MonoBehaviour
     /// </summary>
     private void OnApplicationQuit()
     {
-        CloseManager();
+        
+        Close();
         //sl.ZEDCamera.UnloadPlugin();
 
         //If this was the last camera to close, make sure all instances are closed.
@@ -2010,6 +2011,7 @@ public class ZEDManager : MonoBehaviour
     {
         // Guard against double-close from both OnDestroy and OnApplicationQuit
         if (isClosing) return;
+
         isClosing = true;
 
         if (spatialMapping != null)
@@ -2939,8 +2941,7 @@ public class ZEDManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        //OnApplicationQuit();
-        CloseManager();
+        OnApplicationQuit();
     }
 
 
