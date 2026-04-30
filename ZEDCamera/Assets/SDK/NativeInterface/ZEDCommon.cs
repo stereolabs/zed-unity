@@ -16,8 +16,8 @@ namespace sl
 
 	public class ZEDCommon
 	{
-		public const string NameDLL = "sl_zed_c_api";
-		public const string NameDLLUnity = "sl_unity_private";
+		public const string NameDLL = "sl_zed_c";
+		public const string NameDLLUnity = "sl_zed_unity";
         public static bool IsVector3NaN(Vector3 input)
         {
             return float.IsNaN(input.x) || float.IsNaN(input.y) || float.IsNaN(input.z);
