@@ -449,6 +449,15 @@ public static class NativeWrapper
         private static extern void dllz_get_svo_data_keys(int cameraID, int nb_keys, [Out] string[] keys);
 
         /*
+        * Texture lifecycle functions (Unity layer — must be called around sl_open/sl_close).
+        */
+        [DllImport(nameDllUnity, EntryPoint = "sl_unity_init_textures")]
+        private static extern void dllz_unity_init_textures(int cameraID, int depthMode);
+
+        [DllImport(nameDllUnity, EntryPoint = "sl_unity_cleanup_textures")]
+        private static extern void dllz_unity_cleanup_textures(int cameraID);
+
+        /*
         * Texturing functions.
         */
         [DllImport(nameDllUnity, EntryPoint = "sl_retrieve_textures")]
@@ -1049,6 +1058,7 @@ public static class NativeWrapper
         public void Close()
         {
             cameraReady = false;
+            dllz_unity_cleanup_textures(CameraID);
             dllz_close(CameraID);
         }
 
@@ -1262,6 +1272,7 @@ public static class NativeWrapper
                 fov_H = calibrationParametersRectified.leftCam.hFOV * Mathf.Deg2Rad;
                 fov_V = calibrationParametersRectified.leftCam.vFOV * Mathf.Deg2Rad;
                 cameraModel = GetCameraModel();
+                dllz_unity_init_textures(CameraID, (int)initParameters.depthMode);
                 cameraReady = true;
                 return (ERROR_CODE)v;
             }
