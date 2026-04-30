@@ -113,6 +113,7 @@ public static class NativeWrapper
         /// DLL name, used for extern calls to the wrapper.
         /// </summary>
         public const string nameDll = sl.ZEDCommon.NameDLL;
+        public const string nameDllUnity = sl.ZEDCommon.NameDLLUnity;
 
         /// <summary>
         /// List of all created textures, representing SDK output. Indexed by ints corresponding to its ZEDCamera.TYPE_VIEW
@@ -341,10 +342,10 @@ public static class NativeWrapper
         public static readonly System.Version PluginVersion = new System.Version(5, 2, 0);
 
         /******** DLL members ***********/
-        [DllImport(nameDll, EntryPoint = "GetRenderEventFunc")]
+        [DllImport(nameDllUnity, EntryPoint = "GetRenderEventFunc")]
         private static extern IntPtr GetRenderEventFunc();
 
-        [DllImport(nameDll, EntryPoint = "sl_register_callback_debuger")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_register_callback_debuger")]
         private static extern void dllz_register_callback_debuger(DebugCallback callback);
 
 
@@ -360,7 +361,7 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_unload_instance")]
         private static extern void dllz_unload_instance(int id);
 
-        [DllImport(nameDll, EntryPoint = "sl_find_usb_device")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_find_usb_device")]
         private static extern bool dllz_find_usb_device(USB_DEVICE dev);
 
         [DllImport(nameDll, EntryPoint = "sl_generate_unique_id")]
@@ -450,33 +451,33 @@ public static class NativeWrapper
         /*
         * Texturing functions.
         */
-        [DllImport(nameDll, EntryPoint = "sl_retrieve_textures")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_retrieve_textures")]
         private static extern void dllz_retrieve_textures(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_updated_textures_timestamp")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_get_updated_textures_timestamp")]
         private static extern ulong dllz_get_updated_textures_timestamp(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_swap_textures")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_swap_textures")]
         private static extern void dllz_swap_textures(int cameraID);
 
 
 
-        [DllImport(nameDll, EntryPoint = "sl_register_texture_image_type")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_register_texture_image_type")]
         private static extern int dllz_register_texture_image_type(int cameraID, int option, IntPtr id, int width, int height);
 
-        [DllImport(nameDll, EntryPoint = "sl_register_texture_measure_type")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_register_texture_measure_type")]
         private static extern int dllz_register_texture_measure_type(int cameraID, int option, IntPtr id, int width, int height);
 
-        [DllImport(nameDll, EntryPoint = "sl_unregister_texture_measure_type")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_unregister_texture_measure_type")]
         private static extern int dllz_unregister_texture_measure_type(int cameraID, int option);
 
-        [DllImport(nameDll, EntryPoint = "sl_unregister_texture_image_type")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_unregister_texture_image_type")]
         private static extern int dllz_unregister_texture_image_type(int cameraID, int option);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_copy_mat_texture_image_type")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_get_copy_mat_texture_image_type")]
         private static extern IntPtr dllz_get_copy_mat_texture_image_type(int cameraID, int option);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_copy_mat_texture_measure_type")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_get_copy_mat_texture_measure_type")]
         private static extern IntPtr dllz_get_copy_mat_texture_measure_type(int cameraID, int option);
 
 
@@ -591,16 +592,16 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_get_depth_max_range_value")]
         private static extern float dllz_get_depth_max_range_value(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_depth_value")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_get_depth_value")]
         private static extern float dllz_get_depth_value(int cameraID, uint x, uint y);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_distance_value")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_get_distance_value")]
         private static extern float dllz_get_distance_value(int cameraID, uint x, uint y);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_normal_value")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_get_normal_value")]
         private static extern bool dllz_get_normal_value(int cameraID, uint x, uint y, out Vector4 value);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_xyz_value")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_get_xyz_value")]
         private static extern bool dllz_get_xyz_value(int cameraID, uint x, uint y, out Vector4 value);
 
         [DllImport(nameDll, EntryPoint = "sl_get_depth_min_range_value")]
@@ -613,7 +614,7 @@ public static class NativeWrapper
         /*
          * Motion Tracking functions.
          */
-        [DllImport(nameDll, EntryPoint = "sl_enable_positional_tracking_unity")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_enable_positional_tracking_unity")]
         private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false,
             bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = sl.POSITIONAL_TRACKING_MODE.GEN_1,
             bool enableLocalizationOnly = false, bool enable2DGroundMode = false, System.Text.StringBuilder aeraFilePath = null);
@@ -639,7 +640,7 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_get_position_at_target_frame")]
         private static extern int dllz_get_position_at_target_frame(int cameraID, ref Quaternion quaternion, ref Vector3 translation, ref Quaternion targetQuaternion, ref Vector3 targetTranslation, int reference_frame);
 
-        [DllImport(nameDll, EntryPoint = "sl_transform_pose")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_transform_pose")]
         private static extern void dllz_transform_pose(ref Quaternion quaternion, ref Vector3 translation, ref Quaternion targetQuaternion, ref Vector3 targetTranslation);
 
         [DllImport(nameDll, EntryPoint = "sl_reset_positional_tracking")]
@@ -648,7 +649,7 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_reset_tracking_with_offset")]
         private static extern int dllz_reset_tracking_with_offset(int cameraID, Quaternion rotation, Vector3 translation, Quaternion offsetQuaternion, Vector3 offsetTranslation);
 
-        [DllImport(nameDll, EntryPoint = "sl_estimate_initial_position")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_estimate_initial_position")]
         private static extern int dllz_estimate_initial_position(int cameraID, ref Quaternion quaternion, ref Vector3 translation, int countSuccess, int countTimeout);
 
         [DllImport(nameDll, EntryPoint = "sl_set_imu_prior_orientation")]
