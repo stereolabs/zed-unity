@@ -1168,6 +1168,14 @@ namespace sl
         /// </summary>
         VGA,
         /// <summary>
+        ///  960x768 (x2) \n Available FPS: 30 \n Only supported with ZED-X HDR lineup (One/Stereo)
+        /// </summary>
+        XVGA,
+        /// <summary>
+        /// 640x512 (x2) \n Available FPS: 30 \n Only supported with ZED-X HDR lineup (One/Stereo)
+        /// </summary>
+        TXGA,
+        /// <summary>
         /// Select the resolution compatible with camera, on ZEDX HD1200, HD720 otherwise
         /// </summary>
         AUTO
@@ -1197,7 +1205,7 @@ namespace sl
         /// <summary>
         /// Select the resolution compatible with camera, on ZEDX HD1200, HD720 otherwise
         /// </summary>
-        AUTO = 9
+        AUTO = sl.RESOLUTION.AUTO
     };
 
     /// <summary>
@@ -2115,6 +2123,11 @@ namespace sl
         public Resolution maximumWorkingResolution;
 
         /// <summary>
+        /// Decryption key required to open an SVO file that was recorded with encryption.
+        /// </summary>
+        public string svoDecryptionKey = "";
+
+        /// <summary>
         ///  Set the input as the camera with specified id.
         /// </summary>
         /// <param name="cameraID"></param>
@@ -2366,6 +2379,35 @@ namespace sl
             imageHeightRatioCutoff = imageHeightRatioCutoff_;
             autoApplyModule = autoApplyModule_;
         }
+    }
+
+    /// <summary>
+    /// Struct containing all parameters related to the ZED's positional tracking module, 
+    /// which can be set at runtime with EnablePositionalTracking() and UpdatePositionalTrackingParameters().
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PositionalTrackingParameters
+    {
+        public Quaternion InitialWorldRotation;
+        public Vector3 InitialWorldPosition;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableAreaMemory;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enablePoseSmoothing;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool setFloorAsOrigin;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool setAsStatic;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableIMUFusion;
+        public float depthMinRange;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool setGravityAsOrigin;
+        public POSITIONAL_TRACKING_MODE mode;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableLocalizationOnly;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enable2DGroundMode;
     }
 
     /// <summary>

@@ -10,7 +10,7 @@ namespace sl
 {
 public static class NativeWrapper
 {
-    private const string LibName = sl.ZEDCamera.nameDll;
+    private const string LibName = sl.ZEDCamera.nameDllUnity;
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate int CheckZEDPluginDelegate(int Major, int Minor);
@@ -339,7 +339,7 @@ public static class NativeWrapper
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(5, 2, 0);
+        public static readonly System.Version PluginVersion = new System.Version(5, 3, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDllUnity, EntryPoint = "GetRenderEventFunc")]
@@ -375,12 +375,31 @@ public static class NativeWrapper
 
 
         /*
-        * Opening function (Opens camera and creates textures).
+        * Opening functions (Opens camera and creates textures).
         * Some initparameters are passed as arguments to facilitate Marshalling.
         */
         [DllImport(nameDll, EntryPoint = "sl_open_camera")]
-        private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, uint serialNumber, System.Text.StringBuilder svoPath, System.Text.StringBuilder ipStream,
-            int portStream, int gmslPort, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
+        private static extern int dllz_open(int cameraID, ref dll_initParameters parameters, uint serialNumber, System.Text.StringBuilder svoPath, 
+            System.Text.StringBuilder ipStream, int portStream, int gmslPort, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, 
+            System.Text.StringBuilder opencv_calib_path);
+
+        [DllImport(nameDll, EntryPoint = "sl_open_camera_from_camera_id")]
+        private static extern int dllz_open_from_camera_id(int cameraID, ref dll_initParameters parameters, System.Text.StringBuilder output, 
+            System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
+
+        [DllImport(nameDll, EntryPoint = "sl_open_camera_from_serial_number")]
+        private static extern int dllz_open_from_serial_number(int cameraID, ref dll_initParameters parameters, uint serialNumber, 
+            System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
+
+        [DllImport(nameDll, EntryPoint = "sl_open_camera_from_svo_file")]
+        private static extern int dllz_open_from_svo_file(int cameraID, ref dll_initParameters parameters, System.Text.StringBuilder svoPath,
+            System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path, System.Text.StringBuilder opencv_calib_path);
+
+        [DllImport(nameDll, EntryPoint = "sl_open_camera_from_stream")]
+        private static extern int dllz_open_from_stream(int cameraID, ref dll_initParameters parameters,System.Text.StringBuilder ipStream, 
+            int portStream, System.Text.StringBuilder output, System.Text.StringBuilder opt_settings_path,
+            System.Text.StringBuilder opencv_calib_path);
+
         /*
          * Close function.
          */
@@ -426,7 +445,7 @@ public static class NativeWrapper
         private static extern IntPtr dllz_get_recording_parameters(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_disable_recording")]
-        private static extern bool dllz_disable_recording(int cameraID);
+        private static extern void dllz_disable_recording(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_pause_recording")]
         private static extern void dllz_pause_recording(int cameraID, bool status);
@@ -497,14 +516,14 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_is_camera_setting_supported")]
         private static extern bool dllz_is_video_setting_supported(int id, int setting);
 
-        [DllImport(nameDll, EntryPoint = "sl_set_video_settings")]
-        private static extern void dllz_set_video_settings(int id, int mode, int value);
+        [DllImport(nameDll, EntryPoint = "sl_set_camera_settings")]
+        private static extern int dllz_set_video_settings(int id, int mode, int value);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_video_settings")]
+        [DllImport(nameDll, EntryPoint = "sl_get_camera_settings")]
         private static extern int dllz_get_video_settings(int id, int mode, ref int value);
 
         [DllImport(nameDll, EntryPoint = "sl_set_roi_for_aec_agc")]
-        private static extern int dllz_set_roi_for_aec_agc(int id, int side, sl.Rect roi, bool reset);
+        private static extern int dllz_set_roi_for_aec_agc(int id, int side, ref sl.Rect roi, bool reset);
 
         [DllImport(nameDll, EntryPoint = "sl_get_roi_for_aec_agc")]
         private static extern int dllz_get_roi_for_aec_agc(int id, int side, ref sl.Rect roi);
@@ -552,14 +571,12 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_get_camera_timestamp")]
         private static extern ulong dllz_get_image_timestamp(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_current_Timestamp")]
+        [DllImport(nameDll, EntryPoint = "sl_get_current_timestamp")]
         private static extern ulong dllz_get_current_timestamp(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_frame_dropped_count")]
         private static extern uint dllz_get_frame_dropped_count(int cameraID);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_frame_dropped_percent")]
-        private static extern float dllz_get_frame_dropped_percent(int cameraID);
         /*
                 [DllImport(nameDll, EntryPoint = "sl_get_init_parameters")]
                 private static extern IntPtr dllz_get_init_parameters(int cameraID);
@@ -575,7 +592,7 @@ public static class NativeWrapper
          */
 
         [DllImport(nameDll, EntryPoint = "sl_set_svo_position")]
-        private static extern void dllz_set_svo_position(int cameraID, int frame);
+        private static extern int dllz_set_svo_position(int cameraID, int frame);
 
         [DllImport(nameDll, EntryPoint = "sl_get_svo_number_of_frames")]
         private static extern int dllz_get_svo_number_of_frames(int cameraID);
@@ -623,10 +640,8 @@ public static class NativeWrapper
         /*
          * Motion Tracking functions.
          */
-        [DllImport(nameDllUnity, EntryPoint = "sl_enable_positional_tracking_unity")]
-        private static extern int dllz_enable_tracking(int cameraID, ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = false, bool enablePoseSmoothing = false, bool enableFloorAlignment = false,
-            bool trackingIsStatic = false, bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = sl.POSITIONAL_TRACKING_MODE.GEN_1,
-            bool enableLocalizationOnly = false, bool enable2DGroundMode = false, System.Text.StringBuilder aeraFilePath = null);
+        [DllImport(nameDll, EntryPoint = "sl_enable_positional_tracking")]
+        private static extern int dllz_enable_tracking(int cameraID, ref PositionalTrackingParameters positionalTracking, System.Text.StringBuilder areaFilePath);
 
         [DllImport(nameDll, EntryPoint = "sl_disable_positional_tracking")]
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
@@ -655,7 +670,7 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_reset_positional_tracking")]
         private static extern int dllz_reset_tracking(int cameraID, Quaternion rotation, Vector3 translation);
 
-        [DllImport(nameDll, EntryPoint = "sl_reset_tracking_with_offset")]
+        [DllImport(nameDll, EntryPoint = "sl_reset_positional_tracking_with_offset")]
         private static extern int dllz_reset_tracking_with_offset(int cameraID, Quaternion rotation, Vector3 translation, Quaternion offsetQuaternion, Vector3 offsetTranslation);
 
         [DllImport(nameDllUnity, EntryPoint = "sl_estimate_initial_position")]
@@ -664,10 +679,10 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_set_imu_prior_orientation")]
         private static extern int dllz_set_imu_prior_orientation(int cameraID, Quaternion rotation);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_internal_imu_orientation")]
+        [DllImport(nameDll, EntryPoint = "sl_get_imu_orientation")]
         private static extern int dllz_get_internal_imu_orientation(int cameraID, ref Quaternion rotation, int reference_time);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_internal_sensors_data")]
+        [DllImport(nameDll, EntryPoint = "sl_get_sensors_data")]
         private static extern int dllz_get_internal_sensors_data(int cameraID, ref SensorsData imuData, int reference_time);
 
         [DllImport(nameDll, EntryPoint = "sl_get_area_export_state")]
@@ -850,10 +865,10 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_convert_coordinate_system")]
         private static extern int dllz_convert_coordinate_system(ref Quaternion rotation, ref Vector3 translation, sl.COORDINATE_SYSTEM coordSystemSrc, sl.COORDINATE_SYSTEM coordSystemDest);
 
-        [DllImport(nameDll, EntryPoint = "sl_compute_offset")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_compute_offset")]
         private static extern void dllz_compute_offset(float[] A, float[] B, int nbVectors, float[] C);
 
-        [DllImport(nameDll, EntryPoint = "sl_compute_optical_center_offsets")]
+        [DllImport(nameDllUnity, EntryPoint = "sl_compute_optical_center_offsets")]
         private static extern System.IntPtr dllz_compute_optical_center_offsets(ref Vector4 calibLeft, ref Vector4 calibRight, int width, int height, float planeDistance);
 
 
@@ -1195,6 +1210,12 @@ public static class NativeWrapper
             public Resolution maximumWorkingResolution;
 
             /// <summary>
+            /// Decryption key required to open an SVO file that was recorded with encryption.
+            /// </summary>
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+            public string svoDecryptionKey;
+
+            /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
             /// </summary>
             /// <param name="init"></param>
@@ -1223,6 +1244,7 @@ public static class NativeWrapper
                 grabComputeCappingFPS = init.grabComputeCappingFPS;
                 enableImageValidityCheck = init.enableImageValidityCheck;
                 maximumWorkingResolution = init.maximumWorkingResolution;
+                svoDecryptionKey = init.svoDecryptionKey;
             }
         }
 
@@ -1238,21 +1260,69 @@ public static class NativeWrapper
             //Update values with what we're about to pass to the camera.
             currentResolution = initParameters.resolution;
             fpsMax = GetFpsForResolution(currentResolution);
-            if (initParameters.cameraFPS == 0)
+            if (initParameters.cameraFPS <= 0)
             {
                 initParameters.cameraFPS = (int)fpsMax;
             }
             dll_initParameters initP = new dll_initParameters(initParameters); //DLL-friendly version of InitParameters.
             initP.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP; //Left-hand, Y-up is Unity's coordinate system, so we match that
 
-            int v = dllz_open(CameraID, ref initP, initParameters.serialNumber,
+/*            int v = dllz_open(CameraID, ref initP, initParameters.serialNumber,
                 new System.Text.StringBuilder(initParameters.pathSVO, initParameters.pathSVO.Length),
                 new System.Text.StringBuilder(initParameters.ipStream, initParameters.ipStream.Length),
                 initParameters.portStream,
                 initParameters.gmslPort,
                 new System.Text.StringBuilder(initParameters.sdkVerboseLogFile, initParameters.sdkVerboseLogFile.Length),
                 new System.Text.StringBuilder(initParameters.optionalSettingsPath, initParameters.optionalSettingsPath.Length),
-                new System.Text.StringBuilder(initParameters.optionalOpencvCalibrationFile, initParameters.optionalOpencvCalibrationFile.Length));
+                new System.Text.StringBuilder(initParameters.optionalOpencvCalibrationFile, initParameters.optionalOpencvCalibrationFile.Length));*/
+
+            int v = (int)sl.ERROR_CODE.FAILURE;
+            switch (initParameters.inputType)
+            {
+                case INPUT_TYPE.SVO:
+                    v = dllz_open_from_svo_file(CameraID, ref initP,
+                        new System.Text.StringBuilder(initParameters.pathSVO, initParameters.pathSVO.Length),
+                        new System.Text.StringBuilder(initParameters.sdkVerboseLogFile, initParameters.sdkVerboseLogFile.Length),
+                        new System.Text.StringBuilder(initParameters.optionalSettingsPath, initParameters.optionalSettingsPath.Length),
+                        new System.Text.StringBuilder(initParameters.optionalOpencvCalibrationFile, initParameters.optionalOpencvCalibrationFile.Length));
+                    break;
+                case INPUT_TYPE.STREAM:
+                    v = dllz_open_from_stream(CameraID, ref initP,
+                            new System.Text.StringBuilder(initParameters.ipStream, initParameters.ipStream.Length),
+                            initParameters.portStream,
+                            new System.Text.StringBuilder(initParameters.sdkVerboseLogFile, initParameters.sdkVerboseLogFile.Length),
+                            new System.Text.StringBuilder(initParameters.optionalSettingsPath, initParameters.optionalSettingsPath.Length),
+                            new System.Text.StringBuilder(initParameters.optionalOpencvCalibrationFile, initParameters.optionalOpencvCalibrationFile.Length));
+                    break;
+                case INPUT_TYPE.GMSL:
+                    v = dllz_open(CameraID, ref initP,
+                            initParameters.serialNumber,
+                            new System.Text.StringBuilder(""),
+                            new System.Text.StringBuilder(""),
+                            0,
+                            initParameters.gmslPort,
+                            new System.Text.StringBuilder(initParameters.sdkVerboseLogFile, initParameters.sdkVerboseLogFile.Length),
+                            new System.Text.StringBuilder(initParameters.optionalSettingsPath, initParameters.optionalSettingsPath.Length),
+                            new System.Text.StringBuilder(initParameters.optionalOpencvCalibrationFile, initParameters.optionalOpencvCalibrationFile.Length));
+                    break;
+                default:
+                case INPUT_TYPE.USB:
+                    if (initParameters.serialNumber > 0)
+                    {
+                        v = dllz_open_from_serial_number(CameraID, ref initP, initParameters.serialNumber, 
+                            new System.Text.StringBuilder(initParameters.sdkVerboseLogFile, initParameters.sdkVerboseLogFile.Length),
+                            new System.Text.StringBuilder(initParameters.optionalSettingsPath, initParameters.optionalSettingsPath.Length),
+                            new System.Text.StringBuilder(initParameters.optionalOpencvCalibrationFile, initParameters.optionalOpencvCalibrationFile.Length));
+                    }
+                    else
+                    {
+                        v = dllz_open_from_camera_id(CameraID, ref initP,
+                                new System.Text.StringBuilder(initParameters.sdkVerboseLogFile, initParameters.sdkVerboseLogFile.Length),
+                                new System.Text.StringBuilder(initParameters.optionalSettingsPath, initParameters.optionalSettingsPath.Length),
+                                new System.Text.StringBuilder(initParameters.optionalOpencvCalibrationFile, initParameters.optionalOpencvCalibrationFile.Length));
+                    }
+                    break;
+            }
 
             if ((ERROR_CODE)v != ERROR_CODE.SUCCESS)
             {
@@ -1385,9 +1455,9 @@ public static class NativeWrapper
         /// <summary>
         /// Stops recording to an SVO/AVI, if applicable, and closes the file.
         /// </summary>
-        public bool DisableRecording()
+        public void DisableRecording()
         {
-            return dllz_disable_recording(CameraID);
+            dllz_disable_recording(CameraID);
         }
 
         /// <summary>
@@ -1552,18 +1622,13 @@ public static class NativeWrapper
         /// <summary>
         /// Initialize and Start the tracking functions
         /// </summary>
-        /// <param name="quat"> rotation used as initial world transform. By default it should be identity.</param>
-        /// <param name="vec"> translation used as initial world transform. By default it should be identity.</param>
-        /// <param name="enableSpatialMemory">  (optional) define if spatial memory is enable or not.</param>
+        /// <param name="positionalTracking">Struct with all tracking parameters. See PositionalTrackingParameters for more info.</param>
         /// <param name="areaFilePath"> (optional) file of spatial memory file that has to be loaded to relocate in the scene.</param>
         /// <returns></returns>
-        public sl.ERROR_CODE EnableTracking(ref Quaternion quat, ref Vector3 vec, bool enableSpatialMemory = true, bool enablePoseSmoothing = false, bool enableFloorAlignment = false, bool trackingIsStatic = false,
-            bool enableIMUFusion = true, float depthMinRange = -1.0f, bool setGravityAsOrigin = true, sl.POSITIONAL_TRACKING_MODE mode = POSITIONAL_TRACKING_MODE.GEN_1,
-            bool enableLocalizationOnly = false, bool enable2DGroundMode = false, string areaFilePath = "")
+        public sl.ERROR_CODE EnableTracking(ref PositionalTrackingParameters positionalTracking, string areaFilePath = "")
         {
             sl.ERROR_CODE trackingStatus = sl.ERROR_CODE.CAMERA_NOT_DETECTED;
-            trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(CameraID, ref quat, ref vec, enableSpatialMemory, enablePoseSmoothing, enableFloorAlignment,
-                trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, mode, enableLocalizationOnly, enable2DGroundMode, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
+            trackingStatus = (sl.ERROR_CODE)dllz_enable_tracking(CameraID, ref positionalTracking, new System.Text.StringBuilder(areaFilePath, areaFilePath.Length));
             return trackingStatus;
         }
 
@@ -2032,15 +2097,6 @@ public static class NativeWrapper
         }
 
         /// <summary>
-        /// Gets the percentage of frames dropped since Grab() was called for the first time.
-        /// </summary>
-        /// <returns>Percentage of frames dropped.</returns>
-        public float GetFrameDroppedPercent()
-        {
-            return dllz_get_frame_dropped_percent(CameraID);
-        }
-
-        /// <summary>
         /// Returns the current status of positional tracking module.
         /// </summary>
         /// <returns> The current status of positional tracking module. </returns>
@@ -2287,7 +2343,7 @@ public static class NativeWrapper
         {
             AssertCameraIsReady();
             if (settings == CAMERA_SETTINGS.AEC_AGC_ROI)
-                return dllz_set_roi_for_aec_agc(CameraID, side, roi, reset);
+                return dllz_set_roi_for_aec_agc(CameraID, side, ref roi, reset);
             else
                 return -1;
         }
