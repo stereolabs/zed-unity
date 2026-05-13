@@ -99,7 +99,7 @@ public class ZEDPostProcessingTools
             return;
         }
 
-        RenderTexture buffer = RenderTexture.GetTemporary(source.width / downscale, source.height / downscale, source.depth, source.format, RenderTextureReadWrite.Default);
+        RenderTexture buffer = RenderTexture.GetTemporary(source.width / downscale, source.height / downscale, 0, source.format, RenderTextureReadWrite.Default);
 
         if (mat == null)
         {
@@ -111,7 +111,7 @@ public class ZEDPostProcessingTools
             bool oddEven = false;
 
             //Create two buffers to make a multi-pass blur.
-            RenderTexture buffer2 = RenderTexture.GetTemporary(source.width / downscale, source.height / downscale, source.depth, source.format, RenderTextureReadWrite.Default);
+            RenderTexture buffer2 = RenderTexture.GetTemporary(source.width / downscale, source.height / downscale, 0, source.format, RenderTextureReadWrite.Default);
 
 
             Graphics.Blit(source, buffer);

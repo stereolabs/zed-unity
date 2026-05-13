@@ -62,9 +62,9 @@ Properties
 			v2f vert (v2f v)
 			{
 				v2f o;
-#if SHADER_API_D3D11
+#if SHADER_API_D3D11 || SHADER_API_D3D12
 				o.pos = float4(v.pos.x*2.0, v.pos.y*2.0, 0, 1);
-#elif SHADER_API_GLCORE 
+#elif SHADER_API_GLCORE
 				o.pos = float4(v.pos.x*2.0, -v.pos.y*2.0, 0, 1);
 #elif SHADER_API_VULKAN
 				o.pos = float4(v.pos.x * 2.0, -v.pos.y * 2.0, 0, 1);
@@ -122,9 +122,9 @@ Properties
 				outDepth = 0;
 
 				#ifdef NO_DEPTH
-					#if SHADER_API_D3D11
+					#if SHADER_API_D3D11 || SHADER_API_D3D12
 									outDepth = 0;
-					#elif SHADER_API_GLCORE 
+					#elif SHADER_API_GLCORE
 									outDepth = 1000;//fake infinite depth
 					#elif SHADER_API_VULCAN
 									outDepth = 0;

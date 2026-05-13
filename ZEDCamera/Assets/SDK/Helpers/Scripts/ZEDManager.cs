@@ -1434,12 +1434,6 @@ public class ZEDManager : MonoBehaviour
     [HideInInspector]
     public sl.ERROR_CODE ZEDGrabError = sl.ERROR_CODE.FAILURE;
 
-#if UNITY_EDITOR
-    /// <summary>
-    /// The engine FPS, updated every frame.
-    /// </summary>
-    private float fps_engine = 90.0f;
-#endif
     /// <summary>
     /// Recording state
     /// </summary>
@@ -1964,17 +1958,17 @@ public class ZEDManager : MonoBehaviour
             threadOpening = null;
         }
 
-        // Safe to close now, opening thread has exited
-        if (zedCamera != null)
-        {
-            zedCamera.Close();
-        }
-
         if (threadGrab != null)
         {
             if (!threadGrab.Join(5000))
                 Debug.LogWarning("[ZEDManager] Grab thread did not exit in time.");
             threadGrab = null;
+        }
+
+        // Safe to close now, all threads have exited.
+        if (zedCamera != null)
+        {
+            zedCamera.Destroy();
         }
 
         zedCamera = null;
@@ -2292,6 +2286,7 @@ public class ZEDManager : MonoBehaviour
         {
 
             threadOpening.Join();
+            zedCamera.InitTextures((int)initParameters.depthMode);
             //Initialize the tracking thread, AR initial transforms and SVO read/write as needed.
             ZEDReady();
 
@@ -2692,6 +2687,7 @@ public class ZEDManager : MonoBehaviour
                 InitialWorldRotation = zedOrientation,
                 enableAreaMemory = enableSpatialMemory,
                 setFloorAsOrigin = setFloorAsOrigin,
+                enablePoseSmoothing = enablePoseSmoothing,
                 setAsStatic = trackingIsStatic,
                 enableIMUFusion = enableIMUFusion,
                 depthMinRange = depthMinRange,
@@ -3290,8 +3286,11 @@ public class ZEDManager : MonoBehaviour
                 //Release memory from masks.
                 for (int i = 0; i < objects.nbObjects; i++)
                 {
-                    sl.ZEDMat oldmat = new sl.ZEDMat(objects.objectList[i].mask);
-                    oldmat.Free();
+                    if (objects.objectList[i].mask != IntPtr.Zero)
+                    {
+                        sl.ZEDMat oldmat = new sl.ZEDMat(objects.objectList[i].mask);
+                        oldmat.Free();
+                    }
                 }
             }
 
@@ -3497,8 +3496,11 @@ public class ZEDManager : MonoBehaviour
                 //Release memory from masks.
                 for (int i = 0; i < bodies.nbBodies; i++)
                 {
-                    sl.ZEDMat oldmat = new sl.ZEDMat(bodies.bodyList[i].mask);
-                    oldmat.Free();
+                    if (bodies.bodyList[i].mask != IntPtr.Zero)
+                    {
+                        sl.ZEDMat oldmat = new sl.ZEDMat(bodies.bodyList[i].mask);
+                        oldmat.Free();
+                    }
                 }
             }
 

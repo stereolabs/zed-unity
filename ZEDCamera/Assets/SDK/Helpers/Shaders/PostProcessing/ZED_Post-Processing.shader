@@ -5,6 +5,8 @@ Shader "ZED/ZED Post-Processing" {
 	{
 		_MainTex("Texture", 2D) = "white" {}
 		_MinBlack("Min black threshold", Range(0,1)) = 0.01
+		_gamma("Gamma", Float) = 1.277
+		_NoiseSize("Noise Size", Int) = 2
 	}
 		SubShader
 	{
@@ -61,43 +63,31 @@ Shader "ZED/ZED Post-Processing" {
 
 		//Fragment Shader
 	float4 frag(v2f i) : SV_Target{
-		float2 invertUV = i.uv;
-		invertUV.y = 1 - i.uv.y;
-		float mask = tex2D(ZEDMaskPostProcess, i.uv);
-
+		float mask = tex2D(ZEDMaskPostProcess, i.uv).r;
 		float4 zed = tex2D(_MainTex, i.uv);
 
 		if (mask > 0.9f)
 		{
-		
-			//zed = (zed * 0.187) / (1.035 - zed);
-			float SqrtPixel = sqrt(zed.r * zed.r + zed.g * zed.g + zed.b * zed.b);
-			
+			float4 res = pow(saturate(zed), _gamma);
+
 			float3 NoiseFactors = 2;
-			float2 random = _Time.x*_NoiseSize*floor(i.uv / _MainTex_TexelSize.xy / _NoiseSize) / 3.;
-			float3 NoiseValue = float3(rand(random), 
-									   rand(random), 
+			float2 random = _Time.x * max(_NoiseSize, 1) * floor(i.uv / _MainTex_TexelSize.xy / max(_NoiseSize, 1)) / 3.;
+			float3 NoiseValue = float3(rand(random),
+									   rand(random),
 									   rand(random));
 
-			float4 res = pow(zed, _gamma);
-
-		
 			res.r += (NoiseFactors.r * NoiseValue.r - NoiseFactors.r * 0.5) / 255;
 			res.g += (NoiseFactors.g * NoiseValue.g - NoiseFactors.g * 0.5) / 255;
 			res.b += (NoiseFactors.b * NoiseValue.b - NoiseFactors.b * 0.5) / 255;
-			
-			//res = res / (res + 0.187) * 1.035;
+
 			res.a = 1.0f;
-			//res *= mask;
 #if UNITY_COLORSPACE_GAMMA
 			return clamp(res, _MinBlack, 1.0f);
 #else
 			return clamp(res, GammaToLinearSpaceExact(_MinBlack), 1.0f);
 #endif
-		
 		}
-		return zed;
-		
+		return float4(zed.rgb, 1);
 	}
 		ENDCG
 	}

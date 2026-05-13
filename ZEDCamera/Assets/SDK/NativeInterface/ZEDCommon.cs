@@ -2950,8 +2950,15 @@ namespace sl
         BODY_38=2
     };
 
+    public enum INFERENCE_PRECISION
+    {
+        FP32 = 0,
+        FP16 = 1,
+        INT8 = 2
+    };
+
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public enum BODY_KEYPOINTS_SELECTION
     {
@@ -3365,6 +3372,11 @@ namespace sl
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
         public float[] keypointConfidence;
         /// <summary>
+        /// Per keypoint detection covariance (6 values per keypoint, upper triangular 3x3 matrix).
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 228)]
+        public float[] keypointCovariances;
+        /// <summary>
         /// Per keypoint local position (the position of the child keypoint with respect to its parent expressed in its parent coordinate frame)
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
@@ -3407,11 +3419,15 @@ namespace sl
         /// </summary>
         public int isTracked;
         /// <summary>
-        /// Current detection model used.
+        /// Inference precision mode used for body detection.
         /// </summary>
-        public sl.OBJECT_DETECTION_MODEL detectionModel;
+        public sl.INFERENCE_PRECISION inferencePrecisionMode;
         /// <summary>
-        /// Array of objects 
+        /// Body format used (BODY_18, BODY_34, BODY_38).
+        /// </summary>
+        public sl.BODY_FORMAT bodyFormat;
+        /// <summary>
+        /// Array of bodies
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)(Constant.MAX_OBJECTS))]
         public BodyData[] bodyList;

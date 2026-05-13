@@ -10,53 +10,37 @@ namespace sl
 {
 public static class NativeWrapper
 {
-    private const string LibName = sl.ZEDCamera.nameDllUnity;
+    [DllImport(sl.ZEDCamera.nameDll, EntryPoint = "sl_get_sdk_version", CallingConvention = CallingConvention.Cdecl)]
+    private static extern IntPtr sl_get_sdk_version_native();
 
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int CheckZEDPluginDelegate(int Major, int Minor);
+    public static bool Init() => true;
 
-    private static CheckZEDPluginDelegate _checkZEDPlugin;
-
-    private static bool _initialized = false;
-
-    public static bool IsWrapperLoaded => _initialized;
-
-    // Import the function directly using DllImport
-    [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
-    private static extern int sl_check_plugin(int major, int minor);
-
-    /// <summary>
-    /// Call this once to initialize the wrapper
-    /// </summary>
-    public static bool Init()
+    public static int CheckPlugin()
     {
         try
         {
-            // Assign delegate for convenience
-            _checkZEDPlugin = sl_check_plugin;
-            _initialized = true;
+            IntPtr ptr = sl_get_sdk_version_native();
+            if (ptr == IntPtr.Zero) return -1;
+
+            string version = Marshal.PtrToStringAnsi(ptr);
+            if (string.IsNullOrEmpty(version)) return -1;
+
+            string[] parts = version.Split('.');
+            if (parts.Length < 2) return -1;
+            if (!int.TryParse(parts[0], out int major) || !int.TryParse(parts[1], out int minor)) return -1;
+
+            return (major == ZEDCamera.PluginVersion.Major && minor == ZEDCamera.PluginVersion.Minor) ? 0 : major;
         }
         catch (DllNotFoundException e)
         {
-            Debug.LogError($"[NativeWrapper] Native library {LibName} not found: {e.Message}");
+            Debug.LogError($"[NativeWrapper] ZED SDK not found: {e.Message}");
+            return -1;
         }
         catch (EntryPointNotFoundException e)
         {
-            Debug.LogError($"[NativeWrapper] Function sl_check_plugin not found: {e.Message}");
+            Debug.LogError($"[NativeWrapper] sl_get_sdk_version not found: {e.Message}");
+            return -1;
         }
-        
-        return _initialized;
-    }
-
-    /// <summary>
-    /// Call the plugin check function
-    /// </summary>
-    public static int CheckPlugin()
-    {
-        if (!_initialized || _checkZEDPlugin == null)
-            throw new InvalidOperationException("NativeWrapper is not initialized or function missing.");
-
-        return _checkZEDPlugin(ZEDCamera.PluginVersion.Major, ZEDCamera.PluginVersion.Minor);
     }
 }
 
@@ -476,6 +460,9 @@ public static class NativeWrapper
         [DllImport(nameDllUnity, EntryPoint = "sl_unity_cleanup_textures")]
         private static extern void dllz_unity_cleanup_textures(int cameraID);
 
+        [DllImport(nameDllUnity, EntryPoint = "sl_unity_cleanup_all_textures")]
+        private static extern void dllz_unity_cleanup_all_textures();
+
         /*
         * Texturing functions.
         */
@@ -885,6 +872,7 @@ public static class NativeWrapper
 
         public static void UnloadPlugin()
         {
+            dllz_unity_cleanup_all_textures();
             dllz_unload_all_instances();
         }
 
@@ -1056,7 +1044,7 @@ public static class NativeWrapper
         public bool CreateCamera(int cameraID, bool verbose)
         {
             string infoSystem = SystemInfo.graphicsDeviceType.ToString().ToUpper();
-            if (!infoSystem.Equals("DIRECT3D11") && !infoSystem.Equals("OPENGLCORE") && !infoSystem.Equals("VULKAN"))
+            if (!infoSystem.Equals("DIRECT3D11") && !infoSystem.Equals("OPENGLCORE") && !infoSystem.Equals("VULKAN") && !infoSystem.Equals("DIRECT3D12"))
             {
                 Debug.LogError("The graphic library [" + infoSystem + "] is not supported");
 #if UNITY_EDITOR
@@ -1075,6 +1063,12 @@ public static class NativeWrapper
             cameraReady = false;
             dllz_unity_cleanup_textures(CameraID);
             dllz_close(CameraID);
+        }
+
+        // Must be called on the main thread after Open() succeeds. Unity forbids loading native plugins from background threads.
+        public void InitTextures(int depthMode)
+        {
+            dllz_unity_init_textures(CameraID, depthMode);
         }
 
         /// <summary>
@@ -1342,7 +1336,6 @@ public static class NativeWrapper
                 fov_H = calibrationParametersRectified.leftCam.hFOV * Mathf.Deg2Rad;
                 fov_V = calibrationParametersRectified.leftCam.vFOV * Mathf.Deg2Rad;
                 cameraModel = GetCameraModel();
-                dllz_unity_init_textures(CameraID, (int)initParameters.depthMode);
                 cameraReady = true;
                 return (ERROR_CODE)v;
             }

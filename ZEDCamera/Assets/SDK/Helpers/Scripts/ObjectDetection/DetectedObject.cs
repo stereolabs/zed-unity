@@ -141,8 +141,8 @@ public class DetectedObject
         camPositionAtDetection = campos;
         camRotationAtDetection = camrot;
 
-        maskMat = new ZEDMat(odata.mask);
-        //maskTexture = ZEDMatToTexture_CPU(maskMat);
+        if (odata.mask != IntPtr.Zero)
+            maskMat = new ZEDMat(odata.mask);
 
     }
 
@@ -312,12 +312,18 @@ public class DetectedObject
     /// <returns>True if texture was successfully retrieved; false otherwise.</returns>
     public bool GetMaskTexture(out Texture2D masktex, bool fliponYaxis)
     {
+        if (maskMat == null)
+        {
+            masktex = null;
+            return false;
+        }
+
         if (!fliponYaxis)
         {
             if (maskTexture == null)
             {
                 IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
-                
+
                 if (maskpointer != IntPtr.Zero)
                 {
                     maskTexture = ZEDMatToTexture_CPU(maskMat, false);
@@ -386,9 +392,10 @@ public class DetectedObject
         int height = zedmat.GetHeight();
         
         IntPtr maskpointer = zedmat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
-        if (maskpointer != IntPtr.Zero && zedmat.IsInit() && width > 0 && height > 0)
+        int stepBytes = zedmat.GetStepBytes();
+        if (maskpointer != IntPtr.Zero && zedmat.IsInit() && width > 0 && height > 0 && stepBytes > 0)
         {
-            byte[] texbytes = new byte[zedmat.GetStepBytes() * height];
+            byte[] texbytes = new byte[stepBytes * height];
             System.Runtime.InteropServices.Marshal.Copy(maskpointer, texbytes, 0, texbytes.Length);
 
             if (flipYcoords)
@@ -412,7 +419,7 @@ public class DetectedObject
         }
         else
         {
-            //Debug.LogError("Pointer to texture was null - returning null.");
+            Debug.LogWarning("ZEDMat mask data not available - returning null.");
             return null;
         }
     }
