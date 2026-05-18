@@ -282,10 +282,10 @@ namespace sl
         private static extern int dllz_mat_get_pixel_bytes(System.IntPtr ptr);
 
         [DllImport(nameDll, EntryPoint = "sl_mat_get_step")]
-        private static extern int dllz_mat_get_step(System.IntPtr ptr);
+        private static extern int dllz_mat_get_step(System.IntPtr ptr, int mem);
 
         [DllImport(nameDll, EntryPoint = "sl_mat_get_step_bytes")]
-        private static extern int dllz_mat_get_step_bytes(System.IntPtr ptr);
+        private static extern int dllz_mat_get_step_bytes(System.IntPtr ptr, int mem);
 
         [DllImport(nameDll, EntryPoint = "sl_mat_get_width_bytes")]
         private static extern int dllz_mat_get_width_bytes(System.IntPtr ptr);
@@ -490,18 +490,18 @@ namespace sl
         ///  Returns the memory 'step' in number/length of elements - how many values make up each row of pixels.
         /// </summary>
         /// <returns>Step length.</returns>
-        public int GetStep()
+        public int GetStep(MEM mem = MEM.MEM_CPU)
         {
-            return dllz_mat_get_step(_matInternalPtr);
+            return dllz_mat_get_step(_matInternalPtr, (int)mem);
         }
 
         /// <summary>
         /// Returns the memory 'step' in bytes - how many bytes make up each row of pixels.
         /// </summary>
         /// <returns></returns>
-        public int GetStepBytes()
+        public int GetStepBytes(MEM mem = MEM.MEM_CPU)
         {
-            return dllz_mat_get_step_bytes(_matInternalPtr);
+            return dllz_mat_get_step_bytes(_matInternalPtr, (int)mem);
         }
 
         /// <summary>

@@ -121,7 +121,10 @@ public class GUIMessage : MonoBehaviour
 
             if (!sl.ZEDCamera.CheckPlugin())
             {
-                textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_NOT_INSTALLED);
+                if (sl.ZEDSDKVersionValidator.ValidationComplete && !sl.ZEDSDKVersionValidator.IsSDKCompatible)
+                    textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_VERSION_MISMATCH);
+                else
+                    textmono.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_NOT_INSTALLED);
             }
             imagemono = warningmono.transform.GetChild(0).GetChild(1).gameObject;
             imagemono.transform.parent.gameObject.SetActive(true);
@@ -149,10 +152,13 @@ public class GUIMessage : MonoBehaviour
             imageright = warningright.transform.GetChild(0).GetChild(1).gameObject;
             imageright.transform.parent.gameObject.SetActive(true);
 
-            if (!sl.ZEDCamera.CheckPlugin()) //Warn the use there's no SDK installed. 
+            if (!sl.ZEDCamera.CheckPlugin())
             {
-                textleft.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_NOT_INSTALLED);
-                textright.text = ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_NOT_INSTALLED);
+                var err = (sl.ZEDSDKVersionValidator.ValidationComplete && !sl.ZEDSDKVersionValidator.IsSDKCompatible)
+                    ? ZEDLogMessage.ERROR.SDK_VERSION_MISMATCH
+                    : ZEDLogMessage.ERROR.SDK_NOT_INSTALLED;
+                textleft.text = ZEDLogMessage.Error2Str(err);
+                textright.text = ZEDLogMessage.Error2Str(err);
             }
 
             ready = false;

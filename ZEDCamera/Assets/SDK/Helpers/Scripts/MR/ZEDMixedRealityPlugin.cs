@@ -22,7 +22,7 @@ using UnityEngine.XR;
 public class ZEDMixedRealityPlugin : MonoBehaviour
 {
     #region DLL Calls
-	const string nameDll = sl.ZEDCommon.NameDLL;
+	const string nameDll = sl.ZEDCommon.NameDLLUnity;
 	[DllImport(nameDll, EntryPoint = "sl_compute_size_plane_with_gamma")]
 	private static extern System.IntPtr dllz_compute_size_plane_with_gamma(int width, int height, float perceptionDistance, float eyeToZedDistance, float planeDistance, float HMDFocal, float zedFocal);
 

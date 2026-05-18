@@ -1434,12 +1434,6 @@ public class ZEDManager : MonoBehaviour
     [HideInInspector]
     public sl.ERROR_CODE ZEDGrabError = sl.ERROR_CODE.FAILURE;
 
-#if UNITY_EDITOR
-    /// <summary>
-    /// The engine FPS, updated every frame.
-    /// </summary>
-    private float fps_engine = 90.0f;
-#endif
     /// <summary>
     /// Recording state
     /// </summary>
@@ -1952,18 +1946,14 @@ public class ZEDManager : MonoBehaviour
             StopBodyTracking();
         }
 
-        // Unblock native Grab() call so the grab thread can exit
-        if (zedCamera != null)
-        {
-            zedCamera.Close();
-        }
-
+        // Stop the opening thread BEFORE closing the camera to avoid a race condition
+        // where zedCamera.Close() deletes the native handle while sl::Camera::open() is
+        // still running on the background thread and dereferencing it.
         if (threadOpening != null)
         {
-            initQuittingHandle.Reset();
             forceCloseInit = true;
             initQuittingHandle.Set();
-            if (!threadOpening.Join(5000))
+            if (!threadOpening.Join(10000))
                 Debug.LogWarning("[ZEDManager] Opening thread did not exit in time.");
             threadOpening = null;
         }
@@ -1973,6 +1963,12 @@ public class ZEDManager : MonoBehaviour
             if (!threadGrab.Join(5000))
                 Debug.LogWarning("[ZEDManager] Grab thread did not exit in time.");
             threadGrab = null;
+        }
+
+        // Safe to close now, all threads have exited.
+        if (zedCamera != null)
+        {
+            zedCamera.Destroy();
         }
 
         zedCamera = null;
@@ -2123,8 +2119,15 @@ public class ZEDManager : MonoBehaviour
         bool res = zedCamera.CreateCamera((int)cameraID, wrapperVerbose);
         if (!res)
         {
-            Debug.LogError("ZEDManager on " + gameObject.name + " couldn't connect to camera: " + cameraID +
-               ". Check if another ZEDManager is already connected.");
+            if (sl.ZEDSDKVersionValidator.ValidationComplete && !sl.ZEDSDKVersionValidator.IsSDKCompatible)
+            {
+                Debug.LogError("[ZEDManager] " + sl.ZEDSDKVersionValidator.DetailedMessage);
+            }
+            else
+            {
+                Debug.LogError("ZEDManager on " + gameObject.name + " couldn't connect to camera: " + cameraID +
+                   ". Check if another ZEDManager is already connected.");
+            }
             this.gameObject.SetActive(false);
             return;
         }
@@ -2290,6 +2293,7 @@ public class ZEDManager : MonoBehaviour
         {
 
             threadOpening.Join();
+            zedCamera.InitTextures((int)initParameters.depthMode);
             //Initialize the tracking thread, AR initial transforms and SVO read/write as needed.
             ZEDReady();
 
@@ -2684,9 +2688,22 @@ public class ZEDManager : MonoBehaviour
                 pathSpatialMemory = "";
             }
 
-            sl.ERROR_CODE err = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory,
-                enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic, enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode,
-                enableLocalizationOnly, enable2DGroundMode, pathSpatialMemory));
+            PositionalTrackingParameters positionalTrackingParameters = new PositionalTrackingParameters()
+            {
+                InitialWorldPosition = zedPosition,
+                InitialWorldRotation = zedOrientation,
+                enableAreaMemory = enableSpatialMemory,
+                setFloorAsOrigin = setFloorAsOrigin,
+                enablePoseSmoothing = enablePoseSmoothing,
+                setAsStatic = trackingIsStatic,
+                enableIMUFusion = enableIMUFusion,
+                depthMinRange = depthMinRange,
+                setGravityAsOrigin = setGravityAsOrigin,
+                enableLocalizationOnly = enableLocalizationOnly,
+                enable2DGroundMode = enable2DGroundMode
+            };
+
+            sl.ERROR_CODE err = zedCamera.EnableTracking(ref positionalTrackingParameters);
 
             //Now enable the tracking with the proper parameters.
             if (!(enableTracking = (err == sl.ERROR_CODE.SUCCESS)))
@@ -2896,16 +2913,9 @@ public class ZEDManager : MonoBehaviour
 
         /// If in Unity Editor, update the ZEDManager status list
 #if UNITY_EDITOR
-        //Update strings used for 	di	splaying stats in the Inspector.
+        //Update strings used for displaying stats in the Inspector.
         if (zedCamera != null)
         {
-            float frame_drop_count = zedCamera.GetFrameDroppedPercent();
-            float CurrentTickFPS = 1.0f / Time.deltaTime;
-            fps_engine = (fps_engine + CurrentTickFPS) / 2.0f;
-            engineFPS = fps_engine.ToString("F0") + " FPS";
-            if (frame_drop_count > 30 && fps_engine < 45)
-                engineFPS += "WARNING: Low engine framerate detected";
-
             if (isZEDTracked)
                 trackingState = ZEDTrackingState.ToString();
             else if (ZEDSupportFunctions.hasXRDevice() && isStereoRig)
@@ -3283,8 +3293,11 @@ public class ZEDManager : MonoBehaviour
                 //Release memory from masks.
                 for (int i = 0; i < objects.nbObjects; i++)
                 {
-                    sl.ZEDMat oldmat = new sl.ZEDMat(objects.objectList[i].mask);
-                    oldmat.Free();
+                    if (objects.objectList[i].mask != IntPtr.Zero)
+                    {
+                        sl.ZEDMat oldmat = new sl.ZEDMat(objects.objectList[i].mask);
+                        oldmat.Free();
+                    }
                 }
             }
 
@@ -3490,8 +3503,11 @@ public class ZEDManager : MonoBehaviour
                 //Release memory from masks.
                 for (int i = 0; i < bodies.nbBodies; i++)
                 {
-                    sl.ZEDMat oldmat = new sl.ZEDMat(bodies.bodyList[i].mask);
-                    oldmat.Free();
+                    if (bodies.bodyList[i].mask != IntPtr.Zero)
+                    {
+                        sl.ZEDMat oldmat = new sl.ZEDMat(bodies.bodyList[i].mask);
+                        oldmat.Free();
+                    }
                 }
             }
 
@@ -3893,9 +3909,22 @@ public class ZEDManager : MonoBehaviour
             // If tracking has been switched on
             if (zedCamera.IsCameraReady && !isTrackingEnable && enableTracking)
             {
+                PositionalTrackingParameters positionalTrackingParameters = new PositionalTrackingParameters()
+                {
+                    InitialWorldPosition = zedPosition,
+                    InitialWorldRotation = zedOrientation,
+                    enableAreaMemory = enableSpatialMemory,
+                    setFloorAsOrigin = setFloorAsOrigin,
+                    setAsStatic = trackingIsStatic,
+                    enableIMUFusion = enableIMUFusion,
+                    depthMinRange = depthMinRange,
+                    setGravityAsOrigin = setGravityAsOrigin,
+                    enableLocalizationOnly = enableLocalizationOnly,
+                    enable2DGroundMode = enable2DGroundMode
+                };
+
                 //Enables tracking and initializes the first position of the camera.
-                if (!(enableTracking = (zedCamera.EnableTracking(ref zedOrientation, ref zedPosition, enableSpatialMemory, enablePoseSmoothing, setFloorAsOrigin, trackingIsStatic,
-                    enableIMUFusion, depthMinRange, setGravityAsOrigin, positionalTrackingMode, enableLocalizationOnly, enable2DGroundMode, pathSpatialMemory) == sl.ERROR_CODE.SUCCESS)))
+                if (!(enableTracking = zedCamera.EnableTracking(ref positionalTrackingParameters) == sl.ERROR_CODE.SUCCESS))
                 {
                     isZEDTracked = false;
                     throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));

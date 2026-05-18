@@ -35,6 +35,10 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
+ZEDCamera/Assets/XR/
+ZEDCamera/Assets/XRI/
+ZEDCamera/Assets/StreamingAssets/
+ZEDCamera/Assets/OpenCVForUnity/
 ZEDCamera/Assets/SteamVR/
 ZEDCamera/Assets/Oculus/
 ZEDCamera/Assets/Benjamin

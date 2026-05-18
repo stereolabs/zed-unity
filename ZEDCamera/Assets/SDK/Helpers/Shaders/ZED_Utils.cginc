@@ -40,9 +40,9 @@ float computeDepthXYZ(float3 colorXYZ) {
 	colorXYZ = clamp(colorXYZ, 0.01, 20);
 	//reverse Y and Z axes
 	colorXYZ.b = -colorXYZ.b;
-#if SHADER_API_D3D11
+#if SHADER_API_D3D11 || SHADER_API_D3D12
 	colorXYZ.g = -colorXYZ.g;
-#elif SHADER_API_GLCORE 
+#elif SHADER_API_GLCORE
 	colorXYZ.g = -colorXYZ.g * 2;
 #elif SHADER_API_VULKAN
 	colorXYZ.g = -colorXYZ.g ;
@@ -76,9 +76,9 @@ float computeDepthXYZ(float colorXYZ) {
 	//if (colorXYZ != colorXYZ) return FAR_DEPTH; //Doesn't correctly check for a NaN, and neither does isnan().
 	//colorXYZ = clamp(colorXYZ, 0.01, 20);
 
-#if SHADER_API_D3D11
+#if SHADER_API_D3D11 || SHADER_API_D3D12
 	colorXYZ = -colorXYZ;
-#elif SHADER_API_GLCORE 
+#elif SHADER_API_GLCORE
 	//colorXYZ = -colorXYZ * 2 + 1;
 	colorXYZ = -colorXYZ * 2;
 #elif SHADER_API_VULKAN

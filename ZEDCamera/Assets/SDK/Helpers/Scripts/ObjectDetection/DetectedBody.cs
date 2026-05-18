@@ -119,8 +119,8 @@ public class DetectedBody
         camPositionAtDetection = campos;
         camRotationAtDetection = camrot;
 
-        maskMat = new ZEDMat(bdata.mask);
-        //maskTexture = ZEDMatToTexture_CPU(maskMat);
+        if (bdata.mask != IntPtr.Zero)
+            maskMat = new ZEDMat(bdata.mask);
 
     }
 
@@ -290,6 +290,12 @@ public class DetectedBody
     /// <returns>True if texture was successfully retrieved; false otherwise.</returns>
     public bool GetMaskTexture(out Texture2D masktex, bool fliponYaxis)
     {
+        if (maskMat == null)
+        {
+            masktex = null;
+            return false;
+        }
+
         if (!fliponYaxis)
         {
             if (maskTexture == null)
@@ -398,7 +404,7 @@ public class DetectedBody
         }
         else
         {
-            Debug.LogError("Pointer to texture was null - returning null.");
+            Debug.LogWarning("ZEDMat mask data not available - returning null.");
             return null;
         }
     }

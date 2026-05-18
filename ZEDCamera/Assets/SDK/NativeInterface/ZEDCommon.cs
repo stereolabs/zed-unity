@@ -16,7 +16,8 @@ namespace sl
 
 	public class ZEDCommon
 	{
-		public const string NameDLL = "sl_unitywrapper";
+		public const string NameDLL = "sl_zed_c";
+		public const string NameDLLUnity = "sl_zed_unity";
         public static bool IsVector3NaN(Vector3 input)
         {
             return float.IsNaN(input.x) || float.IsNaN(input.y) || float.IsNaN(input.z);
@@ -1167,6 +1168,14 @@ namespace sl
         /// </summary>
         VGA,
         /// <summary>
+        ///  960x768 (x2) \n Available FPS: 30 \n Only supported with ZED-X HDR lineup (One/Stereo)
+        /// </summary>
+        XVGA,
+        /// <summary>
+        /// 640x512 (x2) \n Available FPS: 30 \n Only supported with ZED-X HDR lineup (One/Stereo)
+        /// </summary>
+        TXGA,
+        /// <summary>
         /// Select the resolution compatible with camera, on ZEDX HD1200, HD720 otherwise
         /// </summary>
         AUTO
@@ -1196,7 +1205,7 @@ namespace sl
         /// <summary>
         /// Select the resolution compatible with camera, on ZEDX HD1200, HD720 otherwise
         /// </summary>
-        AUTO = 9
+        AUTO = sl.RESOLUTION.AUTO
     };
 
     /// <summary>
@@ -2114,6 +2123,11 @@ namespace sl
         public Resolution maximumWorkingResolution;
 
         /// <summary>
+        /// Decryption key required to open an SVO file that was recorded with encryption.
+        /// </summary>
+        public string svoDecryptionKey = "";
+
+        /// <summary>
         ///  Set the input as the camera with specified id.
         /// </summary>
         /// <param name="cameraID"></param>
@@ -2365,6 +2379,35 @@ namespace sl
             imageHeightRatioCutoff = imageHeightRatioCutoff_;
             autoApplyModule = autoApplyModule_;
         }
+    }
+
+    /// <summary>
+    /// Struct containing all parameters related to the ZED's positional tracking module, 
+    /// which can be set at runtime with EnablePositionalTracking() and UpdatePositionalTrackingParameters().
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PositionalTrackingParameters
+    {
+        public Quaternion InitialWorldRotation;
+        public Vector3 InitialWorldPosition;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableAreaMemory;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enablePoseSmoothing;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool setFloorAsOrigin;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool setAsStatic;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableIMUFusion;
+        public float depthMinRange;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool setGravityAsOrigin;
+        public POSITIONAL_TRACKING_MODE mode;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enableLocalizationOnly;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enable2DGroundMode;
     }
 
     /// <summary>
@@ -2907,8 +2950,15 @@ namespace sl
         BODY_38=2
     };
 
+    public enum INFERENCE_PRECISION
+    {
+        FP32 = 0,
+        FP16 = 1,
+        INT8 = 2
+    };
+
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public enum BODY_KEYPOINTS_SELECTION
     {
@@ -3322,6 +3372,11 @@ namespace sl
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
         public float[] keypointConfidence;
         /// <summary>
+        /// Per keypoint detection covariance (6 values per keypoint, upper triangular 3x3 matrix).
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 228)]
+        public float[] keypointCovariances;
+        /// <summary>
         /// Per keypoint local position (the position of the child keypoint with respect to its parent expressed in its parent coordinate frame)
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 38)]
@@ -3364,11 +3419,15 @@ namespace sl
         /// </summary>
         public int isTracked;
         /// <summary>
-        /// Current detection model used.
+        /// Inference precision mode used for body detection.
         /// </summary>
-        public sl.OBJECT_DETECTION_MODEL detectionModel;
+        public sl.INFERENCE_PRECISION inferencePrecisionMode;
         /// <summary>
-        /// Array of objects 
+        /// Body format used (BODY_18, BODY_34, BODY_38).
+        /// </summary>
+        public sl.BODY_FORMAT bodyFormat;
+        /// <summary>
+        /// Array of bodies
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)(Constant.MAX_OBJECTS))]
         public BodyData[] bodyList;
