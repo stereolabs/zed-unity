@@ -2119,8 +2119,15 @@ public class ZEDManager : MonoBehaviour
         bool res = zedCamera.CreateCamera((int)cameraID, wrapperVerbose);
         if (!res)
         {
-            Debug.LogError("ZEDManager on " + gameObject.name + " couldn't connect to camera: " + cameraID +
-               ". Check if another ZEDManager is already connected.");
+            if (sl.ZEDSDKVersionValidator.ValidationComplete && !sl.ZEDSDKVersionValidator.IsSDKCompatible)
+            {
+                Debug.LogError("[ZEDManager] " + sl.ZEDSDKVersionValidator.DetailedMessage);
+            }
+            else
+            {
+                Debug.LogError("ZEDManager on " + gameObject.name + " couldn't connect to camera: " + cameraID +
+                   ". Check if another ZEDManager is already connected.");
+            }
             this.gameObject.SetActive(false);
             return;
         }

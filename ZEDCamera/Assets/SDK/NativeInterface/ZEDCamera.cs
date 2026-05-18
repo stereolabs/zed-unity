@@ -15,8 +15,22 @@ public static class NativeWrapper
 
     public static bool Init() => true;
 
+    // sl_get_sdk_version is header-only / inline in the SDK headers, so the version
+    // it returns is baked into sl_zed_c.dll at compile time. It will always match
+    // PluginVersion. The real version mismatch detection is in ZEDSDKVersionValidator,
+    // which reads the installed SDK version from the filesystem without loading any DLL.
+    // This method's value is as a "can the DLL load at all?" check.
     public static int CheckPlugin()
     {
+        if (!ZEDSDKVersionValidator.ValidationComplete)
+            ZEDSDKVersionValidator.Validate();
+
+        if (!ZEDSDKVersionValidator.IsSDKCompatible)
+        {
+            Debug.LogError($"[NativeWrapper] {ZEDSDKVersionValidator.DetailedMessage}");
+            return -1;
+        }
+
         try
         {
             IntPtr ptr = sl_get_sdk_version_native();
@@ -39,6 +53,16 @@ public static class NativeWrapper
         catch (EntryPointNotFoundException e)
         {
             Debug.LogError($"[NativeWrapper] sl_get_sdk_version not found: {e.Message}");
+            return -1;
+        }
+        catch (BadImageFormatException e)
+        {
+            Debug.LogError($"[NativeWrapper] ZED SDK DLL is incompatible (architecture mismatch or corrupted): {e.Message}");
+            return -1;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[NativeWrapper] Failed to load ZED SDK: {e.GetType().Name}: {e.Message}");
             return -1;
         }
     }
@@ -157,7 +181,7 @@ public static class NativeWrapper
         /// <summary>
         /// True if the ZED SDK is installed.
         /// </summary>
-        private static bool pluginIsReady = true;
+        private static bool pluginIsReady = false;
 
         /// <summary>
         /// Mutex for the image acquisition thread.
@@ -999,6 +1023,16 @@ public static class NativeWrapper
         /// </summary>
         public static bool CheckPlugin()
         {
+            if (!ZEDSDKVersionValidator.ValidationComplete)
+                ZEDSDKVersionValidator.Validate();
+
+            if (!ZEDSDKVersionValidator.IsSDKCompatible)
+            {
+                pluginIsReady = false;
+                Debug.LogError(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_VERSION_MISMATCH));
+                return false;
+            }
+
             if (NativeWrapper.Init())
             {
                 int res = NativeWrapper.CheckPlugin();
@@ -1009,7 +1043,7 @@ public static class NativeWrapper
                 }
             }
 
-            //0 = installed SDK is compatible with plugin. 1 otherwise.
+            pluginIsReady = false;
             Debug.LogError(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_DEPENDENCIES_ISSUE));
             return false;
         }
@@ -1054,9 +1088,21 @@ public static class NativeWrapper
 #endif
                 return false;
             }
+
+            if (!ZEDSDKVersionValidator.ValidationComplete)
+                ZEDSDKVersionValidator.Validate();
+
+            if (!ZEDSDKVersionValidator.IsSDKCompatible)
+            {
+                Debug.LogError("[ZEDCamera] Cannot create camera: " + ZEDSDKVersionValidator.DetailedMessage);
+                return false;
+            }
+
             CameraID = cameraID;
-            //tagOneObject += cameraID;
-            return dllz_create_camera(cameraID);
+            bool result = dllz_create_camera(cameraID);
+            if (result)
+                pluginIsReady = true;
+            return result;
         }
         public void Close()
         {

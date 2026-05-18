@@ -104,6 +104,10 @@ public class ZEDLogMessage
 		/// The ZED SDK is installed but it's not the version the Unity plugin requires.
 		/// </summary>
 		INCORRECT_ZED_SDK_VERSION,
+		/// <summary>
+		/// The installed ZED SDK major.minor version doesn't match the plugin. Detected via filesystem before loading DLLs.
+		/// </summary>
+		SDK_VERSION_MISMATCH,
         /// <summary>
         /// The SDK has a missing dependency.
         /// </summary>
@@ -184,6 +188,9 @@ public class ZEDLogMessage
 
             case ERROR.SDK_NOT_INSTALLED:
                 return "ZED SDK not installed";
+
+            case ERROR.SDK_VERSION_MISMATCH:
+                return sl.ZEDSDKVersionValidator.DetailedMessage;
 
             case ERROR.SDK_DEPENDENCIES_ISSUE:
 			    return "The ZED plugin cannot be loaded. \n Please check that you have ZED SDK "+ zed_sdk_version +" installed" +
