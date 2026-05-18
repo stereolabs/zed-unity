@@ -1,107 +1,83 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿#if UNITY_EDITOR
 
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 
-#if UNITY_EDITOR
-
-using UnityEditor;
-using UnityEditor.PackageManager;
-using UnityEditor.PackageManager.Requests;
-
-
 /// <summary>
-/// Manages the various compiler defines that the ZED Unity plugin uses to enable and disable features that are dependent on specific packages. 
-/// This includes the SteamVR and Oculus plugins (for controller interaction) and OpenCV for Unity (for ArUco detection). 
+/// Manages compiler defines for optional ZED plugin dependencies (e.g. OpenCV for Unity).
+/// Runs on domain reload and after asset changes to keep defines in sync.
 /// </summary>
 [InitializeOnLoad]
 public class ZEDDefineHandler : AssetPostprocessor
 {
+    const string OpenCVAssemblyName = "opencvforunity";
+    const string OpenCVDefine = "ZED_OPENCV_FOR_UNITY";
+
     static ZEDDefineHandler()
-    {  
+    {
+        UpdateDefines();
     }
 
     static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
     {
+        UpdateDefines();
+    }
 
-#region OpenCV
-        string opencvfilename = "opencvforunity.dll";
-        opencvfilename = "opencvforunity";
-
-
-        //if(EditorPrefs.GetBool("ZEDOpenCV") == false && CheckPackageExists(opencvfilename))
-        if (CheckPackageExists(opencvfilename))
-        {
-            ActivateDefine("ZEDOpenCV", "ZED_OPENCV_FOR_UNITY");
-        }
+    static void UpdateDefines()
+    {
+        if (IsAssemblyLoaded(OpenCVAssemblyName))
+            AddDefine(OpenCVDefine);
         else
-        {
-            DeactivateDefine("ZEDOpenCV", "ZED_OPENCV_FOR_UNITY");
-        }
-
-#endregion
+            RemoveDefine(OpenCVDefine);
     }
 
-    /// <summary>
-    /// Finds if a folder in the project exists with the specified name.
-    /// Used to check if a plugin has been imported, as the relevant plugins are placed
-    /// in a folder named after the package. Example: "Assets/Oculus".
-    /// </summary>
-    /// <param name="name">Package name.</param>
-    /// <returns></returns>
-    public static bool CheckPackageExists(string name)
+    static bool IsAssemblyLoaded(string name)
     {
-        string[] packages = AssetDatabase.FindAssets(name);
-        return packages.Length != 0;
+        var assemblies = System.AppDomain.CurrentDomain.GetAssemblies();
+        foreach (var assembly in assemblies)
+        {
+            if (assembly.GetName().Name.Equals(name, System.StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
     }
 
-    /// <summary>
-    /// Activates a define tag in the project. Used to enable compiling sections of scripts with that tag enabled.
-    /// For instance, parts of this script under a #if ZED_STEAM_VR statement will be ignored by the compiler unless ZED_STEAM_VR is enabled.
-    /// </summary>
-    public static void ActivateDefine(string packageName, string defineName)
+    static void AddDefine(string define)
     {
-        EditorPrefs.SetBool(packageName, true);
-        string defines = PlayerSettings.GetScriptingDefineSymbols(UnityEditor.Build.NamedBuildTarget.Standalone);
-        if (defines.Length != 0)
+        var defines = GetDefines();
+        if (!defines.Contains(define))
         {
-            if (!defines.Contains(defineName))
-            {
-                defines += ";" + defineName;
-            }
+            defines.Add(define);
+            SetDefines(defines);
         }
-        else
-        {
-            if (!defines.Contains(defineName))
-            {
-                defines += defineName;
-            }
-        }
-        PlayerSettings.SetScriptingDefineSymbols(UnityEditor.Build.NamedBuildTarget.Standalone, defines);
     }
 
-    /// <summary>
-    /// Removes a define tag from the project.
-    /// Called whenever a package is checked for but not found.
-    /// Removing the define tags will prevent compilation of code marked with that tag, like #if ZED_OCULUS.
-    /// </summary>
-    public static void DeactivateDefine(string packagename, string defineName)
+    static void RemoveDefine(string define)
     {
-        EditorPrefs.SetBool(packagename, false);
-        string defines = PlayerSettings.GetScriptingDefineSymbols(UnityEditor.Build.NamedBuildTarget.Standalone);
-        if (defines.Length != 0)
+        var defines = GetDefines();
+        if (defines.Contains(define))
         {
-            if (defineName != null && defines.Contains(defineName))
-            {
-                defines = defines.Remove(defines.IndexOf(defineName), defineName.Length);
-
-                if (defines.LastIndexOf(";") == defines.Length - 1 && defines.Length != 0)
-                {
-                    defines.Remove(defines.LastIndexOf(";"), 1);
-                }
-            }
+            defines.Remove(define);
+            SetDefines(defines);
         }
-        PlayerSettings.SetScriptingDefineSymbols(UnityEditor.Build.NamedBuildTarget.Standalone, defines);
+    }
+
+    static List<string> GetDefines()
+    {
+        var target = EditorUserBuildSettings.activeBuildTarget;
+        var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(target);
+        var defines = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
+        return defines.Split(';').Where(d => !string.IsNullOrEmpty(d)).ToList();
+    }
+
+    static void SetDefines(List<string> definesList)
+    {
+        var target = EditorUserBuildSettings.activeBuildTarget;
+        var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(target);
+        PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), string.Join(";", definesList));
     }
 }
 
