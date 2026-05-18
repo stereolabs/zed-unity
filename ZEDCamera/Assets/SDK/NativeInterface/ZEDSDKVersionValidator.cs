@@ -51,6 +51,26 @@ namespace sl
 #endif
         }
 
+        static string FindSDKRoot()
+        {
+            string defaultPath;
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            defaultPath = @"C:\Program Files (x86)\ZED SDK";
+#elif UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX
+            defaultPath = "/usr/local/zed";
+#else
+            defaultPath = null;
+#endif
+            if (!string.IsNullOrEmpty(defaultPath) && Directory.Exists(defaultPath))
+                return defaultPath;
+
+            string envRoot = Environment.GetEnvironmentVariable("ZED_SDK_ROOT_DIR");
+            if (!string.IsNullOrEmpty(envRoot) && Directory.Exists(envRoot))
+                return envRoot;
+
+            return null;
+        }
+
         public static void Validate()
         {
             ValidationComplete = false;
@@ -58,11 +78,11 @@ namespace sl
 
             try
             {
-                string sdkRoot = Environment.GetEnvironmentVariable("ZED_SDK_ROOT_DIR");
-                if (string.IsNullOrEmpty(sdkRoot) || !Directory.Exists(sdkRoot))
+                string sdkRoot = FindSDKRoot();
+                if (sdkRoot == null)
                 {
                     InstalledSDKVersion = "not found";
-                    DetailedMessage = "ZED SDK is not installed (ZED_SDK_ROOT_DIR environment variable not set). " +
+                    DetailedMessage = "ZED SDK is not installed. " +
                         $"This plugin requires ZED SDK v{RequiredSDKVersion}. " +
                         "Download it from https://www.stereolabs.com/developers/release";
                     ValidationComplete = true;
