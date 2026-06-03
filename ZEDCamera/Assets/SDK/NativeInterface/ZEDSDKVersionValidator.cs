@@ -2,7 +2,6 @@
 
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -18,15 +17,9 @@ namespace sl
     /// </summary>
     public static class ZEDSDKVersionValidator
     {
-#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        private static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
-        const uint MB_OK = 0x00000000;
-        const uint MB_ICONERROR = 0x00000010;
-#endif
-
         public static bool IsSDKCompatible { get; private set; } = false;
         public static bool ValidationComplete { get; private set; } = false;
+        public static bool IsSDKAvailable => ValidationComplete && IsSDKCompatible;
         public static string InstalledSDKVersion { get; private set; } = "unknown";
         public static string RequiredSDKVersion => $"{ZEDCamera.PluginVersion.Major}.{ZEDCamera.PluginVersion.Minor}";
         public static string DetailedMessage { get; private set; } = "";
@@ -39,16 +32,7 @@ namespace sl
 
         static void HandleRuntimeError(string message)
         {
-#if !UNITY_EDITOR
-#if UNITY_STANDALONE_WIN
-            try
-            {
-                MessageBox(IntPtr.Zero, message, "ZED Plugin - SDK Version Error", MB_OK | MB_ICONERROR);
-            }
-            catch (Exception) { }
-#endif
-            Application.Quit(1);
-#endif
+            Debug.LogWarning($"[ZED Plugin] ZED functionality will be disabled: {message}");
         }
 
         static string FindSDKRoot()
@@ -86,7 +70,6 @@ namespace sl
                         $"This plugin requires ZED SDK v{RequiredSDKVersion}. " +
                         "Download it from https://www.stereolabs.com/developers/release";
                     ValidationComplete = true;
-                    Debug.LogError($"[ZED Plugin] {DetailedMessage}");
                     HandleRuntimeError(DetailedMessage);
                     return;
                 }
@@ -133,7 +116,6 @@ namespace sl
                         $"but this plugin requires v{RequiredSDKVersion}.x. " +
                         $"Please install ZED SDK v{RequiredSDKVersion} from https://www.stereolabs.com/developers/release " +
                         "or update the ZED Unity plugin to match your installed SDK.";
-                    Debug.LogError($"[ZED Plugin] {DetailedMessage}");
                     HandleRuntimeError(DetailedMessage);
                 }
             }

@@ -26,10 +26,7 @@ public static class NativeWrapper
             ZEDSDKVersionValidator.Validate();
 
         if (!ZEDSDKVersionValidator.IsSDKCompatible)
-        {
-            Debug.LogError($"[NativeWrapper] {ZEDSDKVersionValidator.DetailedMessage}");
             return -1;
-        }
 
         try
         {
@@ -896,6 +893,7 @@ public static class NativeWrapper
 
         public static void UnloadPlugin()
         {
+            if (!pluginIsReady) return;
             dllz_unity_cleanup_all_textures();
             dllz_unload_all_instances();
         }
@@ -1029,7 +1027,6 @@ public static class NativeWrapper
             if (!ZEDSDKVersionValidator.IsSDKCompatible)
             {
                 pluginIsReady = false;
-                Debug.LogError(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_VERSION_MISMATCH));
                 return false;
             }
 
@@ -1044,7 +1041,6 @@ public static class NativeWrapper
             }
 
             pluginIsReady = false;
-            Debug.LogError(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.SDK_DEPENDENCIES_ISSUE));
             return false;
         }
 
@@ -1080,12 +1076,7 @@ public static class NativeWrapper
             string infoSystem = SystemInfo.graphicsDeviceType.ToString().ToUpper();
             if (!infoSystem.Equals("DIRECT3D11") && !infoSystem.Equals("OPENGLCORE") && !infoSystem.Equals("VULKAN") && !infoSystem.Equals("DIRECT3D12"))
             {
-                Debug.LogError("The graphic library [" + infoSystem + "] is not supported");
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#else
-                Application.Quit(1);
-#endif
+                Debug.LogError("[ZEDCamera] The graphic library [" + infoSystem + "] is not supported. ZED functionality disabled.");
                 return false;
             }
 
@@ -1093,20 +1084,36 @@ public static class NativeWrapper
                 ZEDSDKVersionValidator.Validate();
 
             if (!ZEDSDKVersionValidator.IsSDKCompatible)
-            {
-                Debug.LogError("[ZEDCamera] Cannot create camera: " + ZEDSDKVersionValidator.DetailedMessage);
                 return false;
-            }
 
             CameraID = cameraID;
-            bool result = dllz_create_camera(cameraID);
-            if (result)
-                pluginIsReady = true;
-            return result;
+            try
+            {
+                bool result = dllz_create_camera(cameraID);
+                if (result)
+                    pluginIsReady = true;
+                return result;
+            }
+            catch (DllNotFoundException e)
+            {
+                Debug.LogError($"[ZEDCamera] ZED SDK native library not found: {e.Message}. ZED functionality disabled.");
+                return false;
+            }
+            catch (BadImageFormatException e)
+            {
+                Debug.LogError($"[ZEDCamera] ZED SDK native library is incompatible (architecture mismatch or corrupted): {e.Message}. ZED functionality disabled.");
+                return false;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[ZEDCamera] Failed to create camera: {e.GetType().Name}: {e.Message}. ZED functionality disabled.");
+                return false;
+            }
         }
         public void Close()
         {
             cameraReady = false;
+            if (!pluginIsReady) return;
             dllz_unity_cleanup_textures(CameraID);
             dllz_close(CameraID);
         }
@@ -1124,6 +1131,7 @@ public static class NativeWrapper
         public void Destroy()
         {
             Close();
+            if (!pluginIsReady) return;
             dllz_unload_instance(CameraID);
             DestroyAllTexture();
         }

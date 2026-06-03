@@ -2119,9 +2119,9 @@ public class ZEDManager : MonoBehaviour
         bool res = zedCamera.CreateCamera((int)cameraID, wrapperVerbose);
         if (!res)
         {
-            if (sl.ZEDSDKVersionValidator.ValidationComplete && !sl.ZEDSDKVersionValidator.IsSDKCompatible)
+            if (!sl.ZEDSDKVersionValidator.IsSDKAvailable)
             {
-                Debug.LogError("[ZEDManager] " + sl.ZEDSDKVersionValidator.DetailedMessage);
+                Debug.LogWarning("[ZEDManager] ZED SDK unavailable. Disabling " + gameObject.name + ".");
             }
             else
             {
@@ -3328,11 +3328,7 @@ public class ZEDManager : MonoBehaviour
         if (bodyFormat != sl.BODY_FORMAT.BODY_18 && bodyFormat != sl.BODY_FORMAT.BODY_34 && bodyFormat != sl.BODY_FORMAT.BODY_38)
         {
             Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34 or BODY_38.");
-#if UNITY_EDITOR
-            EditorApplication.ExitPlaymode();
-#else
-            Application.Quit();
-#endif
+            return;
         }
 
         if (bodyFormat == sl.BODY_FORMAT.BODY_34 || bodyFormat == sl.BODY_FORMAT.BODY_18)
@@ -3720,12 +3716,8 @@ public class ZEDManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Unable to reboot correctly.");
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+            Debug.LogError("Unable to reboot correctly. ZED functionality disabled.");
+            this.gameObject.SetActive(false);
         }
     }
 

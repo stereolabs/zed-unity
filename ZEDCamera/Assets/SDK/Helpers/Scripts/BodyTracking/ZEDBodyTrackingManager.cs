@@ -146,11 +146,8 @@ public class ZEDBodyTrackingManager : MonoBehaviour
         if(cameraFrame == null)
         {
             Debug.LogError("ZEDBodyTrackingManager: Set Camera Frame. It is located under ZED_Rig_X -> Camera_X -> Frame.");
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-         Application.Quit();
-#endif
+            this.enabled = false;
+            return;
         }
     }
 

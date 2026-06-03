@@ -147,7 +147,7 @@ public class ZEDPointCloudManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-		if (zed.IsCameraReady) //Don't do anything unless the ZED has been initialized. 
+		if (zed != null && zed.IsCameraReady) //Don't do anything unless the ZED has been initialized. 
         {
             if (numberPoints == 0)
             {

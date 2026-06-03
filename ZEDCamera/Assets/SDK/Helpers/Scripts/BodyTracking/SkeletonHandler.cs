@@ -572,11 +572,6 @@ public class SkeletonHandler : ScriptableObject
                 break;
             default:
                 Debug.LogError("Error: Invalid BODY_MODEL! Please use either BODY_34 or BODY_38.");
-#if UNITY_EDITOR
-                EditorApplication.ExitPlaymode();
-#else
-            Application.Quit();
-#endif
                 break;
         }
     }
