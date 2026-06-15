@@ -166,6 +166,33 @@ namespace sl
         NOT_AVAILABLE
     }
 
+    /// <summary>
+    /// Lists the available encoding presets for SVO recording.
+    /// </summary>
+    public enum SVO_ENCODING_PRESET
+    {
+        /// <summary>
+        ///  Encoder default. Maps to NVENC P4 / V4L2 default.
+        /// </summary>
+        DEFAULT,
+        /// <summary>
+        /// Fastest encoding, lowest quality. Maps to NVENC P1 / V4L2 ULTRAFAST.
+        /// </summary>
+        ULTRAFAST,
+        /// <summary>
+        /// Fast encoding. Maps to NVENC P2 / V4L2 FAST.
+        /// </summary>
+        FAST,
+        /// <summary>
+        /// Balanced speed/quality. Maps to NVENC P3 / V4L2 MEDIUM.
+        /// </summary>
+        MEDIUM,
+        /// <summary>
+        /// Slow encoding, higher quality. Maps to NVENC P5 / V4L2 SLOW.
+        /// </summary>
+        SLOW
+    };
+
     [StructLayout(LayoutKind.Sequential)]
     public struct DeviceProperties
     {

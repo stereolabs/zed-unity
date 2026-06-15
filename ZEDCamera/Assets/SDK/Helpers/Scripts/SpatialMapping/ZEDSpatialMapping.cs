@@ -1,11 +1,13 @@
 //======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
-using System.Collections.Generic;
-using UnityEngine;
-using System.Threading;
-using System.Text;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
+using System.Runtime.InteropServices;
+using System.Threading;
+using UnityEngine;
+using static log4net.Appender.ColoredConsoleAppender;
 
 /// <summary>
 /// Processes the mesh taken from the ZED's Spatial Mapping feature so it can be used within Unity.
@@ -408,7 +410,14 @@ public class ZEDSpatialMapping
             mapType = type,
             resolutionMeter = ZEDSpatialMappingHelper.ConvertResolutionPreset(resolutionPreset),
             rangeMeter = ZEDSpatialMappingHelper.ConvertRangePreset(rangePreset),
-            saveTexture = isTextured
+            saveTexture = isTextured,
+            useChunkOnly = false,
+            maxMemoryUsage = 4096,
+            reverseVertexOrder = false,
+            stabilityCounter = 0,
+            disparityStd = 0.3f,
+            decay = 1.0f,
+            enableForgetPast = false
         };
 
         error = spatialMappingHelper.EnableSpatialMapping(ref spatialMappingParameters);
@@ -1258,7 +1267,7 @@ public class ZEDSpatialMapping
         /// <summary>
         /// Maximum number of chunks. It's best to get relatively few chunks and to update them quickly.
         /// </summary>
-        private const int MAX_SUBMESH = 1000;
+        private const int MAX_SUBMESH = 65536;
 
         /*** Number of vertices/triangles/indices per chunk***/
         /// <summary>
@@ -1293,6 +1302,10 @@ public class ZEDSpatialMapping
         /// Vertices of the current submesh.
         /// </summary>
         private Vector3[] vertices;
+        /// <summary>
+        /// 
+        /// </summary>
+        private Byte[] colors;
         /// <summary>
         /// UVs of the current submesh.
         /// </summary>
@@ -1516,7 +1529,7 @@ public class ZEDSpatialMapping
         /// </summary>
         public void RetrieveMesh()
         {
-            zedCamera.RetrieveMesh(vertices, triangles, MAX_SUBMESH, null, System.IntPtr.Zero);
+            zedCamera.RetrieveMesh(vertices, triangles, colors, MAX_SUBMESH, uvs, IntPtr.Zero);
         }
 
         /// <summary>
@@ -1529,9 +1542,11 @@ public class ZEDSpatialMapping
             vertices = new Vector3[0];
             triangles = new int[0];
             uvs = new Vector2[0];
-
+            colors = new Byte[0];
             System.Array.Clear(vertices, 0, vertices.Length);
             System.Array.Clear(triangles, 0, triangles.Length);
+            System.Array.Clear(uvs, 0, uvs.Length);
+            System.Array.Clear(colors, 0, colors.Length);
         }
 
         /// <summary>
@@ -1596,20 +1611,30 @@ public class ZEDSpatialMapping
         /// </summary>
         public void SetMeshAndTexture()
         {
-            //If the texture is too large, it's impossible to add the texture to the mesh.
             if (texturesSize[0] > 8192) return;
 
-            Texture2D textureMesh = new Texture2D(texturesSize[0], texturesSize[1], TextureFormat.ARGB32, false);
-
+            Texture2D textureMesh = new Texture2D(texturesSize[0], texturesSize[1], TextureFormat.RGBA32, false);
             if (textureMesh != null)
             {
-                materialTexture.SetTexture("_MainTex", textureMesh);
                 vertices = new Vector3[numVertices];
                 uvs = new Vector2[numVertices];
                 triangles = new int[3 * numTriangles];
+                colors = new Byte[numVertices * 3];
 
-                System.IntPtr texture = textureMesh.GetNativeTexturePtr();
-                zedCamera.RetrieveMesh(vertices, triangles, MAX_SUBMESH, uvs, texture);
+                byte[] textureData = new byte[texturesSize[0] * texturesSize[1] * 4];
+                GCHandle handle = GCHandle.Alloc(textureData, GCHandleType.Pinned);
+                try
+                {
+                    zedCamera.RetrieveMesh(vertices, triangles, colors, MAX_SUBMESH, uvs, handle.AddrOfPinnedObject());
+                }
+                finally
+                {
+                    handle.Free();
+                }
+
+                textureMesh.LoadRawTextureData(textureData);
+                textureMesh.Apply();
+                materialTexture.SetTexture("_MainTex", textureMesh);
             }
         }
 
@@ -1625,6 +1650,7 @@ public class ZEDSpatialMapping
             vertices = new Vector3[numVertices];
             uvs = new Vector2[numVertices];
             triangles = new int[3 * numTriangles];
+            colors = new Byte[numVertices * 3];
             return r;
         }
 
@@ -1655,6 +1681,11 @@ public class ZEDSpatialMapping
             if (triangles.Length < 3 * numTriangles)
             {
                 triangles = new int[3 * numTriangles * 2];
+            }
+
+            if (colors.Length < numVertices * 3)
+            {
+                colors = new Byte[numVertices * 3 * 2];
             }
         }
 

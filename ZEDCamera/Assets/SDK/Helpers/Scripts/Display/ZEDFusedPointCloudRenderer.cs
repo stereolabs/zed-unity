@@ -113,7 +113,15 @@ namespace sl
                 {
                     mapType = SPATIAL_MAP_TYPE.FUSED_POINT_CLOUD,
                     resolutionMeter = resolution,
-                    rangeMeter = range
+                    rangeMeter = range,
+                    saveTexture = false,
+                    useChunkOnly = false,
+                    maxMemoryUsage = 4096,
+                    reverseVertexOrder = false,
+                    stabilityCounter = 0,
+                    disparityStd = 0.3f,
+                    decay = 1.0f,
+                    enableForgetPast = false
                 };
 
                 sl.ERROR_CODE err = zed.EnableSpatialMapping(ref spatialMappingParameters);
