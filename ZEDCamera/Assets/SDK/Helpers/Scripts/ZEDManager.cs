@@ -906,7 +906,7 @@ public class ZEDManager : MonoBehaviour
     /// SVO Output file name
     /// </summary>
     [HideInInspector]
-    public string svoOutputFileName = "Assets/Recording.svo";
+    public string svoOutputFileName = "Assets/Recording.svo2";
 
     /// <summary>
     /// SVO Compression mode used for recording
@@ -932,6 +932,10 @@ public class ZEDManager : MonoBehaviour
     /// Recommended to leave at false to save an encoding session.
     /// </summary>
     public bool svoOutputTranscodeStreaming = false;
+
+    public SVO_ENCODING_PRESET svoEncodingPreset = SVO_ENCODING_PRESET.DEFAULT;
+
+    public string svoEncryptionKey = "";
 
     /// <summary>
     /// Indicates if frame must be recorded

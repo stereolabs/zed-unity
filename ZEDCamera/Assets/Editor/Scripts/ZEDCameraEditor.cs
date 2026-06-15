@@ -65,6 +65,8 @@ public class ZEDCameraEditor : Editor
     private SerializedProperty svoOutputBitrateProperty;
     private SerializedProperty svoOutputTargetFPSProperty;
     private SerializedProperty svoOutputTranscodeProperty;
+    private SerializedProperty svoEncryptionKeyProperty;
+    private SerializedProperty svoEncodingPresetProperty;
 
 
     //Streaming Prop
@@ -329,7 +331,8 @@ public class ZEDCameraEditor : Editor
         svoOutputBitrateProperty = serializedObject.FindProperty("svoOutputBitrate");
         svoOutputTargetFPSProperty = serializedObject.FindProperty("svoOutputTargetFPS");
         svoOutputTranscodeProperty = serializedObject.FindProperty("svoOutputTranscodeStreaming");
-
+        svoEncodingPresetProperty = serializedObject.FindProperty("svoEncodingPreset");
+        svoEncryptionKeyProperty = serializedObject.FindProperty("svoEncryptionKey");
 
         streamingOutProperty = serializedObject.FindProperty("enableStreaming");
         streamingOutCodecProperty = serializedObject.FindProperty("streamingCodec");
@@ -1091,6 +1094,12 @@ public class ZEDCameraEditor : Editor
             GUIContent svoOutputTranscodeLabel = new GUIContent("Transcode", "If streaming input, set to false to avoid transcoding (decoding+ re-encoding for SVO). Recommended to leave at false.");
             svoOutputTranscodeProperty.boolValue = EditorGUILayout.Toggle(svoOutputTranscodeLabel, svoOutputTranscodeProperty.boolValue);
 
+            GUIContent svoEncryptionKeyLabel = new GUIContent("Encryption Key", "If not empty, the SVO will be encrypted with this key. The key size must not exceed 256 characters");
+            svoEncryptionKeyProperty.stringValue = EditorGUILayout.TextField(svoEncryptionKeyLabel, svoEncryptionKeyProperty.stringValue, GUILayout.ExpandWidth(true));
+
+            GUIContent svoEncodePresetLabel = new GUIContent("Encode Preset", "If not empty, the SVO will be encoded with this preset.");
+            svoEncodingPresetProperty.enumValueIndex = (int)(sl.SVO_ENCODING_PRESET)EditorGUILayout.EnumPopup(svoEncodePresetLabel, (sl.SVO_ENCODING_PRESET)svoEncodingPresetProperty.enumValueIndex, GUILayout.ExpandWidth(true));
+
             EditorGUILayout.BeginHorizontal();
             GUI.enabled = cameraIsReady;
             string recordLabel = manager.needRecordFrame ? "Stop Recording" : "Start Recording";
@@ -1106,8 +1115,13 @@ public class ZEDCameraEditor : Editor
                 }
                 else
                 {
-
-                    if (manager.zedCamera.EnableRecording(svoOutputFileNameProperty.stringValue, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex, (int)svoOutputBitrateProperty.intValue, (int)svoOutputTargetFPSProperty.intValue, svoOutputTranscodeProperty.boolValue) == sl.ERROR_CODE.SUCCESS)
+                    string svoOutputFileName = svoOutputFileNameProperty.stringValue;
+                    if (!svoOutputFileName.ToLower().EndsWith(".svo") && !svoOutputFileName.ToLower().EndsWith(".svo2"))
+                    {
+                        svoOutputFileName += ".svo2";
+                    }
+                    if (manager.zedCamera.EnableRecording(svoOutputFileName, (sl.SVO_COMPRESSION_MODE)svoOutputCompressionModeProperty.enumValueIndex, (int)svoOutputBitrateProperty.intValue, 
+                        (int)svoOutputTargetFPSProperty.intValue, svoOutputTranscodeProperty.boolValue) == sl.ERROR_CODE.SUCCESS)
                         manager.needRecordFrame = true;
                     else
                     {

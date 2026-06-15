@@ -44,7 +44,7 @@ public class ZEDSVOManager : MonoBehaviour
     /// </summary>
     [SerializeField]
     [HideInInspector]
-    public string videoFile = "Assets/ZEDRecording.svo";
+    public string videoFile = "Assets/ZEDRecording.svo2";
 
     /// <summary>
     /// If reading an SVO, set this to true if the SVO should repeat once it finishes. 

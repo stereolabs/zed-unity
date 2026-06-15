@@ -690,7 +690,7 @@ MonoBehaviour:
   enableFillMode: 0
   enableImageEnhancement: 1
   m_maxDepthRange: 40
-  svoOutputFileName: Assets/Recording.svo
+  svoOutputFileName: Assets/Recording.svo2
   svoOutputCompressionMode: 1
   svoOutputBitrate: 0
   svoOutputTargetFPS: 0
@@ -750,7 +750,7 @@ MonoBehaviour:
   spatialMappingFoldoutOpen: 0
   objectDetectionFoldoutOpen: 0
   bodyTrackingFoldoutOpen: 0
-  recordingFoldoutOpen: 0
+  recordingFoldoutOpen: 1
   streamingOutFoldoutOpen: 0
   camControlFoldoutOpen: 0
   zedRigDisplayer: {fileID: 0}

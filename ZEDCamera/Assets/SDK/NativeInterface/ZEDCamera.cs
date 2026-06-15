@@ -1,10 +1,11 @@
 //======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
-using UnityEngine;
-using System.Collections.Generic;
 using System;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
+using UnityEngine;
 
 namespace sl
 {
@@ -441,7 +442,9 @@ public static class NativeWrapper
         * Recording functions.
         */
         [DllImport(nameDll, EntryPoint = "sl_enable_recording")]
-        private static extern int dllz_enable_recording(int cameraID, System.Text.StringBuilder video_filename, int compresssionMode, int bitrate, int target_fps, bool transcode);
+        private static extern int dllz_enable_recording(int cameraID, string video_filename,
+                                                int compresssionMode, int bitrate, int target_fps, bool transcode,
+                                               StringBuilder encryption_key, int encoding_preset);
 
         [DllImport(nameDll, EntryPoint = "sl_get_recording_status")]
         private static extern IntPtr dllz_get_recording_status(int cameraID);
@@ -1466,10 +1469,25 @@ public static class NativeWrapper
         /// as well as info about the camera used to record it.</remarks>
         /// <param name="videoFileName">Filename. Whether it ends with .svo or .avi defines its file type.</param>
         /// <param name="compressionMode">How much compression to use</param>
+        /// <param name="bitrate">Bitrate for the video. 0 means default.</param>
+        /// <param name="targetFPS" >Target framerate for the video. 0 means default.</param>
+        /// <param name="transcode">If true, the video will be transcoded.</param>
+        /// <param name="encodingPreset">Encoding preset for the video.</param>
+        /// <param name="encryptionKey">Encryption key for the video. Empty string means no encryption.</param>
         /// <returns>An ERROR_CODE that defines if the file was successfully created and can be filled with images.</returns>
-        public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.H264_BASED, int bitrate = 0, int target_fps = 0, bool transcode = false)
+        public ERROR_CODE EnableRecording(string videoFileName, SVO_COMPRESSION_MODE compressionMode = SVO_COMPRESSION_MODE.H264_BASED,
+                                          int bitrate = 0, int targetFPS = 0, bool transcode = false, SVO_ENCODING_PRESET encodingPreset = SVO_ENCODING_PRESET.DEFAULT, string encryptionKey = "")
         {
-            return (ERROR_CODE)dllz_enable_recording(CameraID, new System.Text.StringBuilder(videoFileName, videoFileName.Length), (int)compressionMode, bitrate, target_fps, transcode);
+            if (encryptionKey.Length > 256)
+            {
+                Debug.LogError("[ZEDCamera] Encryption key is too long. Maximum length is 256 characters.");
+                return ERROR_CODE.SVO_RECORDING_ERROR;
+            }
+
+            return (ERROR_CODE)dllz_enable_recording(CameraID, videoFileName,
+                                                     (int)compressionMode, bitrate, targetFPS, transcode,
+                                                     new System.Text.StringBuilder(encryptionKey, encryptionKey.Length),
+                                                     (int)encodingPreset);
         }
 
         /// <summary>
