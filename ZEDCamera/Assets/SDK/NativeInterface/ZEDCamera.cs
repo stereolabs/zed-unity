@@ -726,6 +726,9 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_pause_spatial_mapping")]
         private static extern void dllz_pause_spatial_mapping(int cameraID, bool status);
 
+        [DllImport(nameDll, EntryPoint = "sl_extract_whole_spatial_map")]
+        private static extern int dllz_extract_whole_spatial_map(int cameraID);
+
         [DllImport(nameDll, EntryPoint = "sl_request_mesh_async")]
         private static extern void dllz_request_mesh_async(int cameraID);
 
@@ -736,7 +739,7 @@ public static class NativeWrapper
         private static extern int dllz_update_mesh(int cameraID, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int nbSubmesh);
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_mesh")]
-        private static extern int dllz_retrieve_mesh(int cameraID, Vector3[] vertices, int[] triangles, int nbSubmesh, Vector2[] uvs, IntPtr textures);
+        private static extern int dllz_retrieve_mesh(int cameraID, Vector3[] vertices, int[] triangles, byte[] colors, Vector2[] uvs, IntPtr textures, int nbSubmesh);
 
         [DllImport(nameDll, EntryPoint = "sl_update_fused_point_cloud")]
         private static extern int dllz_update_fused_point_cloud(int cameraID, ref int pbPoints);
@@ -751,7 +754,8 @@ public static class NativeWrapper
         private static extern bool dllz_save_point_cloud(int cameraID, string filename, MESH_FILE_FORMAT format);
 
         [DllImport(nameDll, EntryPoint = "sl_load_mesh")]
-        private static extern bool dllz_load_mesh(int cameraID, string filename, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int nbMaxSubmesh, int[] textureSize = null);
+        private static extern bool dllz_load_mesh(int cameraID, string filename, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, 
+            ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int[] textureSize, int nbMaxSubmesh);
 
         [DllImport(nameDll, EntryPoint = "sl_apply_texture")]
         private static extern bool dllz_apply_texture(int cameraID, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int[] textureSize, int nbSubmesh);
@@ -2789,9 +2793,9 @@ public static class NativeWrapper
         /// <param name="triangles">Triangles, formatted as the index of each triangle's three vertices in the vertices array.</param>
         /// <param name="nbSubmeshMax">Maximum number of submeshes that can be handled.</param>
         /// <returns>Error code indicating if the retrieval was successful, and why it wasn't otherwise.</returns>
-        public sl.ERROR_CODE RetrieveMesh(Vector3[] vertices, int[] triangles, int nbSubmeshMax, Vector2[] uvs, IntPtr textures)
+        public sl.ERROR_CODE RetrieveMesh(Vector3[] vertices, int[] triangles, Byte[] colors, int nbSubmeshMax, Vector2[] uvs, IntPtr textures)
         {
-            return (sl.ERROR_CODE)dllz_retrieve_mesh(CameraID, vertices, triangles, nbSubmeshMax, uvs, textures);
+            return (sl.ERROR_CODE)dllz_retrieve_mesh(CameraID, vertices, triangles, colors, uvs, textures, nbSubmeshMax);
         }
 
         /// <summary>
@@ -2824,6 +2828,15 @@ public static class NativeWrapper
         public sl.ERROR_CODE RetrieveFusedPointCloud(Vector4[] vertices)
         {
             return (sl.ERROR_CODE)dllz_retrieve_fused_point_cloud(CameraID, vertices);
+        }
+
+        /// <summary>
+        /// Extracts the current spatial map from the spatial mapping process. This is a blocking call.
+        /// Must be called before ApplyTexture() to ensure the complete mesh is available for texturing.
+        /// </summary>
+        public sl.ERROR_CODE ExtractWholeSpatialMap()
+        {
+            return (sl.ERROR_CODE)dllz_extract_whole_spatial_map(CameraID);
         }
 
         /// <summary>
@@ -2888,7 +2901,7 @@ public static class NativeWrapper
             ref int nbVertices, ref int nbTriangles, int nbSubmeshMax, int[] textureSize = null)
         {
             return dllz_load_mesh(CameraID, filename, nbVerticesInSubmeshes, nbTrianglesInSubmeshes, ref nbSubmeshes, updatedIndices, ref nbVertices,
-                ref nbTriangles, nbSubmeshMax, textureSize);
+                ref nbTriangles, textureSize, nbSubmeshMax);
         }
 
         /// <summary>
