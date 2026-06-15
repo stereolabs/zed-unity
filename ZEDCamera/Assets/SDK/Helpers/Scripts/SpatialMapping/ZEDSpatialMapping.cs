@@ -1267,7 +1267,7 @@ public class ZEDSpatialMapping
         /// <summary>
         /// Maximum number of chunks. It's best to get relatively few chunks and to update them quickly.
         /// </summary>
-        private const int MAX_SUBMESH = 1000;
+        private const int MAX_SUBMESH = 65536;
 
         /*** Number of vertices/triangles/indices per chunk***/
         /// <summary>
