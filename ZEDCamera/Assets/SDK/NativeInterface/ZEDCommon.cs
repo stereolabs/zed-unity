@@ -535,6 +535,23 @@ namespace sl
     /*******************************************************************************************************************************
      *******************************************************************************************************************************/
 
+
+    public enum LENS_DISTORTION_MODEL
+    {
+        /// <summary>
+        /// Radial-tangential (Brown-Conrady) distortion. Raw/unrectified parameters.
+        /// </summary>
+        RAN_TAN,
+        /// <summary>
+        /// Fisheye distortion. Raw/unrectified parameters.
+        /// </summary>
+        FISHEYE,
+        /// <summary>
+        /// Pinhole model, no distortion. Rectified parameters.
+        /// </summary>
+        PINHOLE
+    };
+
     /// <summary>
     /// Calibration information for an individual sensor on the ZED (left or right). </summary>
     /// <remarks>For more information, see:
@@ -585,7 +602,11 @@ namespace sl
         /// Real focal length in millimeters
         /// </summary>
         public float focalLengthMetric;
-
+        /// <summary>
+        /// Lens distortion model of these parameters.
+        ///  Raw/unrectified parameters are RAD_TAN or FISHEYE, rectified parameters are PINHOLE.
+        /// </summary>
+        public LENS_DISTORTION_MODEL lensDistortionModel;
     };
 
     /// <summary>
@@ -1298,7 +1319,7 @@ namespace sl
         /// Left BGRA unrectified image. Each pixel contains 4 unsigned char (B, G, R, A).
         ///\n Type: sl.MAT_TYPE.MAT_8U_C4.
         /// </summary>
-        LEFT_UNRECTIFIED,
+        LEFT_UNRECTIFIED = 6,
         /// <summary>
         /// Right BGRA unrectified image. Each pixel contains 4 unsigned char (B, G, R, A).
         ///\n Type: sl.MAT_TYPE.MAT_8U_C4.

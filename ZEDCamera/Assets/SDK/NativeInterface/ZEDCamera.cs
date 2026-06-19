@@ -345,7 +345,7 @@ public static class NativeWrapper
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(5, 3, 0);
+        public static readonly System.Version PluginVersion = new System.Version(5, 4, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDllUnity, EntryPoint = "GetRenderEventFunc")]
