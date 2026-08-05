@@ -345,7 +345,7 @@ public static class NativeWrapper
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(5, 4, 0);
+        public static readonly System.Version PluginVersion = new System.Version(5, 5, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDllUnity, EntryPoint = "GetRenderEventFunc")]
@@ -585,6 +585,12 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_get_current_timestamp")]
         private static extern ulong dllz_get_current_timestamp(int cameraID);
 
+        [DllImport(nameDll, EntryPoint = "sl_get_timestamp")]
+        private static extern ulong dllz_get_timestamp(int cameraID, int timeReference);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_health_status")]
+        private static extern IntPtr dllz_get_health_status(int cameraID);
+
         [DllImport(nameDll, EntryPoint = "sl_get_frame_dropped_count")]
         private static extern uint dllz_get_frame_dropped_count(int cameraID);
 
@@ -700,7 +706,8 @@ public static class NativeWrapper
         private static extern int dllz_get_area_export_state(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_set_region_of_interest")]
-        private static extern int dllz_set_region_of_interest(int cameraID, IntPtr roiMask, bool[] module);
+        private static extern int dllz_set_region_of_interest(int cameraID, IntPtr roiMask,
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U1)] bool[] module);
 
         [DllImport(nameDll, EntryPoint = "sl_get_region_of_interest")]
         private static extern int dllz_get_region_of_interest(int cameraID, IntPtr roiMask, int width, int height, MODULE module);
@@ -1269,6 +1276,10 @@ public static class NativeWrapper
             /// </summary>
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
             public string svoDecryptionKey;
+            /// <summary>
+            /// Precision used for the neural depth inference. Only applies to the neural depth modes.
+            /// </summary>
+            public sl.DEPTH_PRECISION depthPrecision;
 
             /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
@@ -1300,6 +1311,7 @@ public static class NativeWrapper
                 enableImageValidityCheck = init.enableImageValidityCheck;
                 maximumWorkingResolution = init.maximumWorkingResolution;
                 svoDecryptionKey = init.svoDecryptionKey;
+                depthPrecision = init.depthPrecision;
             }
         }
 
@@ -1625,6 +1637,33 @@ public static class NativeWrapper
         public ulong GetCurrentTimeStamp()
         {
             return dllz_get_current_timestamp(CameraID);
+        }
+
+        /// <summary>
+        /// Gets a timestamp at the given time reference.
+        /// </summary>
+        /// <remarks>
+        /// Must be called after Grab() for TIME_REFERENCE.IMAGE and TIME_REFERENCE.IMAGE_CENTER_OF_EXPOSURE.
+        /// IMAGE_CENTER_OF_EXPOSURE returns 0 on inputs that carry no per-frame exposure (USB and HDR models,
+        /// SVO files and streams without per-frame sensor metadata), so check for 0 before using it.
+        /// </remarks>
+        /// <param name="timeReference">The desired sl.TIME_REFERENCE.</param>
+        /// <returns>The timestamp in nanoseconds, or 0 if unavailable on this input.</returns>
+        public ulong GetTimeStamp(sl.TIME_REFERENCE timeReference)
+        {
+            return dllz_get_timestamp(CameraID, (int)timeReference);
+        }
+
+        /// <summary>
+        /// Returns the camera self-diagnostic results (image, depth and sensor health).
+        /// </summary>
+        /// <remarks>Requires InitParameters.enableImageValidityCheck (enabled by default).</remarks>
+        public sl.HealthStatus GetHealthStatus()
+        {
+            IntPtr p = dllz_get_health_status(CameraID);
+            if (p == IntPtr.Zero)
+                return new sl.HealthStatus();
+            return (sl.HealthStatus)Marshal.PtrToStructure(p, typeof(sl.HealthStatus));
         }
 
         /// <summary>
@@ -3411,6 +3450,42 @@ public static class NativeWrapper
             /// Default: -1 (no filtering)
             /// </summary>
             public float minBoxHeightNormalized;
+            /// <summary>
+            /// Maximum allowed 3D width, in meters. Bigger predictions are discarded or clamped.
+            /// Default: -1 (no filtering)
+            /// </summary>
+            public float maxBoxWidthMeters;
+            /// <summary>
+            /// Minimum allowed 3D width, in meters. Smaller predictions are discarded or clamped.
+            /// Default: -1 (no filtering)
+            /// </summary>
+            public float minBoxWidthMeters;
+            /// <summary>
+            /// Maximum allowed 3D height, in meters. Bigger predictions are discarded or clamped.
+            /// Default: -1 (no filtering)
+            /// </summary>
+            public float maxBoxHeightMeters;
+            /// <summary>
+            /// Minimum allowed 3D height, in meters. Smaller predictions are discarded or clamped.
+            /// Default: -1 (no filtering)
+            /// </summary>
+            public float minBoxHeightMeters;
+            /// <summary>
+            /// Built-in sub class this custom class maps onto, for the tracker's motion model.
+            /// </summary>
+            public sl.OBJECT_SUBCLASS nativeMappedClass;
+            /// <summary>
+            /// Acceleration preset used by the tracker for this class.
+            /// </summary>
+            public sl.OBJECT_ACCELERATION_PRESET objectAccelerationPreset;
+            /// <summary>
+            /// Manually override the acceleration preset, in m/s^2. Takes precedence over the preset when set.
+            /// </summary>
+            public float maxAllowedAcceleration;
+            /// <summary>
+            /// Tracking parameters applied to this class.
+            /// </summary>
+            public sl.ObjectTrackingParameters objectTrackingParameters;
 
             public dll_customObjectDetectionProperties(CustomObjectDetectionProperties customObjectDetectionProperties)
             {
@@ -3425,6 +3500,14 @@ public static class NativeWrapper
                 minBoxWidthNormalized = customObjectDetectionProperties.minBoxWidthNormalized;
                 maxBoxHeightNormalized = customObjectDetectionProperties.maxBoxHeightNormalized;
                 minBoxHeightNormalized = customObjectDetectionProperties.minBoxHeightNormalized;
+                maxBoxWidthMeters = customObjectDetectionProperties.maxBoxWidthMeters;
+                minBoxWidthMeters = customObjectDetectionProperties.minBoxWidthMeters;
+                maxBoxHeightMeters = customObjectDetectionProperties.maxBoxHeightMeters;
+                minBoxHeightMeters = customObjectDetectionProperties.minBoxHeightMeters;
+                nativeMappedClass = customObjectDetectionProperties.nativeMappedClass;
+                objectAccelerationPreset = customObjectDetectionProperties.objectAccelerationPreset;
+                maxAllowedAcceleration = customObjectDetectionProperties.maxAllowedAcceleration;
+                objectTrackingParameters = customObjectDetectionProperties.objectTrackingParameters;
             }
         };
 

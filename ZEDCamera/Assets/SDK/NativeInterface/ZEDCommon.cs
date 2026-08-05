@@ -283,12 +283,16 @@ namespace sl
         /// <summary>
         /// The streaming IP of the device
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
         public string ip;
         /// <summary>
         /// The streaming port
         /// </summary>
         public ushort port;
+        /// <summary>
+        /// The serial number of the streaming device.
+        /// </summary>
+        public uint serialNumber;
         /// <summary>
         /// The current bitrate of encoding of the streaming device
         /// </summary>
@@ -343,6 +347,43 @@ namespace sl
         /// Compression ratio (% of raw size) since recording was started.
         /// </summary>
         public double averageCompressionRatio;
+        /// <summary>
+        /// Number of frames handed to the recorder since the beginning of the recording.
+        /// </summary>
+        public int numberFramesIngested;
+        /// <summary>
+        /// Number of frames actually written to the file since the beginning of the recording.
+        /// A value below numberFramesIngested means frames were dropped because the encoder could not keep up.
+        /// </summary>
+        public int numberFramesEncoded;
+    }
+
+    ///\ingroup  Video_group
+    /// <summary>
+    /// Structure containing the self-diagnostic results of the camera (image, depth, sensor health).
+    /// Retrieved via ZEDCamera.GetHealthStatus().
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct HealthStatus
+    {
+        /// <summary>Whether the health check is enabled.</summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool enabled;
+        /// <summary>Poor image quality detected (hardware issue, occlusion, blurry, incorrect settings, etc.).</summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool lowImageQuality;
+        /// <summary>Low-light conditions detected.</summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool lowLighting;
+        /// <summary>Low depth map reliability (obstructed optics, heavy fog, etc.).</summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool lowDepthReliability;
+        /// <summary>IMU data reliability issue (corrupted stream, saturated sensors, shocks, etc.).</summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool lowMotionSensorsReliability;
+        /// <summary>Current image is a duplicate: not a new frame even if the timestamp says so.</summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool duplicatedImage;
     }
 
     /// <summary>
@@ -391,6 +432,10 @@ namespace sl
         /// Accelerometer raw data covariance matrix.
         /// </summary>
 		public Matrix3x3 linearAccelerationCovariance;
+        /// <summary>
+        /// Realtime data acquisition rate in hertz (Hz).
+        /// </summary>
+        public float effectiveRate;
 	};
 
 
@@ -413,6 +458,10 @@ namespace sl
         /// Relative altitude from first camera position
         /// </summary>
         public float relativeAltitude;
+        /// <summary>
+        /// Realtime data acquisition rate in hertz (Hz).
+        /// </summary>
+        public float effectiveRate;
     };
 
     public enum HEADING_STATE
@@ -475,6 +524,10 @@ namespace sl
         /// A negative value means that the magnetometer must be calibrated using the ZED Sensor Viewer tool
         /// </summary>
         public float magneticHeadingAccuracy;
+        /// <summary>
+        /// Realtime data acquisition rate in hertz (Hz).
+        /// </summary>
+        public float effectiveRate;
 
     };
 
@@ -736,14 +789,6 @@ namespace sl
         /// </summary>
         public float3 imuMagnometerTranslation;
         /// <summary>
-        /// Magnetometer to IMU rotation. contains rotation between IMU frame and magnetometer frame.
-        /// </summary>
-        public float4 imu_magnometer_rotation;
-        /// <summary>
-        /// Magnetometer to IMU translation. contains translation between IMU frame and magnetometer frame.
-        /// </summary>
-        public float3 imu_magnometer_translation;
-        /// <summary>
         /// Configuration of the accelerometer device.
         /// </summary>
         public SensorParameters accelerometerParameters;
@@ -969,6 +1014,23 @@ namespace sl
         ///  More accurate Neural disparity estimation.\n Requires AI module.
         /// </summary>
         NEURAL_PLUS
+    };
+
+    ///\ingroup Depth_group
+    /// <summary>
+    /// Precision used for neural depth inference.
+    /// </summary>
+    public enum DEPTH_PRECISION
+    {
+        /// <summary>
+        /// Half-precision neural depth (default).
+        /// </summary>
+        FP16,
+        /// <summary>
+        /// Explicit-quantization (Q/DQ) INT8 neural depth.
+        /// Best-effort: falls back to FP16 if the selected DEPTH_MODE ships no INT8 model or the platform lacks fast INT8.
+        /// </summary>
+        INT8
     };
 
     /// <summary>
@@ -1284,7 +1346,29 @@ namespace sl
         /// <summary>
         /// ZED X Mini
         /// </summary>
-        ZED_XM
+        ZED_XM,
+        /// <summary>
+        /// ZED X HDR
+        /// </summary>
+        ZED_X_HDR,
+        /// <summary>
+        /// ZED X HDR Mini
+        /// </summary>
+        ZED_X_HDR_MINI,
+        /// <summary>
+        /// ZED X HDR Max
+        /// </summary>
+        ZED_X_HDR_MAX,
+        /// <summary>
+        /// ZED X Nano
+        /// </summary>
+        ZED_X_NANO = 9,
+        /// <summary>
+        /// Virtual ZED X, a stereo pair built from two ZED X One cameras.
+        /// </summary>
+        VIRTUAL_ZED_X = 11
+        // Values 30-33 are the mono ZED X One models, deliberately not exposed here:
+        // this plugin is stereo-only.
     };
 
     /// <summary>
@@ -1683,7 +1767,14 @@ namespace sl
 		/// <summary>
 		/// Timestamp from when the relevant function was called.
 		/// </summary>
-		CURRENT
+		CURRENT,
+		/// <summary>
+		/// The middle of the frame's exposure, instead of the start of the sensor readout returned by IMAGE.
+		/// Use it to align frames with other sensors (LiDAR, IMU, robot joints) that are timestamped when they measure.
+		/// Only meaningful for GetTimeStamp(). Requires a per-frame exposure, so it is available on ZED X, ZED X Mini,
+		/// ZED X One GS and ZED X One 4K; it returns 0 on every other input, so always check for 0 before using it.
+		/// </summary>
+		IMAGE_CENTER_OF_EXPOSURE
 	};
 
     /// <summary>
@@ -1751,6 +1842,30 @@ namespace sl
         /// Fast and accurate, in both exploratory mode and mapped environments.\Note Can be used even if depth_mode is set to \ref DEPTH_MODE::NONE.
         /// </summary>
         GEN_3
+    }
+
+    ///\ingroup Core_group
+    /// <summary>
+    /// Lists how much GPU a module is allowed to use.
+    /// </summary>
+    /// The selected mode sets a floor that cannot be avoided: POSITIONAL_TRACKING_MODE.GEN_1 computes depth and
+    /// therefore always uses the GPU. This preference only controls the work that is optional on top of that floor.
+    public enum COMPUTE_PREFERENCE
+    {
+        /// <summary>
+        /// Default. Let the SDK choose: GEN_3 runs on the CPU, GEN_1 uses the GPU since it computes depth.
+        /// </summary>
+        AUTO,
+        /// <summary>
+        /// Use no more GPU than the selected mode requires, leaving the GPU free for your own workloads.
+        /// Tracking is slower than with GPU acceleration.
+        /// </summary>
+        PREFER_CPU,
+        /// <summary>
+        /// Use GPU acceleration wherever available, which makes tracking faster and lowers the per-frame Grab() time.
+        /// Falls back to the CPU by itself if the GPU cannot be used.
+        /// </summary>
+        PREFER_GPU
     }
 
     ///\ingroup PositionalTracking_group
@@ -2176,6 +2291,15 @@ namespace sl
         public string svoDecryptionKey = "";
 
         /// <summary>
+        /// Precision used for the neural depth inference.
+        /// </summary>
+        /// Set it to DEPTH_PRECISION.INT8 to request explicit-quantization (Q/DQ) INT8 inference: a faster depth
+        /// runtime and a lower memory footprint, for a small accuracy cost. Always safe to set - the SDK falls back
+        /// to FP16 when the depth mode or the GPU does not support INT8.
+        /// Default: DEPTH_PRECISION.FP16
+        public sl.DEPTH_PRECISION depthPrecision = sl.DEPTH_PRECISION.FP16;
+
+        /// <summary>
         ///  Set the input as the camera with specified id.
         /// </summary>
         /// <param name="cameraID"></param>
@@ -2418,7 +2542,7 @@ namespace sl
         /// <summary>
         /// Once computed the ROI computed will be automatically applied.
         /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)MODULE.LAST)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)MODULE.LAST, ArraySubType = UnmanagedType.U1)]
         public bool[] autoApplyModule;
 
         public RegionOfInterestParameters(bool[] autoApplyModule_, float depthFarThresholdMeters_ = 2.5f, float imageHeightRatioCutoff_ = 0.5f)
@@ -2456,6 +2580,13 @@ namespace sl
         public bool enableLocalizationOnly;
         [MarshalAs(UnmanagedType.U1)]
         public bool enable2DGroundMode;
+        /// <summary>
+        /// How much GPU positional tracking is allowed to use.
+        /// </summary>
+        /// POSITIONAL_TRACKING_MODE.GEN_3 runs on the CPU by default, so it does not compete with your own GPU
+        /// workloads. Set this to COMPUTE_PREFERENCE.PREFER_GPU to make tracking faster, at the cost of using the GPU.
+        /// GEN_1 computes depth and therefore uses the GPU whatever this is set to.
+        public sl.COMPUTE_PREFERENCE computePreference;
     }
 
     /// <summary>
@@ -2726,11 +2857,6 @@ namespace sl
         /// Determines how the ZED SDK interprets object acceleration, affecting tracking behavior and predictions.
         public OBJECT_ACCELERATION_PRESET objectAccelerationPreset;
 
-        /// <summary>
-        /// Deprecated: Manually override the acceleration preset.
-        /// </summary>
-        /// \warning Preferred way is to use \ref velocitySmoothingFactor.
-        public float maxAllowedAcceleration;
 
         /// <summary>
         /// Control the smoothing of the velocity estimation. Manually override the acceleration preset.
@@ -3181,6 +3307,65 @@ namespace sl
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool isGrounded;
+        /// <summary>
+        /// Whether the object is expected to never move.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool isStatic;
+        /// <summary>
+        /// How long the tracker keeps an unseen object alive, in seconds.
+        /// By default the tracker decides internally from the object's sub class.
+        /// </summary>
+        public float trackingTimeout;
+        /// <summary>
+        /// Distance, in meters, past which an unseen tracked object is dropped. Only valid for static objects.
+        /// By default objects are not discarded on distance.
+        /// </summary>
+        public float trackingMaxDist;
+        /// <summary>
+        /// Maximum allowed 3D width. Bigger predictions are discarded or clamped.
+        /// Default: -1 (no filtering)
+        /// </summary>
+        public float maxBoxWidthMeters;
+        /// <summary>
+        /// Minimum allowed 3D width. Smaller predictions are discarded or clamped.
+        /// Default: -1 (no filtering)
+        /// </summary>
+        public float minBoxWidthMeters;
+        /// <summary>
+        /// Maximum allowed 3D height. Bigger predictions are discarded or clamped.
+        /// Default: -1 (no filtering)
+        /// </summary>
+        public float maxBoxHeightMeters;
+        /// <summary>
+        /// Minimum allowed 3D height. Smaller predictions are discarded or clamped.
+        /// Default: -1 (no filtering)
+        /// </summary>
+        public float minBoxHeightMeters;
+        /// <summary>
+        /// Manually override the acceleration preset, in m/s^2. Takes precedence over the preset when set.
+        /// </summary>
+        public float maxAllowedAcceleration;
+        /// <summary>
+        /// Smoothing factor applied to the estimated velocity, between 0 and 1.
+        /// Default: -1 (use the module default)
+        /// </summary>
+        public float velocitySmoothingFactor;
+        /// <summary>
+        /// Velocity below which the object is considered still, in meters per second.
+        /// Default: -1 (use the module default)
+        /// </summary>
+        public float minVelocityThreshold;
+        /// <summary>
+        /// How long a lost object keeps being predicted before it is discarded, in seconds.
+        /// Default: -1 (use the module default)
+        /// </summary>
+        public float predictionTimeout_s;
+        /// <summary>
+        /// How long an object must be seen before it is confirmed as tracked, in seconds.
+        /// Default: -1 (use the module default)
+        /// </summary>
+        public float minConfirmationTime_s;
     }
 
     /// <summary>
@@ -3218,6 +3403,12 @@ namespace sl
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)(Constant.MAX_OBJECTS))]
         public ObjectData[] objectList;
+        /// <summary>
+        /// Name of the group these objects belong to when fused, as set in ObjectDetectionParameters.
+        /// Empty when the detector was not given a group name.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        public string fusedObjectsGroupName;
     };
 
     /// <summary>
