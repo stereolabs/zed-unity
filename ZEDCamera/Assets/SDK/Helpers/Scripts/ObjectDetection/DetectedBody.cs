@@ -300,7 +300,7 @@ public class DetectedBody
         {
             if (maskTexture == null)
             {
-                IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
+                IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.CPU);
 
                 if (maskpointer != IntPtr.Zero && maskMat.IsInit())
                 {
@@ -312,7 +312,7 @@ public class DetectedBody
         {
             if (maskTextureFlipped == null)
             {
-                IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
+                IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.CPU);
                 if (maskpointer != IntPtr.Zero)
                 {
                     maskTextureFlipped = ZEDMatToTexture_CPU(maskMat, true);
@@ -369,7 +369,7 @@ public class DetectedBody
         int width = zedmat.GetWidth(); //Shorthand. 
         int height = zedmat.GetHeight();
 
-        IntPtr maskpointer = zedmat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
+        IntPtr maskpointer = zedmat.GetPtr(sl.ZEDMat.MEM.CPU);
         if (maskpointer != IntPtr.Zero && zedmat.IsInit() && width > 0 && height > 0)
         {
             byte[] texbytes = new byte[zedmat.GetStepBytes() * height];

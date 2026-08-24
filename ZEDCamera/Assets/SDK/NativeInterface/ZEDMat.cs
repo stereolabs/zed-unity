@@ -144,19 +144,19 @@ namespace sl
             /// <summary>
             /// Copies data from one place in CPU memory to another. 
             /// </summary>
-            COPY_TYPE_CPU_CPU, /*!< copy data from CPU to CPU.*/
+            CPU_CPU, /*!< copy data from CPU to CPU.*/
             /// <summary>
             /// Copies data from CPU memory to GPU memory.
             /// </summary>
-            COPY_TYPE_CPU_GPU, /*!< copy data from CPU to GPU.*/
+            CPU_GPU, /*!< copy data from CPU to GPU.*/
             /// <summary>
             /// Copies data from one place in GPU memory to another. 
             /// </summary>
-            COPY_TYPE_GPU_GPU, /*!< copy data from GPU to GPU.*/
+            GPU_GPU, /*!< copy data from GPU to GPU.*/
             /// <summary>
             /// Copies data from GPU memory to CPU memory. 
             /// </summary>
-            COPY_TYPE_GPU_CPU /*!< copy data from GPU to CPU.*/
+            GPU_CPU /*!< copy data from GPU to CPU.*/
         };
 
         /// <summary>
@@ -167,11 +167,11 @@ namespace sl
             /// <summary>
             /// Store on memory accessible by the CPU. 
             /// </summary>
-            MEM_CPU = 0,
+            CPU = 0,
             /// <summary>
             /// Store on memory accessible by the GPU. 
             /// </summary>
-            MEM_GPU = 1 ,
+            GPU = 1 ,
             /// <summary>
             /// Store on memory accessible by the GPU and the CPU. 
             /// </summary>
@@ -351,7 +351,7 @@ namespace sl
         /// Depends on texture type: see sl.VIEW and sl.MEASURE in ZEDCommon.cs.</param>
         /// <param name="mem">Whether Mat should exist on CPU or GPU memory.
         /// Choose depending on where you'll need to access it from.</param>
-        public void Create(sl.Resolution resolution, MAT_TYPE type, MEM mem = MEM.MEM_CPU)
+        public void Create(sl.Resolution resolution, MAT_TYPE type, MEM mem = MEM.CPU)
         {
             _matInternalPtr = dllz_mat_create_new((int)resolution.width, (int)resolution.height, (int)(type), (int)(mem));
         }
@@ -365,7 +365,7 @@ namespace sl
         /// Depends on texture type: see sl.VIEW and sl.MEASURE in ZEDCommon.cs.</param>
         /// <param name="mem">Whether Mat should exist on CPU or GPU memory.
         /// Choose depending on where you'll need to access it from.</param>
-        public void Create(uint width, uint height, MAT_TYPE type, MEM mem = MEM.MEM_CPU)
+        public void Create(uint width, uint height, MAT_TYPE type, MEM mem = MEM.CPU)
         {
             _matInternalPtr = dllz_mat_create_new((int)width, (int)height, (int)(type), (int)(mem));
         }
@@ -424,7 +424,7 @@ namespace sl
         /// <param name="dest">Mat that the data will be copied to.</param>
         /// <param name="copyType">The To and From memory types.</param>
         /// <returns>Error code indicating if the copy was successful, or why it wasn't.</returns>
-        public sl.ERROR_CODE CopyTo(sl.ZEDMat dest, sl.ZEDMat.COPY_TYPE copyType = COPY_TYPE.COPY_TYPE_CPU_CPU)
+        public sl.ERROR_CODE CopyTo(sl.ZEDMat dest, sl.ZEDMat.COPY_TYPE copyType = COPY_TYPE.CPU_CPU)
         {
             return (sl.ERROR_CODE)dllz_mat_copy_to(_matInternalPtr, dest._matInternalPtr, (int)(copyType));
         }
@@ -490,7 +490,7 @@ namespace sl
         ///  Returns the memory 'step' in number/length of elements - how many values make up each row of pixels.
         /// </summary>
         /// <returns>Step length.</returns>
-        public int GetStep(MEM mem = MEM.MEM_CPU)
+        public int GetStep(MEM mem = MEM.CPU)
         {
             return dllz_mat_get_step(_matInternalPtr, (int)mem);
         }
@@ -499,7 +499,7 @@ namespace sl
         /// Returns the memory 'step' in bytes - how many bytes make up each row of pixels.
         /// </summary>
         /// <returns></returns>
-        public int GetStepBytes(MEM mem = MEM.MEM_CPU)
+        public int GetStepBytes(MEM mem = MEM.CPU)
         {
             return dllz_mat_get_step_bytes(_matInternalPtr, (int)mem);
         }
@@ -547,7 +547,7 @@ namespace sl
         /// <param name="height">Height of the image/matrix in pixels.</param>
         /// <param name="matType">Type of matrix (data type and channels; see sl.MAT_TYPE)</param>
         /// <param name="mem">Where the buffer will be stored - CPU memory or GPU memory.</param>
-        public void Alloc(uint width, uint height, MAT_TYPE matType, MEM mem = MEM.MEM_CPU)
+        public void Alloc(uint width, uint height, MAT_TYPE matType, MEM mem = MEM.CPU)
         {
             dllz_mat_alloc(_matInternalPtr, (int)width, (int)height, (int)matType, (int)mem);
         }
@@ -558,7 +558,7 @@ namespace sl
         /// <param name="resolution">Size of the image/matrix in pixels.</param>
         /// <param name="matType">Type of matrix (data type and channels; see sl.MAT_TYPE)</param>
         /// <param name="mem">Where the buffer will be stored - CPU memory or GPU memory.</param>
-        public void Alloc(sl.Resolution resolution, MAT_TYPE matType, MEM mem = MEM.MEM_CPU)
+        public void Alloc(sl.Resolution resolution, MAT_TYPE matType, MEM mem = MEM.CPU)
         {
             dllz_mat_alloc(_matInternalPtr, (int)resolution.width, (int)resolution.height, (int)matType, (int)mem);
         }
@@ -569,12 +569,12 @@ namespace sl
         /// <param name="src">Source Mat from which to copy.</param>
         /// <param name="copyType">The To and From memory types.</param>
         /// <returns>ERROR_CODE (as an int) indicating if the copy was successful, or why it wasn't.</returns>
-        public int SetFrom(ZEDMat src, COPY_TYPE copyType = COPY_TYPE.COPY_TYPE_CPU_CPU)
+        public int SetFrom(ZEDMat src, COPY_TYPE copyType = COPY_TYPE.CPU_CPU)
         {
             return dllz_mat_set_from(_matInternalPtr, src._matInternalPtr, (int)copyType);
         }
 
-        public System.IntPtr GetPtr(MEM mem = MEM.MEM_CPU)
+        public System.IntPtr GetPtr(MEM mem = MEM.CPU)
         {
             return dllz_mat_get_ptr(_matInternalPtr, (int)mem);
         }

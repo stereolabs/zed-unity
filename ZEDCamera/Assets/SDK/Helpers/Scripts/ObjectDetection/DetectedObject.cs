@@ -143,6 +143,8 @@ public class DetectedObject
 
         if (odata.mask != IntPtr.Zero)
             maskMat = new ZEDMat(odata.mask);
+        else
+            Debug.LogWarning("DetectedObject maskMat is null. This is normal if the ZEDManager's Object Detection settings have masks turned off.");
 
     }
 
@@ -322,7 +324,7 @@ public class DetectedObject
         {
             if (maskTexture == null)
             {
-                IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
+                IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.CPU);
 
                 if (maskpointer != IntPtr.Zero)
                 {
@@ -334,7 +336,7 @@ public class DetectedObject
         {
             if (maskTextureFlipped == null)
             {
-                IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
+                IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.CPU);
                 if (maskpointer != IntPtr.Zero)
                 {
                     maskTextureFlipped = ZEDMatToTexture_CPU(maskMat, true);
@@ -391,7 +393,7 @@ public class DetectedObject
         int width = zedmat.GetWidth(); //Shorthand. 
         int height = zedmat.GetHeight();
         
-        IntPtr maskpointer = zedmat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
+        IntPtr maskpointer = zedmat.GetPtr(sl.ZEDMat.MEM.CPU);
         int stepBytes = zedmat.GetStepBytes();
         if (maskpointer != IntPtr.Zero && zedmat.IsInit() && width > 0 && height > 0 && stepBytes > 0)
         {
@@ -414,7 +416,7 @@ public class DetectedObject
             zedtex.anisoLevel = 0;
             zedtex.LoadRawTextureData(texbytes);
             zedtex.Apply(); //Slight bottleneck here - it forces the CPU and GPU to sync. 
-
+            Debug.Log("allo");
             return zedtex;
         }
         else

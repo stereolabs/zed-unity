@@ -467,13 +467,13 @@ public static class NativeWrapper
         private static extern int dllz_get_svo_data_size(int cameraID, string key, ulong ts_begin, ulong ts_end);
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_svo_data")]
-        private static extern ERROR_CODE dllz_retrieve_svo_data(int cameraID, string key, int nb_data, [Out] SVOData[] data, ulong ts_begin, ulong ts_end);
+        private static extern ERROR_CODE dllz_retrieve_svo_data(int cameraID, string key, int nb_data, out IntPtr data, ulong ts_begin, ulong ts_end);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_svo_data_size")]
+        [DllImport(nameDll, EntryPoint = "sl_get_svo_data_keys_size")]
         private static extern int dllz_get_svo_data_keys_size(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_svo_data_keys")]
-        private static extern void dllz_get_svo_data_keys(int cameraID, int nb_keys, [Out] string[] keys);
+        private static extern void dllz_get_svo_data_keys(int cameraID, int nb_keys, out IntPtr keys);
 
         /*
         * Texture lifecycle functions (Unity layer — must be called around sl_open/sl_close).
@@ -1519,6 +1519,7 @@ public static class NativeWrapper
                 return new RecordingStatus();
             }
             RecordingStatus parameters = (RecordingStatus)Marshal.PtrToStructure(p, typeof(RecordingStatus));
+            dllz_free(p);
 
             return parameters;
         }
@@ -1569,10 +1570,23 @@ public static class NativeWrapper
 
             if (nb_data > 0)
             {
-                SVOData[] data_array = new SVOData[nb_data];
+                // The C API fills an array of SL_SVOData* that we own, so pass the address of our
+                // first element and release each shell once its contents are copied out.
+                IntPtr[] dataPtr = new IntPtr[nb_data];
 
-                err = dllz_retrieve_svo_data(CameraID, key, nb_data, data_array, tsBegin, tsEnd);
-                data = new List<SVOData>(data_array);
+                err = dllz_retrieve_svo_data(CameraID, key, nb_data, out dataPtr[0], tsBegin, tsEnd);
+                if (err == ERROR_CODE.SUCCESS)
+                {
+                    for (int i = 0; i < nb_data; i++)
+                    {
+                        if (dataPtr[i] == IntPtr.Zero)
+                        {
+                            continue;
+                        }
+                        data.Add((SVOData)Marshal.PtrToStructure(dataPtr[i], typeof(SVOData)));
+                        dllz_free(dataPtr[i]);
+                    }
+                }
             }
 
             return err;
@@ -1588,11 +1602,21 @@ public static class NativeWrapper
 
             if (nb_keys > 0)
             {
-                string[] keys_array = new string[nb_keys];
+                // Each key is a separate allocation owned by us.
+                IntPtr[] keysPtr = new IntPtr[nb_keys];
 
-                dllz_get_svo_data_keys(CameraID, nb_keys, keys_array);
+                dllz_get_svo_data_keys(CameraID, nb_keys, out keysPtr[0]);
 
-                List<string> keys = new List<string>(keys_array);
+                List<string> keys = new List<string>(nb_keys);
+                for (int i = 0; i < nb_keys; i++)
+                {
+                    if (keysPtr[i] == IntPtr.Zero)
+                    {
+                        continue;
+                    }
+                    keys.Add(Marshal.PtrToStringAnsi(keysPtr[i]));
+                    dllz_free(keysPtr[i]);
+                }
 
                 return keys;
             }
@@ -1663,7 +1687,9 @@ public static class NativeWrapper
             IntPtr p = dllz_get_health_status(CameraID);
             if (p == IntPtr.Zero)
                 return new sl.HealthStatus();
-            return (sl.HealthStatus)Marshal.PtrToStructure(p, typeof(sl.HealthStatus));
+            sl.HealthStatus healthStatus = (sl.HealthStatus)Marshal.PtrToStructure(p, typeof(sl.HealthStatus));
+            dllz_free(p);
+            return healthStatus;
         }
 
         /// <summary>
@@ -2084,6 +2110,7 @@ public static class NativeWrapper
                 return new CalibrationParameters();
             }
             CalibrationParameters parameters = (CalibrationParameters)Marshal.PtrToStructure(p, typeof(CalibrationParameters));
+            dllz_free(p);
 
             if (raw)
                 calibrationParametersRaw = parameters;
@@ -2104,6 +2131,7 @@ public static class NativeWrapper
                 return new SensorsConfiguration();
             }
             SensorsConfiguration configuration = (SensorsConfiguration)Marshal.PtrToStructure(p, typeof(SensorsConfiguration));
+            dllz_free(p);
 
             return configuration;
         }
@@ -2217,6 +2245,7 @@ public static class NativeWrapper
             }
 
             PositionalTrackingStatus positionalTrackingStatus = (PositionalTrackingStatus)Marshal.PtrToStructure(p, typeof(PositionalTrackingStatus));
+            dllz_free(p);
             return positionalTrackingStatus;
         }
 
@@ -2545,7 +2574,11 @@ public static class NativeWrapper
         /// <returns>ZED SDK version as a string in the format MAJOR.MINOR.PATCH.</returns>
         public static string GetSDKVersion()
         {
-            return PtrToStringUtf8(dllz_get_sdk_version());
+            // The version string is a caller-owned allocation.
+            IntPtr versionPtr = dllz_get_sdk_version();
+            string version = PtrToStringUtf8(versionPtr);
+            dllz_free(versionPtr);
+            return version;
         }
 
 
@@ -2555,7 +2588,9 @@ public static class NativeWrapper
         /// <returns>ZED SDK version as a string in the format MAJOR.MINOR.PATCH.</returns>
         public static void GetSDKVersion(ref int major, ref int minor, ref int patch)
         {
-            string sdkVersion = PtrToStringUtf8(dllz_get_sdk_version());
+            IntPtr sdkVersionPtr = dllz_get_sdk_version();
+            string sdkVersion = PtrToStringUtf8(sdkVersionPtr);
+            dllz_free(sdkVersionPtr);
 
             string[] version = sdkVersion.Split('.');
 
@@ -3030,7 +3065,7 @@ public static class NativeWrapper
         /// <param name="mem">Whether the image should be on CPU or GPU memory.</param>
         /// <param name="resolution">Resolution of the texture.</param>
         /// <returns>Error code indicating if the retrieval was successful, and why it wasn't otherwise.</returns>
-        public sl.ERROR_CODE RetrieveMeasure(sl.ZEDMat mat, sl.MEASURE measure, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.MEM_CPU, sl.Resolution resolution = new sl.Resolution())
+        public sl.ERROR_CODE RetrieveMeasure(sl.ZEDMat mat, sl.MEASURE measure, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.CPU, sl.Resolution resolution = new sl.Resolution())
         {
             return (sl.ERROR_CODE)(dllz_retrieve_measure(CameraID, mat.MatPtr, (int)measure, (int)mem, (int)resolution.width, (int)resolution.height));
         }
@@ -3052,7 +3087,7 @@ public static class NativeWrapper
         /// <param name="mem">Whether the image should be on CPU or GPU memory.</param>
         /// <param name="resolution">Resolution of the texture.</param>
         /// <returns>Error code indicating if the retrieval was successful, and why it wasn't otherwise.</returns>
-        public sl.ERROR_CODE RetrieveImage(sl.ZEDMat mat, sl.VIEW view, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.MEM_CPU, sl.Resolution resolution = new sl.Resolution())
+        public sl.ERROR_CODE RetrieveImage(sl.ZEDMat mat, sl.VIEW view, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.CPU, sl.Resolution resolution = new sl.Resolution())
         {
             return (sl.ERROR_CODE)(dllz_retrieve_image(CameraID, mat.MatPtr, (int)view, (int)mem, (int)resolution.width, (int)resolution.height));
         }
@@ -3311,6 +3346,7 @@ public static class NativeWrapper
                 return new AI_Model_status();
             }
             AI_Model_status status = (AI_Model_status)Marshal.PtrToStructure(p, typeof(AI_Model_status));
+            dllz_free(p);
 
             return status;
         }
@@ -3366,7 +3402,8 @@ public static class NativeWrapper
         /// <returns></returns>
         public sl.ERROR_CODE RetrieveObjects(ref ObjectDetectionRuntimeParameters od_params, ref Objects objFrame, uint instanceID = 0)
         {
-            return (sl.ERROR_CODE)dllz_retrieve_objects_data(CameraID, ref od_params, ref objFrame, instanceID);
+            sl.ERROR_CODE err = (sl.ERROR_CODE)dllz_retrieve_objects_data(CameraID, ref od_params, ref objFrame, instanceID);
+            return err;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -3658,7 +3695,8 @@ public static class NativeWrapper
         /// <returns></returns>
         public sl.ERROR_CODE RetrieveBodies(ref BodyTrackingRuntimeParameters bt_params, ref Bodies bodies, uint instanceID = 0)
         {
-            return (sl.ERROR_CODE)dllz_retrieve_bodies_data(CameraID, ref bt_params, ref bodies, instanceID);
+            sl.ERROR_CODE err = (sl.ERROR_CODE)dllz_retrieve_bodies_data(CameraID, ref bt_params, ref bodies, instanceID);
+            return err;
         }
         #endregion
 
