@@ -377,6 +377,7 @@ public static class NativeWrapper
           * Create functions
           */
         [DllImport(nameDll, EntryPoint = "sl_create_camera")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_create_camera(int cameraID);
 
 
@@ -525,6 +526,7 @@ public static class NativeWrapper
          */
 
         [DllImport(nameDll, EntryPoint = "sl_is_camera_setting_supported")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_is_video_setting_supported(int id, int setting);
 
         [DllImport(nameDll, EntryPoint = "sl_set_camera_settings")]
@@ -547,6 +549,7 @@ public static class NativeWrapper
         private static extern float dllz_get_camera_fps(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_is_opened")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_is_opened(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_width")]
@@ -664,6 +667,7 @@ public static class NativeWrapper
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
 
         [DllImport(nameDll, EntryPoint = "sl_is_positional_tracking_enabled")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_is_positional_tracking_enabled(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_save_area_map")]
@@ -755,19 +759,24 @@ public static class NativeWrapper
         private static extern int dllz_retrieve_fused_point_cloud(int cameraID, Vector4[] points);
 
         [DllImport(nameDll, EntryPoint = "sl_save_mesh")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_save_mesh(int cameraID, string filename, MESH_FILE_FORMAT format);
 
         [DllImport(nameDll, EntryPoint = "sl_save_point_cloud")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_save_point_cloud(int cameraID, string filename, MESH_FILE_FORMAT format);
 
         [DllImport(nameDll, EntryPoint = "sl_load_mesh")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_load_mesh(int cameraID, string filename, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, 
             ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int[] textureSize, int nbMaxSubmesh);
 
         [DllImport(nameDll, EntryPoint = "sl_apply_texture")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_apply_texture(int cameraID, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int[] textureSize, int nbSubmesh);
 
         [DllImport(nameDll, EntryPoint = "sl_filter_mesh")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_filter_mesh(int cameraID, FILTER meshFilter, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int nbSubmesh);
 
         [DllImport(nameDll, EntryPoint = "sl_get_spatial_mapping_state")]

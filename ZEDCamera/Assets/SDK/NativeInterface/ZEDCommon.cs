@@ -42,7 +42,17 @@ namespace sl
         USB,
         SVO,
         STREAM,
-        GMSL
+        GMSL,
+        /// <summary>
+        /// Camera connected directly to a MIPI capture card. Reported by GetInputType() and
+        /// DeviceProperties; this plugin does not open these cameras itself.
+        /// </summary>
+        MIPI,
+        /// <summary>
+        /// Camera behind a Holoscan sensor bridge, over Camera-over-Ethernet. Reported by
+        /// GetInputType() and DeviceProperties; this plugin does not open these cameras itself.
+        /// </summary>
+        HOLOSCAN
     };
 
     /// <summary>
@@ -1018,7 +1028,11 @@ namespace sl
         /// <summary>
         ///  More accurate Neural disparity estimation.\n Requires AI module.
         /// </summary>
-        NEURAL_PLUS
+        NEURAL_PLUS,
+        /// <summary>
+        /// Depth is supplied by the application rather than computed by the ZED SDK.
+        /// </summary>
+        CUSTOM
     };
 
     ///\ingroup Depth_group
@@ -1963,7 +1977,27 @@ namespace sl
         /// <summary>
         /// Spatial memory is disabled.
         /// </summary>
-        OFF
+        OFF,
+        /// <summary>
+        /// The spatial memory is still building its first map.
+        /// </summary>
+        INITIALIZING,
+        /// <summary>
+        /// Tracking against a map that was loaded or already built.
+        /// </summary>
+        KNOWN_MAP,
+        /// <summary>
+        /// The map is being extended with newly explored areas.
+        /// </summary>
+        MAP_UPDATE,
+        /// <summary>
+        /// The camera is lost with respect to the map.
+        /// </summary>
+        LOST,
+        /// <summary>
+        /// Not enough memory is left to keep tracking against the map.
+        /// </summary>
+        NOT_ENOUGH_MEMORY_FOR_TRACKING
     }
 
     ///\ingroup PositionalTracking_group
@@ -2486,7 +2520,11 @@ namespace sl
         /// <summary>
         /// Left-Handed with Z axis pointing up and X forward. Used in Unreal Engine.
         /// </summary>
-        LEFT_HANDED_Z_UP
+        LEFT_HANDED_Z_UP,
+        /// <summary>
+        /// Right-Handed with Z axis pointing up and X forward. Used by ROS (REP 103) among others.
+        /// </summary>
+        RIGHT_HANDED_Z_UP_X_FWD
     }
 
     /// <summary>

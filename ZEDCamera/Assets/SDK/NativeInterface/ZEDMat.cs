@@ -188,11 +188,12 @@ namespace sl
 
 
         [DllImport(nameDll, EntryPoint = "sl_mat_is_init")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_mat_is_init(System.IntPtr ptr);
         [DllImport(nameDll, EntryPoint = "sl_mat_free")]
-        private static extern bool dllz_mat_free(System.IntPtr ptr, int type);
+        private static extern void dllz_mat_free(System.IntPtr ptr, int type);
         [DllImport(nameDll, EntryPoint = "sl_mat_get_infos")]
-        private static extern bool dllz_mat_get_infos(System.IntPtr ptr, byte[] buffer);
+        private static extern void dllz_mat_get_infos(System.IntPtr ptr, byte[] buffer);
 
 
         [DllImport(nameDll, EntryPoint = "sl_mat_get_value_float")]
@@ -291,6 +292,7 @@ namespace sl
         private static extern int dllz_mat_get_width_bytes(System.IntPtr ptr);
 
         [DllImport(nameDll, EntryPoint = "sl_mat_is_memory_owner")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_mat_is_memory_owner(System.IntPtr ptr);
 
         [DllImport(nameDll, EntryPoint = "sl_mat_get_resolution")]
@@ -306,7 +308,7 @@ namespace sl
         private static extern System.IntPtr dllz_mat_get_ptr(System.IntPtr ptr, int mem);
 
         [DllImport(nameDll, EntryPoint = "sl_mat_clone")]
-        private static extern void dllz_mat_clone(System.IntPtr ptr, System.IntPtr ptrSource);
+        private static extern int dllz_mat_clone(System.IntPtr ptr, System.IntPtr ptrSource);
 
         #endregion
 
