@@ -98,6 +98,7 @@ namespace sl
         /// <summary>
         /// boolean that indicates if tracking is activated or not. You should check that first if something wrong.
         /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
         public bool valid;
         /// <summary>
         /// Timestamp of the pose. This timestamp should be compared with the camera timestamp for synchronization.
@@ -239,7 +240,7 @@ namespace sl
         /// <summary>
         ///  GMSL port of the camera.
         /// </summary>
-        int gmslPort;
+        public int gmslPort;
         /// <summary>
         /// [Cam model, eeprom version, white balance param]
         /// </summary>
@@ -395,6 +396,7 @@ namespace sl
         /// <summary>
         /// Indicates if imu data is available
         /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
         public bool available;
         /// <summary>
         /// IMU Data timestamp in ns
@@ -445,6 +447,7 @@ namespace sl
         /// <summary>
         /// Indicates if mag data is available
         /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
         public bool available;
         /// <summary>
         /// mag Data timestamp in ns
@@ -494,6 +497,7 @@ namespace sl
         /// <summary>
         /// Indicates if mag data is available
         /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
         public bool available;
         /// <summary>
         /// mag Data timestamp in ns
@@ -759,6 +763,7 @@ namespace sl
         /// <summary>
         ///
         /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
         public bool isAvailable;
     };
 
@@ -1204,7 +1209,12 @@ namespace sl
         /// <summary>
         /// Cannot start the camera stream. Make sure your camera is not already used by another process or blocked by firewall or antivirus.
         /// </summary>
-        CAMERA_ALREADY_IN_USE,
+        CANNOT_START_CAMERA_STREAM,
+        /// <summary>
+        /// Deprecated name of sl.ERROR_CODE.CANNOT_START_CAMERA_STREAM, kept so existing code still compiles.
+        /// Use CANNOT_START_CAMERA_STREAM, which is the name the rest of the ZED SDK and its documentation use.
+        /// </summary>
+        CAMERA_ALREADY_IN_USE = CANNOT_START_CAMERA_STREAM,
         /// <summary>
         ///  No GPU found. CUDA is unable to list it. Can be a driver/reboot issue.
         /// </summary>
@@ -1231,8 +1241,13 @@ namespace sl
         /// restart zed_x_daemon.service
         /// </summary>
         DRIVER_FAILURE,
+        /// <summary>
+        /// The camera configuration exceeds the available bandwidth. Reduce the resolution or the frame rate,
+        /// or change the hardware configuration.
+        /// </summary>
+        CAMERA_EXCEEDS_BANDWIDTH = 35,
         /// @cond SHOWHIDDEN 
-        LAST
+        LAST = 36
         /// @endcond
     };
 
@@ -1961,7 +1976,7 @@ namespace sl
         /// <summary>
         ///  The region of interest auto detection is not enabled.
         /// </summary>
-        ENABLED,
+        NOT_ENABLED,
     }
 
     /// <summary>
@@ -2269,9 +2284,11 @@ namespace sl
         ///  This will perform additional verification on the image to identify corrupted data. This verification is done in the grab function and requires some computations.
         ///  If an issue is found, the grab function will output a warning as sl::ERROR_CODE::CORRUPTED_FRAME.
         ///  This version doesn't detect frame tearing currently.
-        ///  \n default: disabled
+        ///  \n Higher values run more checks: 2 and above compare the left and right images, above 2 adds blur
+        ///  detection and above 3 adds edge comparison. Each level costs more computation than the previous one.
+        ///  \n default: 1 (enabled)
         /// </summary>
-        public bool enableImageValidityCheck = false;
+        public int enableImageValidityCheck = 1;
         /// <summary>
         /// Set a maximum size for all SDK output, like retrieveImage and retrieveMeasure functions.
         /// This will override the default (0,0) and instead of outputting native image size sl::Mat, the ZED SDK will take this size as default.
@@ -2298,6 +2315,15 @@ namespace sl
         /// to FP16 when the depth mode or the GPU does not support INT8.
         /// Default: DEPTH_PRECISION.FP16
         public sl.DEPTH_PRECISION depthPrecision = sl.DEPTH_PRECISION.FP16;
+        /// <summary>
+        /// Lets the ZED SDK record the depth computation once and replay it at each Grab(), which lowers the
+        /// CPU cost of launching it and shortens the depth runtime. The depth output is unchanged.
+        /// \n Off by default, because it also gives the ZED SDK a larger share of the GPU: other work on the
+        /// same GPU, your own rendering included, tends to run slower.
+        /// \n Best effort and DEPTH_MODE.NEURAL only.
+        /// \n Default: false
+        /// </summary>
+        public bool allowDepthCudaGraph = false;
 
         /// <summary>
         ///  Set the input as the camera with specified id.
@@ -2376,7 +2402,7 @@ namespace sl
             this.sdkGPUId = -1;
             this.sdkVerboseLogFile = "";
             this.enableRightSideMeasure = false;
-            this.depthStabilization = -1;
+            this.depthStabilization = 30;
 			this.optionalSettingsPath = "";
 			this.sensorsRequired = false;
             this.ipStream = "";
@@ -2386,7 +2412,7 @@ namespace sl
             this.openTimeoutSec = 5.0f;
             this.asyncGrabCameraRecovery = false;
             this.grabComputeCappingFPS = 0f;
-            this.enableImageValidityCheck = false;
+            this.enableImageValidityCheck = 1;
             this.maximumWorkingResolution = new Resolution(0, 0);
         }
     }
@@ -3473,6 +3499,35 @@ namespace sl
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool allowReducedPrecisionInference;
+        /// <summary>
+        /// Generation of the body tracking network to run for the selected detectionModel.
+        /// Leave it at BODY_TRACKING_MODEL_GEN.DEFAULT to follow the ZED SDK default, currently GEN_2.
+        /// Set GEN_1 to keep the network used up to ZED SDK 5.4.
+        /// \note BODY_TRACKING_MODEL.HUMAN_BODY_FAST and BODY_FORMAT.BODY_38 only have GEN_1 and fall back to it.
+        /// \note allowReducedPrecisionInference applies to GEN_1 only: GEN_2 always runs in FP16.
+        /// </summary>
+        public sl.BODY_TRACKING_MODEL_GEN modelGen;
+    };
+
+    /// <summary>
+    /// Lists the generations of neural network available for the body tracking module.
+    /// </summary>
+    public enum BODY_TRACKING_MODEL_GEN
+    {
+        /// <summary>
+        /// Use the generation the ZED SDK defaults to. Value of a zero-initialized structure, so leaving
+        /// BodyTrackingParameters.modelGen untouched keeps following the SDK default.
+        /// </summary>
+        DEFAULT = 0,
+        /// <summary>
+        /// Network used up to ZED SDK 5.4. Only generation available for BODY_FORMAT.BODY_38.
+        /// </summary>
+        GEN_1 = 1,
+        /// <summary>
+        /// Bottom-up network introduced in ZED SDK 5.5, more robust in crowded scenes and to unusual poses.
+        /// Available for HUMAN_BODY_MEDIUM and HUMAN_BODY_ACCURATE with BODY_18 or BODY_34.
+        /// </summary>
+        GEN_2 = 2
     };
 
     [StructLayout(LayoutKind.Sequential)]
@@ -3772,7 +3827,19 @@ namespace sl
         /// <summary>
         /// For external inference, using your own custom model and/or frameworks. This mode disable the internal inference engine, the 2D bounding box detection must be provided
         /// </summary>
-        CUSTOM_BOX_OBJECTS
+        CUSTOM_BOX_OBJECTS,
+        /// <summary>
+        /// Custom YOLO-like ONNX model, set through ObjectDetectionParameters.customOnnxFile.
+        /// </summary>
+        CUSTOM_YOLOLIKE_BOX_OBJECTS,
+        /// <summary>
+        /// Custom RF-DETR / DETR-like ONNX model.
+        /// </summary>
+        CUSTOM_RFDETRLIKE_BOX_OBJECTS,
+        /// <summary>
+        /// Custom ONNX model whose family the ZED SDK detects automatically.
+        /// </summary>
+        CUSTOM_BOX_OBJECTS_AUTODETECT
     };
 
     /// <summary>
@@ -3875,8 +3942,12 @@ namespace sl
         /// related to sl.DETECTION_MODEL.NEURAL_PLUS
         /// </summary>
         NEURAL_PLUS_DEPTH = 14,
+        /// <summary>
+        /// Model for DEPTH_MODE.NEURAL at INT8 precision.
+        /// </summary>
+        NEURAL_DEPTH_INT8 = 15,
 
-        LAST =15
+        LAST = 16
     };
 
     /// <summary>

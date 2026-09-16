@@ -2704,7 +2704,8 @@ public class ZEDManager : MonoBehaviour
                 depthMinRange = depthMinRange,
                 setGravityAsOrigin = setGravityAsOrigin,
                 enableLocalizationOnly = enableLocalizationOnly,
-                enable2DGroundMode = enable2DGroundMode
+                enable2DGroundMode = enable2DGroundMode,
+                mode = positionalTrackingMode
             };
 
             sl.ERROR_CODE err = zedCamera.EnableTracking(ref positionalTrackingParameters);
@@ -3152,6 +3153,8 @@ public class ZEDManager : MonoBehaviour
             od_param.detectionModel = objectDetectionModel;
             od_param.maxRange = objectDetectionMaxRange;
             od_param.filteringMode = objectDetectionFilteringMode;
+            od_param.predictionTimeout_s = 0.2f;
+            od_param.customOnnxDynamicInputShape = new sl.Resolution(512, 512);
 
             objectDetectionRuntimeParameters.objectConfidenceThreshold = new int[(int)sl.OBJECT_CLASS.LAST];
             objectDetectionRuntimeParameters.objectConfidenceThreshold[(int)sl.OBJECT_CLASS.PERSON] = OD_personDetectionConfidenceThreshold;
@@ -3916,7 +3919,8 @@ public class ZEDManager : MonoBehaviour
                     depthMinRange = depthMinRange,
                     setGravityAsOrigin = setGravityAsOrigin,
                     enableLocalizationOnly = enableLocalizationOnly,
-                    enable2DGroundMode = enable2DGroundMode
+                    enable2DGroundMode = enable2DGroundMode,
+                    mode = positionalTrackingMode
                 };
 
                 //Enables tracking and initializes the first position of the camera.

@@ -579,7 +579,7 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_get_camera_imu_transform")]
         private static extern void dllz_get_camera_imu_transform(int cameraID, out Vector3 translation, out Quaternion rotation);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_camera_timestamp")]
+        [DllImport(nameDll, EntryPoint = "sl_get_image_timestamp")]
         private static extern ulong dllz_get_image_timestamp(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_current_timestamp")]
@@ -854,7 +854,7 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_update_objects_batch")]
         private static extern int dllz_update_objects_batch(int cameraID, out int nbBatches);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_objects_batch")]
+        [DllImport(nameDll, EntryPoint = "sl_get_objects_batch_csharp")]
         private static extern int dllz_get_objects_batch_data(int cameraID, int batch_index, ref int numData, ref int id, ref OBJECT_CLASS label, ref OBJECT_SUBCLASS sublabel, ref POSITIONAL_TRACKING_STATE trackingState,
             [In, Out] Vector3[] position, [In, Out] float[,] positionCovariances, [In, Out] Vector3[] velocities, [In, Out] ulong[] timestamps, [In, Out] Vector2[,] boundingBoxes2D, [In, Out] Vector3[,] boundingBoxes,
             [In, Out] float[] confidences, [In, Out] OBJECT_ACTION_STATE[] actionStates, [In, Out] Vector2[,] headBoundingBoxes2D, [In, Out] Vector3[,] headBoundingBoxes, [In, Out] Vector3[] headPositions);
@@ -898,10 +898,10 @@ public static class NativeWrapper
          * Retreieves used by mat
          */
         [DllImport(nameDll, EntryPoint = "sl_retrieve_measure")]
-        private static extern int dllz_retrieve_measure(int cameraID, System.IntPtr ptr, int type, int mem, int width, int height);
+        private static extern int dllz_retrieve_measure(int cameraID, System.IntPtr ptr, int type, int mem, int width, int height, System.IntPtr cudaStream);
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_image")]
-        private static extern int dllz_retrieve_image(int cameraID, System.IntPtr ptr, int type, int mem, int width, int height);
+        private static extern int dllz_retrieve_image(int cameraID, System.IntPtr ptr, int type, int mem, int width, int height, System.IntPtr cudaStream);
 
         #endregion
 
@@ -1266,8 +1266,8 @@ public static class NativeWrapper
             ///  This version doesn't detect frame tearing currently.
             ///  \n default: disabled
             /// </summary>
-            [MarshalAs(UnmanagedType.U1)]
-            public bool enableImageValidityCheck;
+            [MarshalAs(UnmanagedType.I4)]
+            public int enableImageValidityCheck;
 
             public Resolution maximumWorkingResolution;
 
@@ -1280,6 +1280,11 @@ public static class NativeWrapper
             /// Precision used for the neural depth inference. Only applies to the neural depth modes.
             /// </summary>
             public sl.DEPTH_PRECISION depthPrecision;
+            /// <summary>
+            /// Lets the ZED SDK record the depth computation once and replay it at each Grab().
+            /// </summary>
+            [MarshalAs(UnmanagedType.U1)]
+            public bool allowDepthCudaGraph;
 
             /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
@@ -1312,6 +1317,7 @@ public static class NativeWrapper
                 maximumWorkingResolution = init.maximumWorkingResolution;
                 svoDecryptionKey = init.svoDecryptionKey;
                 depthPrecision = init.depthPrecision;
+                allowDepthCudaGraph = init.allowDepthCudaGraph;
             }
         }
 
@@ -1327,9 +1333,9 @@ public static class NativeWrapper
             //Update values with what we're about to pass to the camera.
             currentResolution = initParameters.resolution;
             fpsMax = GetFpsForResolution(currentResolution);
-            if (initParameters.cameraFPS <= 0)
+            if (initParameters.cameraFPS < 0)
             {
-                initParameters.cameraFPS = (int)fpsMax;
+                initParameters.cameraFPS = 0; // let the ZED SDK pick the highest rate for the resolution
             }
             dll_initParameters initP = new dll_initParameters(initParameters); //DLL-friendly version of InitParameters.
             initP.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP; //Left-hand, Y-up is Unity's coordinate system, so we match that
@@ -1681,7 +1687,7 @@ public static class NativeWrapper
         /// <summary>
         /// Returns the camera self-diagnostic results (image, depth and sensor health).
         /// </summary>
-        /// <remarks>Requires InitParameters.enableImageValidityCheck (enabled by default).</remarks>
+        /// <remarks>Requires InitParameters.enableImageValidityCheck, which defaults to 1 (on).</remarks>
         public sl.HealthStatus GetHealthStatus()
         {
             IntPtr p = dllz_get_health_status(CameraID);
@@ -3067,7 +3073,7 @@ public static class NativeWrapper
         /// <returns>Error code indicating if the retrieval was successful, and why it wasn't otherwise.</returns>
         public sl.ERROR_CODE RetrieveMeasure(sl.ZEDMat mat, sl.MEASURE measure, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.CPU, sl.Resolution resolution = new sl.Resolution())
         {
-            return (sl.ERROR_CODE)(dllz_retrieve_measure(CameraID, mat.MatPtr, (int)measure, (int)mem, (int)resolution.width, (int)resolution.height));
+            return (sl.ERROR_CODE)(dllz_retrieve_measure(CameraID, mat.MatPtr, (int)measure, (int)mem, (int)resolution.width, (int)resolution.height, IntPtr.Zero));
         }
 
         /// <summary>
@@ -3089,7 +3095,7 @@ public static class NativeWrapper
         /// <returns>Error code indicating if the retrieval was successful, and why it wasn't otherwise.</returns>
         public sl.ERROR_CODE RetrieveImage(sl.ZEDMat mat, sl.VIEW view, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.CPU, sl.Resolution resolution = new sl.Resolution())
         {
-            return (sl.ERROR_CODE)(dllz_retrieve_image(CameraID, mat.MatPtr, (int)view, (int)mem, (int)resolution.width, (int)resolution.height));
+            return (sl.ERROR_CODE)(dllz_retrieve_image(CameraID, mat.MatPtr, (int)view, (int)mem, (int)resolution.width, (int)resolution.height, IntPtr.Zero));
         }
 
 
