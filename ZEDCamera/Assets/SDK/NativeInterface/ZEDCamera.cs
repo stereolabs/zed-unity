@@ -651,7 +651,7 @@ public static class NativeWrapper
         private static extern float dllz_get_depth_min_range_value(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_current_min_max_depth")]
-        private static extern float dllz_get_current_min_max_depth(int cameraID, ref float min, ref float max);
+        private static extern int dllz_get_current_min_max_depth(int cameraID, ref float min, ref float max);
 
 
         /*

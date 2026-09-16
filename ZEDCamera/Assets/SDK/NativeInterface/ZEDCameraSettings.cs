@@ -14,11 +14,11 @@ public class ZEDCameraSettings
 {
     #region DLL Calls
     const string nameDll = sl.ZEDCommon.NameDLL;
-    [DllImport(nameDll, EntryPoint = "sl_set_video_settings")]
-    private static extern void dllz_set_video_settings(int id, int mode, int value, int usedefault);
+    [DllImport(nameDll, EntryPoint = "sl_set_camera_settings")]
+    private static extern int dllz_set_camera_settings(int id, int mode, int value);
 
-    [DllImport(nameDll, EntryPoint = "sl_get_video_settings")]
-    private static extern int dllz_get_video_settings(int id, int mode);
+    [DllImport(nameDll, EntryPoint = "sl_get_camera_settings")]
+    private static extern int dllz_get_camera_settings(int id, int mode, ref int value);
 
     #endregion
 
@@ -453,7 +453,8 @@ public class ZEDCameraSettings
     public void SetCameraSettings(int cid, sl.CAMERA_SETTINGS settings, int value, bool usedefault = false)
     {
         settings_.settings[(int)settings] = !usedefault && value != -1 ? value : -1;
-        dllz_set_video_settings(cid, (int)settings, value, System.Convert.ToInt32(usedefault));
+        // -1 asks the ZED SDK to restore the default for this setting.
+        dllz_set_camera_settings(cid, (int)settings, usedefault ? -1 : value);
     }
 
     /// <summary>
@@ -463,9 +464,10 @@ public class ZEDCameraSettings
     /// <returns>Current value.</returns>
     public int GetCameraSettings(int cid, sl.CAMERA_SETTINGS settings)
     {
-        return dllz_get_video_settings(cid, (int)settings);
-        //settings_.settings[(int)settings] = dllz_get_camera_settings(cid, (int)settings);
-        //return settings_.settings[(int)settings];
+        int value = -1;
+        dllz_get_camera_settings(cid, (int)settings, ref value);
+        settings_.settings[(int)settings] = value;
+        return value;
     }
 
     /// <summary>

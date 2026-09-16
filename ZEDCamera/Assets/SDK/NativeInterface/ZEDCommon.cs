@@ -1668,7 +1668,50 @@ namespace sl
         /// <summary>
         /// front LED status (1==enable, 0 == disable)
         /// </summary>
-        LED_STATUS
+        LED_STATUS,
+        /// <summary>
+        /// Exposure time in microseconds. ZED X and ZED X One families only.
+        /// </summary>
+        EXPOSURE_TIME,
+        /// <summary>
+        /// Analog gain applied on the sensor. ZED X and ZED X One families only.
+        /// </summary>
+        ANALOG_GAIN,
+        /// <summary>
+        /// Digital gain applied after the sensor. ZED X and ZED X One families only.
+        /// </summary>
+        DIGITAL_GAIN,
+        /// <summary>
+        /// Range of exposure times the automatic exposure may pick from. Uses the min/max accessors.
+        /// </summary>
+        AUTO_EXPOSURE_TIME_RANGE,
+        /// <summary>
+        /// Range of analog gains the automatic exposure may pick from. Uses the min/max accessors.
+        /// </summary>
+        AUTO_ANALOG_GAIN_RANGE,
+        /// <summary>
+        /// Range of digital gains the automatic exposure may pick from. Uses the min/max accessors.
+        /// </summary>
+        AUTO_DIGITAL_GAIN_RANGE,
+        /// <summary>
+        /// Exposure compensation applied on top of the automatic exposure.
+        /// </summary>
+        EXPOSURE_COMPENSATION,
+        /// <summary>
+        /// Strength of the image denoising. ZED X and ZED X One families only.
+        /// </summary>
+        DENOISING,
+        /// <summary>
+        /// Scene illuminance measured by the camera, in lux. Read only.
+        /// </summary>
+        SCENE_ILLUMINANCE,
+        /// <summary>
+        /// Anti-banding mode of the automatic exposure, for scenes lit by mains-powered lights.
+        /// </summary>
+        AE_ANTIBANDING,
+        /// @cond SHOWHIDDEN
+        LAST
+        /// @endcond
     };
 
     /// <summary>
