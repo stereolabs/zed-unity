@@ -2713,9 +2713,10 @@ public class ZEDManager : MonoBehaviour
             sl.ERROR_CODE err = zedCamera.EnableTracking(ref positionalTrackingParameters);
 
             //Now enable the tracking with the proper parameters.
-            if (!(enableTracking = (err == sl.ERROR_CODE.SUCCESS)))
+            if (!(enableTracking = (err <= sl.ERROR_CODE.SUCCESS)))
             {
-                throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
+                    Debug.LogError("Err : " + err + " : " + err);
+                    throw new Exception(ZEDLogMessage.Error2Str(ZEDLogMessage.ERROR.TRACKING_NOT_INITIALIZED));
             }
             else
             {
