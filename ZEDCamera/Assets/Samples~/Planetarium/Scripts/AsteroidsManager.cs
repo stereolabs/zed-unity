@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using sl;
 
 /// <summary>
 /// Used in the ZED planetarium sample to draw asteroids in the solar system's asteroid belt and rotate them. 

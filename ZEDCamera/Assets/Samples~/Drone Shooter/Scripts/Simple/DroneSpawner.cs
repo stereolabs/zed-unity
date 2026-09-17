@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using sl;
 
 /// <summary>
 /// Spawns a given Drone prefab when there is not one already in the scene. 

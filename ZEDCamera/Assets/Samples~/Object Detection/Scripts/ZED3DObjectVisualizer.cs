@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using sl;
 
 /// <summary>
 /// For the ZED 3D Object Detection sample.

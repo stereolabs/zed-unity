@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using sl;
 
 /// <summary>
 /// Handles automatic calibration mode in the ZED MR calibration scene. 

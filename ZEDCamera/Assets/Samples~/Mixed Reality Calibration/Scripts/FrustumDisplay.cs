@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using sl;
 
 /// <summary>
 /// Creates lines and meshes to display the frustum of the specified camera. 
@@ -94,7 +95,7 @@ public class FrustumDisplay : MonoBehaviour
         //Calculate the near plane.
         Vector3[] nearplane = new Vector3[4]; 
         //cam.CalculateFrustumCorners(new Rect(0, 0, 1, 1), cam.nearClipPlane, Camera.MonoOrStereoscopicEye.Mono, nearplane);
-        cam.CalculateFrustumCorners(new Rect(0, 0, 1, 1), nearPlaneRendDist, Camera.MonoOrStereoscopicEye.Mono, nearplane);
+        cam.CalculateFrustumCorners(new UnityEngine.Rect(0, 0, 1, 1), nearPlaneRendDist, Camera.MonoOrStereoscopicEye.Mono, nearplane);
 
         nearPlaneLineRend.positionCount = 4;
         nearPlaneLineRend.SetPositions(nearplane);
@@ -104,7 +105,7 @@ public class FrustumDisplay : MonoBehaviour
 
         //Calculate the far plane that the ends extend to. 
         Vector3[] farplane = new Vector3[4];  
-        cam.CalculateFrustumCorners(new Rect(0, 0, 1, 1), farPlaneRendDist, Camera.MonoOrStereoscopicEye.Mono, farplane);
+        cam.CalculateFrustumCorners(new UnityEngine.Rect(0, 0, 1, 1), farPlaneRendDist, Camera.MonoOrStereoscopicEye.Mono, farplane);
 
         bottomLeftLineRend.SetPositions(new Vector3[2] { nearplane[0], farplane[0] });
         topLeftLineRend.SetPositions(new Vector3[2] { nearplane[1], farplane[1] });

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
+using sl;
 
 /// <summary>
 /// Fires a laser when the user issues a command.

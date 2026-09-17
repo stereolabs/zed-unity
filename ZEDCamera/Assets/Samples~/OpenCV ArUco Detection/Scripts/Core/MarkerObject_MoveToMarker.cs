@@ -3,6 +3,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using sl;
 
 /// <summary>
 /// Moves the object to the marker's location each grab, and turns itself off when it's not seen if desired. 

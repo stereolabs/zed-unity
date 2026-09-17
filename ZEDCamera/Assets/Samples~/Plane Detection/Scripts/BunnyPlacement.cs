@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using System;
+using sl;
 
 /// <summary>
 /// Handles detecting whether or not a real-world location is valid for placing a Bunny object

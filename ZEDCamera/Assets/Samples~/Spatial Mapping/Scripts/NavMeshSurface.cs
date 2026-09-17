@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using sl;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
