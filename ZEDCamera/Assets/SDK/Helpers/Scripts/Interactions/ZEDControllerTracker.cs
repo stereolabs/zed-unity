@@ -6,6 +6,8 @@ using UnityEditor;
 #endif
 
 
+namespace sl
+{
 /// <summary>
 /// Causes the GameObject it's attached to to position itself where a tracked VR object is, such as
 /// a Touch controller or Vive Tracker, but compensates for the ZED's latency. This way, virtual
@@ -300,4 +302,5 @@ public class ZEDControllerTracker : MonoBehaviour
         /// </summary>
         public Vector3 position;
     }
+}
 }

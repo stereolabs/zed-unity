@@ -9,6 +9,8 @@ using UnityEditor;
 #endif
 using sl;
 
+namespace sl
+{
 /// <summary>
 /// The central script of the ZED Unity plugin, and the primary way a developer can interact with the camera.
 /// It sets up and closes connection to the ZED, adjusts parameters based on user settings, enables/disables/handles
@@ -3983,4 +3985,5 @@ public class ZEDManager : MonoBehaviour
 #endif
 
 
+}
 }

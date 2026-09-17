@@ -1,4 +1,6 @@
-﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+﻿namespace sl
+{
+//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using UnityEngine;
 using UnityEngine.XR;
@@ -413,4 +415,5 @@ public class GUIMessage : MonoBehaviour
     {
         ready = true;
     }
+}
 }

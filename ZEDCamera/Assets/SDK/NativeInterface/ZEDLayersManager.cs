@@ -2,6 +2,8 @@
 using UnityEditor;
 #endif
 
+namespace sl
+{
 /// <summary>
 /// This class creates automaticaly layers on load
 /// </summary>
@@ -78,3 +80,4 @@ public static class ZEDLayersManager
     }
 }
 #endif
+}

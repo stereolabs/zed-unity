@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
+namespace sl
+{
 public static class UpgradePluginToSRP
 {
     public static bool UpgradeCameraToSRP(GameObject zedCam)
@@ -175,4 +177,5 @@ public static class UpgradePluginToSRP
         }
         return false;
     }
+}
 }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace sl
+{
 /// <summary>
 /// Moves/rotates the attached object using the keyboard or, if the
 /// Oculus/SteamVR plugins are imported, by buttons on the VR controllers.
@@ -364,4 +366,5 @@ public class ZEDTransformController : MonoBehaviour
         Itself, //Relative to its own rotation, eg. moving forward moves where the object is facing. 
         Camera //Relative to the camera's rotation, eg. moving forward moves where the camera/player is facing. 
     }
+}
 }

@@ -1,3 +1,5 @@
+namespace sl
+{
 //======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using System;
@@ -1198,7 +1200,7 @@ public class ZEDSpatialMapping
                 RenderTexture.active = buffertex;
 
                 Texture2D texcopy = new Texture2D(textosave.width, textosave.height);
-                texcopy.ReadPixels(new Rect(0, 0, buffertex.width, buffertex.height), 0, 0);
+                texcopy.ReadPixels(new UnityEngine.Rect(0, 0, buffertex.width, buffertex.height), 0, 0);
                 texcopy.Apply(); //It's now on the CPU!
 
                 byte[] imagebytes = texcopy.EncodeToPNG();
@@ -1737,4 +1739,5 @@ public class ZEDSpatialMapping
         }
 
     }
+}
 }

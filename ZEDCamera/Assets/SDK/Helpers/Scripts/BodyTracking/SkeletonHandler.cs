@@ -1,3 +1,5 @@
+namespace sl
+{
 //======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using UnityEngine;
@@ -1194,4 +1196,5 @@ public static class TransformExtensions
         input.w *= -1f;
         return input;
     }
+}
 }

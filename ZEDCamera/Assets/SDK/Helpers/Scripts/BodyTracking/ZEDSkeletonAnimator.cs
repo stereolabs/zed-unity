@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace sl
+{
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(HeightOffsetter))]
 public class ZEDSkeletonAnimator : MonoBehaviour
@@ -438,4 +440,5 @@ public class ZEDSkeletonAnimator : MonoBehaviour
     }
 
     #endregion
+}
 }

@@ -4,6 +4,8 @@ using UnityEngine;
 using sl;
 using System;
 
+namespace sl
+{
 /// <summary>
 /// Represents a single object detected by the ZED Object Detection module. 
 /// Provides various functions for knowing where the object is in the world (position) and how much space it takes up (bounds).
@@ -425,4 +427,5 @@ public class DetectedObject
             return null;
         }
     }
+}
 }

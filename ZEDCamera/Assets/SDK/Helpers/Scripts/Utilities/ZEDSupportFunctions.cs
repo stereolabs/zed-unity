@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using UnityEngine.XR.Management;
 using UnityEngine.XR;
 
+namespace sl
+{
 /// <summary>
 /// Holds numerous static functions for getting info about the real world in 
 /// specific places, to compare to the virtual world in the same place. 
@@ -567,7 +569,7 @@ public class ZEDSupportFunctions
         RenderTexture.active = rt; //Switch the source RenderTexture to the active one.
 
         Texture2D tex = new Texture2D(rt.width, rt.height); //Make a Texture2D copy of it and save it. 
-        tex.ReadPixels(new Rect(0, 0, tex.width, tex.height), 0, 0);
+        tex.ReadPixels(new UnityEngine.Rect(0, 0, tex.width, tex.height), 0, 0);
         System.IO.File.WriteAllBytes(path, tex.EncodeToPNG());
 
         RenderTexture.active = currentActiveRT; //Restore the old active RenderTexture.
@@ -650,4 +652,5 @@ public class ZEDSupportFunctions
 
 
 
+}
 }

@@ -1,3 +1,5 @@
+namespace sl
+{
 //======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using System.Runtime.InteropServices;
@@ -491,4 +493,5 @@ public class ZEDCameraSettings
             file.Close();
         }
     }
+}
 }

@@ -1,3 +1,5 @@
+namespace sl
+{
 //======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using UnityEngine;
@@ -75,4 +77,5 @@ private void OnFrameEnd(ScriptableRenderContext context, Camera[] cams)
         RenderPipelineManager.endFrameRendering -= OnFrameEnd;
 #endif
     }
+}
 }

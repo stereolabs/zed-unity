@@ -4,6 +4,8 @@ using UnityEngine;
 using sl;
 using System;
 
+namespace sl
+{
 /// <summary>
 /// Represents a single body detected by the ZED Body Tracking module. 
 /// Provides various functions for knowing where the body is in the world (position) and how much space it takes up (bounds).
@@ -408,4 +410,5 @@ public class DetectedBody
             return null;
         }
     }
+}
 }

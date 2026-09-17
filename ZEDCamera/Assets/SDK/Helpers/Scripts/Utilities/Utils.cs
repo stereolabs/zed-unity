@@ -3,6 +3,8 @@
  using UnityEditor;
 #endif
 
+namespace sl
+{
 ///This file contains classes used to add custom attributes to fields that will 
 ///cause them to be drawn differently in the Inspector, without the need for custom editors. 
 
@@ -40,7 +42,7 @@ public class LabelOverride : PropertyAttribute
     [CustomPropertyDrawer( typeof(LabelOverride) )]
      public class ThisPropertyDrawer : PropertyDrawer
      {
-         public override void OnGUI ( Rect position , SerializedProperty property , GUIContent label )
+         public override void OnGUI ( UnityEngine.Rect position , SerializedProperty property , GUIContent label )
          {
              var propertyAttribute = this.attribute as LabelOverride;
              label.text = propertyAttribute.label;
@@ -87,7 +89,7 @@ public class ReadOnlyDrawer : PropertyDrawer
         return EditorGUI.GetPropertyHeight(property, label, true);
     }
 
-    public override void OnGUI(Rect position,
+    public override void OnGUI(UnityEngine.Rect position,
                                SerializedProperty property,
                                GUIContent label)
     {
@@ -100,3 +102,4 @@ public class ReadOnlyDrawer : PropertyDrawer
  
 }
 #endif
+}

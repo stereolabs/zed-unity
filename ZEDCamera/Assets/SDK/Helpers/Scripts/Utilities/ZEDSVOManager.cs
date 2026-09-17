@@ -1,4 +1,6 @@
-﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+﻿namespace sl
+{
+//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 //       ##DEPRECATED
 
 using UnityEngine;
@@ -189,7 +191,7 @@ public class SVOManagerInspector : Editor
     private SerializedProperty currentFrame;
     private SerializedProperty numberFrameMax;
 
-    Rect drop_area; //Bounds for dragging and dropping SVO files. 
+    UnityEngine.Rect drop_area; //Bounds for dragging and dropping SVO files. 
 
     private GUILayoutOption[] optionsButtonBrowse = { GUILayout.MaxWidth(30) }; //Adds padding for the SVO browse button. 
     string pauseText = "Pause";
@@ -230,7 +232,7 @@ public class SVOManagerInspector : Editor
         EditorGUILayout.EndHorizontal();
         if (drop_area.width != EditorGUIUtility.currentViewWidth || drop_area.height != Screen.height)
         {
-            drop_area = new Rect(0, 0, EditorGUIUtility.currentViewWidth, Screen.height);
+            drop_area = new UnityEngine.Rect(0, 0, EditorGUIUtility.currentViewWidth, Screen.height);
         }
         if (EditorGUI.EndChangeCheck())
         {
@@ -344,3 +346,4 @@ public class SVOManagerInspector : Editor
     }
 }
 #endif
+}

@@ -7,6 +7,8 @@ using UnityEngine.Rendering;
 #endif
 
 
+namespace sl
+{
 /// <summary>
 /// Stops an object from being drawn for cameras that shouldn't draw it, without the use of layers. 
 /// Used so that the left ZED eye doesn't see the right eye's canvas object, and vice versa, and for 
@@ -182,4 +184,5 @@ public class HideFromWrongCameras : MonoBehaviour
 
     }
 
+}
 }

@@ -1,4 +1,6 @@
-﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+﻿namespace sl
+{
+//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 
 /// <summary>
@@ -207,4 +209,5 @@ public class ZEDLogMessage
 
     }
 
+}
 }

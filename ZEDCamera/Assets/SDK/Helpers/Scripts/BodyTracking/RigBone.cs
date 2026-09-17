@@ -1,4 +1,6 @@
-﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+﻿namespace sl
+{
+//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using System.Collections;
 using System.Collections.Generic;
@@ -65,4 +67,5 @@ public class RigBone {
     bone = b;
     savedValue = animator.GetBoneTransform(bone).localRotation;
   }
+}
 }

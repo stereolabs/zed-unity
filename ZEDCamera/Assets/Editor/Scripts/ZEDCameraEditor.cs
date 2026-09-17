@@ -1,4 +1,6 @@
-﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+﻿namespace sl
+{
+//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 using UnityEngine;
 using UnityEditor;
 
@@ -441,7 +443,7 @@ public class ZEDCameraEditor : Editor
                     orangetext.normal.textColor = Color.red;
                     orangetext.wordWrap = true;
                     string labeltext = "Settings have changed that require restarting the camera to apply.";
-                    Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(labeltext, ""), orangetext);
+                    UnityEngine.Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(labeltext, ""), orangetext);
                     EditorGUI.LabelField(labelrect, labeltext, orangetext);
 
                     if (GUILayout.Button("Restart Camera"))
@@ -557,7 +559,7 @@ public class ZEDCameraEditor : Editor
             EditorGUI.indentLevel++;
 
             string greenscreennote = "Requires GreenScreenManager component on the ZED rig's Camera objects.";
-            Rect gsrect = GUILayoutUtility.GetRect(new GUIContent(greenscreennote, ""), greenscreennotestyle);
+            UnityEngine.Rect gsrect = GUILayoutUtility.GetRect(new GUIContent(greenscreennote, ""), greenscreennotestyle);
             EditorGUI.LabelField(gsrect, greenscreennote, greenscreennotestyle);
 
             GUILayout.Space(8);
@@ -1319,7 +1321,7 @@ public class ZEDCameraEditor : Editor
             if (arlayer < 0)
             {
                 string errortext = "Unity layers must be above zero to be visible.";
-                Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(errortext, ""), errormessagestyle);
+                UnityEngine.Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(errortext, ""), errormessagestyle);
                 EditorGUI.LabelField(labelrect, errortext, errormessagestyle);
             }
 
@@ -1327,7 +1329,7 @@ public class ZEDCameraEditor : Editor
             if (arlayer > 31)
             {
                 string errortext = "Unity doesn't support layers above 31.";
-                Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(errortext, ""), errormessagestyle);
+                UnityEngine.Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(errortext, ""), errormessagestyle);
                 EditorGUI.LabelField(labelrect, errortext, errormessagestyle);
             }
 
@@ -1341,7 +1343,7 @@ public class ZEDCameraEditor : Editor
             if (arlayer == 31)
             {
                 string warningext = "Warning: Unity reserves layer 31 for previews in the editor. Assigning to layer 31 can cause conflicts.";
-                Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(warningext, ""), warningmessagestyle);
+                UnityEngine.Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(warningext, ""), warningmessagestyle);
                 EditorGUI.LabelField(labelrect, warningext, warningmessagestyle);
             }
 
@@ -1350,7 +1352,7 @@ public class ZEDCameraEditor : Editor
             {
                 string warningext = "Warning: Setting the AR rig to see the Default layer means other objects will be drawn in the background, " +
                     "and in unexpected positions as the AR rig position is not synced with the ZED_Rig_Stereo object.";
-                Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(warningext, ""), warningmessagestyle);
+                UnityEngine.Rect labelrect = GUILayoutUtility.GetRect(new GUIContent(warningext, ""), warningmessagestyle);
                 EditorGUI.LabelField(labelrect, warningext, warningmessagestyle);
             }
             ZEDLayersManager.ClearLayer(ZEDLayers.ID_arlayer);
@@ -1766,4 +1768,5 @@ public class ZEDCameraEditor : Editor
 
     }
 
+}
 }

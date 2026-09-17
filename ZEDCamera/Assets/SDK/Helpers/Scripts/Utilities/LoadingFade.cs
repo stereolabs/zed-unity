@@ -1,4 +1,6 @@
-﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+﻿namespace sl
+{
+//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using UnityEngine;
 
@@ -76,4 +78,5 @@ public class LoadingFade : MonoBehaviour
         return -c * (Mathf.Sqrt(1 - (t /= d) * t) - 1) + b;
     }
 
+}
 }

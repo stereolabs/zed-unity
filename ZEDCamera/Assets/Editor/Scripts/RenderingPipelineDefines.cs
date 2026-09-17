@@ -5,6 +5,8 @@ using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+namespace sl
+{
 [InitializeOnLoad]
 public class RenderingPipelineDefines
 {
@@ -125,4 +127,5 @@ public class RenderingPipelineDefines
         var defines = string.Join(";", definesList.ToArray());
         PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), defines);
     }
+}
 }
