@@ -418,7 +418,6 @@ public class DetectedObject
             zedtex.anisoLevel = 0;
             zedtex.LoadRawTextureData(texbytes);
             zedtex.Apply(); //Slight bottleneck here - it forces the CPU and GPU to sync. 
-            Debug.Log("allo");
             return zedtex;
         }
         else
