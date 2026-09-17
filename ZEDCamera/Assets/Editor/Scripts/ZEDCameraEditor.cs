@@ -1271,8 +1271,9 @@ public class ZEDCameraEditor : Editor
                 "\nThis will perform additional verification on the image to identify corrupted data. This verification is done in the grab function and requires some computations." +
                 "\nIf an issue is found, the grab function will output a warning as sl::ERROR_CODE::CORRUPTED_FRAME." +
                 "This version currently doesn't detect frame tearing." +
-                "\nDefault: disabled");
-            enableImageValidityCheckProperty.boolValue = EditorGUILayout.Toggle(enableImageValidityCheckLabel, enableImageValidityCheckProperty.boolValue);
+                "\nHigher values run more checks: 2 and above compare the left and right images, above 2 adds blur detection and above 3 adds edge comparison." +
+                "\nDefault: 1");
+            enableImageValidityCheckProperty.intValue = EditorGUILayout.IntSlider(enableImageValidityCheckLabel, enableImageValidityCheckProperty.intValue, 0, 4);
 
             GUILayout.Space(12);
 

@@ -147,15 +147,15 @@ public class ZEDManager : MonoBehaviour
     public float grabComputeCappingFPS = 0f;
 
     /// <summary>
-    /// Define a computation upper limit to the grab frequency. 0 means setting is ignored.
-    /// This can be useful to get a known constant fixed rate or limit the computation load while keeping a short exposure time by setting a high camera capture framerate.
-	/// The value should be inferior to the InitParameters::camera_fps and strictly positive.It has no effect when reading an SVO file.
-	/// This is an upper limit and won't make a difference if the computation is slower than the desired compute capping fps.
-	/// Internally the grab function always tries to get the latest available image while respecting the desired fps as much as possible.
-    /// default is 0.
+    /// How thoroughly the grab function checks the image for corrupted data, reported as
+    /// sl.ERROR_CODE.CORRUPTED_FRAME. 0 disables the check. Higher values run more checks:
+    /// 2 and above compare the left and right images, above 2 adds blur detection and above
+    /// 3 adds edge comparison. Each level costs more computation than the previous one.
+    /// Frame tearing is not detected.
+    /// default is 1.
     /// </summary>
     [HideInInspector]
-    public bool enableImageValidityCheck = false;
+    public int enableImageValidityCheck = 1;
 
     /// <summary>
     /// SVO loop back option
