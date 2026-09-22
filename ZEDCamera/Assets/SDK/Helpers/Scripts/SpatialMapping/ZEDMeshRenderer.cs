@@ -1,4 +1,6 @@
 
+namespace sl
+{
 //======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using UnityEngine;
@@ -191,4 +193,5 @@ public class ZEDMeshRenderer : MonoBehaviour
             meshTex.Release();
         }
     }
+}
 }

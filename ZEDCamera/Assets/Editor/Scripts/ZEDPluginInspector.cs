@@ -1,4 +1,6 @@
-﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+﻿namespace sl
+{
+//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using UnityEngine;
 using UnityEditor;
@@ -213,7 +215,7 @@ public class ZEDPluginInspector : EditorWindow
         myStyle.normal.textColor = Color.red;
 
 
-        GUI.Box(new Rect(0, position.height / 2, position.width, 100), errorMessage, myStyle);
+        GUI.Box(new UnityEngine.Rect(0, position.height / 2, position.width, 100), errorMessage, myStyle);
 
         GUILayout.FlexibleSpace();
         GUILayout.BeginHorizontal();
@@ -544,4 +546,5 @@ public class ZEDPluginInspector : EditorWindow
 
         GUILayout.EndHorizontal();
     }
+}
 }

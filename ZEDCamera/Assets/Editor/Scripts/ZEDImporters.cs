@@ -5,6 +5,8 @@ using System.Linq;
 using sl;
 using System.IO;
 
+namespace sl
+{
 public class ZEDImporters : Editor
 {
     static readonly string PackageName = "com.stereolabs.zed";
@@ -84,4 +86,5 @@ public class ZEDImporters : Editor
             CopyDirectory(subdir.FullName, tempPath);
         }
     }
+}
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using sl;
 
 /// <summary>
 /// For the ZED 2D Object Detection sample.
@@ -242,7 +243,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
             }
 
             float xmod = canvas.GetComponent<RectTransform>().rect.width / zedManager.zedCamera.ImageWidth;
-            Rect objrect = dobj.Get2DBoundingBoxRect(xmod);
+            UnityEngine.Rect objrect = dobj.Get2DBoundingBoxRect(xmod);
 
             //Adjust the size of the RectTransform to encompass the object.
             bbox.sizeDelta = new Vector2(objrect.width, objrect.height);
@@ -305,7 +306,7 @@ public class ZED2DObjectVisualizer : MonoBehaviour
             }
 
             float xmod = canvas.GetComponent<RectTransform>().rect.width / zedManager.zedCamera.ImageWidth;
-            Rect objrect = dbody.Get2DBoundingBoxRect(xmod);
+            UnityEngine.Rect objrect = dbody.Get2DBoundingBoxRect(xmod);
 
             //Adjust the size of the RectTransform to encompass the object.
             bbox.sizeDelta = new Vector2(objrect.width, objrect.height);

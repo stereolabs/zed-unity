@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using sl;
 
 /// <summary>
 /// Handles the clickable ball objects spawned by AutoCalibrationManager, which lets the user set reference points.

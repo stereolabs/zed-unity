@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using sl;
 
 /// <summary>
 /// Spawns the specified prefab and positions it when a NavMeshSurface reports there's 

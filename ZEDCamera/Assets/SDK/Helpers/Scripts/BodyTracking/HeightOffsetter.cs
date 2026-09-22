@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace sl
+{
 public class HeightOffsetter : MonoBehaviour
 {
     #region vars
@@ -124,4 +126,5 @@ public class HeightOffsetter : MonoBehaviour
         }
         durationOffsetError = 0f;
     }
+}
 }

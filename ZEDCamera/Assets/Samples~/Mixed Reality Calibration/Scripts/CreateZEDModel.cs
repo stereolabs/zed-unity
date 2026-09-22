@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using sl;
 
 /// <summary>
 /// Spawns a prefab 3D model of the ZED camera or ZED Mini, depending on which is connected. 

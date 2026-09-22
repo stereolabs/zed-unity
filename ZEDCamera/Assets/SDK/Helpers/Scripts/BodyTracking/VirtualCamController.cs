@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace sl
+{
 public class VirtualCamController : MonoBehaviour
 {
     /// <summary>
@@ -108,4 +110,5 @@ public class VirtualCamController : MonoBehaviour
             transform.SetPositionAndRotation(currentPosition, currentRotation);
         }
     }
+}
 }

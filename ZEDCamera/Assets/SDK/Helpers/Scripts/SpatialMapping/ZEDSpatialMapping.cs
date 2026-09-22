@@ -1,3 +1,5 @@
+namespace sl
+{
 //======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using System;
@@ -551,6 +553,10 @@ public class ZEDSpatialMapping
                     if (meshUpdated == false && updateTexture) //If we need to update the texture, prioritize that.
                     {
                         //Get the last size of the mesh and get the texture size.
+                        //ApplyTexture warns and returns false when there is no usable texture.
+                        //updatedTexture must still be set either way: it signals that the texturing
+                        //pass finished, and is what triggers DisableSpatialMapping() further down.
+                        //SetMeshAndTexture() re-checks the size before building the Texture2D.
                         spatialMappingHelper.ApplyTexture();
                         meshUpdated = true;
                         updateTexture = false;
@@ -1194,7 +1200,7 @@ public class ZEDSpatialMapping
                 RenderTexture.active = buffertex;
 
                 Texture2D texcopy = new Texture2D(textosave.width, textosave.height);
-                texcopy.ReadPixels(new Rect(0, 0, buffertex.width, buffertex.height), 0, 0);
+                texcopy.ReadPixels(new UnityEngine.Rect(0, 0, buffertex.width, buffertex.height), 0, 0);
                 texcopy.Apply(); //It's now on the CPU!
 
                 byte[] imagebytes = texcopy.EncodeToPNG();
@@ -1508,9 +1514,25 @@ public class ZEDSpatialMapping
         /// <summary>
         /// Tells the ZED SDK to calculate the size of the texture and the UVs.
         /// </summary>
-        public void ApplyTexture()
+        /// <returns>True if the texture was applied and texturesSize is now valid.</returns>
+        public bool ApplyTexture()
         {
-            zedCamera.ApplyTexture(numVerticesInSubmesh, numTrianglesInSubmesh, ref numUpdatedSubmesh, UpdatedIndices, ref numVertices, ref numTriangles, texturesSize, MAX_SUBMESH);
+            // Do not pre-clear texturesSize: LoadMesh() fills it for an already-textured mesh and
+            // the C API only overwrites it on success (it also uses -1, not 0, as its no-texture
+            // sentinel there).
+            if (!zedCamera.ApplyTexture(numVerticesInSubmesh, numTrianglesInSubmesh, ref numUpdatedSubmesh, UpdatedIndices, ref numVertices, ref numTriangles, texturesSize, MAX_SUBMESH))
+            {
+                Debug.LogWarning("[ZED] Spatial mapping: applying the texture failed. Check that spatial mapping was enabled with texturing on.");
+                return false;
+            }
+
+            if (texturesSize[0] <= 0 || texturesSize[1] <= 0)
+            {
+                Debug.LogWarning("[ZED] Spatial mapping: the scanned texture is empty (" + texturesSize[0] + "x" + texturesSize[1] + "). The mesh will be left untextured.");
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -1610,7 +1632,17 @@ public class ZEDSpatialMapping
         /// </summary>
         public void SetMeshAndTexture()
         {
-            if (texturesSize[0] > 8192) return;
+            if (texturesSize[0] <= 0 || texturesSize[1] <= 0)
+            {
+                Debug.LogWarning("[ZED] Spatial mapping: no texture to apply (" + texturesSize[0] + "x" + texturesSize[1] + ").");
+                return;
+            }
+
+            if (texturesSize[0] > 8192 || texturesSize[1] > 8192)
+            {
+                Debug.LogWarning("[ZED] Spatial mapping: the scanned texture is " + texturesSize[0] + "x" + texturesSize[1] + ", larger than the 8192 limit. The mesh will be left untextured.");
+                return;
+            }
 
             Texture2D textureMesh = new Texture2D(texturesSize[0], texturesSize[1], TextureFormat.RGBA32, false);
             if (textureMesh != null)
@@ -1707,4 +1739,5 @@ public class ZEDSpatialMapping
         }
 
     }
+}
 }

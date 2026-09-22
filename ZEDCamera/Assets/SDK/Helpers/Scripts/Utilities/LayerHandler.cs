@@ -4,6 +4,8 @@
 #endif
 
  
+namespace sl
+{
 public class LayerHandler
 {
 
@@ -142,5 +144,6 @@ public class LayerHandler
 
 
 
+}
 }
  

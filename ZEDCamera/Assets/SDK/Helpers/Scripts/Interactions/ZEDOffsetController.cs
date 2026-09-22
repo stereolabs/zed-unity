@@ -1,4 +1,6 @@
-﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+﻿namespace sl
+{
+//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using UnityEngine;
 using System.IO;
@@ -302,3 +304,4 @@ public class ZEDPositionEditor : Editor
 }
 
 #endif
+}

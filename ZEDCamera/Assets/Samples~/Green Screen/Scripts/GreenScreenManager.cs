@@ -1,6 +1,7 @@
 ﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 using UnityEngine;
 using System.IO;
+using sl;
 
 #if ZED_HDRP || ZED_URP
 using UnityEngine.Rendering;

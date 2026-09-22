@@ -1,4 +1,6 @@
-﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+﻿namespace sl
+{
+//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -239,4 +241,5 @@ public class ZEDPostProcessingTools
        // matComposeMask.set("_Mask", Uniforms._TempRT);
         cb.Blit(Uniforms._TempRT2, mask, matComposeMask);
     }
+}
 }

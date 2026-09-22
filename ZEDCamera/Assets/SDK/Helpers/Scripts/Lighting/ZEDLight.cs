@@ -1,4 +1,6 @@
-﻿//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
+﻿namespace sl
+{
+//======= Copyright (c) Stereolabs Corporation, All rights reserved. ===============
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -67,4 +69,5 @@ public class ZEDLight : MonoBehaviour
 
         return true;
     }
+}
 }

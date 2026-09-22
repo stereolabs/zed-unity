@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using sl;
 
 public class Drone : MonoBehaviour, ILaserable
 {

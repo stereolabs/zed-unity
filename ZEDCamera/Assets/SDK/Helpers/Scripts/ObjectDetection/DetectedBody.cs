@@ -4,6 +4,8 @@ using UnityEngine;
 using sl;
 using System;
 
+namespace sl
+{
 /// <summary>
 /// Represents a single body detected by the ZED Body Tracking module. 
 /// Provides various functions for knowing where the body is in the world (position) and how much space it takes up (bounds).
@@ -300,7 +302,7 @@ public class DetectedBody
         {
             if (maskTexture == null)
             {
-                IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
+                IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.CPU);
 
                 if (maskpointer != IntPtr.Zero && maskMat.IsInit())
                 {
@@ -312,7 +314,7 @@ public class DetectedBody
         {
             if (maskTextureFlipped == null)
             {
-                IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
+                IntPtr maskpointer = maskMat.GetPtr(sl.ZEDMat.MEM.CPU);
                 if (maskpointer != IntPtr.Zero)
                 {
                     maskTextureFlipped = ZEDMatToTexture_CPU(maskMat, true);
@@ -369,7 +371,7 @@ public class DetectedBody
         int width = zedmat.GetWidth(); //Shorthand. 
         int height = zedmat.GetHeight();
 
-        IntPtr maskpointer = zedmat.GetPtr(sl.ZEDMat.MEM.MEM_CPU);
+        IntPtr maskpointer = zedmat.GetPtr(sl.ZEDMat.MEM.CPU);
         if (maskpointer != IntPtr.Zero && zedmat.IsInit() && width > 0 && height > 0)
         {
             byte[] texbytes = new byte[zedmat.GetStepBytes() * height];
@@ -408,4 +410,5 @@ public class DetectedBody
             return null;
         }
     }
+}
 }

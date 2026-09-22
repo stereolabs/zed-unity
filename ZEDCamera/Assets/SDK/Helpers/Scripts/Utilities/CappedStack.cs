@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
+namespace sl
+{
 /// <summary>
 /// Extended version of List used to give stack functionality, but with a maximum capacity. 
 /// </summary>
@@ -37,4 +39,5 @@ public class CappedStack<T> : List<T>
         RemoveAt(Count - 1);
         return val;
     }
+}
 }

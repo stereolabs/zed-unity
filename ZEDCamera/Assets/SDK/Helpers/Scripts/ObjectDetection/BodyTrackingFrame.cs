@@ -2,6 +2,8 @@
 using UnityEngine;
 using sl;
 
+namespace sl
+{
 /// <summary>
 /// Holds all bodies detected by the ZED Object Detection module from a single ZED camera during a single frame. 
 /// Holds metadata about the frame and camera, and provides helper functions for filtering out the detected objects. 
@@ -146,4 +148,5 @@ public class BodyTrackingFrame
             dobj.CleanUpTextures();
         }
     }
+}
 }

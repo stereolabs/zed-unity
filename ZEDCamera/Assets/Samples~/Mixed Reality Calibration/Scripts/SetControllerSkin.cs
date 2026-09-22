@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using sl;
 
 /// <summary>
 /// Creates a model to match whatever tracked object it's assigned to. Used alongsize ZEDControllerTracker. 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using sl;
 
 public class SunMaterialManager : MonoBehaviour
 {

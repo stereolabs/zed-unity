@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using sl;
 
 /// <summary>
 /// Moves around the placeholder object in the ZED place detection demo. 

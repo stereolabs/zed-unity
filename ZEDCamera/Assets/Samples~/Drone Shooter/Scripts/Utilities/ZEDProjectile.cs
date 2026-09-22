@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using sl;
 
 /// <summary>
 /// Checks for collisions with both the real and virtual world and moves forward each frame. 

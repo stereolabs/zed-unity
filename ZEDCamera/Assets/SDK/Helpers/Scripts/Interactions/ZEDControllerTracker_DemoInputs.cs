@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR;
 
+namespace sl
+{
 /// <summary>
 /// Extended version of ZEDControllerTracker that also checks for several inputs in a generic way.
 /// You can check a state with
@@ -238,4 +240,5 @@ public enum ControllerButtonState
     /// The button was released this frame.
     /// </summary>
     Up
+}
 }

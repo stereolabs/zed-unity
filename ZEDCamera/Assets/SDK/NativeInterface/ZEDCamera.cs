@@ -345,7 +345,7 @@ public static class NativeWrapper
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(5, 4, 0);
+        public static readonly System.Version PluginVersion = new System.Version(5, 5, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDllUnity, EntryPoint = "GetRenderEventFunc")]
@@ -377,6 +377,7 @@ public static class NativeWrapper
           * Create functions
           */
         [DllImport(nameDll, EntryPoint = "sl_create_camera")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_create_camera(int cameraID);
 
 
@@ -467,13 +468,13 @@ public static class NativeWrapper
         private static extern int dllz_get_svo_data_size(int cameraID, string key, ulong ts_begin, ulong ts_end);
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_svo_data")]
-        private static extern ERROR_CODE dllz_retrieve_svo_data(int cameraID, string key, int nb_data, [Out] SVOData[] data, ulong ts_begin, ulong ts_end);
+        private static extern ERROR_CODE dllz_retrieve_svo_data(int cameraID, string key, int nb_data, out IntPtr data, ulong ts_begin, ulong ts_end);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_svo_data_size")]
+        [DllImport(nameDll, EntryPoint = "sl_get_svo_data_keys_size")]
         private static extern int dllz_get_svo_data_keys_size(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_svo_data_keys")]
-        private static extern void dllz_get_svo_data_keys(int cameraID, int nb_keys, [Out] string[] keys);
+        private static extern void dllz_get_svo_data_keys(int cameraID, int nb_keys, out IntPtr keys);
 
         /*
         * Texture lifecycle functions (Unity layer — must be called around sl_open/sl_close).
@@ -525,6 +526,7 @@ public static class NativeWrapper
          */
 
         [DllImport(nameDll, EntryPoint = "sl_is_camera_setting_supported")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_is_video_setting_supported(int id, int setting);
 
         [DllImport(nameDll, EntryPoint = "sl_set_camera_settings")]
@@ -547,6 +549,7 @@ public static class NativeWrapper
         private static extern float dllz_get_camera_fps(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_is_opened")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_is_opened(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_width")]
@@ -579,11 +582,17 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_get_camera_imu_transform")]
         private static extern void dllz_get_camera_imu_transform(int cameraID, out Vector3 translation, out Quaternion rotation);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_camera_timestamp")]
+        [DllImport(nameDll, EntryPoint = "sl_get_image_timestamp")]
         private static extern ulong dllz_get_image_timestamp(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_current_timestamp")]
         private static extern ulong dllz_get_current_timestamp(int cameraID);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_timestamp")]
+        private static extern ulong dllz_get_timestamp(int cameraID, int timeReference);
+
+        [DllImport(nameDll, EntryPoint = "sl_get_health_status")]
+        private static extern IntPtr dllz_get_health_status(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_frame_dropped_count")]
         private static extern uint dllz_get_frame_dropped_count(int cameraID);
@@ -645,7 +654,7 @@ public static class NativeWrapper
         private static extern float dllz_get_depth_min_range_value(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_get_current_min_max_depth")]
-        private static extern float dllz_get_current_min_max_depth(int cameraID, ref float min, ref float max);
+        private static extern int dllz_get_current_min_max_depth(int cameraID, ref float min, ref float max);
 
 
         /*
@@ -658,6 +667,7 @@ public static class NativeWrapper
         private static extern void dllz_disable_tracking(int cameraID, System.Text.StringBuilder path);
 
         [DllImport(nameDll, EntryPoint = "sl_is_positional_tracking_enabled")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_is_positional_tracking_enabled(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_save_area_map")]
@@ -700,7 +710,8 @@ public static class NativeWrapper
         private static extern int dllz_get_area_export_state(int cameraID);
 
         [DllImport(nameDll, EntryPoint = "sl_set_region_of_interest")]
-        private static extern int dllz_set_region_of_interest(int cameraID, IntPtr roiMask, bool[] module);
+        private static extern int dllz_set_region_of_interest(int cameraID, IntPtr roiMask,
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U1)] bool[] module);
 
         [DllImport(nameDll, EntryPoint = "sl_get_region_of_interest")]
         private static extern int dllz_get_region_of_interest(int cameraID, IntPtr roiMask, int width, int height, MODULE module);
@@ -748,19 +759,24 @@ public static class NativeWrapper
         private static extern int dllz_retrieve_fused_point_cloud(int cameraID, Vector4[] points);
 
         [DllImport(nameDll, EntryPoint = "sl_save_mesh")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_save_mesh(int cameraID, string filename, MESH_FILE_FORMAT format);
 
         [DllImport(nameDll, EntryPoint = "sl_save_point_cloud")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_save_point_cloud(int cameraID, string filename, MESH_FILE_FORMAT format);
 
         [DllImport(nameDll, EntryPoint = "sl_load_mesh")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_load_mesh(int cameraID, string filename, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, 
             ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int[] textureSize, int nbMaxSubmesh);
 
         [DllImport(nameDll, EntryPoint = "sl_apply_texture")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_apply_texture(int cameraID, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int[] textureSize, int nbSubmesh);
 
         [DllImport(nameDll, EntryPoint = "sl_filter_mesh")]
+        [return: MarshalAs(UnmanagedType.U1)]
         private static extern bool dllz_filter_mesh(int cameraID, FILTER meshFilter, int[] nbVerticesInSubemeshes, int[] nbTrianglesInSubemeshes, ref int nbSubmeshes, int[] updatedIndices, ref int nbVertices, ref int nbTriangles, int nbSubmesh);
 
         [DllImport(nameDll, EntryPoint = "sl_get_spatial_mapping_state")]
@@ -847,7 +863,7 @@ public static class NativeWrapper
         [DllImport(nameDll, EntryPoint = "sl_update_objects_batch")]
         private static extern int dllz_update_objects_batch(int cameraID, out int nbBatches);
 
-        [DllImport(nameDll, EntryPoint = "sl_get_objects_batch")]
+        [DllImport(nameDll, EntryPoint = "sl_get_objects_batch_csharp")]
         private static extern int dllz_get_objects_batch_data(int cameraID, int batch_index, ref int numData, ref int id, ref OBJECT_CLASS label, ref OBJECT_SUBCLASS sublabel, ref POSITIONAL_TRACKING_STATE trackingState,
             [In, Out] Vector3[] position, [In, Out] float[,] positionCovariances, [In, Out] Vector3[] velocities, [In, Out] ulong[] timestamps, [In, Out] Vector2[,] boundingBoxes2D, [In, Out] Vector3[,] boundingBoxes,
             [In, Out] float[] confidences, [In, Out] OBJECT_ACTION_STATE[] actionStates, [In, Out] Vector2[,] headBoundingBoxes2D, [In, Out] Vector3[,] headBoundingBoxes, [In, Out] Vector3[] headPositions);
@@ -891,10 +907,10 @@ public static class NativeWrapper
          * Retreieves used by mat
          */
         [DllImport(nameDll, EntryPoint = "sl_retrieve_measure")]
-        private static extern int dllz_retrieve_measure(int cameraID, System.IntPtr ptr, int type, int mem, int width, int height);
+        private static extern int dllz_retrieve_measure(int cameraID, System.IntPtr ptr, int type, int mem, int width, int height, System.IntPtr cudaStream);
 
         [DllImport(nameDll, EntryPoint = "sl_retrieve_image")]
-        private static extern int dllz_retrieve_image(int cameraID, System.IntPtr ptr, int type, int mem, int width, int height);
+        private static extern int dllz_retrieve_image(int cameraID, System.IntPtr ptr, int type, int mem, int width, int height, System.IntPtr cudaStream);
 
         #endregion
 
@@ -1259,8 +1275,8 @@ public static class NativeWrapper
             ///  This version doesn't detect frame tearing currently.
             ///  \n default: disabled
             /// </summary>
-            [MarshalAs(UnmanagedType.U1)]
-            public bool enableImageValidityCheck;
+            [MarshalAs(UnmanagedType.I4)]
+            public int enableImageValidityCheck;
 
             public Resolution maximumWorkingResolution;
 
@@ -1269,6 +1285,15 @@ public static class NativeWrapper
             /// </summary>
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
             public string svoDecryptionKey;
+            /// <summary>
+            /// Precision used for the neural depth inference. Only applies to the neural depth modes.
+            /// </summary>
+            public sl.DEPTH_PRECISION depthPrecision;
+            /// <summary>
+            /// Lets the ZED SDK record the depth computation once and replay it at each Grab().
+            /// </summary>
+            [MarshalAs(UnmanagedType.U1)]
+            public bool allowDepthCudaGraph;
 
             /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
@@ -1300,6 +1325,8 @@ public static class NativeWrapper
                 enableImageValidityCheck = init.enableImageValidityCheck;
                 maximumWorkingResolution = init.maximumWorkingResolution;
                 svoDecryptionKey = init.svoDecryptionKey;
+                depthPrecision = init.depthPrecision;
+                allowDepthCudaGraph = init.allowDepthCudaGraph;
             }
         }
 
@@ -1315,9 +1342,9 @@ public static class NativeWrapper
             //Update values with what we're about to pass to the camera.
             currentResolution = initParameters.resolution;
             fpsMax = GetFpsForResolution(currentResolution);
-            if (initParameters.cameraFPS <= 0)
+            if (initParameters.cameraFPS < 0)
             {
-                initParameters.cameraFPS = (int)fpsMax;
+                initParameters.cameraFPS = 0; // let the ZED SDK pick the highest rate for the resolution
             }
             dll_initParameters initP = new dll_initParameters(initParameters); //DLL-friendly version of InitParameters.
             initP.coordinateSystem = COORDINATE_SYSTEM.LEFT_HANDED_Y_UP; //Left-hand, Y-up is Unity's coordinate system, so we match that
@@ -1507,6 +1534,7 @@ public static class NativeWrapper
                 return new RecordingStatus();
             }
             RecordingStatus parameters = (RecordingStatus)Marshal.PtrToStructure(p, typeof(RecordingStatus));
+            dllz_free(p);
 
             return parameters;
         }
@@ -1557,10 +1585,23 @@ public static class NativeWrapper
 
             if (nb_data > 0)
             {
-                SVOData[] data_array = new SVOData[nb_data];
+                // The C API fills an array of SL_SVOData* that we own, so pass the address of our
+                // first element and release each shell once its contents are copied out.
+                IntPtr[] dataPtr = new IntPtr[nb_data];
 
-                err = dllz_retrieve_svo_data(CameraID, key, nb_data, data_array, tsBegin, tsEnd);
-                data = new List<SVOData>(data_array);
+                err = dllz_retrieve_svo_data(CameraID, key, nb_data, out dataPtr[0], tsBegin, tsEnd);
+                if (err == ERROR_CODE.SUCCESS)
+                {
+                    for (int i = 0; i < nb_data; i++)
+                    {
+                        if (dataPtr[i] == IntPtr.Zero)
+                        {
+                            continue;
+                        }
+                        data.Add((SVOData)Marshal.PtrToStructure(dataPtr[i], typeof(SVOData)));
+                        dllz_free(dataPtr[i]);
+                    }
+                }
             }
 
             return err;
@@ -1576,11 +1617,21 @@ public static class NativeWrapper
 
             if (nb_keys > 0)
             {
-                string[] keys_array = new string[nb_keys];
+                // Each key is a separate allocation owned by us.
+                IntPtr[] keysPtr = new IntPtr[nb_keys];
 
-                dllz_get_svo_data_keys(CameraID, nb_keys, keys_array);
+                dllz_get_svo_data_keys(CameraID, nb_keys, out keysPtr[0]);
 
-                List<string> keys = new List<string>(keys_array);
+                List<string> keys = new List<string>(nb_keys);
+                for (int i = 0; i < nb_keys; i++)
+                {
+                    if (keysPtr[i] == IntPtr.Zero)
+                    {
+                        continue;
+                    }
+                    keys.Add(Marshal.PtrToStringAnsi(keysPtr[i]));
+                    dllz_free(keysPtr[i]);
+                }
 
                 return keys;
             }
@@ -1625,6 +1676,35 @@ public static class NativeWrapper
         public ulong GetCurrentTimeStamp()
         {
             return dllz_get_current_timestamp(CameraID);
+        }
+
+        /// <summary>
+        /// Gets a timestamp at the given time reference.
+        /// </summary>
+        /// <remarks>
+        /// Must be called after Grab() for TIME_REFERENCE.IMAGE and TIME_REFERENCE.IMAGE_CENTER_OF_EXPOSURE.
+        /// IMAGE_CENTER_OF_EXPOSURE returns 0 on inputs that carry no per-frame exposure (USB and HDR models,
+        /// SVO files and streams without per-frame sensor metadata), so check for 0 before using it.
+        /// </remarks>
+        /// <param name="timeReference">The desired sl.TIME_REFERENCE.</param>
+        /// <returns>The timestamp in nanoseconds, or 0 if unavailable on this input.</returns>
+        public ulong GetTimeStamp(sl.TIME_REFERENCE timeReference)
+        {
+            return dllz_get_timestamp(CameraID, (int)timeReference);
+        }
+
+        /// <summary>
+        /// Returns the camera self-diagnostic results (image, depth and sensor health).
+        /// </summary>
+        /// <remarks>Requires InitParameters.enableImageValidityCheck, which defaults to 1 (on).</remarks>
+        public sl.HealthStatus GetHealthStatus()
+        {
+            IntPtr p = dllz_get_health_status(CameraID);
+            if (p == IntPtr.Zero)
+                return new sl.HealthStatus();
+            sl.HealthStatus healthStatus = (sl.HealthStatus)Marshal.PtrToStructure(p, typeof(sl.HealthStatus));
+            dllz_free(p);
+            return healthStatus;
         }
 
         /// <summary>
@@ -2045,6 +2125,7 @@ public static class NativeWrapper
                 return new CalibrationParameters();
             }
             CalibrationParameters parameters = (CalibrationParameters)Marshal.PtrToStructure(p, typeof(CalibrationParameters));
+            dllz_free(p);
 
             if (raw)
                 calibrationParametersRaw = parameters;
@@ -2065,6 +2146,7 @@ public static class NativeWrapper
                 return new SensorsConfiguration();
             }
             SensorsConfiguration configuration = (SensorsConfiguration)Marshal.PtrToStructure(p, typeof(SensorsConfiguration));
+            dllz_free(p);
 
             return configuration;
         }
@@ -2178,6 +2260,7 @@ public static class NativeWrapper
             }
 
             PositionalTrackingStatus positionalTrackingStatus = (PositionalTrackingStatus)Marshal.PtrToStructure(p, typeof(PositionalTrackingStatus));
+            dllz_free(p);
             return positionalTrackingStatus;
         }
 
@@ -2506,7 +2589,11 @@ public static class NativeWrapper
         /// <returns>ZED SDK version as a string in the format MAJOR.MINOR.PATCH.</returns>
         public static string GetSDKVersion()
         {
-            return PtrToStringUtf8(dllz_get_sdk_version());
+            // The version string is a caller-owned allocation.
+            IntPtr versionPtr = dllz_get_sdk_version();
+            string version = PtrToStringUtf8(versionPtr);
+            dllz_free(versionPtr);
+            return version;
         }
 
 
@@ -2516,7 +2603,9 @@ public static class NativeWrapper
         /// <returns>ZED SDK version as a string in the format MAJOR.MINOR.PATCH.</returns>
         public static void GetSDKVersion(ref int major, ref int minor, ref int patch)
         {
-            string sdkVersion = PtrToStringUtf8(dllz_get_sdk_version());
+            IntPtr sdkVersionPtr = dllz_get_sdk_version();
+            string sdkVersion = PtrToStringUtf8(sdkVersionPtr);
+            dllz_free(sdkVersionPtr);
 
             string[] version = sdkVersion.Split('.');
 
@@ -2991,9 +3080,9 @@ public static class NativeWrapper
         /// <param name="mem">Whether the image should be on CPU or GPU memory.</param>
         /// <param name="resolution">Resolution of the texture.</param>
         /// <returns>Error code indicating if the retrieval was successful, and why it wasn't otherwise.</returns>
-        public sl.ERROR_CODE RetrieveMeasure(sl.ZEDMat mat, sl.MEASURE measure, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.MEM_CPU, sl.Resolution resolution = new sl.Resolution())
+        public sl.ERROR_CODE RetrieveMeasure(sl.ZEDMat mat, sl.MEASURE measure, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.CPU, sl.Resolution resolution = new sl.Resolution())
         {
-            return (sl.ERROR_CODE)(dllz_retrieve_measure(CameraID, mat.MatPtr, (int)measure, (int)mem, (int)resolution.width, (int)resolution.height));
+            return (sl.ERROR_CODE)(dllz_retrieve_measure(CameraID, mat.MatPtr, (int)measure, (int)mem, (int)resolution.width, (int)resolution.height, IntPtr.Zero));
         }
 
         /// <summary>
@@ -3013,9 +3102,9 @@ public static class NativeWrapper
         /// <param name="mem">Whether the image should be on CPU or GPU memory.</param>
         /// <param name="resolution">Resolution of the texture.</param>
         /// <returns>Error code indicating if the retrieval was successful, and why it wasn't otherwise.</returns>
-        public sl.ERROR_CODE RetrieveImage(sl.ZEDMat mat, sl.VIEW view, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.MEM_CPU, sl.Resolution resolution = new sl.Resolution())
+        public sl.ERROR_CODE RetrieveImage(sl.ZEDMat mat, sl.VIEW view, sl.ZEDMat.MEM mem = sl.ZEDMat.MEM.CPU, sl.Resolution resolution = new sl.Resolution())
         {
-            return (sl.ERROR_CODE)(dllz_retrieve_image(CameraID, mat.MatPtr, (int)view, (int)mem, (int)resolution.width, (int)resolution.height));
+            return (sl.ERROR_CODE)(dllz_retrieve_image(CameraID, mat.MatPtr, (int)view, (int)mem, (int)resolution.width, (int)resolution.height, IntPtr.Zero));
         }
 
 
@@ -3272,6 +3361,7 @@ public static class NativeWrapper
                 return new AI_Model_status();
             }
             AI_Model_status status = (AI_Model_status)Marshal.PtrToStructure(p, typeof(AI_Model_status));
+            dllz_free(p);
 
             return status;
         }
@@ -3327,7 +3417,8 @@ public static class NativeWrapper
         /// <returns></returns>
         public sl.ERROR_CODE RetrieveObjects(ref ObjectDetectionRuntimeParameters od_params, ref Objects objFrame, uint instanceID = 0)
         {
-            return (sl.ERROR_CODE)dllz_retrieve_objects_data(CameraID, ref od_params, ref objFrame, instanceID);
+            sl.ERROR_CODE err = (sl.ERROR_CODE)dllz_retrieve_objects_data(CameraID, ref od_params, ref objFrame, instanceID);
+            return err;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -3411,6 +3502,42 @@ public static class NativeWrapper
             /// Default: -1 (no filtering)
             /// </summary>
             public float minBoxHeightNormalized;
+            /// <summary>
+            /// Maximum allowed 3D width, in meters. Bigger predictions are discarded or clamped.
+            /// Default: -1 (no filtering)
+            /// </summary>
+            public float maxBoxWidthMeters;
+            /// <summary>
+            /// Minimum allowed 3D width, in meters. Smaller predictions are discarded or clamped.
+            /// Default: -1 (no filtering)
+            /// </summary>
+            public float minBoxWidthMeters;
+            /// <summary>
+            /// Maximum allowed 3D height, in meters. Bigger predictions are discarded or clamped.
+            /// Default: -1 (no filtering)
+            /// </summary>
+            public float maxBoxHeightMeters;
+            /// <summary>
+            /// Minimum allowed 3D height, in meters. Smaller predictions are discarded or clamped.
+            /// Default: -1 (no filtering)
+            /// </summary>
+            public float minBoxHeightMeters;
+            /// <summary>
+            /// Built-in sub class this custom class maps onto, for the tracker's motion model.
+            /// </summary>
+            public sl.OBJECT_SUBCLASS nativeMappedClass;
+            /// <summary>
+            /// Acceleration preset used by the tracker for this class.
+            /// </summary>
+            public sl.OBJECT_ACCELERATION_PRESET objectAccelerationPreset;
+            /// <summary>
+            /// Manually override the acceleration preset, in m/s^2. Takes precedence over the preset when set.
+            /// </summary>
+            public float maxAllowedAcceleration;
+            /// <summary>
+            /// Tracking parameters applied to this class.
+            /// </summary>
+            public sl.ObjectTrackingParameters objectTrackingParameters;
 
             public dll_customObjectDetectionProperties(CustomObjectDetectionProperties customObjectDetectionProperties)
             {
@@ -3425,6 +3552,14 @@ public static class NativeWrapper
                 minBoxWidthNormalized = customObjectDetectionProperties.minBoxWidthNormalized;
                 maxBoxHeightNormalized = customObjectDetectionProperties.maxBoxHeightNormalized;
                 minBoxHeightNormalized = customObjectDetectionProperties.minBoxHeightNormalized;
+                maxBoxWidthMeters = customObjectDetectionProperties.maxBoxWidthMeters;
+                minBoxWidthMeters = customObjectDetectionProperties.minBoxWidthMeters;
+                maxBoxHeightMeters = customObjectDetectionProperties.maxBoxHeightMeters;
+                minBoxHeightMeters = customObjectDetectionProperties.minBoxHeightMeters;
+                nativeMappedClass = customObjectDetectionProperties.nativeMappedClass;
+                objectAccelerationPreset = customObjectDetectionProperties.objectAccelerationPreset;
+                maxAllowedAcceleration = customObjectDetectionProperties.maxAllowedAcceleration;
+                objectTrackingParameters = customObjectDetectionProperties.objectTrackingParameters;
             }
         };
 
@@ -3575,7 +3710,8 @@ public static class NativeWrapper
         /// <returns></returns>
         public sl.ERROR_CODE RetrieveBodies(ref BodyTrackingRuntimeParameters bt_params, ref Bodies bodies, uint instanceID = 0)
         {
-            return (sl.ERROR_CODE)dllz_retrieve_bodies_data(CameraID, ref bt_params, ref bodies, instanceID);
+            sl.ERROR_CODE err = (sl.ERROR_CODE)dllz_retrieve_bodies_data(CameraID, ref bt_params, ref bodies, instanceID);
+            return err;
         }
         #endregion
 

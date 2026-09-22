@@ -4,6 +4,8 @@
 
 using UnityEngine;
 
+namespace sl
+{
 /// <summary>
 /// Interface for handling SteamVR and Oculus tracked controllers in the same way.
 /// Implemented in ZEDSteamVRControllerManager and ZEDOculusControllerManager. 
@@ -62,8 +64,6 @@ public interface ZEDControllerManager
     int ControllerIndexZEDHolder { get; }
 }
 
-namespace sl
-{
     /// <summary>
     /// VR controller button press sources. 
     /// </summary>
