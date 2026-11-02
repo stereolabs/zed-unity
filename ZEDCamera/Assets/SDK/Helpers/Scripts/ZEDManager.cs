@@ -2248,7 +2248,7 @@ public class ZEDManager : MonoBehaviour
 
     private System.Collections.IEnumerator InitZED()
     {
-        DEPTH_MODE[] NeuralModes = {DEPTH_MODE.NEURAL_LIGHT, DEPTH_MODE.NEURAL, DEPTH_MODE.NEURAL_PLUS };
+        DEPTH_MODE[] NeuralModes = {DEPTH_MODE.NEURAL_LIGHT, DEPTH_MODE.NEURAL, DEPTH_MODE.NEURAL_PLUS, DEPTH_MODE.NEURAL_MAX };
         
         foreach (var mode in NeuralModes) 
         {
