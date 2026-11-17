@@ -345,7 +345,7 @@ public static class NativeWrapper
         /// <summary>
         /// Current Plugin Version.
         /// </summary>
-        public static readonly System.Version PluginVersion = new System.Version(5, 5, 0);
+        public static readonly System.Version PluginVersion = new System.Version(5, 6, 0);
 
         /******** DLL members ***********/
         [DllImport(nameDllUnity, EntryPoint = "GetRenderEventFunc")]
@@ -699,6 +699,9 @@ public static class NativeWrapper
 
         [DllImport(nameDll, EntryPoint = "sl_set_imu_prior_orientation")]
         private static extern int dllz_set_imu_prior_orientation(int cameraID, Quaternion rotation);
+
+        [DllImport(nameDll, EntryPoint = "sl_ingest_motion_prior")]
+        private static extern int dllz_ingest_motion_prior(int cameraID, ref RelativePoseData motionPrior);
 
         [DllImport(nameDll, EntryPoint = "sl_get_imu_orientation")]
         private static extern int dllz_get_internal_imu_orientation(int cameraID, ref Quaternion rotation, int reference_time);
@@ -1294,6 +1297,22 @@ public static class NativeWrapper
             /// </summary>
             [MarshalAs(UnmanagedType.U1)]
             public bool allowDepthCudaGraph;
+            /// <summary>
+            /// Processor that runs the neural depth network.
+            /// </summary>
+            public sl.DEPTH_COMPUTE_DEVICE depthComputeDevice;
+            /// <summary>
+            /// Requested full-scale range of the accelerometer.
+            /// </summary>
+            public sl.ACCELEROMETER_RANGE imuAccelerometerRange;
+            /// <summary>
+            /// Requested full-scale range of the gyroscope.
+            /// </summary>
+            public sl.GYROSCOPE_RANGE imuGyroscopeRange;
+            /// <summary>
+            /// Requested IMU sampling rate.
+            /// </summary>
+            public sl.IMU_SAMPLING_RATE imuSamplingRate;
 
             /// <summary>
             /// Copy constructor. Takes values from Unity-suited InitParameters class.
@@ -1327,6 +1346,10 @@ public static class NativeWrapper
                 svoDecryptionKey = init.svoDecryptionKey;
                 depthPrecision = init.depthPrecision;
                 allowDepthCudaGraph = init.allowDepthCudaGraph;
+                depthComputeDevice = init.depthComputeDevice;
+                imuAccelerometerRange = init.imuAccelerometerRange;
+                imuGyroscopeRange = init.imuGyroscopeRange;
+                imuSamplingRate = init.imuSamplingRate;
             }
         }
 
@@ -1757,6 +1780,8 @@ public static class NativeWrapper
         {
             switch (depth_mode)
             {
+                case DEPTH_MODE.NEURAL_MAX:
+                    return AI_MODELS.NEURAL_MAX_DEPTH;
                 case DEPTH_MODE.NEURAL_PLUS:
                     return AI_MODELS.NEURAL_PLUS_DEPTH;
                 case DEPTH_MODE.NEURAL:
@@ -2349,6 +2374,27 @@ public static class NativeWrapper
             trackingStatus = (sl.ERROR_CODE)dllz_set_imu_prior_orientation(CameraID, rotation);
             return trackingStatus;
         }
+
+        /// <summary>
+        /// Gives the positional tracking a motion prior: the motion measured by an external source (wheel odometry,
+        /// external VIO, difference between two GNSS fixes). Requires POSITIONAL_TRACKING_MODE.GEN_3; nothing else to enable.
+        /// </summary>
+        /// Call it before Grab(), from any thread, as many times as needed: samples are matched to images by timestamp.
+        /// Feed them back to back (each startTimestamp is the previous endTimestamp). Samples up to 2 seconds late are still used.
+        /// How the motion was used for the last image is reported by GetPositionalTrackingStatus().relativePoseFusionStatus.
+        /// <param name="motionPrior">Motion measured over one time interval, with its uncertainty.</param>
+        /// <returns>SUCCESS if the motion was accepted.
+        /// INVALID_FUNCTION_CALL if the tracking is not enabled with POSITIONAL_TRACKING_MODE.GEN_3.
+        /// INVALID_FUNCTION_PARAMETERS if covariance does not hold 36 values or any field is unusable (timestamps 0 or not
+        /// ordered, no measured axis, invalid or mirroring sensorTransform, rejectionThreshold not above 0).
+        /// INVALID_TIMESTAMP if the sample ends more than 2 seconds before the last grabbed image.</returns>
+        public sl.ERROR_CODE IngestMotionPrior(ref RelativePoseData motionPrior)
+        {
+            if (motionPrior.covariance == null || motionPrior.covariance.Length != 36)
+                return sl.ERROR_CODE.INVALID_FUNCTION_PARAMETERS;
+            return (sl.ERROR_CODE)dllz_ingest_motion_prior(CameraID, ref motionPrior);
+        }
+
         /// <summary>
         /// Gets the rotation given by the ZED-M/ZED2 IMU. Return an error if using ZED (v1) which does not contains internal sensors
         /// </summary>
@@ -2464,12 +2510,16 @@ public static class NativeWrapper
         /// </summary>
         /// <param name="settings">Setting to be changed (brightness, contrast, gain, exposure, etc.)</param>
         /// <param name="value">New value.</param>
-        /// <param name="usedefault">True to set the settings to their default values.</param>
-        public void SetCameraSettings(CAMERA_SETTINGS settings, int value)
+        /// <returns>SUCCESS if the camera applied the setting.
+        /// INVALID_FUNCTION_PARAMETERS if the setting does not exist on this camera model or the value is out of range (see IsCameraSettingSupported()).
+        /// INVALID_FUNCTION_CALL if the input is an SVO file (only SHARPNESS can be changed during playback).
+        /// CAMERA_NOT_INITIALIZED if the camera is no longer available.
+        /// FAILURE if the camera refused the setting.</returns>
+        public sl.ERROR_CODE SetCameraSettings(CAMERA_SETTINGS settings, int value)
         {
             AssertCameraIsReady();
             //cameraSettingsManager.SetCameraSettings(CameraID, settings, value);
-            dllz_set_video_settings(CameraID, (int)settings, value);
+            return (sl.ERROR_CODE)dllz_set_video_settings(CameraID, (int)settings, value);
         }
 
         /// <summary>

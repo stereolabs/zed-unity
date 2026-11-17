@@ -702,6 +702,53 @@ namespace sl
     };
 
     /// <summary>
+    /// IMU sampling rates that can be requested in InitParameters.imuSamplingRate.
+    /// </summary>
+    public enum IMU_SAMPLING_RATE
+    {
+        /// <summary>
+        /// Camera default (200 Hz on ZED X cameras).
+        /// </summary>
+        DEFAULT,
+        HZ_200,
+        HZ_400,
+        /// <summary>
+        /// IMU not opened: the camera runs without motion sensors.
+        /// </summary>
+        OFF
+    };
+
+    /// <summary>
+    /// Accelerometer full-scale ranges that can be requested in InitParameters.imuAccelerometerRange.
+    /// </summary>
+    public enum ACCELEROMETER_RANGE
+    {
+        /// <summary>
+        /// Camera default (±12 g on ZED X cameras).
+        /// </summary>
+        DEFAULT,
+        G_3,
+        G_6,
+        G_12,
+        G_24
+    };
+
+    /// <summary>
+    /// Gyroscope full-scale ranges that can be requested in InitParameters.imuGyroscopeRange.
+    /// </summary>
+    public enum GYROSCOPE_RANGE
+    {
+        /// <summary>
+        /// Camera default (±1000 deg/s on ZED X cameras).
+        /// </summary>
+        DEFAULT,
+        DPS_250,
+        DPS_500,
+        DPS_1000,
+        DPS_2000
+    };
+
+    /// <summary>
     /// List of the available onboard sensors measurement units
     /// </summary>
     public enum SENSORS_UNIT
@@ -1032,7 +1079,12 @@ namespace sl
         /// <summary>
         /// Depth is supplied by the application rather than computed by the ZED SDK.
         /// </summary>
-        CUSTOM
+        CUSTOM,
+        /// <summary>
+        /// Most accurate Neural disparity estimation.\n Requires AI module.
+        /// \note Much heavier than NEURAL_PLUS, with about 1 GB of GPU memory: meant for high-end GPUs or offline processing.
+        /// </summary>
+        NEURAL_MAX
     };
 
     ///\ingroup Depth_group
@@ -1046,10 +1098,41 @@ namespace sl
         /// </summary>
         FP16,
         /// <summary>
-        /// Explicit-quantization (Q/DQ) INT8 neural depth.
-        /// Best-effort: falls back to FP16 if the selected DEPTH_MODE ships no INT8 model or the platform lacks fast INT8.
+        /// 8-bit neural depth: faster and with a lower memory footprint, at an accuracy cost.
+        /// NEURAL_LIGHT, NEURAL, NEURAL_PLUS and NEURAL_MAX provide 8-bit models (NEURAL_MAX in FP8 on GPUs that support it).
+        /// Best-effort: falls back to FP16 if the depth mode or the GPU does not support INT8.
         /// </summary>
-        INT8
+        INT8,
+        /// <summary>
+        /// Only reported by the ZED SDK, never set: the depth runs at a precision that has no value here (e.g. on the DLA or the PVA).
+        /// </summary>
+        LAST
+    };
+
+    ///\ingroup Depth_group
+    /// <summary>
+    /// Processors that can run the neural depth network.
+    /// </summary>
+    public enum DEPTH_COMPUTE_DEVICE
+    {
+        /// <summary>
+        /// The processor that gives the best depth performance, currently the GPU (default).
+        /// </summary>
+        AUTO,
+        /// <summary>
+        /// The GPU.
+        /// </summary>
+        GPU,
+        /// <summary>
+        /// Experimental. Deep Learning Accelerator of a Jetson AGX Orin or Orin NX with JetPack 6. NEURAL_LIGHT only.
+        /// Where it cannot be used, the depth runs on the GPU and Open() returns CONFIGURATION_FALLBACK.
+        /// </summary>
+        DLA,
+        /// <summary>
+        /// Experimental. Programmable Vision Accelerator of a Jetson, currently with JetPack 7.2 only. NEURAL_LIGHT only.
+        /// Where it cannot be used, the depth runs on the GPU and Open() returns CONFIGURATION_FALLBACK.
+        /// </summary>
+        PVA
     };
 
     /// <summary>
@@ -1260,8 +1343,17 @@ namespace sl
         /// or change the hardware configuration.
         /// </summary>
         CAMERA_EXCEEDS_BANDWIDTH = 35,
+        /// <summary>
+        /// The data was discarded because its timestamp is too old. Check that it uses the camera time reference, in nanoseconds.
+        /// </summary>
+        INVALID_TIMESTAMP = 36,
+        /// <summary>
+        /// The AI model needed by the depth mode or module is not on this host and could not be downloaded.
+        /// Connect the host to the internet, or download the models beforehand with ZED Diagnostic.
+        /// </summary>
+        AI_MODEL_NOT_AVAILABLE = 37,
         /// @cond SHOWHIDDEN 
-        LAST = 36
+        LAST = 38
         /// @endcond
     };
 
@@ -2013,7 +2105,138 @@ namespace sl
         VISUAL_INERTIAL_GNSS = 4,
         VISUAL_GNSS = 5,
         INERTIAL_GNSS = 6,
-        UNAVAILABLE = 7
+        UNAVAILABLE = 7,
+        /// <summary>
+        /// The images cannot be used, so the pose follows the motion given to ZEDCamera.IngestMotionPrior(), completed by the IMU when available.
+        /// </summary>
+        MOTION_PRIOR = 8
+    }
+
+    ///\ingroup PositionalTracking_group
+    /// <summary>
+    /// How the motion given to ZEDCamera.IngestMotionPrior() was used for the current image.
+    /// </summary>
+    public enum RELATIVE_POSE_FUSION_STATUS
+    {
+        /// <summary>
+        /// Not used: no sample accepted yet in this session, or the tracking does not run POSITIONAL_TRACKING_MODE.GEN_3.
+        /// </summary>
+        OFF = 0,
+        /// <summary>
+        /// The motion prior was used for this image.
+        /// </summary>
+        OK = 1,
+        /// <summary>
+        /// No motion prior was received for this image. Occasional values are harmless.
+        /// </summary>
+        MISSING = 2,
+        /// <summary>
+        /// A motion prior was available but did not cover this image's time interval.
+        /// If reported on every frame, the samples are not chained (startTimestamp != previous endTimestamp) or the two clocks do not agree.
+        /// </summary>
+        OUT_OF_SYNC = 3,
+        /// <summary>
+        /// The motion prior disagreed with the images and was discarded. Persistent values usually mean a wrong
+        /// sensorTransform, a wrong sign convention, or a covariance that is too low.
+        /// </summary>
+        REJECTED = 4,
+        /// <summary>
+        /// The motion prior for this image had not arrived yet (source slower than the camera, or late samples):
+        /// it is used to correct the trajectory once it arrives.
+        /// </summary>
+        DEFERRED = 5
+    }
+
+    ///\ingroup PositionalTracking_group
+    /// <summary>
+    /// Flags selecting which degrees of freedom of a RelativePoseData are measured.
+    /// </summary>
+    /// Axes are those of the motion source, oriented by RelativePoseData.sensorTransform. Their order is also the order of
+    /// the rows and columns of RelativePoseData.covariance. A wheel odometry measuring forward (X), sideways (Y) and heading
+    /// (about Z) motion declares <c>TX | TY | RZ</c>.
+    [Flags]
+    public enum POSE_AXIS : uint
+    {
+        NONE = 0,
+        TX = 1 << 0,
+        TY = 1 << 1,
+        TZ = 1 << 2,
+        RX = 1 << 3,
+        RY = 1 << 4,
+        RZ = 1 << 5,
+        TRANSLATION = TX | TY | TZ,
+        ROTATION = RX | RY | RZ,
+        ALL = TRANSLATION | ROTATION
+    }
+
+    ///\ingroup PositionalTracking_group
+    /// <summary>
+    /// A translation and a rotation. Mirrors SL_Transform in the C API.
+    /// </summary>
+    /// \note The default value is not a valid transform, as its rotation is a zeroed quaternion. Start from \ref Identity.
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TransformData
+    {
+        public Vector3 translation;
+        public Quaternion rotation;
+
+        public TransformData(Vector3 translation, Quaternion rotation)
+        {
+            this.translation = translation;
+            this.rotation = rotation;
+        }
+
+        public static TransformData Identity => new TransformData(Vector3.zero, Quaternion.identity);
+    }
+
+    ///\ingroup PositionalTracking_group
+    /// <summary>
+    /// Motion measured by an external source (wheel odometry, external VIO, consecutive GNSS fixes) over one time interval,
+    /// given to the positional tracking through ZEDCamera.IngestMotionPrior().
+    /// </summary>
+    /// \note The motion is the pose of the source at endTimestamp expressed in the frame the source was in at startTimestamp,
+    /// along the source's own axes, in InitParameters.coordinateUnit.
+    /// \note covariance is ordered [tx, ty, tz, rx, ry, rz] like Pose.poseCovariance (rotation as a rotation vector in radians).
+    /// \note The plugin opens the camera in COORDINATE_SYSTEM.LEFT_HANDED_Y_UP: a right-handed source must be converted first,
+    /// as a mirroring sensorTransform is refused.
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RelativePoseData
+    {
+        /// <summary>
+        /// Start of the interval, in nanoseconds. Set it to the endTimestamp of the previous sample. Cannot be 0.
+        /// </summary>
+        public ulong startTimestamp;
+        /// <summary>
+        /// End of the interval, in nanoseconds, on the same clock as ZEDCamera.GetCameraTimeStamp().
+        /// </summary>
+        public ulong endTimestamp;
+        /// <summary>
+        /// Motion of the source between the two timestamps. Its rotation must be valid even if no rotation axis is measured.
+        /// </summary>
+        public TransformData motion;
+        /// <summary>
+        /// Degrees of freedom the source actually measures. NONE is rejected.
+        /// </summary>
+        public POSE_AXIS measuredAxes;
+        /// <summary>
+        /// Row-major 6x6 uncertainty of the motion. Must hold 36 values; only the rows and columns of measuredAxes are read.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 36)]
+        public float[] covariance;
+        /// <summary>
+        /// True if the source reports that the camera did not move. Set it with a small but non-zero covariance.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)]
+        public bool isStationary;
+        /// <summary>
+        /// Pose of the source in the camera frame. Use TransformData.Identity when the source reports the camera motion along the camera axes.
+        /// </summary>
+        public TransformData sensorTransform;
+        /// <summary>
+        /// How far the motion may disagree with the images before it is discarded, as a multiple of covariance.
+        /// Must be strictly positive; 3 is a good starting point.
+        /// </summary>
+        public float rejectionThreshold;
     }
 
     ///\ingroup PositionalTracking_group
@@ -2034,6 +2257,10 @@ namespace sl
         /// Represents the current state of positional tracking fusion.
         /// </summary>
         public POSITIONAL_TRACKING_FUSION_STATUS trackingFusionStatus;
+        /// <summary>
+        /// How the motion given to ZEDCamera.IngestMotionPrior() was used for the current image.
+        /// </summary>
+        public RELATIVE_POSE_FUSION_STATUS relativePoseFusionStatus;
 
     }
 
@@ -2387,9 +2614,9 @@ namespace sl
         /// <summary>
         /// Precision used for the neural depth inference.
         /// </summary>
-        /// Set it to DEPTH_PRECISION.INT8 to request explicit-quantization (Q/DQ) INT8 inference: a faster depth
-        /// runtime and a lower memory footprint, for a small accuracy cost. Always safe to set - the SDK falls back
-        /// to FP16 when the depth mode or the GPU does not support INT8.
+        /// Set it to DEPTH_PRECISION.INT8 to request 8-bit inference: a faster depth runtime and a lower memory
+        /// footprint, at an accuracy cost. Always safe to set: the SDK falls back to FP16 when the depth mode or
+        /// the GPU does not support INT8.
         /// Default: DEPTH_PRECISION.FP16
         public sl.DEPTH_PRECISION depthPrecision = sl.DEPTH_PRECISION.FP16;
         /// <summary>
@@ -2401,6 +2628,28 @@ namespace sl
         /// \n Default: false
         /// </summary>
         public bool allowDepthCudaGraph = false;
+        /// <summary>
+        /// Processor that runs the neural depth network. DLA and PVA are experimental, Jetson only, and NEURAL_LIGHT only.
+        /// \n Default: DEPTH_COMPUTE_DEVICE.AUTO (currently the GPU)
+        /// </summary>
+        public sl.DEPTH_COMPUTE_DEVICE depthComputeDevice = sl.DEPTH_COMPUTE_DEVICE.AUTO;
+        /// <summary>
+        /// Requested full-scale range of the accelerometer. ZED X family with ZED X driver 1.5.0 or later only;
+        /// other cameras keep their default range.
+        /// \n Default: ACCELEROMETER_RANGE.DEFAULT (±12 g on ZED X cameras)
+        /// </summary>
+        public sl.ACCELEROMETER_RANGE imuAccelerometerRange = sl.ACCELEROMETER_RANGE.DEFAULT;
+        /// <summary>
+        /// Requested full-scale range of the gyroscope. Same availability as imuAccelerometerRange.
+        /// \n Default: GYROSCOPE_RANGE.DEFAULT (±1000 deg/s on ZED X cameras)
+        /// </summary>
+        public sl.GYROSCOPE_RANGE imuGyroscopeRange = sl.GYROSCOPE_RANGE.DEFAULT;
+        /// <summary>
+        /// Requested IMU sampling rate. 400 Hz needs ZED X driver 1.5.0 or later, otherwise the IMU runs at 200 Hz.
+        /// IMU_SAMPLING_RATE.OFF opens the camera without its IMU.
+        /// \n Default: IMU_SAMPLING_RATE.DEFAULT (200 Hz on ZED X cameras)
+        /// </summary>
+        public sl.IMU_SAMPLING_RATE imuSamplingRate = sl.IMU_SAMPLING_RATE.DEFAULT;
 
         /// <summary>
         ///  Set the input as the camera with specified id.
@@ -4027,8 +4276,20 @@ namespace sl
         /// Model for DEPTH_MODE.NEURAL at INT8 precision.
         /// </summary>
         NEURAL_DEPTH_INT8 = 15,
+        /// <summary>
+        /// Model for DEPTH_MODE.NEURAL_LIGHT at INT8 precision.
+        /// </summary>
+        NEURAL_LIGHT_DEPTH_INT8 = 16,
+        /// <summary>
+        /// related to sl.DEPTH_MODE.NEURAL_MAX
+        /// </summary>
+        NEURAL_MAX_DEPTH = 17,
+        /// <summary>
+        /// Model for DEPTH_MODE.NEURAL_PLUS at INT8 precision.
+        /// </summary>
+        NEURAL_PLUS_DEPTH_INT8 = 18,
 
-        LAST = 16
+        LAST = 19
     };
 
     /// <summary>
